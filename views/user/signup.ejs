@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/head') %>
+  <body class="auth-body">
+    <div class="auth-container">
+      <form id="signup_form" action="/signup" method="POST">
+        <h3>Create an account</h3>
+        <p>Enter your details below</p>
+        <%= msg ? msg : "" %> 
+        <!-- name -->
+        <div class="wave-group">
+          <input type="text" id="name" class="input" name="name" required />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">N</span>
+            <span class="label-char" style="--index: 1">a</span>
+            <span class="label-char" style="--index: 2">m</span>
+            <span class="label-char" style="--index: 3">e</span>
+          </label>
+        </div>
+        <div id="error1" class="error-message"></div>
+        <!-- phone number -->
+        <div class="wave-group">
+          <input type="number" id="phone_no" class="input" name="phone_no" required />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">P</span>
+            <span class="label-char" style="--index: 1">h</span>
+            <span class="label-char" style="--index: 2">o</span>
+            <span class="label-char" style="--index: 3">n</span>
+            <span class="label-char" style="--index: 4">e</span>
+            <span class="label-char" style="--index: 1">&nbsp;</span>
+            <!-- Space between words -->
+            <span class="label-char" style="--index: 5">N</span>
+            <span class="label-char" style="--index: 6">u</span>
+            <span class="label-char" style="--index: 7">m</span>
+            <span class="label-char" style="--index: 8">b</span>
+            <span class="label-char" style="--index: 9">e</span>
+            <span class="label-char" style="--index: 10">r</span>
+          </label>
+        </div>
+        <div id="error2" class="error-message"></div>
+        <!-- email -->
+        <div class="wave-group">
+          <input type="email" id="email" class="input" name="email" required />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">E</span>
+            <span class="label-char" style="--index: 1">m</span>
+            <span class="label-char" style="--index: 2">a</span>
+            <span class="label-char" style="--index: 3">i</span>
+            <span class="label-char" style="--index: 4">l</span>
+          </label>
+        </div>
+        <div id="error3" class="error-message"></div>
+        <!-- password -->
+        <div class="wave-group">
+          <input
+            type="password"
+            id="password"
+            class="input password"
+            name="password"
+            required
+          />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">P</span>
+            <span class="label-char" style="--index: 1">a</span>
+            <span class="label-char" style="--index: 2">s</span>
+            <span class="label-char" style="--index: 3">s</span>
+            <span class="label-char" style="--index: 4">w</span>
+            <span class="label-char" style="--index: 5">o</span>
+            <span class="label-char" style="--index: 6">r</span>
+            <span class="label-char" style="--index: 7">d</span>
+          </label>
+          <button
+            type="button"
+            class="togglePassword"
+            aria-label="Show password"
+          >
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="error4" class="error-message"></div>
+        <!-- repeat password -->
+        <div class="wave-group">
+          <input
+            type="password"
+            class="input password"
+            id="repeatPassword"
+            name="repeatPassword"
+            required
+          />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">R</span>
+            <span class="label-char" style="--index: 1">e</span>
+            <span class="label-char" style="--index: 2">p</span>
+            <span class="label-char" style="--index: 3">e</span>
+            <span class="label-char" style="--index: 4">a</span>
+            <span class="label-char" style="--index: 5">t</span>
+            <span class="label-char" style="--index: 6">&nbsp;</span>
+            <!-- Space between words -->
+            <span class="label-char" style="--index: 7">P</span>
+            <span class="label-char" style="--index: 8">a</span>
+            <span class="label-char" style="--index: 9">s</span>
+            <span class="label-char" style="--index: 10">s</span>
+            <span class="label-char" style="--index: 11">w</span>
+            <span class="label-char" style="--index: 12">o</span>
+            <span class="label-char" style="--index: 13">r</span>
+            <span class="label-char" style="--index: 14">d</span>
+          </label>
+          <button
+            type="button"
+            class="togglePassword"
+            aria-label="Show password"
+          >
+            <i class="fa-solid fa-eye"></i>
+          </button>
+        </div>
+        <div id="error5" class="error-message"></div>
+        <button type="submit" class="btn  mt-2 auth-btn">Create Account</button>
+      </form>
+      <div class="social-auth-btn-container m-2">
+         <a href="https://www.google.com" >
+            <button  class="btn social-google social-auth-btn">
+                <i class="fa-brands fa-google"></i>
+                Signup  with Google
+            </button>
+          </a>
+          
+          <a href="https://www.facebook.com" >
+            <button class="btn social-facebook social-auth-btn">
+                <i class="fab fa-facebook-f"></i>
+                Signup with facebook
+            </button>
+          </a>          
+      </div>
+      <p>Already have account ? <a href="/login">Login</a></p>
+    </div>
+
+  </body>
+  <%- include('partials/footer') %>
+</html>

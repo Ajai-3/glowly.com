@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+<body class="auth-body">
+    <div class="auth-container">
+        <h2 class="m-0">Glowly</h2>
+        <h3 class="m-0">Log in to Exclusive</h3>
+        <p>Enter your details below</p>
+        <% if (msg && msg.length > 0) { %>
+            <div class="alert <%= msg[0].type === 'error' ? 'alert-error' : 'alert-success' %>">
+                <%= msg[0].msg %>
+            </div>
+        <% } %>    
+        <form action="/login" method="POST">
+            <!-- email -->
+            <div class="wave-group">
+                <input type="email" class="input" name="email" required>
+                <span class="bar"></span>
+                <label class="label">
+                    <span class="label-char" style="--index: 0">E</span>
+                    <span class="label-char" style="--index: 1">m</span>
+                    <span class="label-char" style="--index: 2">a</span>
+                    <span class="label-char" style="--index: 3">i</span>
+                    <span class="label-char" style="--index: 4">l</span>
+                </label>
+            </div>
+            <!-- password -->
+            <div class="wave-group">
+                <input type="password" class="input password" name="password" required>
+                <span class="bar"></span>
+                <label class="label">
+                    <span class="label-char" style="--index: 0">P</span>
+                    <span class="label-char" style="--index: 1">a</span>
+                    <span class="label-char" style="--index: 2">s</span>
+                    <span class="label-char" style="--index: 3">s</span>
+                    <span class="label-char" style="--index: 4">w</span>
+                    <span class="label-char" style="--index: 5">o</span>
+                    <span class="label-char" style="--index: 6">r</span>
+                    <span class="label-char" style="--index: 7">d</span>
+                </label>
+                <button type="button" class="togglePassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+            </div>
+            <a href="/forgot-password" id="forgot-password">Forgot Password ?</a>
+            <button type="submit" class="btn auth-btn">Login</button>
+        </form>
+        <div class="social-auth-btn-container m-2">
+            <a href="https://www.google.com" >
+               <button  class="btn social-google social-auth-btn">
+                   <i class="fa-brands fa-google"></i>
+                   Log in with Google
+               </button>
+             </a>
+             
+             <a href="https://www.facebook.com" >
+               <button class="btn social-facebook social-auth-btn">
+                   <i class="fab fa-facebook-f"></i>
+                   Login in with facebook
+               </button>
+             </a>          
+         </div>
+        <p>Don’t have an account? <a href="/signup">Signup</a></p>
+    </div>
+
+</body>
+<%- include('partials/footer') %> 
+</html>

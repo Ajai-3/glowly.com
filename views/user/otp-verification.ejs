@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/head') %>
+  <body class="auth-body">
+    <div class="auth-container">
+      <h3 class="m-1">Enter the OTP</h3>
+      <p class="m-2">
+        The OTP was sent to your registered email Please check the spam folder.
+      </p>
+      <form
+        id="otp_form"
+        action="/otp-verification"
+        method="POST"
+        onsubmit="return validateOTPForm()"
+      >
+        <div class="wave-group">
+          <input type="text" class="input" id="otp" name="otp" required />
+          <span class="bar"></span>
+          <label class="label">
+            <span class="label-char" style="--index: 0">E</span>
+            <span class="label-char" style="--index: 1">n</span>
+            <span class="label-char" style="--index: 2">t</span>
+            <span class="label-char" style="--index: 3">e</span>
+            <span class="label-char" style="--index: 4">r</span>
+            <span class="label-char" style="--index: 6">&nbsp;</span>
+            <!-- Space between words -->
+            <span class="label-char" style="--index: 5">O</span>
+            <span class="label-char" style="--index: 6">T</span>
+            <span class="label-char" style="--index: 7">P</span>
+          </label>
+          <!-- <div id="timer" class="timer">01:00</div> -->
+          <div id="timervalue">
+            <div id="timer" >0:10</div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button type="button" class="resend-btn" onclick="resendOTP()">Resend OTP</button>
+          </div>
+        
+        </div>
+        
+        <button class="btn m-2 action-btn" type="submit">Conform</button>
+      </form>
+      <p>Back to <a href="/login">Login ?</a></p>
+    </div>
+    <!-- <div class="resend-otp m-1">
+      <button type="button" class="resend-btn">Resend OTP</button>
+  </div> -->
+  </body>
+  <%- include('partials/footer') %>
+</html>

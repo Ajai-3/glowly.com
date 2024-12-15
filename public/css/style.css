@@ -1,0 +1,330 @@
+/* ------------------------------------------------------------------- 
+ * ## fonts 
+ * ------------------------------------------------------------------- */
+ @import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap');
+ :root {
+    --font-1: 'ZCOOL XiaoWei', serif;
+    --font-2: 'DM Sans', sans-serif;
+    --foot-3: ;
+ }
+ 
+ /* ------------------------------------------------------------------- 
+  * ## colors
+  * ------------------------------------------------------------------- */
+ :root {
+     --bg-color: #000000;
+     --main-color: #E80071;
+     --text-color: #ffffff;
+     --text-color-2: #848383;
+     --second-text-color: #515151;
+     --red-text-color: #EA4335;
+     --blue-text-color: #316FF6;
+     --green-text-color: #28a745;
+ }
+ 
+ body {
+     margin: 0;
+     padding: 0;
+     color: var(--text-color);
+     background-color: var(--bg-color);
+     font-family: 'DM Sans', sans-serif;
+ }
+ a {
+     text-decoration: none;
+ }
+ 
+ /* ===================================================================
+  * # Authentication Pages Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    - Login  
+  *    - Signup
+  *    - OTP Message
+  *    - OTP Verification
+  *    - Forgot Password
+  *    - New Password
+  *
+  * - Class Naming Conventions:
+  *    --auth-body        : Body styling for all authentication pages
+  *    --auth-container   : Main content container
+  *    --auth-btn         : Buttons for login and signup actions
+  *    --action-btn       : Buttons for actions like Next, Confirm, Reset, Send OTP
+  *    --social-auth-btn  : Buttons for social media authentication like Google, Facebook
+  * -------------------------------------------------------------------
+  */
+ .auth-container h3 {
+     font-size: 1.25rem; /* 20px */
+     margin: 0;
+ }
+ .auth-container h2 {
+    color: var(--main-color);
+    font-family: var(--font-1);
+ }
+ .auth-container p {
+     color: var(--second-text-color);
+     font-size: 0.75rem; /* 12px */
+     margin: 0;
+ }
+ 
+ .error-message {
+     display: none;
+     text-align: left;
+     font-size: 0.6rem; /* 10px */
+     color: var(--red-text-color);
+ }
+ 
+ .alert {
+    padding: 0;
+    margin: 0;
+    border: none;
+    font-size: 0.7rem;
+    background-color: transparent;
+
+ }
+
+ .alert-success {
+    color: var(--green-text-color);
+ }
+
+ .alert-error {
+    color: var(--red-text-color);
+ }
+
+ /* --- AJAX Costum theam --- */
+ .swal-dark-popup {
+    border: 1px solid var(--second-text-color);
+    background-color: var(--bg-color);
+    border-radius: 5px;
+    width: 300px;
+}
+
+
+.swal-dark-title {
+    color: var(--text-color);
+    font-weight: bold;
+    font-family: var(--font-1);
+    font-size: 1.2rem;
+}
+
+.swal-dark-content {
+    color: var(--text-color-2);
+    font-family: var(--font-2);
+    font-size: 0.9rem;
+}
+
+.swal-dark-confirm {
+    background-color: var(--bg-color);
+    color: var(--green-text-color);
+    font-family: var(--font-2);
+    border: 1px solid var(--green-text-color);
+    border-radius: 5px;
+    padding: 8px 16px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    cursor: pointer;
+}
+
+.swal-dark-confirm:hover {
+    background-color: var(--green-text-color);
+    color: var(--text-color);
+}
+
+/* .swal-icon {
+    background-color: #006400 !important; 
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px; 
+    height: 50px; 
+    margin: 0 auto;
+} */
+
+
+
+
+ /* --- Authentication Body --- */
+ .auth-body {
+     height: 100vh;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     text-align: center;
+ }
+ 
+ /* --- Main Container --- */
+ .auth-container {
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;
+     text-align: center;
+ }
+ 
+ /* --- Buttons --- */
+ .auth-btn {
+     width: 100%;
+     font-size: 0.75rem; /* 12px */
+     border-radius: 3px;
+     color: var(--text-color);
+     background-color: var(--main-color);
+ }
+ .action-btn {
+     width: auto;
+     font-size: 0.75rem; /* 12px */
+     border-radius: 3px;
+     color: var(--text-color);
+     background-color: var(--main-color);
+ }
+ .social-auth-btn {
+     font-size: 0.71875rem; /* 11.5px */
+     border-radius: 3px;
+     cursor: pointer;
+     color: var(--text-color);
+     border: 1px solid var(--second-text-color);
+ }
+ 
+ /* --- Hover States --- */
+ .auth-btn:hover,
+ .action-btn:hover {
+     background-color: var(--main-color);
+ }
+ 
+ .social-google:hover {
+     color: var(--text-color);
+     background-color: var(--red-text-color);
+ }
+ .social-facebook:hover {
+     color: var(--text-color);
+     background-color: var(--blue-text-color);
+ }
+ 
+ /* --- Forgot Password Link --- */
+ #forgot-password {
+     display: block;
+     margin-bottom: 8px;
+     text-align: right;
+     color: var(--red-text-color);
+     font-size: 0.75rem; /* 12px */
+     text-decoration: none;
+ }
+ 
+ /* --- Form Design --- */
+ .wave-group {
+     position: relative;
+ }
+ 
+ .input {
+     width: 100%;
+     padding-right: 20px; 
+ }
+ 
+ .togglePassword {
+     position: absolute; 
+     top: 50%; 
+     right: 10px; 
+     transform: translateY(-50%); 
+     background: transparent; 
+     border: none; 
+     cursor: pointer;
+     color: var(--second-text-color); 
+     z-index: 10; 
+ }
+ 
+ /* FORM INPUT ANIMATIONS */
+ .wave-group {
+     position: relative;
+     margin-top: 10px;
+ }
+ .wave-group .input {
+     color: var(--text-color);
+     font-size: 0.75rem; /* 12px */
+     padding: 15px 10px 5px 5px;
+     display: block;
+     width: 300px;
+     border: none;
+     border-bottom: 1px solid var(--second-text-color);
+     background: transparent;
+     padding-right: 40px; 
+ }
+ .wave-group .input:focus {
+     outline: none;
+ }
+ .wave-group .label {
+     color: var(--second-text-color);
+     font-size: 0.875rem; /* 14px */
+     font-weight: normal;
+     position: absolute;
+     pointer-events: none;
+     left: 5px;
+     top: 12px;
+     display: flex;
+ }
+ .wave-group .label-char {
+     transition: 0.2s ease all;
+     transition-delay: calc(var(--index) * .05s);
+ }
+ .wave-group .input:focus ~ label .label-char,
+ .wave-group .input:valid ~ label .label-char {
+     transform: translateY(-20px);
+     font-size: 0.75rem; /* 12px */
+     color: var(--main-color);
+ }
+ .wave-group .bar {
+     position: relative;
+     display: block;
+     width: 300px;
+ }
+ .wave-group .bar:before,
+ .wave-group .bar:after {
+     content: '';
+     height: 1px;
+     width: 0;
+     bottom: 1px;
+     position: absolute;
+     background: var(--main-color);
+     transition: 0.2s ease all;
+ }
+ .wave-group .bar:before {
+     left: 50%;
+ }
+ .wave-group .bar:after {
+     right: 50%;
+ }
+ .wave-group .input:focus ~ .bar:before,
+ .wave-group .input:focus ~ .bar:after {
+     width: 50%;
+ }
+ 
+ /* OTP Message Page */
+ .otp-icon {
+     font-size: 3.125rem; /* 50px */
+     color: var(--green-text-color); 
+ }
+ 
+ /* OTP Verification Page */
+ #timervalue {
+     position: absolute;
+     top: 50%;
+     right: 10px;
+     transform: translateY(-50%);
+     font-size: 0.875rem; /* 14px */
+     color: var(--text-color-2);
+     pointer-events: none;            
+ }
+ /* Timer Expired Styling */
+#timervalue.expired {
+    color: var(--red-text-color);
+}
+
+/*  Resent btn */
+ .resend-btn {
+    display: flex;
+    align-items: end;
+    border: none;
+    font-size: 0.8rem;
+    color: var(--text-color-2);
+    background-color: transparent;
+ }
+ 
