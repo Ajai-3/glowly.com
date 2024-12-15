@@ -6,7 +6,7 @@
       <form id="signup_form" action="/signup" method="POST">
         <h3>Create an account</h3>
         <p>Enter your details below</p>
-        <%= msg ? msg : "" %> 
+        <div class="signup-err-msg"><%= msg ? msg : "" %></div> 
         <!-- name -->
         <div class="wave-group">
           <input type="text" id="name" class="input" name="name" required />
@@ -122,14 +122,14 @@
         <button type="submit" class="btn  mt-2 auth-btn">Create Account</button>
       </form>
       <div class="social-auth-btn-container m-2">
-         <a href="https://www.google.com" >
+         <a href="/auth/google" >
             <button  class="btn social-google social-auth-btn">
                 <i class="fa-brands fa-google"></i>
                 Signup  with Google
             </button>
           </a>
           
-          <a href="https://www.facebook.com" >
+          <a href="/auth/facebook" >
             <button class="btn social-facebook social-auth-btn">
                 <i class="fab fa-facebook-f"></i>
                 Signup with facebook

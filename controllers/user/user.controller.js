@@ -136,7 +136,7 @@ export const handleUserSignup = async (req, res) => {
         console.log("OTP send", OTP)
     } catch (error) {
         console.error("Signup error", error);
-        res.redirect("user/page-not-found")
+        res.redirect("/page-not-found")
 
     }
 }
@@ -190,7 +190,7 @@ export const handleResendOTP = async (req, res) => {
        const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
        if (sendOTPEmail) {
         console.log("Resend OTP : ", OTP);
-        res.status(200).json({success: true, msg: "OTP Rsend successfully" })
+        res.status(200).json({success: true, msg: "OTP Resend successfully" })
        } else {
         res.status(500).json({ success: false, msg: "Failed to resend OTP." })
        }
@@ -201,6 +201,49 @@ export const handleResendOTP = async (req, res) => {
 }
 
 // Handle User Login
-export const handleUserLogin = (req, res) => {
+export const handleUserLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        // Finding The User
+        const user = await User.findOne({ email, role: 'user' });
+        // If The User Is Not Found
+        if (!user) {
+            req.flash('msg', { type: 'error', msg: "User Not Found" })
+            return res.render("user/login", { msg: req.flash('msg') })
+        }
+        // Check The User Is Blocked By Admin
+        if (user.status === 'blocked') {
+            req.flash('msg', { type: 'error', msg: "Account blocked by admin...!"})
+            return res.render("user/login", { msg: req.flash('msg')  })
+        }
 
+        // Compare The Password
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        // If The Password Dosn't Match
+        if (!passwordMatch) {
+            req.flash('msg', { type: 'error', msg: "Invalid Password" })
+            return res.render("user/login", ({ msg: req.flash('msg') }))
+        }
+
+        req.session.user = user._id;
+        res.redirect('/')
+
+    } catch (error) {
+        console.error("Login error", error);
+        req.flash('msg', { type: "error", msg: "Login Failed...Try again later" })
+        res.render("user/login", { msg: req.flash('msg') })
+
+    }
 }
+
+// Handle Page Not Found 
+export const pageNotFound = async (req, res) => {
+    try {
+        return res.render("user/page-404");
+    } catch (error) {
+        console.error("Error in rendering page-not-found", error);
+        res.redirect("/user/page-not-found");
+    }
+};
+

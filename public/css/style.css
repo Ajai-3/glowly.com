@@ -68,13 +68,7 @@
      margin: 0;
  }
  
- .error-message {
-     display: none;
-     text-align: left;
-     font-size: 0.6rem; /* 10px */
-     color: var(--red-text-color);
- }
- 
+ /* Login Page Error Message */
  .alert {
     padding: 0;
     margin: 0;
@@ -92,6 +86,17 @@
     color: var(--red-text-color);
  }
 
+ /* Signup Page Error Message */
+ .error-message {
+    display: none;
+    text-align: left;
+    font-size: 0.6rem; /* 10px */
+    color: var(--red-text-color);
+}
+ .signup-err-msg {
+    font-size: 0.7rem;
+    color: var(--red-text-color);
+ }
  /* --- AJAX Costum theam --- */
  .swal-dark-popup {
     border: 1px solid var(--second-text-color);

@@ -7,8 +7,14 @@ const userSchema = new mongoose.Schema ({
     },
     phone_no: {
         type: Number,
-        required: true,
-        unique: true
+        required: false,
+        unique: true,
+        sparse: true, 
+        default: null,
+    },
+    googleId: {
+      type: String,
+      unique: true,
     },
     email: {
         type: String,
@@ -18,7 +24,7 @@ const userSchema = new mongoose.Schema ({
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     status: {
         type: String,
@@ -27,7 +33,7 @@ const userSchema = new mongoose.Schema ({
     },
     role: {
         type: String,
-        role: ['user', 'admin'],
+        enum: ['user', 'admin'],
         default: 'user'
     },
     created_at: {

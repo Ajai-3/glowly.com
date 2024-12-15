@@ -254,7 +254,7 @@ function resendOTP() {
             if (response.success) {
                 Swal.fire({
                     icon: "success",
-                    title: "OTP Resemd Successfully..!",
+                    title: "OTP Resent Successfully..! ",
                     showConfirmButton: false,
                     timer: 1500,
                     customClass: {
@@ -262,22 +262,76 @@ function resendOTP() {
                         title: "swal-dark-title",
                         content: "swal-dark-content",
                     },
-                })
+                });
             } else {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
-                    text: "Please try again...!",
+                    text: response.message, // Use the message from the server response
                     customClass: {
                         popup: "swal-dark-popup",
                         title: "swal-dark-title",
                         content: "swal-dark-content",
                     },
+                }).then(() => {
+                    // Redirect to the Create Account page if session is not found
+                    if (response.message.includes("User session not found")) {
+                        window.location.href = '/create-account';
+                    }
                 });
             }
+        },
+        error: function(xhr, status, error) {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: "Something went wrong, please try again later.",
+                customClass: {
+                    popup: "swal-dark-popup",
+                    title: "swal-dark-title",
+                    content: "swal-dark-content",
+                },
+            });
         }
     });
 }
+
+// function resendOTP() {
+//     clearInterval(timerInterval);
+//     startTimer();
+   
+//     $.ajax({
+//         type: "POST",
+//         url: "/resend-otp",
+//         success: function (response) {
+//             console.log('Response:', response);
+//             if (response.success) {
+//                 Swal.fire({
+//                     icon: "success",
+//                     title: "OTP Resemd Successfully..!",
+//                     showConfirmButton: false,
+//                     timer: 1500,
+//                     customClass: {
+//                         popup: "swal-dark-popup",
+//                         title: "swal-dark-title",
+//                         content: "swal-dark-content",
+//                     },
+//                 })
+//             } else {
+//                 Swal.fire({
+//                     icon: "error",
+//                     title: "Error",
+//                     text: "Please try again...!",
+//                     customClass: {
+//                         popup: "swal-dark-popup",
+//                         title: "swal-dark-title",
+//                         content: "swal-dark-content",
+//                     },
+//                 });
+//             }
+//         }
+//     });
+// }
 // document.addEventListener('DOMContentLoaded', function () {
 //     // Attach event listener to the button
 //     document.querySelector('.resend-btn').addEventListener('click', resendOTP);
