@@ -7,6 +7,6 @@ export const isAuthenticated = (req, res, next) => {
         return next();
     } catch (error) {
         console.error("Error in isAuthenticated middleware", error);
-       res.redirect("/page-not-found") 
+        res.redirect("/") 
     }
 }

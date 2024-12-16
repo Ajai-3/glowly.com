@@ -26,6 +26,7 @@
  :root {
      --bg-color: #030405;
      --main-color: #E80071;
+     --main-color2: #ea4b98a8;
      --text-color: #f3f4f7;
      --text-color-2: #848383;
      --text-color-3: #b4b4b4;
@@ -38,6 +39,7 @@
 
      /* Admin Panel  */
      --bg-color: #030405;
+     /* --bg-color: #0b0c0c; */
      --bg-color-2: #161927;
      --bg-color-3: #232942;
      --bg-color-btn-hover: #242d56;
@@ -368,6 +370,134 @@
 
 
 
+/* ===================================================================
+/* ===================================================================
+ /* ===================================================================
+  * #Home Page & User Side Pages Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *
+  * - Class Naming Conventions:
+  *    --auth-body        : Body styling for all authentication pages
+  *    --auth-container   : Main content container
+  *    --auth-btn         : Buttons for login and signup actions
+  *    --action-btn       : Buttons for actions like Next, Confirm, Reset, Send OTP
+  *    --social-auth-btn  : Buttons for social media authentication like Google, Facebook
+  * -------------------------------------------------------------------
+  */
+   .horizontal-line hr {
+    margin: 0;
+    background-color: var(--text-color-2);
+   }
+   /* NAV BAR 
+    */
+    /* Nav Offer  */
+   .nav-offer {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    padding: 0px 70px;
+    justify-content: space-between;
+    background-color: var(--main-color2);
+   }
+   /* Nav Offer Session 1 */
+   .nav-offer1 {
+    width: 60%;
+    background-color: #161927;
+   }
+   /* Nav Offer Session 2 */
+   .nav-offer2 {
+    display: flex;
+    gap: 20px;
+   }
+   .nav-offer-content a {
+    font-size: var(--font-size-third);
+     color: var(--text-color);
+   }
+   /* .nav-offer-content a:hover {
+    color: var(--main-color2);
+  } */
+
+   .nav-offer-content i {
+      margin-right: 7px;
+      color: var(--text-color);
+      padding-left: 6px;
+      font-size: var(--font-size-second);
+      border-left: 1px solid var(--text-color);
+   }
+   .fa-question-circle {
+    font-weight: lighter;
+   }
+   /* Nav Bar
+    */
+   .nav-bar {
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 70px;
+   }
+   .nav-bar-logo {
+    padding-bottom: 8px;
+    color: var(--main-color);
+    font-family: var(--font-1);
+    font-size: var(--font-size-logo);
+   }
+   .nav-bar-lists ul {
+     display: flex;
+     gap: 20px;
+     margin: 0;
+     list-style-type: none;
+     font-size: var(--font-size-second);
+   }
+   .nav-bar-lists li:hover {
+    color: var(--main-color);
+    cursor: pointer;
+   }
+   .nav-bar-search {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-between; */
+   }
+   .nav-bar-search input {
+    width: 200px;
+     outline: none;
+     border-style: none;
+     color: var(--text-color);
+     background-color: transparent;
+     font-size: var(--font-size-second);
+     border-bottom: 1px solid var(--text-color-2);
+   }
+   .nav-bar-search-button {
+    border: none;
+    color: var(--main-color);
+    background-color: transparent;
+   } 
+   .nav-bar-search input:focus{
+    border-bottom: 1px solid var(--main-color);
+   }
+   .nav-bar-last {
+    display: flex;
+    align-items: center;
+   }
+   .nav-bar-last i {
+       margin: 10px;
+   }
+   
+
+
+
+
+
+
+
 
 
 
@@ -398,7 +528,7 @@
   * -------------------------------------------------------------------
   */
 
-
+   
 
 
 
@@ -677,3 +807,9 @@
 .brudcrumbs {
     margin-bottom: 5px;
 }
+
+
+/* .demo {
+    height: 100px;
+    background-color: #000000;
+} */

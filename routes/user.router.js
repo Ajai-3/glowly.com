@@ -20,8 +20,8 @@ import { isAuthenticated } from "../middlewares/auth.middleware.js";
 router.get("/", renderHomePage); // Home Page
 router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/page-not-found", pageNotFound);
-router.get("/login", isAuthenticated, renderLoginPage); // Login Page
-router.get("/signup", isAuthenticated, renderSignupPage); // Signup Page
+router.get("/login",  renderLoginPage); // Login Page
+router.get("/signup",  renderSignupPage); // Signup Page
 router.get("/otp-message", isAuthenticated, renderOtpStatusPage); // OTP Message Page
 router.get("/new-password", isAuthenticated,renderNewPasswordPage); // New Password Page
 router.get("/forgot-password", isAuthenticated, renderForgotPasswordPage); // Forgot Password Page
@@ -37,8 +37,6 @@ router.post("/resend-otp", handleResendOTP);
 router.post("/otp-verification", handleOTPVerification);
 
 
-// router.all("*", (req, res) => {
-//     res.render("user/page-not-found");
-// })
+
 
 export default router;
