@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+<body class="admin-container">
+    <div class="sidebar">
+        <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products"  class="active">Products</a>
+        <a href="orderlists">Order Lists</a>
+        <a href="/users">Users</a>
+        <a href="/sales-report">Sales Report</a>
+        <a href="coupons">Coupons</a>
+        <a href="category">Category</a>
+        <a href="banner-management">Banner Management</a>
+        <a href="settings">Settings</a>
+        <a href="logout">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs">brudcrumbs>add-products</div>
+        
+        <div class="add-products-container">
+            <div class="add-products-container1">
+                <h4>Add New Product</h4>
+
+                <div class="add-products-container-center">
+                    <div>
+                        <label for="productName">Product Name</label>
+                        <input type="text" name="productName" id="productName" placeholder="Type product name">
+                    </div>
+                    <div>
+                        <label for="brand">Brand</label>
+                        <input type="text" name="brand" id="brand" placeholder="Type brand name">
+                    </div>
+                </div>             
+
+                <label for="discription">Discription</label><br>
+                <textarea id="discription" name="discription" placeholder="Enter product description here..."></textarea>
+
+                <div class="add-products-container-center">
+                    <div>
+                        <label for="category">Category</label>
+                        <input type="text" name="category" id="category" placeholder="Type category here">
+                    </div>
+                    <div>
+                        <label for="subCategory">Sub Category</label>
+                        <input type="text" name="subCategory" id="subCategory" placeholder="Type sub category">
+                    </div>
+                </div>
+
+                <div class="add-products-container-center">
+                    <div>
+                        <label for="stockQuantity">Stock Quantity</label>
+                        <input type="number" name="stockQuantity" id="stockQuantity" placeholder="303">
+                    </div>
+                    <div>
+                        <label for="regularPrice">Regular Price</label>
+                        <input type="number" name="regularPrice" id="regularPrice" placeholder="&#8377;21,400">
+                    </div>
+                    <div>
+                        <label for="salePrice">Sale Price</label>
+                        <input type="number" name="salePrice" id="salePrice" placeholder="&#8377;18,949">
+                    </div>    
+                </div>
+                <div class="d-flex justify-content-between">
+                    <a href="/add-new-brand"><button class="add-new-brand-btn my-4">Add New Brands<i class="fas fa-plus-circle"></i></button></a> 
+                    <a href="/add-product"><button class="add-product-btn2 my-4">Add Product</button></a> 
+                </div>
+            </div>
+            <div class="add-products-container2">
+                <h4>Add Product Image</h4>
+            </div>   
+        </div>
+
+        
+
+    </div>
+
+</body>
+<%- include('partials/footer') %> 
+</html>

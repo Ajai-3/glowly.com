@@ -6,21 +6,50 @@
  :root {
     --font-1: 'ZCOOL XiaoWei', serif;
     --font-2: 'DM Sans', sans-serif;
-    --foot-3: ;
+    --font-3: ;
+
+    --font-size-logo: 2.5rem;
+    --font-size-heading: 3rem;
+    --font-size-heading2: 1.2rem;
+    --font-size-err1: 0.6rem;
+    --font-size-err2: 0.7rem;
+    --font-size-err3: 0.9rem;
+    --font-size-p: 0.75rem;
+    --font-size-normal: 1rem;
+    --font-size-second: .875rem;
+    --font-size-third: .7rem;
  }
  
  /* ------------------------------------------------------------------- 
   * ## colors
   * ------------------------------------------------------------------- */
  :root {
-     --bg-color: #000000;
+     --bg-color: #030405;
      --main-color: #E80071;
-     --text-color: #ffffff;
+     --text-color: #f3f4f7;
      --text-color-2: #848383;
+     --text-color-3: #b4b4b4;
+     --text-color-4: #e2e2e2;
      --second-text-color: #515151;
      --red-text-color: #EA4335;
      --blue-text-color: #316FF6;
      --green-text-color: #28a745;
+
+
+     /* Admin Panel  */
+     --bg-color: #030405;
+     --bg-color-2: #161927;
+     --bg-color-3: #232942;
+     --bg-color-btn-hover: #242d56;
+     --bg-color-btn-hover2: #212e64;
+     --bg-color-btn-hover3: #1a3294;
+     --bg-green-color: #249542;
+     --bg-red-color: #db5d5d;
+     --bg-blue-color: #3d99f5;
+     --bg-purple-color: #6261cc;
+     --red-text-color: #EA4335;
+     --green-text-color: #28a745;
+
  }
  
  body {
@@ -55,16 +84,18 @@
   * -------------------------------------------------------------------
   */
  .auth-container h3 {
-     font-size: 1.25rem; /* 20px */
+     font-size: var(--font-size-heading2); /* 20px */
      margin: 0;
  }
- .auth-container h2 {
+ .auth-container h2,
+ .admin-container h2 {
+    font-size: var(--font-size-logo);
     color: var(--main-color);
     font-family: var(--font-1);
  }
  .auth-container p {
      color: var(--second-text-color);
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      margin: 0;
  }
  
@@ -73,7 +104,7 @@
     padding: 0;
     margin: 0;
     border: none;
-    font-size: 0.7rem;
+    font-size: var(--font-size-err2);
     background-color: transparent;
 
  }
@@ -90,11 +121,11 @@
  .error-message {
     display: none;
     text-align: left;
-    font-size: 0.6rem; /* 10px */
+    font-size: var(--font-size-err1); /* 10px */
     color: var(--red-text-color);
 }
  .signup-err-msg {
-    font-size: 0.7rem;
+    font-size: var(--font-size-err2);
     color: var(--red-text-color);
  }
  /* --- AJAX Costum theam --- */
@@ -110,13 +141,13 @@
     color: var(--text-color);
     font-weight: bold;
     font-family: var(--font-1);
-    font-size: 1.2rem;
+    font-size: var(--font-size-heading2);
 }
 
 .swal-dark-content {
     color: var(--text-color-2);
     font-family: var(--font-2);
-    font-size: 0.9rem;
+    font-size: var(--font-size-err3);
 }
 
 .swal-dark-confirm {
@@ -170,14 +201,14 @@
  /* --- Buttons --- */
  .auth-btn {
      width: 100%;
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      border-radius: 3px;
      color: var(--text-color);
      background-color: var(--main-color);
  }
  .action-btn {
      width: auto;
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      border-radius: 3px;
      color: var(--text-color);
      background-color: var(--main-color);
@@ -211,7 +242,7 @@
      margin-bottom: 8px;
      text-align: right;
      color: var(--red-text-color);
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      text-decoration: none;
  }
  
@@ -244,7 +275,7 @@
  }
  .wave-group .input {
      color: var(--text-color);
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      padding: 15px 10px 5px 5px;
      display: block;
      width: 300px;
@@ -273,7 +304,7 @@
  .wave-group .input:focus ~ label .label-char,
  .wave-group .input:valid ~ label .label-char {
      transform: translateY(-20px);
-     font-size: 0.75rem; /* 12px */
+     font-size: var(--font-size-p); /* 12px */
      color: var(--main-color);
  }
  .wave-group .bar {
@@ -333,3 +364,316 @@
     background-color: transparent;
  }
  
+
+
+
+
+
+
+
+
+
+
+/* ===================================================================
+/* ===================================================================
+/* ===================================================================
+/* ===================================================================
+  * # Admin Pages Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -   
+  *    - 
+  *    - 
+  *    - 
+  *    -
+  *    - 
+  *
+  * - Class Naming Conventions:
+  *    --auth-body        : Body styling for all authentication pages
+  *    --auth-container   : Main content container
+  *    --auth-btn         : Buttons for login and signup actions
+  *    --action-btn       : Buttons for actions like Next, Confirm, Reset, Send OTP
+  *    --social-auth-btn  : Buttons for social media authentication like Google, Facebook
+  * -------------------------------------------------------------------
+  */
+
+
+
+
+
+ /* Sidebar styling */
+ .sidebar {
+    width: 200px;
+    height: 100vh;
+    background-color: var(--bg-color-2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-weight: 300;
+}
+
+.sidebar a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: var(--font-size-second);
+    display: block;
+    padding: 9px;
+    margin-left: 10px;
+    border-radius: 5px;
+}
+
+.sidebar a:hover {
+    background-color: var(--bg-color-btn-hover);
+}
+
+.sidebar a.active {
+    background-color: var(--bg-color-btn-hover);
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 200px;
+    padding: 15px;
+}
+
+.header {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 0;
+}
+
+.search-bar input {
+    outline: none;
+    background-color: transparent;
+    color: var(--text-color);
+    padding: 2px;
+    width: 200px;
+    border-radius: 4px;
+    border: 1px solid var(--text-color-2);
+}
+/* Admin Profile */
+.fa-circle-user {
+    font-size: 2rem;
+    color: var(--text-color-2);
+}
+/* Dashboard summary */
+.dashboard-summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.dashboard-summary div {
+    background-color: var(--bg-color-2);
+    border-radius: 8px;
+    padding: 10px;
+    width: 22%;
+}
+
+.dashboard-summary h3 {
+    margin: 5px 0;
+    font-size: var(--font-size-normal);
+    color: var(--text-color-2);
+}
+
+.dashboard-summary p, p1, p2 {
+    padding: 0;
+    margin: 5px 0;
+    font-size: var(--font-size-third);
+}
+.dashboard-summary p1 {
+   color: var(--green-text-color);
+}
+.dashboard-summary p2 {
+   color: var(--red-text-color);
+}
+.dashboard-summary i {
+    font-size: var(--font-size-second);
+    margin: 4px;
+}
+/* .dashboard-summary1 {
+  background-color: var(--bg-blue-color);
+}
+.dashboard-summary2 {
+    background-color: var(--bg-green-color);
+}
+.dashboard-summary3 {
+    background-color: var(--bg-purple-color);
+}
+.dashboard-summary4 {
+    background-color: var(--bg-red-color);
+} */
+
+.sales-chart {
+    background-color: var(--bg-color-2);
+    padding: 20px;
+    border-radius: 10px;
+}
+/* Filter Container */
+.filter-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.filter-div1 {
+    display: flex;
+    border-radius: 10px;
+    background-color: var(--bg-color-2);
+    border: 1px solid var(--bg-color-3);
+}
+.filter-box {
+    border: 1px solid var(--bg-color-3);
+    padding: 6px;
+    border-radius: 10px;
+}
+.filter-box label {
+    color: var(--text-color);
+    font-size: var(--font-size-second);
+    margin-bottom: 5px;
+}
+.filter-box select {
+    outline: none;
+    color: var(--text-color-2);
+    background-color: transparent;
+    font-size: var(--font-size-third);
+    border-radius: 4px;
+    border: none;
+}
+.filter-box option {
+    /* border: none;
+    outline: none; */
+  background-color: var(--bg-color-2);
+}
+
+
+/* All Table */
+/* User, Sales, Product */
+.all-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    border-radius: 10px; 
+    overflow: hidden;
+}
+
+.all-table th, .all-table td {
+    padding: 10px;
+    text-align: left;
+    font-size: var(--font-size-third);
+    border-bottom: 1px solid var(--bg-color-3);
+}
+
+.all-table td {
+    background-color: var(--bg-color-2);
+}
+
+.all-table th {
+    background-color: var(--bg-color-3);
+}
+
+
+.all-table tr:hover {
+    background-color: var(--bg-color-btn-hover);
+}
+
+.all-table tr:hover td {
+    background-color: var(--bg-color-btn-hover);
+}
+
+/* Add Products Page */
+.add-products-container {
+    display: flex;
+    padding: 10px;
+    flex-wrap: wrap;
+    border-radius: 10px;
+    background-color: var(--bg-color-2);
+}
+.add-products-container1 {
+    width: 60%;
+    padding-bottom: 10px;
+}
+.add-products-container2 {
+    width: 40%; 
+    padding-left: 15px;
+    /* background-color: #1a3294; */
+}
+.add-products-container1 input {
+   width: 100%;
+   padding: 5px;
+   outline: none;
+   display: block;
+   border-radius: 4px;
+   color: var(--text-color-3);
+   background-color: transparent;
+   font-size: var(--font-size-third);
+   border: 1px solid var(--bg-color-btn-hover);
+   
+}
+.add-products-container1 label {
+    color: var(--text-color-4);
+   font-size: var(--font-size-second);
+}
+.add-products-container-center {
+    display: flex;
+    gap: 20px;
+}
+.add-products-container-center input {
+    display: block;
+    width: 100%;
+}
+.add-products-container-center div {
+    flex: 1;
+    margin: 5px 0;
+}
+
+.add-products-container1 input:focus {
+    border-color: var(--bg-color-btn-hover3);
+}
+#discription {
+    width: 100%;
+    height: 20%; 
+    outline: none;
+    padding: 5px;
+    border-radius: 4px;
+   color: var(--text-color-3);
+   background-color: transparent;
+   font-size: var(--font-size-third);
+   border: 1px solid var(--bg-color-btn-hover);
+}
+
+#discription:focus {
+    border-color: var(--bg-color-btn-hover3);
+}
+
+.add-new-brand-btn,
+.add-product-btn,
+.add-product-btn2 {
+    color: var(--text-color);
+    font-size: var(--font-size-second);
+    padding: 6px;
+    border: 0px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--bg-blue-color);
+}
+
+.add-product-btn2 {
+    padding: 6px 90px;
+}
+.add-new-brand-btn {
+    padding: 6px 20px;
+    background-color: var(--bg-green-color);
+}
+.add-new-brand-btn i {
+    padding-left: 10px;
+}
+
+.brudcrumbs {
+    margin-bottom: 5px;
+}

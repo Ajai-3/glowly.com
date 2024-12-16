@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+<body class="admin-container">
+    <div class="sidebar">
+        <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products">Products</a>
+        <a href="orderlists">Order Lists</a>
+        <a href="/users" class="active">Users</a>
+        <a href="/sales-report">Sales Report</a>
+        <a href="coupons">Coupons</a>
+        <a href="category">Category</a>
+        <a href="banner-management">Banner Management</a>
+        <a href="settings">Settings</a>
+        <a href="logout">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs">brudcrumbs</div>
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone No</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>00001</td>
+                    <td>Christina Brooks</td>
+                    <td>08B Ketch Green Apt. 448</td>
+                    <td>Main</td>
+                    <td>Completed</td>
+                </tr>
+                <tr>
+                    <td>00002</td>
+                    <td>Rosie Pearson</td>
+                    <td>579 Immartual Ferry Suite 926</td>
+                    <td>Luxury</td>
+                    <td>Processing</td>
+                </tr>
+                <tr>
+                    <td>00003</td>
+                    <td>Ana De Armas</td>
+                    <td>8587 Fridas Ports</td>
+                    <td>Women</td>
+                    <td>Shipped</td>
+                </tr>
+                <tr>
+                    <td>00004</td>
+                    <td>Christina Brooks</td>
+                    <td>08B Ketch Green Apt. 448</td>
+                    <td>Main</td>
+                    <td>Completed</td>
+                </tr>
+                <tr>
+                    <td>00005</td>
+                    <td>Christina Brooks</td>
+                    <td>08B Ketch Green Apt. 448</td>
+                    <td>Main</td>
+                    <td>Completed</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+<%- include('partials/footer') %> 
+</html>

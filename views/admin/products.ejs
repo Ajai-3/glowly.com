@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+<body class="admin-container">
+    <div class="sidebar">
+        <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/products"  class="active">Products</a>
+        <a href="orderlists">Order Lists</a>
+        <a href="/users">Users</a>
+        <a href="/sales-report">Sales Report</a>
+        <a href="coupons">Coupons</a>
+        <a href="category">Category</a>
+        <a href="banner-management">Banner Management</a>
+        <a href="settings">Settings</a>
+        <a href="logout">Logout</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <input type="text" placeholder="Search">
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs">brudcrumbs</div>
+        <div>
+            <div class="filter-container">
+                <div class="filter-div1">
+                    <div class="filter-box">
+                        <i class="fa-solid fa-filter"></i>
+                       </div>
+                    <div class="filter-box">
+                        <label for="filter">Filter By
+
+                            <select name="filter" id="filter">
+                                <option value="date">14 feb 2014</option>
+                            </select>
+                        </label>
+                        
+                       </div>
+                       <div class="filter-box">
+                        <label for="category">Category
+                            <select name="category" id="category">
+                                <option value="category1">Category1</option>
+                                <option value="category2">Category2</option>
+                            </select>
+
+                        </label>
+                        
+                       </div>
+                </div>
+               <a href="/add-products">
+                <button class="add-product-btn">
+                    Add New Products
+                </button>
+               </a>
+            </div>
+            
+        </div>
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Product Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Pieces</th> <!-- Added Pieces column -->
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><img src="path_to_image1.jpg" alt="Product Image" class="product-image"></td>
+                    <td>Product A</td>
+                    <td>Category 1</td>
+                    <td>$20.99</td>
+                    <td>50</td> <!-- Added quantity of products -->
+                    <td>
+                        <a href="/edit-products"> <button>
+                            Edit
+                        </button></a>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="path_to_image2.jpg" alt="Product Image" class="product-image"></td>
+                    <td>Product B</td>
+                    <td>Category 2</td>
+                    <td>$35.49</td>
+                    <td>120</td> <!-- Added quantity of products -->
+                    <td>
+                        <a href="/edit-products"> <button>
+                            Edit
+                        </button></a>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="path_to_image3.jpg" alt="Product Image" class="product-image"></td>
+                    <td>Product C</td>
+                    <td>Category 3</td>
+                    <td>$45.99</td>
+                    <td>30</td> <!-- Added quantity of products -->
+                    <td>
+                        <a href="/edit-products"> <button>
+                            Edit
+                        </button></a>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="path_to_image4.jpg" alt="Product Image" class="product-image"></td>
+                    <td>Product D</td>
+                    <td>Category 4</td>
+                    <td>$12.50</td>
+                    <td>75</td> <!-- Added quantity of products -->
+                    <td>
+                        <a href="/edit-products"> <button>
+                            Edit
+                        </button></a>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><img src="path_to_image5.jpg" alt="Product Image" class="product-image"></td>
+                    <td>Product E</td>
+                    <td>Category 5</td>
+                    <td>$99.99</td>
+                    <td>2000</td> 
+                    <td>
+                        <a href="/edit-products"> <button>
+                            Edit
+                        </button></a>
+                        <button class="btn btn-delete">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+<%- include('partials/footer') %> 
+</html>

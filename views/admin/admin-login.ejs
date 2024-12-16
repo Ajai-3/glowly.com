@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+<body class="auth-body">
+    <div class="auth-container">
+        <h2 class="m-3">Admin Login</h2>
+        <form action="/admin-login" method="POST">
+            <!-- email -->
+            <div class="wave-group my-2">
+                <input type="email" class="input" name="email" required>
+                <span class="bar"></span>
+                <label class="label">
+                    <span class="label-char" style="--index: 0">E</span>
+                    <span class="label-char" style="--index: 1">m</span>
+                    <span class="label-char" style="--index: 2">a</span>
+                    <span class="label-char" style="--index: 3">i</span>
+                    <span class="label-char" style="--index: 4">l</span>
+                </label>
+            </div>
+            <!-- password -->
+            <div class="wave-group my-2">
+                <input type="password" class="input password" name="password" required>
+                <span class="bar"></span>
+                <label class="label">
+                    <span class="label-char" style="--index: 0">P</span>
+                    <span class="label-char" style="--index: 1">a</span>
+                    <span class="label-char" style="--index: 2">s</span>
+                    <span class="label-char" style="--index: 3">s</span>
+                    <span class="label-char" style="--index: 4">w</span>
+                    <span class="label-char" style="--index: 5">o</span>
+                    <span class="label-char" style="--index: 6">r</span>
+                    <span class="label-char" style="--index: 7">d</span>
+                </label>
+                <button type="button" class="togglePassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
+            </div>
+            <button type="submit" class="btn auth-btn my-4">Login</button>
+        </form>
+    </div>
+
+</body>
+<%- include('partials/footer') %> 
+</html>
