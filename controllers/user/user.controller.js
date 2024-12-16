@@ -11,16 +11,20 @@ dotenv.config();
 
 // Render Home Page
 export const renderHomePage = (req, res) => {
+    const user= req.session.user;
+    if (user) {
+
+    }
     return res.render('user/home')
 }
 // Render Login Page
 export const renderLoginPage = (req, res) => {
-    const msg = req.flash('msg');
+    const msg = req.session.msg || null; 
     return res.render('user/login', { msg })
 }
 // Render Signup Page
 export const renderSignupPage = (req, res) => {
-    const msg = req.flash('msg');
+    const msg = req.session.msg || null; 
     return res.render('user/signup', { msg })
 }
 // Render OTP Message Page
@@ -102,44 +106,47 @@ export const handleUserSignup = async (req, res) => {
     const { name, phone_no, email, password, repeatPassword } = req.body;
 
     try {
-        // Check The User Email Is Exist Or Not
+        // Check if the user email already exists
         const userExists = await User.findOne({ email });
         if (userExists) {
-            req.flash('msg', "User with this email already exists.")
-            return res.render("user/signup", { msg: req.flash('msg') })
+            const msg = "User with this email already exists.";
+            return res.render("user/signup", { msg });
         }
-        // Check The Phone No Is Exist Or Not
+
+        // Check if the phone number already exists
         const userPhoneNoExists = await User.findOne({ phone_no });
         if (userPhoneNoExists) {
-            req.flash('msg', "User with this phone number already exists.")
-            return res.render("user/signup", { msg: req.flash('msg') })
+            const msg = "Phone number already in use.";
+            return res.render("user/signup", { msg });
         }
-        // Check The Password Is Matching Or Not
+
+        // Check if the passwords match
         if (password !== repeatPassword) {
-            req.flash('msg', "Password do not match.")
-            return res.render("user/signup", { msg: req.flash('msg') })
-        } 
-        // Genarate OTP & Expiry Time
+            const msg = "Passwords do not match.";
+            return res.render("user/signup", { msg });
+        }
+
+        // Generate OTP and expiry time
         const { OTP, expiryTime } = generateOTP();
         req.session.otp = OTP;
         req.session.userOTP = OTP;
         req.session.otpExpiriy = expiryTime;
         req.session.userData = { name, phone_no, email, password };
 
+        // Send OTP to the user email
         const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
         if (!sendOTPEmail) {
-            req.flash('msg', 'Error sending OTP to your email.');
-            return res.redirect('user/signup', { msg: req.flash('msg') });
+            const msg = "Error sending OTP to your email.";
+            return res.render("user/signup", { msg });
         }
 
         res.render("user/otp-verification");
-        console.log("OTP send", OTP)
+        console.log("OTP sent", OTP);
     } catch (error) {
         console.error("Signup error", error);
-        res.redirect("/page-not-found")
-
+        res.redirect("/page-not-found");
     }
-}
+};
 
 // Hndle OTP Verification
 export const handleOTPVerification = async (req, res) => {
@@ -208,13 +215,15 @@ export const handleUserLogin = async (req, res) => {
         const user = await User.findOne({ email, role: 'user' });
         // If The User Is Not Found
         if (!user) {
-            req.flash('msg', { type: 'error', msg: "User Not Found" })
-            return res.render("user/login", { msg: req.flash('msg') })
+            const msg = { type: "error", msg: "User Not Found" };
+            return res.render("user/login", { msg });
+
         }
         // Check The User Is Blocked By Admin
         if (user.status === 'blocked') {
-            req.flash('msg', { type: 'error', msg: "Account blocked by admin...!"})
-            return res.render("user/login", { msg: req.flash('msg')  })
+            const msg = { type: 'error', msg: "Account blocked by admin...!" };
+            return res.render("user/login", { msg });
+
         }
 
         // Compare The Password
@@ -222,18 +231,18 @@ export const handleUserLogin = async (req, res) => {
 
         // If The Password Dosn't Match
         if (!passwordMatch) {
-            req.flash('msg', { type: 'error', msg: "Invalid Password" })
-            return res.render("user/login", ({ msg: req.flash('msg') }))
+            const msg = { type: 'error', msg: "Invalid Password" };
+            return res.render("user/login", { msg });            
         }
 
         req.session.user = user._id;
-        res.redirect('/')
+        const msg = { type: 'success', msg: "Logged in successfully!" };
+        res.render('user/home')
 
     } catch (error) {
         console.error("Login error", error);
-        req.flash('msg', { type: "error", msg: "Login Failed...Try again later" })
-        res.render("user/login", { msg: req.flash('msg') })
-
+        const msg = { type: "error", msg: "Login Failed...Try again later" };
+        res.render("user/login", { msg });
     }
 }
 
@@ -243,7 +252,19 @@ export const pageNotFound = async (req, res) => {
         return res.render("user/page-404");
     } catch (error) {
         console.error("Error in rendering page-not-found", error);
-        res.redirect("/user/page-not-found");
+        res.redirect("user/page-not-found");
     }
 };
 
+// Handle The User Logout
+export const handleUserLogout = async (req, res) => {
+   req.session.destroy((err) => {
+    if (err) {
+        console.error("Loggout error", err);
+        return res.redirect("user/home")
+    } 
+    res.clearCookie("connect.sid");
+    const msg = { type: 'success', msg: "Logged out successfully" };
+    return res.render("user/login", { msg });
+   })
+}

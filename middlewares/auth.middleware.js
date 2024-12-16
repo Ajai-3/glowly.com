@@ -1,12 +1,16 @@
 // Check The User Is loggined Or Not
-export const isAuthenticated = (req, res, next) => {
+export const authMiddleware = (req, res, next) => {
     try {
-        if (req.session.user) {
-            return res.redirect("/home")
+        const isLoggedIn = req.session.user;
+        if (isLoggedIn && (req.path === '/login' || req.path === '/signup' || req.path === '/forgot-password' || req.path === '/new-password' || req.path === '/otp-verification')) {
+            return res.redirect('/');
+        }
+        if (!req.session.user && (req.path !== '/login' && req.path !== '/signup' && req.path !== '/forgot-password' && req.path !== '/new-password' && req.path !== '/otp-verification')) {
+            return res.redirect("/login")
         } 
         return next();
     } catch (error) {
-        console.error("Error in isAuthenticated middleware", error);
-        res.redirect("/") 
+        console.error("Error in authMiddleware", error);
+        res.redirect("/page-not-found") 
     }
 }

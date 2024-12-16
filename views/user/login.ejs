@@ -6,11 +6,13 @@
         <h2 class="m-0">Glowly</h2>
         <h3 class="m-0">Log in to Exclusive</h3>
         <p>Enter your details below</p>
-        <% if (msg && msg.length > 0) { %>
-            <div class="alert <%= msg[0].type === 'error' ? 'alert-error' : 'alert-success' %>">
-                <%= msg[0].msg %>
+        
+          <% if (msg) { %>
+            <div class="alert <%= msg.type === 'error' ? 'alert-error' : 'alert-success' %>">
+              <%= msg.msg %>
             </div>
-        <% } %>    
+          <% } %>
+           
         <form action="/login" method="POST">
             <!-- email -->
             <div class="wave-group">

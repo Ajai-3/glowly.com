@@ -39,41 +39,20 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>00001</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
-                <tr>
-                    <td>00002</td>
-                    <td>Rosie Pearson</td>
-                    <td>579 Immartual Ferry Suite 926</td>
-                    <td>Luxury</td>
-                    <td>Processing</td>
-                </tr>
-                <tr>
-                    <td>00003</td>
-                    <td>Ana De Armas</td>
-                    <td>8587 Fridas Ports</td>
-                    <td>Women</td>
-                    <td>Shipped</td>
-                </tr>
-                <tr>
-                    <td>00004</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
-                <tr>
-                    <td>00005</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
+                <% users.forEach(user => { %>
+                   <tr>
+                     <td></td>
+                     <td> <%= user.name %> </td>
+                     <td> <%= user.email %> </td>
+                     <td> <%= user.phone_no %> </td>
+                     <td> <%= user.created_at %> </td>
+                     <td>
+                        <form action="/update" method="POST">
+                            <button>block</button>
+                        </form>
+                     </td>
+                   </tr>
+                <% }); %>
             </tbody>
         </table>
     </div>

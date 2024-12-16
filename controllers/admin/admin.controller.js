@@ -1,3 +1,6 @@
+import dontenv from "dotenv";dontenv.config();
+
+
 
 /////////////////////////////////////////////////////////////////////////////
 //////////////////////////RENDER PAGES///////////////////////////////////////
@@ -54,3 +57,27 @@ export const renderSettingsPage= (req, res) => {
 // export const renderLogoutPage= (req, res) => {
 //     return res.render("admin/logout")
 // }
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+//////////////////////////            ///////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+
+export const handleAdminLogin = async (req, res) => {
+   const { email, password } = req.body;
+   try {
+    if (email === process.env.ADMIN_EMAIL && password === ADMIN_PASSWORD && role === 'admin') {
+        const users = await User.find();
+        return res.render('admin/users', { users })
+     }
+   } catch (error) {
+    console.error("Error fetching users:", error);
+    return res.status(500).send("An error occurred while fetching users.");
+   }
+}
