@@ -21,8 +21,9 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 // Apply Middleware To All Routes 
 // router.use(authMiddleware);
 
-router.get("/", authMiddleware, renderHomePage); // Home Page
-router.get("/home", authMiddleware, renderHomePage); // Home Page User After Login
+
+router.get("/", renderHomePage); // Home Page
+router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/login", authMiddleware, renderLoginPage); // Login Page
 router.get("/signup", authMiddleware, renderSignupPage); // Signup Page
 router.get("/page-not-found", pageNotFound);

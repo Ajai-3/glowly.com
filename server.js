@@ -33,7 +33,6 @@ app.use(session({
         maxAge: 72 * 60 * 60 * 1000
     }
 }));
-
 // Flash messages must come after session middleware
 app.use(flash());
 

@@ -1,3 +1,4 @@
+import User from "../../models/user.model.js"
 import dontenv from "dotenv";dontenv.config();
 
 
@@ -29,9 +30,24 @@ export const renderEditProductsPage  = (req, res) => {
 export const renderOrderlistsPage = (req, res) => {
     return res.render("admin/orderlists")
 }
-// Rendre Users Page
-export const renderUsersPage = (req, res) => {
-    return res.render("admin/users")
+// Rendre Users Page Wirh User Data
+export const renderUsersPage = async (req, res) => {
+    try {
+        const perPage = 8; // User Per Page
+        const page = parseInt(req.query.page) || 1
+
+        const totalUsers = await User.countDocuments();
+        const users = await User.find()
+               .skip((page - 1) * perPage) // Skip The Previous Pages
+               .limit(perPage); // Limit The User Count Per Page
+
+        const totalPages = Math.ceil(totalUsers / perPage) // To Calulate Total Pages     
+
+        return res.render('admin/users', { users, currentPage: page, totalPages, perPage });
+    } catch (error) {
+        console.log("Error fetching users: ", error);
+        return res.status(500).send("An error occurred while fetching users..")
+    }
 }
 // Rendre Sales Report Page
 export const renderSalesReportPage = (req, res) => {
@@ -70,14 +86,22 @@ export const renderSettingsPage= (req, res) => {
 /////////////////////////////////////////////////////////////////////////////
 
 export const handleAdminLogin = async (req, res) => {
-   const { email, password } = req.body;
-   try {
-    if (email === process.env.ADMIN_EMAIL && password === ADMIN_PASSWORD && role === 'admin') {
-        const users = await User.find();
-        return res.render('admin/users', { users })
-     }
-   } catch (error) {
-    console.error("Error fetching users:", error);
-    return res.status(500).send("An error occurred while fetching users.");
-   }
+    const { email, password } = req.body;
+
+    try {
+        // Check if the provided email and password match the environment variables
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
+            // If login is successful, render the dashboard page
+            return res.render('admin/dashboard');  // Corrected path to "dashboard"
+        } else {
+            // If login fails, you can redirect back to login with a message or render an error page
+            return res.render('admin/admin-login', { errorMessage: 'Invalid credentials!' });
+        }
+    } catch (error) {
+        console.error("Error during admin login:", error);
+        return res.status(500).send("An error occurred during login.");
+    }
 }
+
+// Render User Page With User Data
+

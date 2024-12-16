@@ -38,10 +38,11 @@
 
 
      /* Admin Panel  */
-     --bg-color: #030405;
+     --bg-color: #000000;
      /* --bg-color: #0b0c0c; */
      --bg-color-2: #161927;
      --bg-color-3: #232942;
+     --bg-color-4: #1a1a1a;
      --bg-color-btn-hover: #242d56;
      --bg-color-btn-hover2: #212e64;
      --bg-color-btn-hover3: #1a3294;
@@ -443,6 +444,8 @@
     align-items: center;
     justify-content: space-between;
     padding: 0px 70px;
+    position: relative;
+    z-index: 500;
    }
    .nav-bar-logo {
     padding-bottom: 8px;
@@ -501,6 +504,39 @@
       background-color: var(--main-color);
    }
    
+   .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--bg-color-4);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    right: 0;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: var(--text-color-4);
+    padding: 12px 16px;
+    display: block;
+    text-decoration: none;
+    width: 100%;
+}
+
+.dropdown-content a:hover {
+    background-color: var(--main-color);
+    color: white;
+    border-radius: 5px;
+}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
 
 
 
@@ -544,7 +580,7 @@
 
  /* Sidebar styling */
  .sidebar {
-    width: 200px;
+    width: 190px;
     height: 100vh;
     background-color: var(--bg-color-2);
     position: fixed;
@@ -558,7 +594,8 @@
     text-decoration: none;
     font-size: var(--font-size-second);
     display: block;
-    padding: 9px;
+    padding: 7px;
+    margin-bottom: 5px;
     margin-left: 10px;
     border-radius: 5px;
 }
@@ -568,6 +605,9 @@
 }
 
 .sidebar a.active {
+    background-color: var(--bg-color-btn-hover);
+}
+.sidbar a:focus {
     background-color: var(--bg-color-btn-hover);
 }
 
@@ -697,7 +737,7 @@
 .all-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 30px;
+    margin-top: 10px;
     border-radius: 10px; 
     overflow: hidden;
 }
@@ -818,8 +858,30 @@
     margin-bottom: 5px;
 }
 
-
-/* .demo {
-    height: 100px;
-    background-color: #000000;
-} */
+/* Admin Users Page */
+/* Pgination for The */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: var(--font-size-third);
+}
+.pagination a, .pagination span {
+    padding: 1px 6px;
+    margin: 0 5px;
+    border: 1px solid var(--bg-color-btn-hover2);
+    color: var(--text-color-3);
+    cursor: pointer;
+}
+.pagination a:hover {
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    background-color: var(--text-color-2);
+}
+.pagination span {
+    background-color: var(--bg-color-btn-hover-4);
+}
+.pagination a.active {
+    color: var(--text-color-4);
+    border: 1px solid var(--text-color-4);
+}

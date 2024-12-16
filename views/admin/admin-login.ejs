@@ -4,6 +4,9 @@
 <body class="auth-body">
     <div class="auth-container">
         <h2 class="m-3">Admin Login</h2>
+        <% if (errorMessage) { %>
+            <p style="color: red;"><%= errorMessage %></p>
+        <% } %>
         <form action="/admin-login" method="POST">
             <!-- email -->
             <div class="wave-group my-2">

@@ -1,0 +1,63 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
+    <title>Glowly.com: Buy Cosmetic Products</title>
+</head>
+<body>
+    <nav>
+        <div class="nav-offer">
+            <div class="nav-offer1">Nav offer and app</div>
+            <div class="nav-offer2">
+                <div class="nav-offer-content"><a href="#"><i class="fa-solid fa-mobile-screen-button"></i>GET APP</a></div>
+                <div class="nav-offer-content"><a href="#"><i class="fas fa-truck"></i>TRACK ORDER</a></div>
+                <div class="nav-offer-content"><a href="#"><i class="fas fa-question-circle"></i>HELP</a></div>
+            </div> 
+        </div>
+        <div class="nav-bar">
+            <div class="nav-bar-logo">Glowly</div>
+            <div class="nav-bar-lists">
+                <ul>  
+                    <li>HOME</li>
+                    <li>SHOP CATEGORIES</li>
+                    <li>BRANDS</li>
+                    <li>NEW</li>
+                    <li>LUXURY</li>
+                </ul>
+            </div>
+            <div class="nav-bar-search">
+                <form action="" method="GET">
+                    <input type="text" id="nav-search" name="nav-search" placeholder="Search Product and Brands"> 
+                   <button  class="nav-bar-search-button"><i class="fas fa-search"></i></button>
+                </form>
+                
+                
+            </div>
+            <div class="nav-bar-last">
+                <% if (locals.user) { %> 
+                   <div class="dropdown">
+                    <a href="#"> <%= locals.user.name %> </a>
+                    <div class="dropdown-content">
+                        <a href="/user-profile">Profile</a>
+                        <a href="/logout">Log out</a>
+                    </div>
+                   </div>                 
+                <% } else { %>
+                    <a href="/login">Log in</a>
+                    <button class="nav-bar-last-signup-btn">
+                        <a href="/signup">Sign Up</a>
+                    </button> 
+                <% } %>
+                <i class="fa-solid fa-cart-shopping"></i>
+                <i class="fa-regular fa-heart"></i>
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </div>
+        <div class="horizontal-line"><hr></div>
+
+    </nav>
+    <a href="/logout">Log out</a>

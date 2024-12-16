@@ -1,20 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
-<body class="admin-container">
-    <div class="sidebar">
-        <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/products">Products</a>
-        <a href="orderlists">Order Lists</a>
-        <a href="/users" class="active">Users</a>
-        <a href="/sales-report">Sales Report</a>
-        <a href="coupons">Coupons</a>
-        <a href="category">Category</a>
-        <a href="banner-management">Banner Management</a>
-        <a href="settings">Settings</a>
-        <a href="logout">Logout</a>
-    </div>
 
     <div class="main-content">
         <div class="header">
@@ -35,28 +21,47 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone No</th>
-                    <th>Update</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <% users.forEach(user => { %>
+                <% users.forEach((user, index) => { %>
                    <tr>
-                     <td></td>
-                     <td> <%= user.name %> </td>
-                     <td> <%= user.email %> </td>
-                     <td> <%= user.phone_no %> </td>
-                     <td> <%= user.created_at %> </td>
+                    <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+                     <td><%= user.name %></td>
+                     <td><%= user.email %></td>
+                     <td><%= user.phone_no %></td>
+                     <td><%= user.created_at %></td> 
                      <td>
+                        <!-- Form for blocking user (update) -->
                         <form action="/update" method="POST">
-                            <button>block</button>
+                            <input type="hidden" name="userId" value="<%= user._id %>"> <!-- User ID for identification -->
+                            <button type="submit">Block</button>
                         </form>
                      </td>
                    </tr>
                 <% }); %>
             </tbody>
         </table>
+        <div class="pagination">
+            <% if (currentPage > 1) { %> 
+                <a href="/users?page=<%= currentPage - 1 %>">Previous</a>
+            <% } %>
+        
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <!-- Make each page number clickable -->
+                <a href="/users?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>">
+                    <%= i %> <!-- Display the page number here -->
+                </a>    
+            <% } %>
+        
+            <% if (currentPage < totalPages) { %>
+                <a href="/users?page=<%= currentPage + 1 %>">Next</a>
+            <% } %>
+        </div>
+        
     </div>
-
 </body>
 <%- include('partials/footer') %> 
 </html>

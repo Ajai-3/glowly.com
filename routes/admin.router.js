@@ -2,6 +2,11 @@ import express from "express";
 const router = express.Router();
 import { renderLoginPage, renderDashboardPage, renderProductsPage, renderOrderlistsPage, renderUsersPage, renderSalesReportPage, renderCouponsPage, renderCategoryPage, renderSettingsPage, renderBannerManagementPage, renderAddProductsPage, renderEditProductsPage, handleAdminLogin } from "../controllers/admin/admin.controller.js";
 
+router.use((req, res, next) => {
+    res.locals.currentPath = req.path;
+    next();
+});
+
 router.get('/users', renderUsersPage);
 router.get('/coupons', renderCouponsPage);
 router.get('/products', renderProductsPage);

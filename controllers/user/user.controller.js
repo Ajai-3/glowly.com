@@ -10,13 +10,23 @@ dotenv.config();
 /////////////////////////////////////////////////////////////////////////////
 
 // Render Home Page
-export const renderHomePage = (req, res) => {
-    const user= req.session.user;
-    if (user) {
+export const renderHomePage = async (req, res) => {
+    try {
+        const user= req.session.user;
+       if (user) {
+          const userData = await User.findOne({ _id:user._id })
+          return res.render('user/home', { user: userData })
 
+       } else {
+          return res.render('user/home');
+       }
+    } catch (error) {
+        console.log("Homr page is not loading : ", error);
+        res.status(500).send("Server Error");
     }
-    return res.render('user/home')
 }
+
+
 // Render Login Page
 export const renderLoginPage = (req, res) => {
     const msg = req.session.msg || null; 
@@ -236,7 +246,6 @@ export const handleUserLogin = async (req, res) => {
         }
 
         req.session.user = user._id;
-        const msg = { type: 'success', msg: "Logged in successfully!" };
         res.render('user/home')
 
     } catch (error) {
