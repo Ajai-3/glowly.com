@@ -24,9 +24,9 @@
   * ## colors
   * ------------------------------------------------------------------- */
  :root {
-     --bg-color: #030405;
+     /* --bg-color: #030405; */
      --main-color: #E80071;
-     --main-color2: #ea4b98a8;
+     --main-color2: #eb5ca1;
      --text-color: #f3f4f7;
      --text-color-2: #848383;
      --text-color-3: #b4b4b4;
@@ -38,11 +38,12 @@
 
 
      /* Admin Panel  */
-     --bg-color: #000000;
-     /* --bg-color: #0b0c0c; */
+     /* --bg-color: #000000; */
+     --bg-color: #111111;
      --bg-color-2: #161927;
      --bg-color-3: #232942;
      --bg-color-4: #1a1a1a;
+     --bg-color-5: #222222;
      --bg-color-btn-hover: #242d56;
      --bg-color-btn-hover2: #212e64;
      --bg-color-btn-hover3: #1a3294;
@@ -396,7 +397,12 @@
    .horizontal-line hr {
     margin: 0;
     background-color: var(--text-color-2);
-   }
+    position: fixed;
+    top: 95px;
+    left: 0;
+    right: 0;
+    z-index: 499; 
+}
    /* NAV BAR 
     */
     /* Nav Offer  */
@@ -404,9 +410,15 @@
     height: 35px;
     display: flex;
     align-items: center;
-    padding: 0px 70px;
+    padding: 0px 100px;
     justify-content: space-between;
     background-color: var(--main-color2);
+    z-index: 501;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    backdrop-filter: blur(5px);
    }
    /* Nav Offer Session 1 */
    .nav-offer1 {
@@ -422,9 +434,6 @@
     font-size: var(--font-size-third);
      color: var(--text-color);
    }
-   /* .nav-offer-content a:hover {
-    color: var(--main-color2);
-  } */
 
    .nav-offer-content i {
       margin-right: 7px;
@@ -443,9 +452,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0px 70px;
-    position: relative;
+    padding: 0px 60px;
     z-index: 500;
+    position: fixed;
+    top: 35px;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-color);
    }
    .nav-bar-logo {
     padding-bottom: 8px;
@@ -493,6 +506,11 @@
    .nav-bar-last i {
        margin: 10px;
    }
+   .nav-bar-logo:hover,
+   .nav-bar-last i:hover {
+    color: var(--main-color);
+    cursor: pointer;
+   }
    .nav-bar-last a {
     font-size: var(--font-size-second);
     color: var(--text-color);
@@ -503,41 +521,106 @@
       border-style: none;
       background-color: var(--main-color);
    }
-   
-   .dropdown {
+   .profile-section {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+    cursor: pointer;
+   }
+   .profile-section i {
+    margin: 0;
     position: relative;
     display: inline-block;
+
+   }
+   .username {
+    max-width: 60px;
+    font-size: var(--font-size-second);
+    color: var(--text-color-2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+   }
+
+/* Dropdown Parent */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
 }
 
-.dropdown-content {
+/* Dropdown Menu (Initially Hidden) */
+.dropdown-menu {
     display: none;
     position: absolute;
     background-color: var(--bg-color-4);
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    right: 0;
-    border-radius: 5px;
+    min-width: 120px;
+    margin-top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.dropdown-content a {
+/* Show Dropdown on Hover */
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Links */
+.dropdown-menu a {
+    display: block;
+    margin: 4px;
+    padding-left: 8px;
     color: var(--text-color-4);
-    padding: 12px 16px;
-    display: block;
-    text-decoration: none;
-    width: 100%;
+    font-size: var(--font-size-third);
 }
 
-.dropdown-content a:hover {
-    background-color: var(--main-color);
-    color: white;
-    border-radius: 5px;
+/* Hover Effect for Links */
+.dropdown-menu a:hover {
+    color: var(--main-color);
 }
 
-.dropdown:hover .dropdown-content {
-    display: block;
+/* Arrow */
+.arrow {
+    display: none;  
+    position: absolute;
+    top: 18px;  
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid var(--bg-color-4); 
+}
+.profile-section .arrow {
+    top: 32px;  
+}
+/* Show Arrow on Hover */
+.dropdown:hover .arrow {
+    display: block; 
+}
+.dropdown:hover .username {
+    color: var(--main-color);
 }
 
+.profile-section .dropdown-menu {
+    position: absolute;
+    right: -60px;
+    top: 100%;
+    left: unset;
+}
+
+
+/* The User Interface This Div Is The Main Div For All Contents */
+.user-contents {
+    padding-top: 95px;
+
+}
 
 
 
@@ -616,6 +699,7 @@
     margin-left: 200px;
     padding: 15px;
 }
+
 
 .header {
     display: flex;

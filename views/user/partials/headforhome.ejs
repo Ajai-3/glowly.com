@@ -8,7 +8,7 @@
     <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
     <title>Glowly.com: Buy Cosmetic Products</title>
 </head>
-<body>
+<body style="padding-bottom: 1000px;">
     <nav>
         <div class="nav-offer">
             <div class="nav-offer1">Nav offer and app</div>
@@ -21,12 +21,50 @@
         <div class="nav-bar">
             <div class="nav-bar-logo">Glowly</div>
             <div class="nav-bar-lists">
-                <ul>  
-                    <li>HOME</li>
-                    <li>SHOP CATEGORIES</li>
-                    <li>BRANDS</li>
-                    <li>NEW</li>
-                    <li>LUXURY</li>
+                <ul>
+                    <li class="dropdown">
+                        HOME
+                        <div class="dropdown-menu">
+                            <a href="#">Welcome</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                    </li>
+                    
+                    <li class="dropdown">
+                        SHOP CATEGORIES
+                        <div class="dropdown-menu">
+                            <a href="#">Electronics</a>
+                            <a href="#">Clothing</a>
+                            <a href="#">Books</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                    </li>
+            
+                    <li class="dropdown">
+                        BRANDS
+                        <div class="dropdown-menu">
+                            <a href="#">Nike</a>
+                            <a href="#">Adidas</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                    </li>
+            
+                    <li class="dropdown">
+                        NEW
+                        <div class="dropdown-menu">
+                            <a href="#">Latestfdsssssssssssssssssssssss Arrivals</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                    </li>
+            
+                    <li class="dropdown">
+                        LUXURY
+                        <div class="dropdown-menu">
+                            <a href="#">Watches</a>
+                            <a href="#">Bags</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                    </li>
                 </ul>
             </div>
             <div class="nav-bar-search">
@@ -38,26 +76,33 @@
                 
             </div>
             <div class="nav-bar-last">
-                <% if (locals.user) { %> 
-                   <div class="dropdown">
-                    <a href="#"> <%= locals.user.name %> </a>
-                    <div class="dropdown-content">
-                        <a href="/user-profile">Profile</a>
-                        <a href="/logout">Log out</a>
-                    </div>
-                   </div>                 
-                <% } else { %>
+                <% if (!name) { %> 
+                    <!-- If User Is NOT Logged In -->
                     <a href="/login">Log in</a>
                     <button class="nav-bar-last-signup-btn">
                         <a href="/signup">Sign Up</a>
-                    </button> 
+                    </button>
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <i class="fa-regular fa-heart"></i>
+                <% } else { %> 
+                    <!-- If User IS Logged In -->
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <i class="fa-regular fa-heart"></i>
+                    <div class="profile-section dropdown">
+                        <span class="username"><%= name %></span>
+                        <i class="fa-solid fa-circle-user"></i>
+                        <div class="dropdown-menu">
+                            <a href="/myaccount"><i class="fas fa-user"></i> &nbsp; My Account</a>
+                            <a href="/settings"><i class="fa-solid fa-gear"></i> &nbsp; Settings</a>
+                            <a href="/orders"><i class="fa-solid fa-truck"></i> &nbsp; Orders</a>
+                            <a href="/logout"><i class="fas fa-sign-out"></i> &nbsp; Logout</a>
+                        </div>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span>   
+                    </div>
                 <% } %>
-                <i class="fa-solid fa-cart-shopping"></i>
-                <i class="fa-regular fa-heart"></i>
-                <i class="fa-solid fa-circle-user"></i>
             </div>
+            
         </div>
         <div class="horizontal-line"><hr></div>
 
     </nav>
-    <a href="/logout">Log out</a>

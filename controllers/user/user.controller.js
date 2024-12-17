@@ -10,21 +10,21 @@ dotenv.config();
 /////////////////////////////////////////////////////////////////////////////
 
 // Render Home Page
+// Render Home Page
 export const renderHomePage = async (req, res) => {
     try {
-        const user= req.session.user;
-       if (user) {
-          const userData = await User.findOne({ _id:user._id })
-          return res.render('user/home', { user: userData })
-
-       } else {
-          return res.render('user/home');
-       }
+        const user = req.session.user;
+        if (user) {
+            res.render('user/home', { name: user.name });
+        } else {
+            res.redirect("/login");
+        }
     } catch (error) {
-        console.log("Homr page is not loading : ", error);
+        console.log("Home page is not loading: ", error);
         res.status(500).send("Server Error");
     }
-}
+};
+
 
 
 // Render Login Page
@@ -244,9 +244,15 @@ export const handleUserLogin = async (req, res) => {
             const msg = { type: 'error', msg: "Invalid Password" };
             return res.render("user/login", { msg });            
         }
+        // req.session.user = user._id;
+        // res.render('user/home')
+        req.session.user = {
+            _id: user._id,
+            name: user.name
+        };
 
-        req.session.user = user._id;
-        res.render('user/home')
+        // Redirect to the home page
+        res.redirect("/home");
 
     } catch (error) {
         console.error("Login error", error);
