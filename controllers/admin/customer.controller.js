@@ -28,14 +28,13 @@ export const renderUsersPage = async (req, res) => {
         } else if (status === 'unblock') {
             query.status = 'active'; // Filter active users
         }
-        // If status === 'all', no status condition is added (fetch all users)
 
         console.log("Final Query:", query); // Verify query before execution
 
-        // Count users for pagination
+        // Count users for pagination - this is done with the query that includes filters
         const totalUsers = await User.countDocuments(query);
 
-        // Fetch users with pagination
+        // Fetch users with pagination - applying the filters to the query
         const users = await User.find(query)
             .skip((page - 1) * perPage)
             .limit(perPage);
@@ -49,7 +48,9 @@ export const renderUsersPage = async (req, res) => {
             totalPages, 
             perPage, 
             search, 
-            status 
+            status,
+            // Optional: to pass the filters back to the view
+            queryParams: `search=${search}&status=${status}` 
         });
 
     } catch (error) {
@@ -57,6 +58,7 @@ export const renderUsersPage = async (req, res) => {
         res.status(500).send("An error occurred while rendering the users page.");
     }
 };
+
 
 
 // Block User
