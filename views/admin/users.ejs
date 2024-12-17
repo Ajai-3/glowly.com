@@ -1,31 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
+    <div class="main-content">
+            
+        <div class="header">
+            <div class="search-bar">
+                <form action="/search-user" method="GET">
+                    <input type="text" name="search" placeholder="Search User">
+                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs">brudcrumbs</div>
 
         <div class="filter-container">
             <div class="filter-div1">
                 <div class="filter-box">
                     <i class="fa-solid fa-filter"></i>
-                   </div>
-                <div class="filter-box">
-                    <label for="filter">Filter By
-
-                        <select name="filter" id="filter">
-                            <option value="date">14 feb 2014</option>
-                        </select>
-                    </label>
-                    
-                   </div>
-                   <div class="filter-box">
-                    <label for="category">Category
-                        <select name="category" id="category">
-                            <option value="category1">Category1</option>
-                            <option value="category2">Category2</option>
-                        </select>
-
-                    </label>
-                    
-                   </div>
+                </div>
+                
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="filter">Filter By
+                            <select name="filter" id="filter">
+                                <option value="date">14 feb 2014</option>
+                            </select>
+                        </label>
+                       </div>
+                </form>
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="status">Status
+                            <select name="status" id="status" onchange="this.form.submit()">
+                                <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+                                <option value="block" <%= status === 'block' ? 'selected' : '' %>>Blocked</option>
+                                <option value="unblock" <%= status === 'unblock' ? 'selected' : '' %>>Active</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
             </div>
         </div>
         <table class="all-table">
@@ -35,6 +53,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone No</th>
+                    <th>Role</th>
                     <th>Created At</th>
                     <th>Actions</th>
                 </tr>
@@ -46,12 +65,24 @@
                      <td><%= user.name %></td>
                      <td><%= user.email %></td>
                      <td><%= user.phone_no %></td>
-                     <td><%= user.created_at %></td> 
+                     <td><%= user.role %></td>
+                     <!-- <td><%= user.created_at %></td>  -->
+                     <td><%= new Date(user.created_at).toLocaleString() %></td>
                      <td>
                         <!-- Form for blocking user (update) -->
                         <form action="/update" method="POST">
                             <input type="hidden" name="userId" value="<%= user._id %>"> <!-- User ID for identification -->
-                            <button type="submit">Block</button>
+
+                            <% if (user.status === 'active') { %>
+                                <a href="/block-user?id=<%= user._id %>" class="block-btn">Block</a>
+                            <% } else if (user.status === 'blocked')  { %>
+                                <a href="/unblock-user?id=<%= user._id %>" class="unblock-btn">Unblock</a>
+                            <% } %>
+                            
+                            <!-- <button type="submit" class=" <%= user.status === 'active' ? 'block-btn' : 'unblock-btn' %>">
+                                <%= user.status === 'active' ? 'Block' : 'Unblock' %>
+                            </button>   -->
+                            
                         </form>
                      </td>
                    </tr>

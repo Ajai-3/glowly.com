@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import User from "../../models/user.model.js"
-import dontenv from "dotenv";dontenv.config();
 
 
 
@@ -11,11 +10,12 @@ import dontenv from "dotenv";dontenv.config();
 // Render Login Page
 export const renderLoginPage = (req, res) => {
     if (req.session.admin) {
-        return res.redirect("/admin/dashboard")
+        return res.redirect("/admin/dashboard");
     }
     const msg = '';
-    res.render("admin/admin-login", { msg })
-}
+    res.render("admin/admin-login", { msg });
+};
+
 // Rendre Dashboard Page
 export const renderDashboardPage = (req, res) => {
     return res.render("admin/dashboard")
@@ -36,25 +36,25 @@ export const renderEditProductsPage  = (req, res) => {
 export const renderOrderlistsPage = (req, res) => {
     return res.render("admin/orderlists")
 }
-// Rendre Users Page Wirh User Data
-export const renderUsersPage = async (req, res) => {
-    try {
-        const perPage = 8; // User Per Page
-        const page = parseInt(req.query.page) || 1
+// // Rendre Users Page Wirh User Data
+// export const renderUsersPage = async (req, res) => {
+//     try {
+//         const perPage = 8; // User Per Page
+//         const page = parseInt(req.query.page) || 1
 
-        const totalUsers = await User.countDocuments();
-        const users = await User.find()
-               .skip((page - 1) * perPage) // Skip The Previous Pages
-               .limit(perPage); // Limit The User Count Per Page
+//         const totalUsers = await User.countDocuments();
+//         const users = await User.find()
+//                .skip((page - 1) * perPage) // Skip The Previous Pages
+//                .limit(perPage); // Limit The User Count Per Page
 
-        const totalPages = Math.ceil(totalUsers / perPage) // To Calulate Total Pages     
+//         const totalPages = Math.ceil(totalUsers / perPage) // To Calulate Total Pages     
 
-        return res.render('admin/users', { users, currentPage: page, totalPages, perPage });
-    } catch (error) {
-        console.log("Error fetching users: ", error);
-        return res.status(500).send("An error occurred while fetching users..")
-    }
-}
+//         return res.render('admin/users', { users, currentPage: page, totalPages, perPage });
+//     } catch (error) {
+//         console.log("Error fetching users: ", error);
+//         return res.status(500).send("An error occurred while fetching users..")
+//     }
+// }
 // Rendre Sales Report Page
 export const renderSalesReportPage = (req, res) => {
     return res.render("admin/sales-report")
@@ -92,25 +92,40 @@ export const renderSettingsPage= (req, res) => {
 /////////////////////////////////////////////////////////////////////////////
 
 export const handleAdminLogin = async (req, res) => {
-    const { email, password } = req.body;
-
     try {
-        // Check if the provided email and password match the environment variables
-        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
-            // If login is successful, render the dashboard page
-            return res.render('admin/dashboard');  // Corrected path to "dashboard"
+        const { email, password } = req.body;
+        const admin = await User.findOne({ email, role: 'admin' });
+
+        if (admin) {
+            const passwordMatch = await bcrypt.compare(password, admin.password);
+            if (passwordMatch) {
+                req.session.admin = true; // Set the session for admin login
+                return res.redirect("/admin/dashboard"); // Redirect to dashboard after login
+            } else {
+                return res.render('admin/admin-login', { msg: 'Invalid credentials!' });
+            }
         } else {
-            // If login fails, you can redirect back to login with a message or render an error page
-            return res.render('admin/admin-login', { errorMessage: 'Invalid credentials!' });
+            return res.render('admin/admin-login', { msg: 'Admin not found!' });
         }
     } catch (error) {
         console.error("Error during admin login:", error);
         return res.status(500).send("An error occurred during login.");
     }
-}
+};
 
 // Handle Admin Log Out
-export const handleAdminLogout = (req, res) => {
-
+export const handleAdminLogout = async (req, res) => {
+    try {
+       req.session.destroy(err => {
+        if (err) {
+            console.error("Error destroying session", err);
+            return res.redirect("/pageerror")
+        }
+        res.redirect("/admin/admin-login")
+       }) 
+    } catch (error) {
+       console.error("Unnexpected error during logout", error);
+       res.redirect("/pageerror") 
+    }
 }
 

@@ -52,7 +52,11 @@
      --bg-blue-color: #3d99f5;
      --bg-purple-color: #6261cc;
      --red-text-color: #EA4335;
+     --red-text-color-2: #d00000;
+     --red-text-color-3: #ff000057;
      --green-text-color: #28a745;
+     --green-text-color-2: #00be10;
+     --green-text-color-3: #00ff1557;
 
  }
  
@@ -716,11 +720,24 @@
     outline: none;
     background-color: transparent;
     color: var(--text-color);
-    padding: 2px;
+    padding: 2px 8px;
     width: 200px;
+    font-size: var(--font-size-second);
     border-radius: 4px;
     border: 1px solid var(--text-color-2);
 }
+.admin-search-button {
+    background-color: transparent;
+    color: var(--text-color-2);
+    border: none;
+ }
+.search-bar input:focus {
+    border: 1px solid var(--main-color);
+}
+.search-bar input:focus + .admin-search-button {
+    color: var(--main-color);
+}
+
 /* Admin Profile */
 .fa-circle-user {
     font-size: 2rem;
@@ -788,12 +805,14 @@
 .filter-div1 {
     display: flex;
     border-radius: 10px;
+    height: 35px;
     background-color: var(--bg-color-2);
     border: 1px solid var(--bg-color-3);
 }
 .filter-box {
     border: 1px solid var(--bg-color-3);
-    padding: 6px;
+    padding: 2px;
+    padding-left: 5px;
     border-radius: 10px;
 }
 .filter-box label {
@@ -968,4 +987,17 @@
 .pagination a.active {
     color: var(--text-color-4);
     border: 1px solid var(--text-color-4);
+}
+.block-btn, .unblock-btn {
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.block-btn {
+    color: var(--red-text-color-2);
+    background-color: var(--red-text-color-3);
+}
+.unblock-btn  {
+    color: var(--green-text-color-2);
+    background-color: var(--green-text-color-3);
 }

@@ -274,13 +274,19 @@ export const pageNotFound = async (req, res) => {
 
 // Handle The User Logout
 export const handleUserLogout = async (req, res) => {
-   req.session.destroy((err) => {
-    if (err) {
-        console.error("Loggout error", err);
-        return res.redirect("user/home")
-    } 
-    res.clearCookie("connect.sid");
-    const msg = { type: 'success', msg: "Logged out successfully" };
-    return res.render("user/login", { msg });
-   })
-}
+    try {
+        req.session.destroy((err) => {
+            if (err) {
+                console.error("Loggout error", err);
+                return res.redirect("user/home")
+            } 
+            res.clearCookie("connect.sid");
+            // const msg = { type: 'success', msg: "Logged out successfully" };
+            // return res.render("user/login", { msg });
+            return res.render("user/home", { name: "" })
+           }) 
+    } catch (error) {
+        console.error("Unnexpected error during logout", error);
+       return res.status(500).send("Error in logout") 
+    }
+}  
