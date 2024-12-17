@@ -26,9 +26,9 @@ router.get("/", renderHomePage); // Home Page
 router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/login", authMiddleware, renderLoginPage); // Login Page
 router.get("/signup", authMiddleware, renderSignupPage); // Signup Page
-router.get("/page-not-found", pageNotFound);
+router.get("/page-not-found", authMiddleware, pageNotFound);
 // router.get("/otp-message", renderOtpStatusPage); // OTP Message Page
-router.get("/new-password",authMiddleware, renderNewPasswordPage); // New Password Page
+router.get("/new-password", authMiddleware, renderNewPasswordPage); // New Password Page
 router.get("/forgot-password", authMiddleware, renderForgotPasswordPage); // Forgot Password Page
 router.get("/otp-verification", authMiddleware, renderpOtpVerificationPage); // OTP Verification Page
 

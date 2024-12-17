@@ -15,9 +15,9 @@ export const renderHomePage = async (req, res) => {
     try {
         const user = req.session.user;
         if (user) {
-            res.render('user/home', { name: user.name });
+           return res.render('user/home', { name: user.name });
         } else {
-            res.redirect("/login");
+            return res.render("user/home", { name: "" });
         }
     } catch (error) {
         console.log("Home page is not loading: ", error);
@@ -199,10 +199,11 @@ export const handleResendOTP = async (req, res) => {
     try {
        const { email } = req.session.userData;
        if (!email) {
-        return res.status(400).json({ success: false, msg: "Email not found in sessiom" })
+        return res.status(400).json({ success: false, msg: "Email not found in session" })
        } 
-       const OTP = generateOTP();
+       const { OTP } = generateOTP();
        req.session.userOTP = OTP;
+
 
        const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
        if (sendOTPEmail) {
@@ -252,7 +253,7 @@ export const handleUserLogin = async (req, res) => {
         };
 
         // Redirect to the home page
-        res.redirect("/home");
+        return res.redirect("/home");
 
     } catch (error) {
         console.error("Login error", error);

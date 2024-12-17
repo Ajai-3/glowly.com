@@ -1,3 +1,5 @@
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
 import User from "../../models/user.model.js"
 import dontenv from "dotenv";dontenv.config();
 
@@ -8,7 +10,11 @@ import dontenv from "dotenv";dontenv.config();
 /////////////////////////////////////////////////////////////////////////////
 // Render Login Page
 export const renderLoginPage = (req, res) => {
-    return res.render("admin/admin-login")
+    if (req.session.admin) {
+        return res.redirect("/admin/dashboard")
+    }
+    const msg = '';
+    res.render("admin/admin-login", { msg })
 }
 // Rendre Dashboard Page
 export const renderDashboardPage = (req, res) => {
@@ -103,5 +109,8 @@ export const handleAdminLogin = async (req, res) => {
     }
 }
 
-// Render User Page With User Data
+// Handle Admin Log Out
+export const handleAdminLogout = (req, res) => {
+
+}
 
