@@ -45,18 +45,29 @@
      --bg-color-4: #1a1a1a;
      --bg-color-5: #222222;
      --bg-color-btn-hover: #242d56;
+     --bg-color-tbl-hover: #242d5673;
      --bg-color-btn-hover2: #212e64;
      --bg-color-btn-hover3: #1a3294;
      --bg-green-color: #249542;
      --bg-red-color: #db5d5d;
      --bg-blue-color: #3d99f5;
      --bg-purple-color: #6261cc;
-     --red-text-color: #EA4335;
-     --red-text-color-2: #d00000;
+
+     --red-text-color: #ff2a2a;
+     --red-text-color-2: #cd0000;
      --red-text-color-3: #ff000057;
-     --green-text-color: #28a745;
-     --green-text-color-2: #00be10;
+
+     --green-text-color: #3aff33;
+     --green-text-color-2: #00ca11;
      --green-text-color-3: #00ff1557;
+
+     --blue-text-color: #389bff;
+     --blue-text-color-2: #006ad4;
+     --blue-text-color-3: #0080ff58;
+     
+     --yellow-text-color: #ffff38; 
+     --yellow-text-color-2: #d4bb00;
+     --yellow-text-color-3: #fff20058;
 
  }
  
@@ -402,7 +413,7 @@
     margin: 0;
     background-color: var(--text-color-2);
     position: fixed;
-    top: 95px;
+    top: 80px;
     left: 0;
     right: 0;
     z-index: 499; 
@@ -411,7 +422,7 @@
     */
     /* Nav Offer  */
    .nav-offer {
-    height: 35px;
+    height: 30px;
     display: flex;
     align-items: center;
     padding: 0px 100px;
@@ -452,14 +463,14 @@
    /* Nav Bar
     */
    .nav-bar {
-    height: 60px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 0px 60px;
     z-index: 500;
     position: fixed;
-    top: 35px;
+    top: 30px;
     left: 0;
     right: 0;
     background-color: var(--bg-color);
@@ -862,11 +873,11 @@
 
 
 .all-table tr:hover {
-    background-color: var(--bg-color-btn-hover);
+    background-color: var(--bg-color-tbl-hover);
 }
 
 .all-table tr:hover td {
-    background-color: var(--bg-color-btn-hover);
+    background-color: var(--bg-color-tbl-hover);
 }
 
 /* Add Products Page */
@@ -936,26 +947,42 @@
 
 .add-new-brand-btn,
 .add-product-btn,
-.add-product-btn2 {
-    color: var(--text-color);
+.add-product-btn2,
+.add-btn {
     font-size: var(--font-size-second);
     padding: 6px;
     border: 0px;
     border-radius: 4px;
     cursor: pointer;
-    background-color: var(--bg-blue-color);
 }
-
+.add-product-btn,
+.add-btn {
+    color: var(--blue-text-color-2);
+    background-color: var(--blue-text-color-3);
+}
 .add-product-btn2 {
     padding: 6px 90px;
+    color: var(--blue-text-color-2);
+    background-color: var(--blue-text-color-3);
 }
 .add-new-brand-btn {
     padding: 6px 20px;
-    background-color: var(--bg-green-color);
+    color: var(--green-text-color-2);
+    background-color: var(--green-text-color-3);
+}
+ 
+.add-product-btn2:hover,
+.add-product-btn:hover,
+.add-btn:hover {
+    color: var(--blue-text-color);
+}
+.add-new-brand-btn:hover {
+    color: var(--green-text-color);
 }
 .add-new-brand-btn i {
     padding-left: 10px;
 }
+
 
 .brudcrumbs {
     margin-bottom: 5px;
@@ -1000,4 +1027,31 @@
 .unblock-btn  {
     color: var(--green-text-color-2);
     background-color: var(--green-text-color-3);
+}
+.block-btn:hover {
+   color: var(--red-text-color);
+}
+.unblock-btn:hover {
+   color: var(--green-text-color);
+}
+
+/* products Page */
+.edit-btn, .delete-btn {
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px; 
+}
+.edit-btn {
+    color: var(--yellow-text-color-2);
+    background-color: var(--yellow-text-color-3);
+}
+.delete-btn {
+    color: var(--red-text-color-2);
+    background-color: var(--red-text-color-3);
+}
+.edit-btn:hover {
+    color: var(--yellow-text-color);
+}
+.delete-btn:hover {
+    color: var(--red-text-color);
 }

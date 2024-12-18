@@ -1,9 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
-
-    </div> <!-- <div class="main-content"></div> -->
-
+    <div class="main-content">
+            
+        <div class="header">
+            <div class="search-bar">
+                <form action="/search-user" method="GET">
+                    <input type="text" name="search" placeholder="Search User">
+                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs">Category</div>
+        <div class="filter-container">
+            <div class="filter-div1">
+                <div class="filter-box">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="filter">Filter By
+                            <select name="filter" id="filter">
+                                <option value="date">14 feb 2014</option>
+                            </select>
+                        </label>
+                       </div>
+                </form>
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="status">Status
+                            <select name="status" id="status" onchange="this.form.submit()">
+                                <option value="all" >All</option>
+                                <option value="block" >Blocked</option>
+                                <option value="unblock">Active</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+            </div>
+            <a href="/add-category">
+                <button class="add-btn">
+                    Add Category
+                </button>
+            </a>
+            
+        </div>
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Category names</th>
+                    <th>Sub categories</th>
+                    <th>Created At</th>
+                    <th>List / Unlist</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (category && category.length > 0) { %>
+                  <% category.forEach((cat, index) => { %>
+                    <tr>
+                      <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
+                      <td> <%= cat.name %> </td>
+                      <td> 
+                          <ul>
+                            <% cat.subcategories.forEach((sub) => { %>
+                              <li> <%= sub.name %> </li>
+                            <% }) %>
+                          </ul>
+                      </td>
+                      <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
+                      <td>
+                        <!-- Replace with your actual list/unlist logic -->
+                        <a href="#">List/Unlist</a>
+                      </td>
+                      <td> 
+                        <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a>
+                        <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
+                      </td>
+                    </tr>
+                  <% }) %>
+                <% } else { %>
+                  <tr>
+                    <td colspan="6">No categories found.</td>
+                  </tr>
+                <% } %>
+              </tbody>
+              
+        </table>
+        <div class="pagination">
+            <!-- Example for the previous page -->
+            <% if (currentPage > 1) { %>
+                <a href="/admin/category?page=<%= currentPage - 1 %><%= queryParams ? '&' + queryParams : '' %>">Previous</a>
+            <% } %>
+        
+            <!-- Example for individual page numbers -->
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/category?page=<%= i %><%= queryParams ? '&' + queryParams : '' %>" 
+                   class="<%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+        
+            <!-- Example for the next page -->
+            <% if (currentPage < totalPages) { %>
+                <a href="/admin/category?page=<%= currentPage + 1 %><%= queryParams ? '&' + queryParams : '' %>">Next</a>
+            <% } %>
+        </div>
+        
+        
+        
+    </div>  
 </body>
 <%- include('partials/footer') %> 
 </html>

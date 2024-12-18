@@ -36,6 +36,7 @@ export const renderUsersPage = async (req, res) => {
 
         // Fetch users with pagination - applying the filters to the query
         const users = await User.find(query)
+            .sort({created_at: -1})
             .skip((page - 1) * perPage)
             .limit(perPage);
 

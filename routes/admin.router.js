@@ -8,7 +8,7 @@ import {
   // renderUsersPage,
   renderSalesReportPage,
   renderCouponsPage,
-  renderCategoryPage,
+  // renderCategoryPage,
   renderSettingsPage,
   renderBannerManagementPage,
   renderAddProductsPage,
@@ -18,6 +18,7 @@ import {
 } from "../controllers/admin/admin.controller.js";
 import { adminAuthMiddleware, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
+import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, addCategory } from "../controllers/admin/category.controller.js";
 
 
 // Admin login and logout routes
@@ -27,7 +28,7 @@ router.get("/admin-logout", handleAdminLogout);
 
 
 // Pages Are Protected With adminAuthMiddleware
-router.use(adminAuthMiddleware);
+// router.use(adminAuthMiddleware);
 router.use(pageMiddlware);
 
 // Admin Login
@@ -49,8 +50,16 @@ router.get('/unblock-user', unBlockUser);
 router.get("/sales-report", renderSalesReportPage);
 //
 router.get("/coupons", renderCouponsPage);
-//
+// Category & Subcategory Routes
 router.get("/category", renderCategoryPage);
+router.get("/add-category", renderAddCategoryPage);
+router.post('/add-subcategory', addSubcategoryToExistingCategory);
+router.post("/add-category", addCategory);
+router.get('/category/edit/:id', renderEditCategoryPage);
+router.post('/category/edit/:id', updateCategory);
+router.get('/category/delete/:id', deleteCategory);
+
+// router.post("/addSubCategory", handleAddSubCategory);
 //
 router.get("/banner-management", renderBannerManagementPage);
 //

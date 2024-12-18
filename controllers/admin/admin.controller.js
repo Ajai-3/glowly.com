@@ -63,10 +63,10 @@ export const renderSalesReportPage = (req, res) => {
 export const renderCouponsPage= (req, res) => {
     return res.render("admin/coupons")
 }
-// Rendre Category Page
-export const renderCategoryPage= (req, res) => {
-    return res.render("admin/category")
-}
+// // Rendre Category Page
+// export const renderCategoryPage= (req, res) => {
+//     return res.render("admin/category")
+// }
 // Rendre Banner Management Page
 export const renderBannerManagementPage= (req, res) => {
     return res.render("admin/banner-management")
