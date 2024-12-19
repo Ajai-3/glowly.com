@@ -1,4 +1,4 @@
-import mongoose from "mongoose"; 
+import mongoose from "mongoose";
 import Category from "../../models/category.model.js";
 import Subcategory from '../../models/subcategory.model.js';
 
@@ -14,7 +14,7 @@ export const renderAddCategoryPage = async (req, res) => {
         res.status(500).send("Error fetching categories");
     }
 };
-  
+
 export const renderCategoryPage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -30,13 +30,15 @@ export const renderCategoryPage = async (req, res) => {
         const totalCategories = await Category.countDocuments();
 
         const totalPages = Math.ceil(totalCategories / limit);
-
+        const msg = req.query.msg || null;
+        const type = req.query.type || null;
         return res.render("admin/category", {
             category: CategoryData,
             currentPage: page,
             totalPages: totalPages,
             totalCategories: totalCategories,
             queryParams: req.query,
+            msg: msg ? { text: msg, type } : null,
         });
     } catch (error) {
         console.error("Error in fetching Category page:", error);
@@ -44,7 +46,7 @@ export const renderCategoryPage = async (req, res) => {
 };
 
 
-  export const addCategory = async (req, res) => {
+export const addCategory = async (req, res) => {
     try {
         const { categoryName, description, subcategoryName, subcategoryDescription } = req.body;
 
@@ -80,7 +82,7 @@ export const renderCategoryPage = async (req, res) => {
         await newCategory.save();
 
         // Send the success response with a message
-        res.redirect('/admin/category?msg=Category and Subcategory added successfully');
+        res.redirect('/admin/category?msg=Category and Subcategory added successfully&type=success');
     } catch (error) {
         console.error(error);
         res.status(500).send("Error adding category and subcategory");
@@ -111,7 +113,7 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
         category.subcategories.push(newSubcategory._id);
         await category.save();
 
-        res.redirect(`/admin/category?msg=Subcategory added successfully`);
+        res.redirect(`/admin/category?msg=Subcategory added successfully&type=success`);
     } catch (error) {
         console.error("Error adding subcategory:", error);
         res.status(500).send("Error adding subcategory");
@@ -151,7 +153,7 @@ export const updateCategory = async (req, res) => {
             return res.status(404).send("Category not found");
         }
 
-        res.redirect('/admin/category?msg=Category updated successfully');
+        res.redirect('/admin/category?msg=Category updated successfully&type=success');
     } catch (error) {
         console.error("Error updating category:", error);
         res.status(500).send("Error updating category");

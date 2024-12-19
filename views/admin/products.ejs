@@ -57,79 +57,57 @@
                     <th>Image</th>
                     <th>Product Name</th>
                     <th>Category</th>
+                    <th>Sub category</th>
+                    <th>Brand</th>
                     <th>Price</th>
-                    <th>Pieces</th> <!-- Added Pieces column -->
+                    <th>Pieces</th> 
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><img src="path_to_image1.jpg" alt="Product Image" class="product-image"></td>
-                    <td>Product A</td>
-                    <td>Category 1</td>
-                    <td>$20.99</td>
-                    <td>50</td> <!-- Added quantity of products -->
-                    <td>
-                        <a href="/edit-products"> <button class="edit-btn">
-                            Edit
-                        </button></a>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><img src="path_to_image2.jpg" alt="Product Image" class="product-image"></td>
-                    <td>Product B</td>
-                    <td>Category 2</td>
-                    <td>$35.49</td>
-                    <td>120</td> <!-- Added quantity of products -->
-                    <td>
-                        <a href="/edit-products"> <button class="edit-btn">
-                            Edit
-                        </button></a>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><img src="path_to_image3.jpg" alt="Product Image" class="product-image"></td>
-                    <td>Product C</td>
-                    <td>Category 3</td>
-                    <td>$45.99</td>
-                    <td>30</td> <!-- Added quantity of products -->
-                    <td>
-                        <a href="/edit-products"> <button class="edit-btn">
-                            Edit
-                        </button></a>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><img src="path_to_image4.jpg" alt="Product Image" class="product-image"></td>
-                    <td>Product D</td>
-                    <td>Category 4</td>
-                    <td>$12.50</td>
-                    <td>75</td> <!-- Added quantity of products -->
-                    <td>
-                        <a href="/edit-products"> <button class="edit-btn">
-                            Edit
-                        </button></a>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td><img src="path_to_image5.jpg" alt="Product Image" class="product-image"></td>
-                    <td>Product E</td>
-                    <td>Category 5</td>
-                    <td>$99.99</td>
-                    <td>2000</td> 
-                    <td>
-                        <a href="/edit-products"> <button class="edit-btn">
-                            Edit
-                        </button></a>
-                        <button class="delete-btn">Delete</button>
-                    </td>
-                </tr>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><img src="<%= product.product_img %>" alt="<%= product.title %> Image" class="product-image"></td>
+                        <td><%= product.title %></td>
+                        <td>
+                            <%= product.category_id ? product.category_id.name : "No category" %>
+                        </td>
+                        <td>
+                            <%= product.subcategory_id ? product.subcategory_id.name : "No subcategory" %>
+                        </td>
+                        <td>
+                            <%= product.brand_id ? product.brand_id.name : "No brand" %>
+                        </td>
+                        <td><%= product.price %></td>
+                        <td><%= product.available_quantity %></td>
+                        <td>
+                            <a href="/admin/products/edit/<%= product._id %>">Edit</a> |
+                            <a href="/admin/products/delete/<%= product._id %>">Delete</a>
+                        </td>
+                    </tr>
+                <% }) %>
             </tbody>
         </table>
+        
+        <div class="pagination">
+            <!-- Example for the previous page -->
+            <% if (currentPage > 1) { %>
+                <a href="/admin/products?page=<%= currentPage - 1 %><%= queryParams ? '&' + queryParams : '' %>">Previous</a>
+            <% } %>
+        
+            <!-- Example for individual page numbers -->
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/products?page=<%= i %><%= queryParams ? '&' + queryParams : '' %>" 
+                   class="<%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+        
+            <!-- Example for the next page -->
+            <% if (currentPage < totalPages) { %>
+                <a href="/admin/products?page=<%= currentPage + 1 %><%= queryParams ? '&' + queryParams : '' %>">Next</a>
+            <% } %>
+        </div>
     </div> <!-- <div class="main-content"></div> -->
 
 </body>

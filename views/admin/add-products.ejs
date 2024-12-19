@@ -19,55 +19,73 @@
 
         <div class="add-products-container">
             <div class="add-products-container1">
-                <h4>Add New Product</h4>
+                <form action="/add-products" method="POST">
+                    <h4>Add New Product</h4>
 
-                <div class="add-products-container-center">
-                    <div>
-                        <label for="productName">Product Name</label>
-                        <input type="text" name="productName" id="productName" placeholder="Type product name">
+                    <div class="add-products-container-center">
+                        <div>
+                            <label for="productName">Product Name</label>
+                            <input type="text" name="productName" id="productName" placeholder="Type product name">
+                        </div>
+                        <div>
+                            <label for="brand">Select Brand</label> <br>
+                            <select name="brand" id="brand">
+                                <option value="">Select Brand</option>
+                                <% brands.forEach(brand => { %>
+                                    <option value="<%= brand._id %>"><%= brand.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                    </div>             
+    
+                    <label for="discription">Discription</label><br>
+                    <textarea id="discription" name="discription" placeholder="Enter product description here..."></textarea>
+    
+                    <div class="add-products-container-center">
+                        <div>
+                            <label for="category">Category</label> <br>
+                            <select name="category" id="category">
+                                <option value="">Select Category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category._id %>"><%= category.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="subCategory">Sub Category</label> <br>
+                            <select name="subCategory" id="subCategory">
+                                <option value="">Select Sub Category</option>
+                                <% subcategories.forEach(subcategory => { %>
+                                    <option value="<%= subcategory._id %>"><%= subcategory.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
                     </div>
-                    <div>
-                        <label for="brand">Brand</label>
-                        <input type="text" name="brand" id="brand" placeholder="Type brand name">
+    
+                    <div class="add-products-container-center">
+                        <div>
+                            <label for="stockQuantity">Stock Quantity</label>
+                            <input type="number" name="stockQuantity" id="stockQuantity" placeholder="303">
+                        </div>
+                        <div>
+                            <label for="regularPrice">Regular Price</label>
+                            <input type="number" name="regularPrice" id="regularPrice" placeholder="&#8377;21,400">
+                        </div>
+                        <div>
+                            <label for="salePrice">Sale Price</label>
+                            <input type="number" name="salePrice" id="salePrice" placeholder="&#8377;18,949">
+                        </div>    
                     </div>
-                </div>             
-
-                <label for="discription">Discription</label><br>
-                <textarea id="discription" name="discription" placeholder="Enter product description here..."></textarea>
-
-                <div class="add-products-container-center">
-                    <div>
-                        <label for="category">Category</label>
-                        <input type="text" name="category" id="category" placeholder="Type category here">
-                    </div>
-                    <div>
-                        <label for="subCategory">Sub Category</label>
-                        <input type="text" name="subCategory" id="subCategory" placeholder="Type sub category">
+                    <div class="d-flex justify-content-between">
+                        <a href="/add-products"><button class="add-product-btn2 my-1">Add Product</button></a> 
                     </div>
                 </div>
+                <div class="add-products-container2">
+                    <h4>Add Product Image</h4>
+                </div>
+                </form>
+                <a href="/add-new-brand"><button class="add-new-brand-btn my-1">Add New Brands<i class="fas fa-plus-circle"></i></button></a> 
 
-                <div class="add-products-container-center">
-                    <div>
-                        <label for="stockQuantity">Stock Quantity</label>
-                        <input type="number" name="stockQuantity" id="stockQuantity" placeholder="303">
-                    </div>
-                    <div>
-                        <label for="regularPrice">Regular Price</label>
-                        <input type="number" name="regularPrice" id="regularPrice" placeholder="&#8377;21,400">
-                    </div>
-                    <div>
-                        <label for="salePrice">Sale Price</label>
-                        <input type="number" name="salePrice" id="salePrice" placeholder="&#8377;18,949">
-                    </div>    
-                </div>
-                <div class="d-flex justify-content-between">
-                    <a href="/add-new-brand"><button class="add-new-brand-btn my-4">Add New Brands<i class="fas fa-plus-circle"></i></button></a> 
-                    <a href="/add-product"><button class="add-product-btn2 my-4">Add Product</button></a> 
-                </div>
-            </div>
-            <div class="add-products-container2">
-                <h4>Add Product Image</h4>
-            </div>   
         </div>
 
         

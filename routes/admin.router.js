@@ -1,29 +1,28 @@
 import express from "express";
 const router = express.Router();
+import multer from "multer";
+import storage from "../helpers/multer.js"
+const uploads = multer ({ storage:storage })
 import {
   renderLoginPage,
   renderDashboardPage,
-  renderProductsPage,
   renderOrderlistsPage,
-  // renderUsersPage,
   renderSalesReportPage,
   renderCouponsPage,
-  // renderCategoryPage,
   renderSettingsPage,
   renderBannerManagementPage,
-  renderAddProductsPage,
-  renderEditProductsPage,
   handleAdminLogin,
   handleAdminLogout,
 } from "../controllers/admin/admin.controller.js";
 import { adminAuthMiddleware, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, addCategory } from "../controllers/admin/category.controller.js";
+import { renderProductsPage, renderAddProductsPage, renderEditProductsPage, renderAddBrandPage, addBrands } from "../controllers/admin/product.controller.js";
 
 
 // Admin login and logout routes
-router.get("/admin-login", renderLoginPage); 
-router.post("/admin-login", handleAdminLogin); 
+router.get("/admin-login", renderLoginPage);
+router.post("/admin-login", handleAdminLogin);
 router.get("/admin-logout", handleAdminLogout);
 
 
@@ -39,6 +38,9 @@ router.get("/dashboard", renderDashboardPage);
 router.get("/products", renderProductsPage);
 router.get("/add-products", renderAddProductsPage);
 router.get("/edit-products", renderEditProductsPage);
+
+router.get("/add-new-brand", renderAddBrandPage);
+router.post("/add-brands", addBrands);
 // Order Routes
 router.get("/orderlists", renderOrderlistsPage);
 // Users Routes

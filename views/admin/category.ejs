@@ -44,13 +44,18 @@
                     </div>
                 </form>
             </div>
+            <% if (msg) { %>
+                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
+                    <%= msg.text %>
+                </div>
+            <% } %>
             <a href="/add-category">
                 <button class="add-btn">
                     Add Category
                 </button>
             </a>
-            
         </div>
+        
         <table class="all-table">
             <thead>
                 <tr>

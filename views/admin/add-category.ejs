@@ -16,47 +16,56 @@
             </div>
         </div>
         <div class="brudcrumbs"><a href="/category">Category </a>> Add category</div>
-
+        
         <% if (msg) { %>
             <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-                <%= msg.msg %>
+                <%= msg.text %>
             </div>
         <% } %>
-        <form action="/admin/add-category" method="POST">
-            <label for="categoryName">Category Name:</label>
-            <input type="text" id="categoryName" name="categoryName" required><br><br>
+        <div class="add-category-container">
+            <div class="add-category-container3">
+                <h4 class="mb-4">Add New Category & Subcategory</h4>
+                <form action="/admin/add-category" method="POST">
+                    <label for="categoryName">Category Name:</label>
+                    <input type="text" id="categoryName" name="categoryName" placeholder="Type category name" required>
+            
+                    <label for="description">Category Description:</label>
+                    <input type="text" id="description" name="description" placeholder="Typee category description"required>
+            
+                    <label for="subcategoryName">Subcategory Name:</label>
+                    <input type="text" id="subcategoryName" name="subcategoryName" placeholder="Type subcategory name" required>
+            
+                    <label for="subcategoryDescription">Subcategory Description:</label>
+                    <input type="text" id="subcategoryDescription" name="subcategoryDescription" placeholder="Typee subcategory description" required>
+            
+                    <button type="submit" class="large-button-green">Add Category and Subcategory</button>
+                </form>
+            </div>
+            <div class="add-category-container3">
+                <h4 class="mb-4">Add Subcategory to Existing Category</h4>
+                <form action="/admin/add-subcategory" method="POST">
+                    <label for="categoryId">Select Category:</label>
+                    <select id="categoryId" name="categoryId" required>
+                        <option value="" disabled selected> --- Select a category --- </option>
+                        <% categories.forEach(category => { %>
+                            <option value="<%= category._id %>"><%= category.name %></option>
+                        <% }) %>
+                    </select> <br>
+        
+                    <label for="subcategoryName" class="mt-3">Subcategory Name:</label>
+                    <input type="text" id="subcategoryName" name="subcategoryName" placeholder="Type subcategory name" required>
+        
+                    <label for="subcategoryDescription">Subcategory Description:</label>
+                    <input type="text" id="subcategoryDescription" name="subcategoryDescription" placeholder="Type Cubcategory description" required>
+        
+                    <button type="submit" class="large-button-pink">Add Subcategory</button>
+                </form>
+            </div>
     
-            <label for="description">Category Description:</label>
-            <input type="text" id="description" name="description" required><br><br>
     
-            <label for="subcategoryName">Subcategory Name:</label>
-            <input type="text" id="subcategoryName" name="subcategoryName" required><br><br>
-    
-            <label for="subcategoryDescription">Subcategory Description:</label>
-            <input type="text" id="subcategoryDescription" name="subcategoryDescription" required><br><br>
-    
-            <button type="submit">Add Category and Subcategory</button>
-        </form>
-
-
-        <h3>Add Subcategory to Existing Category</h3>
-        <form action="/admin/add-subcategory" method="POST">
-            <label for="categoryId">Select Category:</label>
-            <select id="categoryId" name="categoryId" required>
-                <option value="" disabled selected>Select a category</option>
-                <% categories.forEach(category => { %>
-                    <option value="<%= category._id %>"><%= category.name %></option>
-                <% }) %>
-            </select><br><br>
-
-            <label for="subcategoryName">Subcategory Name:</label>
-            <input type="text" id="subcategoryName" name="subcategoryName" required><br><br>
-
-            <label for="subcategoryDescription">Subcategory Description:</label>
-            <input type="text" id="subcategoryDescription" name="subcategoryDescription" required><br><br>
-
-            <button type="submit">Add Subcategory</button>
-        </form>
+            
+        </div>
+        
     </div>  
 </body>
 <%- include('partials/footer') %> 
