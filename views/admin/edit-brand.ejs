@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/head') %>
+
+  <div class="main-content">
+    <div class="header">
+      <div class="search-bar">
+        <form action="/search-user" method="GET">
+          <input type="text" name="search" placeholder="Search User" />
+          <button class="admin-search-button">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+      <div class="admin-profile mx-3">
+        <a href="/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="breadcrumbs">
+      <a href="/brands">Brands</a> > <a href="/add-new-brand">Add New Brand</a>
+    </div>
+
+    <div class="brand-page-edit">
+      <form action="/admin/edit-brand/<%= brand._id %>" method="POST" enctype="multipart/form-data">
+        <div class="form-sections">
+          <div class="brand-page-edit-box">
+            <h4>Edit Brand</h4>
+            <label for="name">Brand Name</label>
+            <input type="text" id="name" name="name" value="<%= brand.brandName %>" required />
+            
+            <label for="description">Brand Description</label>
+            <textarea id="description" name="description" required><%= brand.brandDescription %></textarea>
+            <label for="image">Current Image:</label>
+            <% if (brand.brandImage) { %>
+              <div class="mb-4">
+                <img src="/uploads/<%= brand.brandImage %>" alt="Current Brand Image" style="max-width: 200px; height: auto;">
+              </div>
+            <% } %>
+          </div>
+
+          <div class="brand-page-edit-box">
+            
+
+            <div id="imagePreviewContainer">
+              <label for="image">Upload New Image (Preview):</label>
+              <input type="file" id="image" name="image" onchange="previewImage(event)" />
+              <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; height: auto;"/>
+            </div>
+
+            <button type="submit" class="large-button-pink m-1 px-5">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    // Image preview function
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        const imagePreview = document.getElementById('imagePreview');
+        imagePreview.src = reader.result;  // Set the preview image's source to the file's result
+        imagePreview.style.display = 'block';  // Show the image preview
+      }
+
+      if (file) {
+        reader.readAsDataURL(file); // Read the file as a data URL
+      }
+    }
+  </script>
+</html>

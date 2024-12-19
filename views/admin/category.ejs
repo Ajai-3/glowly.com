@@ -60,7 +60,7 @@
             <thead>
                 <tr>
                     <th>S.No</th>
-                    <th>Category names</th>
+                    <th>Category name</th>
                     <th>Sub categories</th>
                     <th>Created At</th>
                     <th>List / Unlist</th>
@@ -86,7 +86,7 @@
                         <a href="#">List/Unlist</a>
                       </td>
                       <td> 
-                        <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a>
+                        <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
                         <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
                       </td>
                     </tr>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+
+<div class="main-content">
+    <div class="header">
+        <div class="search-bar">
+            <form action="/search-user" method="GET">
+                <input type="text" name="search" placeholder="Search User">
+                <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="admin-profile mx-3">
+            <a href="/settings">
+                <i class="fa-solid fa-circle-user"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="breadcrumbs">Breadcrumbs</div>
+
+    <div>
+        <div class="filter-container">
+            <div class="filter-div1">
+                <div class="filter-box">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                <div class="filter-box">
+                    <label for="filter">Filter By
+                        <select name="filter" id="filter">
+                            <option value="date">14 Feb 2014</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="filter-box">
+                    <label for="category">Category
+                        <select name="category" id="category">
+                            <option value="category1">Category1</option>
+                            <option value="category2">Category2</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <% if (msg) { %>
+                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
+                    <%= msg.text %>
+                </div>
+            <% } %>
+
+            <a href="/add-new-brand">
+                <button class="add-new-brand-btn my-1">Add New Brand <i class="fas fa-plus-circle"></i></button>
+            </a>
+        </div>
+
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Logo</th>
+                    <th>Brand Name</th>
+                    <th>Created At</th>
+                    <th>List / Unlist</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% brands.forEach((brand, index) => { %>
+                    <tr>
+                        <td><%= (currentPage - 1) * 5 + index + 1 %></td>
+                        <td><img src="/uploads/<%= brand.brandImage %>" alt="<%= brand.brandName %> Image" width="50" height="50"></td>
+
+                        <td><%= brand.brandName %></td>
+                        <td><%= brand.created_at.toLocaleDateString() %></td>
+                        <td>
+                            <button class="list-unlist-btn"><%= brand.isListed ? 'Unlist' : 'List' %></button>
+                        </td>
+                        <td>
+                            <a href="/edit-brand/<%= brand._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/delete-brand/<%= brand._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn" >Delete</button></a>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <div class="pagination">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>">Previous</a>
+            <% } %>
+            <span>Page <%= currentPage %> of <%= totalPages %></span>
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>">Next</a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 
+</html>

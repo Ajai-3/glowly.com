@@ -2,7 +2,6 @@ import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
 import Subcategory from "../../models/subcategory.model.js"
 import Brand from "../../models/brand.model.js"
-import storage from "../../helpers/multer.js"
 
 
 
@@ -21,8 +20,6 @@ export const renderProductsPage = async (req, res) => {
             .populate('subcategory_id') // Populate subcategory
             .populate('brand_id'); // Populate brand
 
-        // Log products to check if data is populated correctly
-        console.log(products);
 
         const totalProducts = await Product.countDocuments();
         const totalPages = Math.ceil(totalProducts / perPage);
@@ -61,16 +58,10 @@ export const renderAddProductsPage  = async (req, res) => {
     }
     
 }
+
+
 // Rendre Edit Products Page
 export const renderEditProductsPage  = (req, res) => {
     return res.render("admin/edit-products")
 }
 
-// Brands
-export const renderAddBrandPage = async (req, res) => {
-    return res.render("admin/add-new-brand")
-}
-
-export const addBrands = async (req, res) => {
-    return res.render("admin/products")
-}

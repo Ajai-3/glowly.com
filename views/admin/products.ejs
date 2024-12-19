@@ -60,6 +60,7 @@
                     <th>Sub category</th>
                     <th>Brand</th>
                     <th>Price</th>
+                    <th>Salce Price</th>
                     <th>Pieces</th> 
                     <th>Action</th>
                 </tr>
@@ -79,10 +80,11 @@
                             <%= product.brand_id ? product.brand_id.name : "No brand" %>
                         </td>
                         <td><%= product.price %></td>
+                        <td><%= product.sales_price %></td>
                         <td><%= product.available_quantity %></td>
                         <td>
-                            <a href="/admin/products/edit/<%= product._id %>">Edit</a> |
-                            <a href="/admin/products/delete/<%= product._id %>">Delete</a>
+                            <a href="/admin/products/edit/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/admin/products/delete/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
                         </td>
                     </tr>
                 <% }) %>

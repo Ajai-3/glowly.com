@@ -1,14 +1,18 @@
 import mongoose from "mongoose";
 
 const brandSchema = new mongoose.Schema({
-  name: {
+  brandName: {
     type: String,
     required: true,
     trim: true,
   },
-  description: {
+  brandDescription: {
     type: String,
     trim: true,
+  },
+  brandImage: {
+    type: String, 
+    required: true,
   },
   created_at: {
     type: Date,

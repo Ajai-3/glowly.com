@@ -32,14 +32,14 @@
                             <select name="brand" id="brand">
                                 <option value="">Select Brand</option>
                                 <% brands.forEach(brand => { %>
-                                    <option value="<%= brand._id %>"><%= brand.name %></option>
+                                    <option value="<%= brand._id %>"><%= brand.brandName %></option>
                                 <% }) %>
                             </select>
                         </div>
                     </div>             
     
-                    <label for="discription">Discription</label><br>
-                    <textarea id="discription" name="discription" placeholder="Enter product description here..."></textarea>
+                    <label for="description">Discription</label><br>
+                    <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
     
                     <div class="add-products-container-center">
                         <div>
@@ -84,8 +84,6 @@
                     <h4>Add Product Image</h4>
                 </div>
                 </form>
-                <a href="/add-new-brand"><button class="add-new-brand-btn my-1">Add New Brands<i class="fas fa-plus-circle"></i></button></a> 
-
         </div>
 
         

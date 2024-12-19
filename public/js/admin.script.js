@@ -1,19 +1,15 @@
-// const newCategory = document.getElementById('newCategory');
-// const existingCategory = document.getElementById('existingCategory');
-// const categoryDescription = document.getElementById('categoryDescription');
+// Add & Edit Brand Page Image Preview 
+function previewImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-// existingCategory.addEventListener('change', function () {
-//     const selectedOption = existingCategory.options[existingCategory.selectedIndex];
-//     const description = selectedOption.getAttribute('data-description') || "No description available"; // Default description
+    reader.onload = function() {
+      const imagePreview = document.getElementById('imagePreview');
+      imagePreview.src = reader.result;  // Set the preview image's source to the file's result
+      imagePreview.style.display = 'block';  // Show the image preview
+    }
 
-//     if (this.value) {
-//         newCategory.value = "";
-//         newCategory.disabled = true; // Disable the new category input
-//         categoryDescription.value = description; // Set description
-//         categoryDescription.setAttribute("readonly", true); // Make description readonly
-//     } else {
-//         newCategory.disabled = false; // Enable new category input
-//         categoryDescription.value = ''; // Clear description
-//         categoryDescription.removeAttribute("readonly"); // Make description editable
-//     }
-// });
+    if (file) {
+      reader.readAsDataURL(file); // Read the file as a data URL
+    }
+  }

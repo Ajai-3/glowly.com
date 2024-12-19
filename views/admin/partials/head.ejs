@@ -12,12 +12,13 @@
     <div class="sidebar">
         <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
         <a href="/dashboard" class="<%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a>
-        <a href="/products" class="<%= currentPath === '/products' ? 'active' : '' %>">Products</a>
+        <a href="/products" class="<%= currentPath.startsWith('/products') || currentPath === '/add-products' ? 'active' : '' %>">Products</a>
+        <a href="/brands" class="<%= currentPath === '/brands' || currentPath === '/add-new-brand' ? 'active' : '' %>">Brands</a>
+        <a href="/category" class="<%= currentPath.startsWith('/category') || currentPath === '/add-category' ? 'active' : '' %>">Category</a>
         <a href="/orderlists" class="<%= currentPath === '/orderlists' ? 'active' : '' %>">Order Lists</a>
         <a href="/users" class="<%= currentPath === '/users' ? 'active' : '' %>">Users</a>
         <a href="/sales-report" class="<%= currentPath === '/sales-report' ? 'active' : '' %>">Sales Report</a>
-        <a href="/coupons" class="<%= currentPath === '/coupons' ? 'active' : '' %>">Coupons</a>
-        <a href="/category" class="<%= currentPath === '/category' ? 'active' : '' %>">Category</a>
+        <a href="/coupons" class="<%= currentPath === '/coupons' ? 'active' : '' %>">Coupons</a> 
         <a href="/banner-management" class="<%= currentPath === '/banner-management' ? 'active' : '' %>">Banner Management</a>
         <a href="/settings" class="<%= currentPath === '/settings' ? 'active' : '' %>">Settings</a>
         <a href="/admin-logout" class="<%= currentPath === '/admin-logout' ? 'active' : '' %>">Logout</a>

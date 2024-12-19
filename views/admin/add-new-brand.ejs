@@ -1,28 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-                
-        <div class="header">
-            <div class="search-bar">
-                <form action="/search" method="GET">
-                    <input type="text" name="search" placeholder="Search">
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/products">Products</a> > <a href="/add-products">Add Products</a> > Add Brands </div>
+  <%- include('partials/head') %>
 
+  <div class="main-content">
+    <div class="header">
+      <div class="search-bar">
+        <form action="/search-user" method="GET">
+          <input type="text" name="search" placeholder="Search User" />
+          <button class="admin-search-button">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+      <div class="admin-profile mx-3">
+        <a href="/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+      </div>
+    </div>
 
-add product
+    <div class="breadcrumbs">
+      <a href="/brands">Brands</a> > <a href="/add-new-brand">Add New Brand</a>
+    </div>
+
+    <div class="brand-page-add">
         
+      <form action="/admin/add-new-brand" method="POST" enctype="multipart/form-data">
+        <div class="form-sections">
+            
+          <div class="brand-page-add-box">
+            <h4>Add New Brand</h4>
+            <label for="name">Brand Name</label>
+            <input type="text" name="name" id="name" placeholder="Brand name" required />
+            <label for="description">Brand Description</label><br>
+            <textarea id="description" name="description" placeholder="Brand description"></textarea>
+          </div>
 
-    </div> 
+          <div class="brand-page-add-box">
+            <label for="image">Brand Image</label>
+            <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(event)" required />
 
-</body>
-<%- include('partials/footer') %> 
+            <div id="imagePreviewContainer" class="imagePreviewContainer">
+              <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 200px; height: auto" />
+            </div>
+
+            <button type="submit" class="large-button-pink m-1 px-5">
+              Submit
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    function previewImage(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function () {
+        const imagePreview = document.getElementById("imagePreview");
+        imagePreview.src = reader.result;
+        imagePreview.style.display = "block";
+      };
+
+      if (file) {
+        reader.readAsDataURL(file);
+      }
+    }
+  </script>
 </html>
