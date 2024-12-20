@@ -862,14 +862,33 @@ p2 {
   background-color: var(--bg-color-2);
 }
 .add-products-container1 {
-  width: 60%;
+  width: 50%;
   padding-bottom: 10px;
 }
 .add-products-container2 {
-  width: 40%;
+  display: flex;
+  flex-wrap: wrap;
+  width: 50%;
   padding-left: 15px;
-  /* background-color: #1a3294; */
+  font-size: var(--font-size-second);
 }
+
+.add-products-container2 h4 {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.image-upload-slot {
+  width: 40%; 
+  margin: 10px 1%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-color-3);
+}
+
+
+/* .add-products-container2 . */
 .add-products-container3 {
   width: 50%;
   padding-bottom: 10px;
@@ -929,7 +948,7 @@ p2 {
 .brand-page-add {
   display: flex;
   justify-content: space-between;
-  width: 75%;
+  width: 70%;
   padding: 10px;
   flex-wrap: wrap;
   border-radius: 10px;
@@ -943,7 +962,7 @@ p2 {
 }
 
 .brand-page-add-box {
-  width: 100%; /* Take up 48% of the container's width */
+  width: 300px;
   margin-bottom: 20px;
 }
 
@@ -978,7 +997,7 @@ p2 {
 
 .form-sections {
   display: flex;
-  gap: 30px;
+  gap: 40px;
   width: 100%;
 }
 
@@ -987,10 +1006,46 @@ p2 {
   margin-bottom: 20px;
 }
 
-#imagePreviewContainer {
-  margin-top: 10px;
-  margin-bottom: 10px;
+.image-upload-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 20px;
+  width: 100px;
+  font-size: var(--font-size-third);
+  color: var(--second-text-color);
 }
+
+/* Custom style for the label, which will be clicked to upload the image */
+.custom-image-input {
+  display: inline-block;
+  cursor: pointer;
+  border: 1px dashed var(--bg-color-btn-hover);
+  border-radius: 4px;
+  padding: 5px;
+  max-width: 200px;
+  max-height: 200px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-color-2);
+}
+
+/* Hover effect for the label */
+.custom-image-input:hover {
+  border-color: var(--bg-color-btn-hover3); /* Change border color on hover */
+}
+
+/* Image styling */
+.custom-image-input img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  object-fit: cover; 
+  border-radius: 4px;
+}
+
 
 
 

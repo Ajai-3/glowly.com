@@ -2,7 +2,6 @@
 <html lang="en">
 <%- include('partials/head') %> 
     <div class="main-content">
-                
         <div class="header">
             <div class="search-bar">
                 <form action="/search" method="GET">
@@ -19,7 +18,7 @@
 
         <div class="add-products-container">
             <div class="add-products-container1">
-                <form action="/add-products" method="POST">
+                <form action="/add-products" method="POST" enctype="multipart/form-data">
                     <h4>Add New Product</h4>
 
                     <div class="add-products-container-center">
@@ -37,8 +36,7 @@
                             </select>
                         </div>
                     </div>             
-    
-                    <label for="description">Discription</label><br>
+                    <label for="description">Description</label><br>
                     <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
     
                     <div class="add-products-container-center">
@@ -64,8 +62,8 @@
     
                     <div class="add-products-container-center">
                         <div>
-                            <label for="stockQuantity">Stock Quantity</label>
-                            <input type="number" name="stockQuantity" id="stockQuantity" placeholder="303">
+                            <label for="availableQuantity">Stock Quantity</label>
+                            <input type="number" name="availableQuantity" id="availableQuantity" placeholder="303">
                         </div>
                         <div>
                             <label for="regularPrice">Regular Price</label>
@@ -81,15 +79,106 @@
                     </div>
                 </div>
                 <div class="add-products-container2">
-                    <h4>Add Product Image</h4>
+                    <h4>Add Product Images</h4>
+                
+                    <!-- First image upload -->
+                    <div class="image-upload-slot">
+                        <label for="productImage1" class="custom-image-input">
+                            <img id="productImagePreview1" src="#" alt="Upload Product Image 1" />
+                        </label>
+                        <input
+                            type="file"
+                            id="productImage1"
+                            name="productImages"
+                            accept="image/*"
+                            onchange="previewProductImage(event, 'productImagePreview1')"
+                            style="display: none;"
+                        />
+                    </div>
+                
+                    <!-- Second image upload -->
+                    <div class="image-upload-slot">
+                        <label for="productImage2" class="custom-image-input">
+                            <img id="productImagePreview2" src="#" alt="Upload Product Image 2" />
+                        </label>
+                        <input
+                            type="file"
+                            id="productImage2"
+                            name="productImages"
+                            accept="image/*"
+                            onchange="previewProductImage(event, 'productImagePreview2')"
+                            style="display: none;"
+                        />
+                    </div>
+                
+                    <!-- Third image upload -->
+                    <div class="image-upload-slot">
+                        <label for="productImage3" class="custom-image-input">
+                            <img id="productImagePreview3" src="#" alt="Upload Product Image 3" />
+                        </label>
+                        <input
+                            type="file"
+                            id="productImage3"
+                            name="productImages"
+                            accept="image/*"
+                            onchange="previewProductImage(event, 'productImagePreview3')"
+                            style="display: none;"
+                        />
+                    </div>
+                
+                    <!-- Fourth image upload -->
+                    <div class="image-upload-slot">
+                        <label for="productImage4" class="custom-image-input">
+                            <img id="productImagePreview4" src="#" alt="Upload Product Image 4" />
+                        </label>
+                        <input
+                            type="file"
+                            id="productImage4"
+                            name="productImages"
+                            accept="image/*"
+                            onchange="previewProductImage(event, 'productImagePreview4')"
+                            style="display: none;"
+                        />
+                    </div>
+                
+                    <!-- Fifth image upload -->
+                    <div class="image-upload-slot">
+                        <label for="productImage5" class="custom-image-input">
+                            <img id="productImagePreview5" src="#" alt="Upload Product Image 5" />
+                        </label>
+                        <input
+                            type="file"
+                            id="productImage5"
+                            name="productImages"
+                            accept="image/*"
+                            onchange="previewProductImage(event, 'productImagePreview5')"
+                            style="display: none;"
+                        />
+                    </div>
                 </div>
-                </form>
-        </div>
-
-        
-
-    </div> <!-- <div class="main-content"></div> -->
+            </form> 
+        </div> 
+    </div>
 
 </body>
 <%- include('partials/footer') %> 
+<script>
+    function previewProductImage(event, previewId) {
+        // Get the uploaded file
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        // Once the file is read, update the preview image
+        reader.onload = function () {
+            const productImagePreview = document.getElementById(previewId);
+            productImagePreview.src = reader.result; // Set the image preview source
+            productImagePreview.style.display = "block"; // Display the preview image
+        };
+
+        // If a file is selected, read it as a data URL
+        if (file) {
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
 </html>

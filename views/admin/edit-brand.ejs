@@ -33,24 +33,32 @@
             
             <label for="description">Brand Description</label>
             <textarea id="description" name="description" required><%= brand.brandDescription %></textarea>
-            <label for="image">Current Image:</label>
+            
+            <label for="currentImage">Current Image:</label>
             <% if (brand.brandImage) { %>
               <div class="mb-4">
-                <img src="/uploads/<%= brand.brandImage %>" alt="Current Brand Image" style="max-width: 200px; height: auto;">
+                <img src="/uploads/<%= brand.brandImage %>" alt="Current Brand Image" style="max-width: 200px; height: auto; border: 1px solid #ccc; border-radius: 8px; padding: 5px;">
               </div>
             <% } %>
           </div>
 
           <div class="brand-page-edit-box">
-            
-
-            <div id="imagePreviewContainer">
-              <label for="image">Upload New Image (Preview):</label>
-              <input type="file" id="image" name="image" onchange="previewImage(event)" />
-              <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width: 200px; height: auto;"/>
+            <label for="image">Upload New Image:</label>
+            <div class="image-upload-container">
+              <label for="image" class="custom-image-input">
+                <img id="imagePreview" src="#" alt="Upload New Image" />
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onchange="previewImage(event)"
+                style="display: none;"
+              />
             </div>
 
-            <button type="submit" class="large-button-pink m-1 px-5">
+            <button type="submit" class="large-button-pink m-1 px-5 ml-3">
               Save Changes
             </button>
           </div>
@@ -69,8 +77,8 @@
 
       reader.onload = function () {
         const imagePreview = document.getElementById('imagePreview');
-        imagePreview.src = reader.result;  // Set the preview image's source to the file's result
-        imagePreview.style.display = 'block';  // Show the image preview
+        imagePreview.src = reader.result; // Set the preview image's source to the file's result
+        imagePreview.style.display = 'block'; // Show the image preview
       }
 
       if (file) {

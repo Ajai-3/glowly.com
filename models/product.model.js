@@ -36,8 +36,8 @@ const productSchema = new mongoose.Schema({
       type: String,
       required: true
     },
-    product_img: {
-      type: String,
+    product_imgs: {
+      type: [String],
       required: true
     },
     created_at: {

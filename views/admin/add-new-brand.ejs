@@ -37,14 +37,22 @@
           </div>
 
           <div class="brand-page-add-box">
-            <label for="image">Brand Image</label>
-            <input type="file" name="image" id="image" accept="image/*" onchange="previewImage(event)" required />
-
-            <div id="imagePreviewContainer" class="imagePreviewContainer">
-              <img id="imagePreview" src="#" alt="Image Preview" style="display: none; max-width: 200px; height: auto" />
+            <div class="image-upload-container">
+              <label for="image" class="custom-image-input">
+                <img id="imagePreview" src="#" alt="Upload New Image" />
+              </label>
+              <input
+                type="file"
+                id="image"
+                name="image"
+                accept="image/*"
+                onchange="previewImage(event)"
+                style="display: none;"
+                required
+              />
             </div>
 
-            <button type="submit" class="large-button-pink m-1 px-5">
+            <button type="submit" class="large-button-pink mr-5 px-5">
               Submit
             </button>
           </div>
