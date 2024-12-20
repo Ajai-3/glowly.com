@@ -852,6 +852,12 @@ p2 {
 .all-table tr:hover td {
   background-color: var(--bg-color-tbl-hover);
 }
+.truncate {
+  white-space: nowrap;         /* Prevents the text from wrapping onto a new line */
+  overflow: hidden;            /* Hides the overflow text */
+  text-overflow: ellipsis;     /* Adds the ellipsis (...) at the end */
+  max-width: 200px;            /* Adjust this value to control the truncation width */
+}
 
 /* Add Products Page */
 .add-products-container {
@@ -886,7 +892,13 @@ p2 {
   align-items: center;
   color: var(--text-color-3);
 }
-
+.edit-products-container {
+  display: flex;
+  padding: 10px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  background-color: var(--bg-color-2);
+}
 
 /* .add-products-container2 . */
 .add-products-container3 {

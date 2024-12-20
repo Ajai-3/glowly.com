@@ -7,6 +7,7 @@
             <div class="search-bar">
                 <form action="/search" method="GET">
                     <input type="text" name="search" placeholder="Search">
+                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
@@ -15,7 +16,7 @@
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs">brudcrumbs</div>
+        <div class="brudcrumbs"><a href="/products">Products</a></div>
         
         <div>
             <div class="filter-container">
@@ -63,11 +64,11 @@
                     <th>S.No</th>
                     <th>Image</th>
                     <th>Product Name</th>
+                    <th>Brand</th>
                     <th>Category</th>
                     <th>Sub category</th>
-                    <th>Brand</th>
                     <th>Price</th>
-                    <th>Salce Price</th>
+                    <th>Sales Price</th>
                     <th>Pieces</th> 
                     <th>Action</th>
                 </tr>
@@ -76,23 +77,26 @@
                 <% products.forEach((product, index) => { %>
                     <tr>
                         <td><%= (currentPage - 1) * 5 + index + 1 %></td>
-                        <td><img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" alt="<%= product.title %> Image" width="50" height="50">
+                        <td>
+                            <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" alt="<%= product.title %> Image" width="50" height="50">
                         </td>
-                        
+                        <td class="truncate"><%= product.title %></td>
+
+                        <td>
+                            <%= product.brand_id ? product.brand_id.brandName : "No brand" %>
+                        </td>
                         <td>
                             <%= product.category_id ? product.category_id.name : "No category" %>
                         </td>
                         <td>
                             <%= product.subcategory_id ? product.subcategory_id.name : "No subcategory" %>
                         </td>
-                        <td>
-                            <%= product.brand_id ? product.brand_id.brandName : "No brand" %>
-                        </td>
+                        
                         <td><%= product.price %></td>
                         <td><%= product.sales_price %></td>
                         <td><%= product.available_quantity %></td>
                         <td>
-                            <a href="/admin/products/edit/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
                             <a href="/admin/products/delete/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
                         </td>
                     </tr>

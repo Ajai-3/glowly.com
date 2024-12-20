@@ -17,7 +17,7 @@ import {
 import { adminAuthMiddleware, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, addCategory } from "../controllers/admin/category.controller.js";
-import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductsPage} from "../controllers/admin/product.controller.js";
+import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, deleteBrand } from "../controllers/admin/brand.controller.js"
 
 
@@ -39,7 +39,9 @@ router.get("/dashboard", renderDashboardPage);
 router.get("/products", renderProductsPage);
 router.get("/add-products", renderAddProductsPage);
 router.post('/add-products', uploads.array('productImages', 5), addProduct);
-router.get("/edit-products", renderEditProductsPage);
+router.get("/edit-product/:id", renderEditProductPage);
+router.post("/edit-product/:id", uploads.array('productImages', 5), editProduct);
+
 // Brand Router
 router.get("/brands", renderBrandPage)
 router.get("/add-new-brand", renderAddBrandPage);
