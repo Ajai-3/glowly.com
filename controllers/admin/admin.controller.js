@@ -30,10 +30,7 @@ export const renderOrderlistsPage = (req, res) => {
 export const renderSalesReportPage = (req, res) => {
     return res.render("admin/sales-report")
 }
-// Rendre Coupons Page
-export const renderCouponsPage= (req, res) => {
-    return res.render("admin/coupons")
-}
+
 
 // Rendre Banner Management Page
 export const renderBannerManagementPage= (req, res) => {

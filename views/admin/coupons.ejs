@@ -2,8 +2,148 @@
 <html lang="en">
 <%- include('partials/head') %> 
 
-    </div> <!-- <div class="main-content"></div> -->
+<div class="main-content">
+    <div class="header">
+        <div class="search-bar">
+            <form action="/search-user" method="GET">
+                <input type="text" name="search" placeholder="Search User">
+                <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <div class="admin-profile mx-3">
+            <a href="/settings">
+                <i class="fa-solid fa-circle-user"></i>
+            </a>
+        </div>
+    </div>
 
-</body>
+    <div class="breadcrumbs"><a href="/coupons">Coupons</a></div>
+
+    <div>
+        <div class="add-coupon-box mb-1">
+            <h5 class="m-0">Add Coupon</h5>
+            <form action="/add-coupon" method="Post">
+                <div class="add-products-container-center coupoun-div">
+                    <div>
+                        <label for="code">Code</label>
+                        <input type="text" id="code" name="code" placeholder="Type the code" required>
+                    </div>
+                    <div>
+                        <label for="discountType">Discount Type</label>
+                        <select name="discountType" id="discountType" required>
+                            <option value="" disabled selected>Select Discount Type</option>
+                            <% discountTypes.forEach(type => { %>
+                                <option value="<%= type %>"><%= type %></option>
+                            <% }); %>
+                        </select> 
+                    </div>
+                    <div>
+                        <label for="value">Value</label>
+                        <input type="number" id="value" name="value" placeholder="Discount value" required>
+                    </div>
+                    <div>
+                       
+                    <label for="expiryDate">Expiry Date</label>
+                    <input type="date" id="expiryDate" name="expiryDate" required>  
+                    </div>                  
+                </div>
+                <div class="add-products-container-center coupoun-div">
+                    <div>
+                        <label for="minPrice">Min price</label>
+                        <input type="number" id="minPrice" name="minPrice" placeholder="&#8377;200" required>
+                    </div>
+                    <div>
+                        <label for="maxPrice">Max price</label>
+                    <input type="number" id="maxPrice" name="maxPrice" placeholder="&#8377;1000" required>
+                    </div>
+                    <div>
+                        <label for="limit">Limit</label>
+                    <input type="number" id="limit" name="limit" placeholder="No of coupon" required>
+                    </div>
+                    
+                    
+                    
+                </div>
+                <button class="large-button-pink my-1">Add Coupon <i class="fas fa-plus-circle"></i></button>
+            </form>   
+       </div>
+
+        <div class="filter-container">
+            <div class="filter-div1">
+                <div class="filter-box">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                <div class="filter-box">
+                    <label for="filter">Filter By
+                        <select name="filter" id="filter">
+                            <option value="date">14 Feb 2014</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="filter-box">
+                    <label for="category">Category
+                        <select name="category" id="category">
+                            <option value="category1">Category1</option>
+                            <option value="category2">Category2</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <% if (msg) { %>
+                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
+                    <%= msg.text %>
+                </div>
+            <% } %>
+        </div>
+
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Coupon Code</th>
+                    <th>Type</th>
+                    <th>Discount Value</th>
+                    <th>Price Range</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% coupons.forEach((coupon, index) => { %>
+                    <tr>
+                        <td><%= (currentPage - 1) * 5 + index + 1 %></td>
+                        <td><%= coupon.code %></td>
+                        <td><%= coupon.type %></td>
+                        <td><%= coupon.discountValue %></td>
+                        <td><%= coupon.minPrice %> - <%= coupon.maxPrice %></td>
+                        <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
+                        <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
+                        <td>
+                            <a href="/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/delete-coupon/<%= coupon._id %>" onclick="return confirm('Are you sure?')">
+                                <button class="delete-btn">Delete</button>
+                            </a>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <div class="pagination m-2">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>">Previous</a>
+            <% } %>
+            <span>Page <%= currentPage %> of <%= totalPages %></span>
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>">Next</a>
+            <% } %>
+        </div>
+    </div>
+
+
+</div>
+
 <%- include('partials/footer') %> 
 </html>

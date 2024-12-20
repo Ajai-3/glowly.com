@@ -8,7 +8,6 @@ import {
   renderDashboardPage,
   renderOrderlistsPage,
   renderSalesReportPage,
-  renderCouponsPage,
   renderSettingsPage,
   renderBannerManagementPage,
   handleAdminLogin,
@@ -18,7 +17,8 @@ import { adminAuthMiddleware, pageMiddlware } from "../middlewares/admin.midlewa
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, addCategory } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct } from "../controllers/admin/product.controller.js";
-import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, deleteBrand } from "../controllers/admin/brand.controller.js"
+import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
+import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from "../controllers/admin/coupon.controller.js";
 
 
 // Admin login and logout routes
@@ -63,12 +63,17 @@ router.get("/users", renderUsersPage);
 router.get('/search-user', renderUsersPage)
 router.get('/block-user', blockUser);
 router.get('/unblock-user', unBlockUser);
+// Coupon Routes
+router.get("/coupons", renderCouponsPage);
+// router.get("/add-coupon", renderAddCouponPage);
+router.post("/add-coupon", addCoupon);
+router.get("/edit-coupon", renderEditCouponPage);
+router.post("/edit-coupon", editCoupon);
 // Order Routes
 router.get("/orderlists", renderOrderlistsPage);
 //
 router.get("/sales-report", renderSalesReportPage);
-//
-router.get("/coupons", renderCouponsPage);
+
 //
 router.get("/banner-management", renderBannerManagementPage);
 //

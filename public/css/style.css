@@ -624,8 +624,89 @@ a {
 
 /* The User Interface This Div Is The Main Div For All Contents */
 .user-contents {
-  padding-top: 95px;
+  background-color: #223e5b;
+  padding: 90px 30px 20px 30px;
 }
+
+/* User Product Cart */
+.product-card {
+  position: relative;
+  height: 310px;
+  width: 190px;
+  padding: 5px;
+  text-align: center;
+  border-radius: 4px;
+  /* background-color: var(--bg-color-4); */
+}
+.product-card-like {
+  position: absolute;
+  color: var(--main-color);
+  top: 10px;
+  right: 10px;
+  z-index: 1;
+}
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 2px;
+}
+.product-card h5 {
+  font-weight: 200;
+  margin: 3px;
+   text-align: left;
+   font-size: var(--font-size-normal);
+}
+.product-description {
+  margin: 8px 0;
+  font-weight: 200;
+  text-align: left;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.5;
+  white-space: normal;
+  font-size: var(--font-size-second);
+  display: -webkit-box;
+  line-clamp: inherit;
+  -webkit-line-clamp: 2; 
+  -webkit-box-orient: vertical;
+  overflow: hidden; 
+}
+
+.product-prices-box {
+  display: flex;
+  /* justify-content: space-between; */
+  font-size: var(--font-size-second);
+}
+.original-price {
+  text-decoration: line-through;
+  color: var(--second-text-color);
+}
+.product-rating {
+  color: var(--bg-green-color);
+}
+.product-card .add-to-cart-btn {
+  width: 100%;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: var(--font-size-second);
+  color: var(--main-color);
+   border: 1px solid var(--main-color);
+   background-color: transparent;
+}
+.product-card .add-to-cart-btn:hover {
+  color: var(--main-color2);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 /* ===================================================================
 /* ===================================================================
@@ -1267,4 +1348,32 @@ p2 {
 }
 .delete-btn:hover {
   color: var(--red-text-color);
+}
+
+
+
+/* coupon  **************************/
+.add-coupon-box {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  font-size: var(--font-size-second);
+  background-color: var(--bg-color-2);
+}
+.coupoun-div input{
+  width: 100%;
+  padding: 5px;
+  outline: none;
+  display: block;
+  border-radius: 4px;
+  color: var(--text-color-3);
+  background-color: transparent;
+  font-size: var(--font-size-third);
+  border: 1px solid var(--bg-color-btn-hover);
+}
+.coupoun-div input:focus {
+  border: 1px solid var(--bg-color-btn-hover3);
 }
