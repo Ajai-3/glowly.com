@@ -3,7 +3,7 @@ import passport from "../config/passport.js";
 const router = express.Router();
 import {
     renderForgotPasswordPage,
-    renderHomePage,
+    // renderHomePage,
     renderLoginPage,
     renderNewPasswordPage,
     renderpOtpVerificationPage,
@@ -17,7 +17,7 @@ import {
     handleUserLogout,
 } from "../controllers/user/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-
+import { renderHomePage } from "../controllers/user/home.controller.js";
 // Apply Middleware To All Routes 
 // router.use(authMiddleware);
 

@@ -10,20 +10,6 @@ dotenv.config();
 /////////////////////////////////////////////////////////////////////////////
 
 // Render Home Page
-// Render Home Page
-export const renderHomePage = async (req, res) => {
-    try {
-        const user = req.session.user;
-        if (user) {
-           return res.render('user/home', { name: user.name });
-        } else {
-            return res.render("user/home", { name: "" });
-        }
-    } catch (error) {
-        console.log("Home page is not loading: ", error);
-        res.status(500).send("Server Error");
-    }
-};
 
 
 
