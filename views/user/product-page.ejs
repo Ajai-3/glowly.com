@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+
+    <div class="user-contents">
+        
+        <div class="container mt-2 ">
+            <div class="container mt-2">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="/category/<%= product.category_id._id %>"><%= product.category_id.name %></a></li>
+                        <li class="breadcrumb-item"><a href="/subcategory/<%= product.subcategory_id._id %>"><%= product.subcategory_id.name %></a></li>
+                        <li class="breadcrumb-item active" aria-current="page">
+                            <%= product.title.split(' ').slice(0, 5).join(' ') %>
+                        </li>
+                    </ol>
+                </nav>
+            </div>
+                                  
+            
+            <div class="row justify-content-center g-0 p-3 product-container">
+                <!-- Product Image Section -->
+                <div class="col-md-5 d-flex">
+                    <div class="product-image d-flex ">
+                        <div class="product-images d-flex flex-column me-2">
+                            <% product.product_imgs.forEach((img, index) => { %>
+                                <div class="product-img m-1">
+                                    <img src="/uploads/<%= encodeURIComponent(img) %>" 
+                                         alt="Product Image <%= index + 1 %>" 
+                                         class="img-thumbnail side-image"
+                                         data-src="/uploads/<%= encodeURIComponent(img) %>">
+                                </div>
+                            <% }); %>
+                        </div>
+                        <div class="product-display-image p-3 pt-2">
+                            <div class="zoom-container">
+                                <img id="main-display-image" 
+                                     src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" 
+                                     alt="Main Product Image" 
+                                     class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Product Info Section -->
+                <div class="col-md-5">
+                    <div class="product-info">
+                        <div class="product-page-product-title mb-2">
+                            <%= product.title %>
+                        </div>
+        
+                        <div class="product-page-product-rating d-flex">
+                            <%= product.rating ? ' ★★★★☆' + product.rating : '★★★★☆' %> 
+                             / 5 &nbsp;  <p class="mb-1">| &nbsp;&nbsp;<%= product.ratings_count ? product.ratings_count + ' ratings' : '0 ratings' %>  & <%= product.reviews_count ? product.reviews_count + ' reviews' : '0 reviews' %> </p>  
+                        </div>
+                        
+                        <div class="product-stock m-0 <%= product.available_quantity > 0 ? 'available' : 'unavailable' %>">
+                            Stocks: <%= product.available_quantity > 0 ? product.available_quantity : "Unavailable" %>
+                        </div>
+                        
+
+                        <div class="product-color">
+                            Colors: <%= product.color ? product.color : "Unavailable" %>
+                        </div>
+        
+                        <div class="quantity-selector m-1">
+                            <button class="decrease-quantity me-1" id="decrease-btn">-</button>
+                            <input type="number" id="quantity" value="1" min="1" readonly />
+                            <button class="increase-quantity ms-1" id="increase-btn">+</button>
+                        </div>
+        
+                        <div class="product-page-product-price mt-1 mb-2"> 
+                            <span class="mrp">MRP: </span>      
+                            <span class="original-price"> ₹<%= product.price %></span>
+                            <span class="sales-price">₹<%= product.sales_price %>&nbsp;</span>
+                        </div>
+        
+                        <a href="/add-to-cart/<%= product.id %>">
+                            <button class="add-to-bag-btn">Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i></button>
+                        </a>
+                        <a href="/buy-now/<%= product.id %>">
+                            <button class="buy-now-btn">Buy Now</button>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Description and Reviews Section (Toggle) -->
+            <div class="row mt-4 description-review-container">
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" id="productTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="description-tab" data-bs-toggle="tab" href="#description1" role="tab" aria-controls="description" aria-selected="true">
+                                Description
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">
+                                Reviews
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="productTabContent">
+                        <!-- Description Section -->
+                        <div class="tab-pane fade show active" id="description1" role="tabpanel" aria-labelledby="description-tab">
+                            <div class="row">
+                                <!-- First Description -->
+                                <div class="col-md-6 content">
+                                    <p><%= product.description %></p>
+                                </div>
+                                <!-- Second Description -->
+                                <div class="col-md-6 content">
+                                    <p>Brand: &nbsp; <%= product.brand_id.brandName %></p>
+                                    <p>Category: &nbsp; <%= product.category_id.name %></p>
+                                    <p>Subcategory: &nbsp; <%= product.subcategory_id.name %></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+            
+                        <!-- Reviews Section -->
+                        <div class="tab-pane fade content" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                            <div class="reviews">
+                                <% if (product.reviews && product.reviews.length > 0) { %>
+                                    <% product.reviews.forEach((review) => { %>
+                                        <div class="review mb-3">
+                                            <h4><%= review.username %></h4>
+                                            <p><%= review.comment %></p>
+                                            <p>Rating: <%= review.rating %> / 5</p>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <p>No reviews yet. Be the first to review!</p>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+
+        
+            <!-- Related Products Section -->
+            <h5 class="mb-0 mt-4">Similar Items You Might Also Like</h5>
+            <div class="product-grid mt-4">
+                <% relatedProducts.forEach(product => { %>
+                    <div class="product-card">
+                        <a href="/product/<%= product._id %>">
+                            <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" />
+                        </a>    
+                        <div class="product-card-like"><i class="fa-regular fa-heart"></i></div>
+                        <a href="/product/<%= product._id %>">
+                            <p class="product-title"><%= product.title %></p>
+                        </a>
+                        <div class="product-prices-box">
+                            <p class="sale-price">&#8377;<%= product.sales_price %></p>
+                            <p class="original-price mx-2">&#8377;<%= product.price %></p>
+                            <p class="product-rating">★★★★☆</p>
+                        </div>
+                        <a href="/product/<%= product._id %>">
+                            <button class="add-to-cart-btn">Add to Cart</button>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>  
+
+    <%- include('partials/footerforhome') %> 
+
+    <script>
+        // Select all side images and the main display image
+        const sideImages = document.querySelectorAll('.side-image');
+        const mainImage = document.getElementById('main-display-image');
+
+        // Add a click event listener to each side image
+        sideImages.forEach(image => {
+            image.addEventListener('click', () => {
+                // Update the src of the main image with the data-src of the clicked side image
+                mainImage.src = image.dataset.src;
+            });
+        });
+
+        // Add event listener for zooming and shifting
+        const zoomContainer = document.querySelector('.zoom-container');
+        zoomContainer.addEventListener('click', () => {
+          zoomContainer.classList.toggle('zoomed');
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const quantityInput = document.getElementById('quantity');
+            const increaseButton = document.getElementById('increase-btn');
+            const decreaseButton = document.getElementById('decrease-btn');
+
+            // Increase Quantity
+            increaseButton.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                quantityInput.value = quantity + 1;
+            });
+
+            // Decrease Quantity
+            decreaseButton.addEventListener('click', function() {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantityInput.value = quantity - 1;
+                }
+            });
+        });
+    </script>
+</html>

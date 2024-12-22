@@ -19,54 +19,88 @@
             </div> 
         </div>
         <div class="nav-bar">
-            <div class="nav-bar-logo">Glowly</div>
+            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
             <div class="nav-bar-lists">
                 <ul>
+                    <!-- Home Menu -->
                     <li class="dropdown">
-                        HOME
-                        <div class="dropdown-menu">
+                        <a href="/home">HOME</a>
+                        <!-- <div class="dropdown-menu">
                             <a href="#">Welcome</a>
                         </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
+                    </li>
+            
+                    <!-- Shop by Category -->
+                    <li class="dropdown">
+                        SHOP BY CATEGORY
+                        <div class="dropdown-menu">
+                            <div class="categories-container">
+                                <% categories.forEach(category => { %>
+                                    <div class="category-block">
+                                        <!-- Render Category Name -->
+                                        <div class="category-name">
+                                            <a href="/category/<%= category.name %>">
+                                                <%= category.name %>
+                                            </a>
+                                        </div>
+                                        
+                                        <!-- Render Subcategories -->
+                                        <div class="subcategory-list">
+                                            <% category.subcategories.forEach(subcategory => { %>
+                                                <div class="subcategory">
+                                                    <a href="/subcategory/<%= subcategory.name %>">
+                                                        <%= subcategory.name %>
+                                                    </a>
+                                                </div>
+                                            <% }) %>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                        <span class="arrow"><i class="fas fa-caret-down"></i></span>
                     </li>
                     
+                    
+                    
+                    
+            
+                    <!-- Brands -->
                     <li class="dropdown">
-                        SHOP CATEGORIES
-                        <div class="dropdown-menu">
-                            <a href="#">Electronics</a>
-                            <a href="#">Clothing</a>
-                            <a href="#">Books</a>
+                        <a href="users/brands">BRANDS</a>
+                        <!-- <div class="dropdown-menu">
+                            <ul>
+                                <% brands.forEach(brand => { %>
+                                    <li><a href="/brand/<%= brand.brandName %>"><%= brand.brandName %></a></li>
+                                <% }) %>
+                            </ul>
                         </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
                     </li>
             
+                    <!-- New Menu -->
                     <li class="dropdown">
-                        BRANDS
-                        <div class="dropdown-menu">
-                            <a href="#">Nike</a>
-                            <a href="#">Adidas</a>
+                        <a href="/new-arrivals">NEW</a>
+                        <!-- <div class="dropdown-menu">
+                            <a href="#">Latest Arrivals</a>
                         </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
                     </li>
             
+                    <!-- Luxury Menu -->
                     <li class="dropdown">
-                        NEW
-                        <div class="dropdown-menu">
-                            <a href="#">Latestfdsssssssssssssssssssssss Arrivals</a>
+                        <a href="/luxury">LUXURY</a>
+                        <!-- <div class="dropdown-menu">
+                            <a href="#">Foundation</a>
+                            <a href="#">Lipsticks</a>
                         </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
-                    </li>
-            
-                    <li class="dropdown">
-                        LUXURY
-                        <div class="dropdown-menu">
-                            <a href="#">Watches</a>
-                            <a href="#">Bags</a>
-                        </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
+                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
                     </li>
                 </ul>
             </div>
+            
+            
             <div class="nav-bar-search">
                 <form action="" method="GET">
                     <input type="text" id="nav-search" name="nav-search" placeholder="Search Product and Brands"> 
@@ -82,16 +116,16 @@
                     <button class="nav-bar-last-signup-btn">
                         <a href="/signup">Sign Up</a>
                     </button>
-                    <i class="fa-solid fa-cart-shopping"></i>
+                    <i class="fa-solid fa-bag-shopping"></i>
                     <i class="fa-regular fa-heart"></i>
                 <% } else { %> 
                     <!-- If User IS Logged In -->
-                    <i class="fa-solid fa-cart-shopping"></i>
+                    <i class="fa-solid fa-bag-shopping"></i>
                     <i class="fa-regular fa-heart"></i>
                     <div class="profile-section dropdown">
                         <span class="username"><%= name %></span>
                         <i class="fa-solid fa-circle-user"></i>
-                        <div class="dropdown-menu">
+                        <div class="dropdown-menu2">
                             <a href="/myaccount"><i class="fas fa-user"></i> &nbsp; My Account</a>
                             <a href="/settings"><i class="fa-solid fa-gear"></i> &nbsp; Settings</a>
                             <a href="/orders"><i class="fa-solid fa-truck"></i> &nbsp; Orders</a>

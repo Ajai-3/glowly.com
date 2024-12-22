@@ -38,9 +38,9 @@ router.get("/dashboard", renderDashboardPage);
 // Product Routes
 router.get("/products", renderProductsPage);
 router.get("/add-products", renderAddProductsPage);
-router.post('/add-products', uploads.array('productImages', 5), addProduct);
+router.post('/add-products', uploads.array('productImages', 4), addProduct);
 router.get("/edit-product/:id", renderEditProductPage);
-router.post("/edit-product/:id", uploads.array('productImages', 5), editProduct);
+router.post("/edit-product/:id", uploads.array('productImages', 4), editProduct);
 
 // Brand Router
 router.get("/brands", renderBrandPage)

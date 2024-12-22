@@ -1,4 +1,6 @@
+import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
+import Category from "../../models/category.model.js";
 
 // Render Home Page
 export const renderHomePage = async (req, res) => {
@@ -6,10 +8,26 @@ export const renderHomePage = async (req, res) => {
         const user = req.session.user;
 
         const products = await Product.find({});
+        const brands = await Brand.find({})
+        const categories = await Category.find({}).populate('subcategories');
+        // products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));  // Random index
+              [arr[i], arr[j]] = [arr[j], arr[i]];  // Swap elements
+            }
+          }
+          
+          // Shuffle the products array
+          shuffleArray(products);
 
         return res.render('user/home', {
             name: user ? user.name : "",
-            products, 
+            brands,
+            products,
+            categories
         });
     } catch (error) {
         console.log("Home page is not loading: ", error);

@@ -1,6 +1,9 @@
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import Brand from "../../models/brand.model.js"
+import Product from "../../models/product.model.js"
+import Category from "../../models/category.model.js";
 import User from "../../models/user.model.js";
 dotenv.config();
 
@@ -136,7 +139,7 @@ export const handleUserSignup = async (req, res) => {
             return res.render("user/signup", { msg });
         }
 
-        res.render("user/otp-verification");
+        res.render("user/otp-message");
         console.log("OTP sent", OTP);
     } catch (error) {
         console.error("Signup error", error);
@@ -261,18 +264,27 @@ export const pageNotFound = async (req, res) => {
 // Handle The User Logout
 export const handleUserLogout = async (req, res) => {
     try {
+        const products = await Product.find({});
+        const brands = await Brand.find({})
+        const categories = await Category.find({})
+
         req.session.destroy((err) => {
             if (err) {
-                console.error("Loggout error", err);
-                return res.redirect("user/home")
-            } 
+                console.error("Logout error:", err);
+                return res.status(500).send("Error during logout");
+            }
+            // Clear session cookie
             res.clearCookie("connect.sid");
-            // const msg = { type: 'success', msg: "Logged out successfully" };
-            // return res.render("user/login", { msg });
-            return res.render("user/home", { name: "" })
-           }) 
+            // Redirect to the login or home page
+            return res.render("user/home", { 
+                name: "",
+                brands,
+                products,
+                categories
+            })
+        });
     } catch (error) {
-        console.error("Unnexpected error during logout", error);
-       return res.status(500).send("Error in logout") 
+        console.error("Unexpected error during logout:", error);
+        return res.status(500).send("Server error during logout");
     }
-}  
+};

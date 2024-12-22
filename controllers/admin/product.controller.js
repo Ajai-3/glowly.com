@@ -139,7 +139,30 @@ export const renderEditProductPage = async (req, res) => {
 
 export const editProduct = async (req, res) => {
     try {
-        // Handle file uploads if any
+        console.log('Uploaded files:', req.files);
+
+        // Retrieve the existing product from the database
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).send('Product not found');
+        }
+
+        // If new files are uploaded, replace the old images
+        let updatedImages = [];
+
+        if (req.files && req.files.length > 0) {
+            // Extract the filenames from the uploaded files
+            updatedImages = req.files.map(file => file.filename);
+            console.log('New images to be saved:', updatedImages);
+        }
+
+        // If no new images were uploaded, keep the existing ones
+        if (updatedImages.length === 0) {
+            updatedImages = product.product_imgs; // Keep the old images if none were uploaded
+            console.log('No new images, keeping existing ones:', updatedImages);
+        }
+
+        // Update the product with the new list of images, replace the old ones
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
             title: req.body.productName,
             description: req.body.description,
@@ -149,11 +172,16 @@ export const editProduct = async (req, res) => {
             available_quantity: req.body.availableQuantity,
             price: req.body.regularPrice,
             sales_price: req.body.salePrice,
-            product_Imgs: req.files ? req.files.map(file => file.filename) : [],  // Assuming images are uploaded
+            product_imgs: updatedImages,
         }, { new: true });
 
-        // Redirect back to the edit page of the updated product
-        res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
+
+        if (updatedProduct && updatedProduct.product_imgs) {
+            console.log('Updated product images:', updatedProduct.product_imgs);
+            res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
+        } else {
+            res.status(500).send('Error updating product images');
+        }
     } catch (err) {
         console.log(err);
         res.status(500).send('Error updating product');

@@ -18,6 +18,7 @@ import {
 } from "../controllers/user/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
+import { renderProductPage } from "../controllers/user/product-page.controller.js";
 // Apply Middleware To All Routes 
 // router.use(authMiddleware);
 
@@ -43,6 +44,10 @@ router.post("/signup", handleUserSignup);
 router.post("/resend-otp", handleResendOTP);
 router.post("/otp-verification", handleOTPVerification);
 
+
+
+
+router.get("/product/:id", renderProductPage)
 
 
 

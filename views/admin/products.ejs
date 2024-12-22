@@ -97,7 +97,7 @@
                         <td><%= product.available_quantity %></td>
                         <td>
                             <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
-                            <a href="/admin/products/delete/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
+                            <a href="delete-product/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
                         </td>
                     </tr>
                 <% }) %>                

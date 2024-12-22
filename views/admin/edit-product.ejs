@@ -89,7 +89,7 @@
                     
                     <!-- Submit Button -->
                     <button type="submit" class="add-product-btn2 my-3">Update Product</button> 
-                </form> 
+                 
             </div>
 
             <div class="add-products-container2">
@@ -109,6 +109,7 @@
                                 accept="image/*"
                                 onchange="previewProductImage(event, 'productImagePreview<%= i + 1 %>')"
                                 style="display: none;"
+                                multiple
                             />
                         </div>
                     <% } %>
@@ -116,6 +117,7 @@
                     <p>No images uploaded yet.</p>
                 <% } %>
             </div>
+        </form>
         </div>
     </div>
 
