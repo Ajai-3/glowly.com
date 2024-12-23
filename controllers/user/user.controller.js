@@ -266,7 +266,7 @@ export const handleUserLogout = async (req, res) => {
     try {
         const products = await Product.find({});
         const brands = await Brand.find({})
-        const categories = await Category.find({})
+        const categories = await Category.find({}).populate('subcategories');
 
         req.session.destroy((err) => {
             if (err) {
