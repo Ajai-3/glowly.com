@@ -5,9 +5,9 @@
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
-            <form action="/search-user" method="GET">
-                <input type="text" name="search" placeholder="Search User">
-                <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+            <form action="/search-brands" method="GET">
+                <input type="text" name="search" placeholder="Search Brand" value="<%= search %>">
+                <button class="admin-search-button"><i class="fas fa-search"></i></button>
             </form>
         </div>
         <div class="admin-profile mx-3">
@@ -32,14 +32,18 @@
                         </select>
                     </label>
                 </div>
-                <div class="filter-box">
-                    <label for="category">Category
-                        <select name="category" id="category">
-                            <option value="category1">Category1</option>
-                            <option value="category2">Category2</option>
-                        </select>
-                    </label>
-                </div>
+                <form action="/brands" method="GET">
+                    <div class="filter-box">
+                        <label for="isListed">Status
+                            <select name="isListed" id="isListed" onchange="this.form.submit()">
+                                <option value="">All</option>
+                                <option value="true" <%= isListed === 'true' ? 'selected' : '' %>>Listed</option>
+                                <option value="false" <%= isListed === 'false' ? 'selected' : '' %>>Unlisted</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+                
             </div>
 
             <% if (msg) { %>
@@ -73,8 +77,15 @@
                         <td><%= brand.brandName %></td>
                         <td><%= brand.created_at.toLocaleDateString() %></td>
                         <td>
-                            <button class="list-unlist-btn"><%= brand.isListed ? 'Unlist' : 'List' %></button>
+                            <% if (!brand.isListed) { %>
+                                <a href="/toggle-brand/<%= brand._id %>">
+                                    <button class="list-btn">List</button>
+                                </a>
+                            <% } else { %>  
+                                    <a href="/toggle-brand/<%= brand._id %>"><button class="unlist-btn">Unlist</button></button></a>                               
+                            <% } %>
                         </td>
+                        
                         <td>
                             <a href="/edit-brand/<%= brand._id %>"><button class="edit-btn">Edit</button></a> |
                             <a href="/delete-brand/<%= brand._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn" >Delete</button></a>
@@ -83,16 +94,22 @@
                 <% }) %>
             </tbody>
         </table>
-
         <div class="pagination">
             <% if (currentPage > 1) { %>
-                <a href="?page=<%= currentPage - 1 %>">Previous</a>
+                <a href="/admin/brands?page=<%= currentPage - 1 %>&search=<%= search %>&isListed=<%= isListed %>">Previous</a>
             <% } %>
-            <span>Page <%= currentPage %> of <%= totalPages %></span>
+        
+            <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="/admin/brands?page=<%= i %>&search=<%= search %>&isListed=<%= isListed %>"
+                   class="<%= currentPage === i ? 'active' : '' %>">
+                    <%= i %>
+                </a>
+            <% } %>
+        
             <% if (currentPage < totalPages) { %>
-                <a href="?page=<%= currentPage + 1 %>">Next</a>
+                <a href="/admin/brands?page=<%= currentPage + 1 %>&search=<%= search %>&isListed=<%= isListed %>">Next</a>
             <% } %>
-        </div>
+        </div>        
     </div>
 </div>
 

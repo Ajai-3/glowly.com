@@ -8,32 +8,54 @@ const __dirname = path.dirname(__filename);
 
 // Brands
 export const renderBrandPage = async (req, res) => {
-    try {
-        const limit = 5;
-        const page = parseInt(req.query.page) || 1;
-        const skip = (page - 1) * limit;
+  try {
+      const limit = 5;
+      const page = parseInt(req.query.page) || 1;
+      const skip = (page - 1) * limit;
+      const search = req.query.search || '';
+      const isListed = req.query.isListed; 
 
-        const brands = await Brand.find()
-        .sort({ created_at: -1 })
-            .skip(skip)
-            .limit(limit)
+      const query = {}; 
 
-        const totalBrands = await Brand.countDocuments();
-        const totalPages = Math.ceil(totalBrands / limit);
+      if (search) {
+          query.brandName = { $regex: search, $options: 'i' };
+      }
 
-        const msg = req.query.msg || null;
-        const type = req.query.type || null;
+      if (isListed !== undefined) {
+          if (isListed === 'true') {
+              query.isListed = true; 
+          } else if (isListed === 'false') {
+              query.isListed = false;
+          }
+      }
 
-        return res.render("admin/brands", {
-            brands,
-            currentPage: page,
-            totalPages: totalPages,
-            msg: msg ? { text: msg, type } : null
-        })
-    } catch (error) {
-        
-    }
-}
+      const brands = await Brand.find(query)
+          .sort({ created_at: -1 })
+          .skip(skip)
+          .limit(limit);
+
+      const totalBrands = await Brand.countDocuments(query);
+      const totalPages = Math.ceil(totalBrands / limit);
+
+      const msg = req.query.msg || null;
+      const type = req.query.type || null;
+
+
+      return res.render("admin/brands", {
+          brands,
+          currentPage: page,
+          totalPages: totalPages,
+          msg: msg ? { text: msg, type } : null,
+          search: search,  
+          isListed
+      });
+  } catch (error) {
+      console.error("Error rendering brands page:", error);
+      res.status(500).send("An error occurred while rendering the brands page.");
+  }
+};
+
+
 
 // Brands
 export const renderAddBrandPage = async (req, res) => {
@@ -134,6 +156,31 @@ export const editBrand = async (req, res) => {
     }
   };
   
+
+  export const toggleBrand = async (req, res) => {
+    try {
+      const brandId = req.params.id;
+      const brand = await Brand.findById(brandId);
+
+      if (!brand) {
+        return res.status(404).send('Brand is not found.')
+      }
+      brand.isListed = !brand.isListed;
+
+      if (!brand.isListed) {
+        brand.deleted_at = Date.now();  
+      } else {
+        brand.deleted_at = null; 
+      }
+      await brand.save();
+      return res.redirect("/admin/brands");
+
+    } catch (error) {
+       console.error("Error toggling list/restore brand: ", error);
+       return res.status(500).send("Server Error")
+    }
+  }
+
 
   export const deleteBrand = async (req, res) => {
     try {

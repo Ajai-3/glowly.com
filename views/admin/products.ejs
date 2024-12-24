@@ -5,7 +5,7 @@
                 
         <div class="header">
             <div class="search-bar">
-                <form action="/search" method="GET">
+                <form action="/search-products" method="GET">
                     <input type="text" name="search" placeholder="Search">
                     <button  class="admin-search-button"><i class="fas fa-search"></i></button>
                 </form>
@@ -23,26 +23,27 @@
                 <div class="filter-div1">
                     <div class="filter-box">
                         <i class="fa-solid fa-filter"></i>
-                       </div>
+                    </div>
                     <div class="filter-box">
                         <label for="filter">Filter By
-
                             <select name="filter" id="filter">
                                 <option value="date">14 feb 2014</option>
                             </select>
-                        </label>
-                        
-                       </div>
-                       <div class="filter-box">
-                        <label for="category">Category
-                            <select name="category" id="category">
-                                <option value="category1">Category1</option>
-                                <option value="category2">Category2</option>
-                            </select>
-
-                        </label>
-                        
-                       </div>
+                        </label>  
+                    </div>
+                    
+                    
+                       <form action="/products" method="GET">
+                        <div class="filter-box">
+                            <label for="status">Status
+                                <select name="status" id="status" onchange="this.form.submit()">
+                                    <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+                                    <option value="deleted" <%= status === 'deleted' ? 'selected' : '' %>>Deleted</option>
+                                    <option value="available" <%= status === 'available' ? 'selected' : '' %>>Available</option>
+                                </select>
+                            </label>
+                        </div>
+                    </form>
                 </div>
                 <% if (msg) { %>
                     <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
@@ -83,21 +84,30 @@
                         <td class="truncate"><%= product.title %></td>
 
                         <td>
-                            <%= product.brand_id ? product.brand_id.brandName : "No brand" %>
+                            <%= product.brand && product.brand.brandName ? product.brand.brandName : "No brand" %>
+                        </td> 
+                        <td>
+                            <%= product.category && product.category.name ? product.category.name : "No category" %>
                         </td>
                         <td>
-                            <%= product.category_id ? product.category_id.name : "No category" %>
-                        </td>
-                        <td>
-                            <%= product.subcategory_id ? product.subcategory_id.name : "No subcategory" %>
-                        </td>
+                            <%= product.subcategory && product.subcategory.name ? product.subcategory.name : "No subcategory" %>
+                        </td>                       
                         
                         <td><%= product.price %></td>
                         <td><%= product.sales_price %></td>
                         <td><%= product.available_quantity %></td>
                         <td>
                             <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
-                            <a href="delete-product/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
+                            <!-- <a href="delete-product/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a> -->
+                            <% if (!product.isDeleted) { %>
+                                <a href="/toggle-product/<%= product._id %>" onclick="return confirm('Are you sure you want to delete this product?')">
+                                    <button class="delete-btn">Delete</button>
+                                </a>
+                            <% } else { %>
+                                <button class="restore-btn">
+                                    <a href="/toggle-product/<%= product._id %>">Restore</a>
+                                </button>
+                            <% } %>
                         </td>
                     </tr>
                 <% }) %>                
@@ -105,24 +115,22 @@
         </table>
         
         <div class="pagination">
-            <!-- Example for the previous page -->
             <% if (currentPage > 1) { %>
-                <a href="/admin/products?page=<%= currentPage - 1 %><%= queryParams ? '&' + queryParams : '' %>">Previous</a>
+                <a href="/admin/products?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
             <% } %>
-        
-            <!-- Example for individual page numbers -->
+            
             <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/products?page=<%= i %><%= queryParams ? '&' + queryParams : '' %>" 
-                   class="<%= currentPage === i ? 'active' : '' %>">
+                <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" 
+                   <%= currentPage === i ? 'style="font-weight: bold;"' : '' %>>
                     <%= i %>
                 </a>
             <% } %>
-        
-            <!-- Example for the next page -->
+            
             <% if (currentPage < totalPages) { %>
-                <a href="/admin/products?page=<%= currentPage + 1 %><%= queryParams ? '&' + queryParams : '' %>">Next</a>
+                <a href="/admin/products?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
             <% } %>
-        </div>
+        </div>        
+        
     </div> <!-- <div class="main-content"></div> -->
 
 </body>

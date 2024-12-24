@@ -14,6 +14,14 @@ const brandSchema = new mongoose.Schema({
     type: String, 
     required: true,
   },
+  isListed: {
+    type: Boolean,
+    default: true 
+  },
+  deleted_at: {
+    type: Date,
+    default: null
+  },
   created_at: {
     type: Date,
     default: Date.now,

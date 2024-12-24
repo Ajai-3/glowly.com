@@ -1,3 +1,5 @@
+
+
 import mongoose from "mongoose"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
@@ -11,36 +13,76 @@ export const renderProductsPage = async (req, res) => {
     try {
         const perPage = 5;
         const page = parseInt(req.query.page) || 1;
+        const search = req.query.search || '';
+        const status = req.query.status || 'all';
 
-        // Fetch products with populated category, subcategory, and brand
-        const products = await Product.find()
-            .sort({ created_at: -1 })
-            .skip((page - 1) * perPage)
-            .limit(perPage)
-            .populate('category_id')   // Populate category
-            .populate('subcategory_id') // Populate subcategory
-            .populate('brand_id'); // Populate brand
+        // Base Match Conditions
+        const matchConditions = {};
 
+        if (search) {
+            matchConditions.$or = [
+                { 'category.name': { $regex: search, $options: 'i' } },
+                { 'subcategory.name': { $regex: search, $options: 'i' } },
+                { 'brand.brandName': { $regex: search, $options: 'i' } },
+                { title: { $regex: search, $options: 'i' } }
+            ];
+        }
 
-        const totalProducts = await Product.countDocuments();
+        if (status === 'deleted') {
+            matchConditions.isDeleted = true;
+        } else if (status === 'available') {
+            matchConditions.isDeleted = false;
+        }
+
+        // Aggregation Pipeline
+        const pipeline = [
+            { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
+            { $unwind: '$category' },
+            { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
+            { $unwind: '$subcategory' },
+            { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
+            { $unwind: '$brand' },
+            { $match: matchConditions },
+            { $sort: { created_at: -1 } },
+            { $skip: (page - 1) * perPage },
+            { $limit: perPage }
+        ];
+
+        const products = await Product.aggregate(pipeline);
+
+        // Count Total Products
+        const totalCount = await Product.aggregate([
+            { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
+            { $unwind: '$category' },
+            { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
+            { $unwind: '$subcategory' },
+            { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
+            { $unwind: '$brand' },
+            { $match: matchConditions },
+            { $count: 'totalCount' }
+        ]);
+
+        const totalProducts = totalCount.length > 0 ? totalCount[0].totalCount : 0;
         const totalPages = Math.ceil(totalProducts / perPage);
 
-        const msg = req.query.msg || null;
-        const type = req.query.type || null;
-        // Render the page with the populated products
-        return res.render("admin/products", {
+        // Render The Products Page
+        return res.render('admin/products', {
             products,
             currentPage: page,
             totalPages,
             perPage,
+            search,
+            status,
             queryParams: req.query,
-            msg: msg ? { text: msg, type } : null
+            msg: req.query.msg ? { text: req.query.msg, type: req.query.type } : null
         });
     } catch (error) {
-        console.error("Error in fetching products:", error);
-        return res.status(500).send("Internal Server Error");
+        console.error('Error fetching products:', error);
+        return res.status(500).send('Internal Server Error');
     }
 };
+
+
 
 
 // Rendre Add Products Page
@@ -188,4 +230,27 @@ export const editProduct = async (req, res) => {
     }
 }
 
+export const toggleProduct = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        const product = await Product.findById(productId);
 
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
+
+    if (product.isDeleted) {
+      product.isDeleted = false;
+      product.deleted_at = null; 
+    } else {
+      product.isDeleted = true;
+      product.deleted_at = Date.now(); 
+    }
+
+    await product.save(); 
+    return res.redirect('/admin/products');
+    } catch (error) {
+        console.error('Error toggling delete/restore product:', error);
+        return res.status(500).send('Server error');
+    }
+}

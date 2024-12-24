@@ -9,6 +9,14 @@ const subcategorySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    isListed: {
+        type: Boolean,
+        default: true 
+    },
+    deleted_at: {
+       type: Date,
+       default: null
+    },
     products: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product'

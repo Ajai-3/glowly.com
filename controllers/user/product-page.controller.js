@@ -7,7 +7,7 @@ export const renderProductPage = async (req, res) => {
         const user = req.session.user;
         const productId = req.params.id;
 
-        const product = await Product.findById(productId)
+        const product = await Product.findById({ _id: productId, isDeleted: false })
             .populate('brand_id')
             .populate('category_id')
             .populate('subcategory_id');

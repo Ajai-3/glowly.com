@@ -679,6 +679,7 @@ a {
   color: var(--main-color);
 }
 
+
 .profile-section .dropdown-menu2 {
   display: none;
   position: absolute;
@@ -711,7 +712,7 @@ a {
 .user-contents {
   display: flex;
   gap: 30px;
-  margin: 90px 70px 20px 70px;
+  margin: 90px 90px 20px 90px;
 }
 
 /* User Product Cart ************************/
@@ -1235,18 +1236,6 @@ p2 {
   font-size: var(--font-size-second);
   margin: 4px;
 }
-/* .dashboard-summary1 {
-  background-color: var(--bg-blue-color);
-}
-.dashboard-summary2 {
-    background-color: var(--bg-green-color);
-}
-.dashboard-summary3 {
-    background-color: var(--bg-purple-color);
-}
-.dashboard-summary4 {
-    background-color: var(--bg-red-color);
-} */
 
 .sales-chart {
   background-color: var(--bg-color-2);
@@ -1321,6 +1310,9 @@ p2 {
 
 .all-table tr:hover td {
   background-color: var(--bg-color-tbl-hover);
+}
+.all-table li {
+  list-style: none;
 }
 .truncate {
   white-space: nowrap;
@@ -1416,7 +1408,9 @@ p2 {
 .add-products-container-center select:focus {
   border-color: var(--bg-color-btn-hover3);
 }
-
+.unlisted {
+  color: var(--text-color-2);
+}
 
 
 
@@ -1752,24 +1746,31 @@ p2 {
   padding: 2px 8px;
   border-radius: 4px;
 }
-.block-btn {
+.block-btn,
+.unlist-btn {
   color: var(--red-text-color-2);
   background-color: var(--red-text-color-3);
 }
-.unblock-btn {
+.unblock-btn, 
+.list-btn {
   color: var(--green-text-color-2);
   background-color: var(--green-text-color-3);
 }
-.block-btn:hover {
+.block-btn:hover,
+.unlist-btn:hover {
   color: var(--red-text-color);
 }
-.unblock-btn:hover {
+.unblock-btn:hover,
+.list-btn:hover {
   color: var(--green-text-color);
 }
 
 /* products Page */
 .edit-btn,
-.delete-btn {
+.delete-btn,
+.unlist-btn,
+.list-btn,
+.restore-btn {
   border: none;
   padding: 2px 8px;
   border-radius: 4px;
@@ -1778,16 +1779,26 @@ p2 {
   color: var(--yellow-text-color-2);
   background-color: var(--yellow-text-color-3);
 }
+.restore-btn {
+  color: var(--blue-text-color-2);
+  background-color: var(--blue-text-color-3);
+}
+
 .delete-btn {
   color: var(--red-text-color-2);
   background-color: var(--red-text-color-3);
 }
+
 .edit-btn:hover {
   color: var(--yellow-text-color);
 }
 .delete-btn:hover {
   color: var(--red-text-color);
 }
+.restore-btn:hover {
+   color: var(--blue-text-color);
+}
+
 
 /* coupon  **************************/
 .add-coupon-box {

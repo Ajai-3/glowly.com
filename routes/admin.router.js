@@ -15,9 +15,9 @@ import {
 } from "../controllers/admin/admin.controller.js";
 import { adminAuthMiddleware, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
-import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, addCategory } from "../controllers/admin/category.controller.js";
-import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct } from "../controllers/admin/product.controller.js";
-import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
+import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory } from "../controllers/admin/category.controller.js";
+import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
+import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from "../controllers/admin/coupon.controller.js";
 
 
@@ -37,13 +37,17 @@ router.post("/admin-login", handleAdminLogin);
 router.get("/dashboard", renderDashboardPage);
 // Product Routes
 router.get("/products", renderProductsPage);
+router.get('/search-products', renderProductsPage)
 router.get("/add-products", renderAddProductsPage);
+router.get("/toggle-product/:id", toggleProduct); // Delete And Restore
 router.post('/add-products', uploads.array('productImages', 4), addProduct);
 router.get("/edit-product/:id", renderEditProductPage);
 router.post("/edit-product/:id", uploads.array('productImages', 4), editProduct);
 
 // Brand Router
 router.get("/brands", renderBrandPage)
+router.get("/search-brands", renderBrandPage)
+router.get("/toggle-brand/:id", toggleBrand)
 router.get("/add-new-brand", renderAddBrandPage);
 router.post("/add-new-brand", uploads.single("image"), addBrand);
 router.get("/edit-brand/:brandId", renderEditBrandPage);
@@ -52,6 +56,8 @@ router.get("/delete-brand/:brandId", deleteBrand);
 
 // Category & Subcategory Routes
 router.get("/category", renderCategoryPage);
+router.get("/toggle-category/:id", toggleCategory);
+router.post("/toggle-subcategory/:id", toggleSubcategory)
 router.get("/add-category", renderAddCategoryPage);
 router.post('/add-subcategory', addSubcategoryToExistingCategory);
 router.post("/add-category", addCategory);

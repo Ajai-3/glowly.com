@@ -8,10 +8,7 @@ export const renderUsersPage = async (req, res) => {
         const search = req.query.search || '';
         const status = req.query.status || 'all';
 
-        // Initialize query object with the 'role' field first
         const query = { role: 'user' }; // Fetch only users
-
-        console.log("Status received:", status); // Debugging logs
 
         // Search filter
         if (search) {
@@ -29,7 +26,6 @@ export const renderUsersPage = async (req, res) => {
             query.status = 'active'; // Filter active users
         }
 
-        console.log("Final Query:", query); // Verify query before execution
 
         // Count users for pagination - this is done with the query that includes filters
         const totalUsers = await User.countDocuments(query);

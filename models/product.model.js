@@ -40,6 +40,14 @@ const productSchema = new mongoose.Schema({
       type: [String],
       required: true
     },
+    isDeleted: { 
+      type: Boolean,
+      default: false // By default, the product is not deleted
+    },
+    deleted_at: {
+      type: Date,
+      default: null
+    },
     created_at: {
       type: Date,
       default: Date.now

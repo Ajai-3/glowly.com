@@ -74,17 +74,34 @@
                       <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
                       <td> <%= cat.name %> </td>
                       <td> 
-                          <ul>
+                        <ul>
                             <% cat.subcategories.forEach((sub) => { %>
-                              <li> <%= sub.name %> </li>
+                                <li class="<%= sub.isListed ? '' : 'unlisted' %>">
+                                    <form action="/toggle-subcategory/<%= sub._id %>" method="POST">
+                                        <input type="checkbox" 
+                                               name="isListed" 
+                                               value="true" 
+                                               <%= sub.isListed ? 'checked' : '' %> 
+                                               onchange="this.form.submit()">
+                                        <%= sub.name %>
+                                    </form>
+                                </li>
                             <% }) %>
-                          </ul>
-                      </td>
+                        </ul>
+                    </td>
                       <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
                       <td>
-                        <!-- Replace with your actual list/unlist logic -->
-                        <a href="#">List/Unlist</a>
-                      </td>
+                        <% if (!cat.isListed) { %>
+                            <a href="/toggle-category/<%= cat._id %>">
+                                <button class="list-btn">List</button>
+                            </a>
+                        <% } else { %>
+                            <a href="/toggle-category/<%= cat._id %>">
+                                <button class="unlist-btn">Unlist</button>
+                            </a>
+                        <% } %>
+                    </td>
+                    
                       <td> 
                         <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
                         <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
