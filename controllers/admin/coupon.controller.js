@@ -3,12 +3,14 @@ import Coupon from "../../models/coupon.model.js"
 
 // Rendre Coupons Page
 export const renderCouponsPage = async (req, res) => {
-    const { page = 1 } = req.query; 
+    const { page = 1, type = "all" } = req.query; 
     const limit = 4;
     
     try {
-        const totalCoupons = await Coupon.countDocuments(); 
-        const coupons = await Coupon.find()
+        const totalCouponsQuery = type === "all" ? {} : { type }; 
+        const totalCoupons = await Coupon.countDocuments(totalCouponsQuery);  
+
+        const coupons = await Coupon.find(totalCouponsQuery)  
             .sort({ created_at: -1 }) 
             .skip((page - 1) * limit)
             .limit(limit); 
@@ -17,7 +19,6 @@ export const renderCouponsPage = async (req, res) => {
         const discountTypes = await Coupon.distinct('type');
 
         const msg = req.query.msg || null;
-        const type = req.query.type || null;
 
         return res.render("admin/coupons", {
             coupons,
@@ -25,6 +26,7 @@ export const renderCouponsPage = async (req, res) => {
             msg: null,
             currentPage: parseInt(page, 10),
             totalPages,
+            selectedType: type || "",
             msg: msg ? { text: msg, type } : null
         });
     } catch (error) {
@@ -32,6 +34,7 @@ export const renderCouponsPage = async (req, res) => {
         return res.status(500).send("Error rendering coupons page.");
     }
 };
+
 
 // // Render Add Coupon Page
 // export const renderAddCouponPage = async (req, res) => {
