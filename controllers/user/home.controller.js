@@ -8,8 +8,13 @@ export const renderHomePage = async (req, res) => {
         const user = req.session.user;
 
         const products = await Product.find({ isDeleted: false });
-        const brands = await Brand.find({})
-        const categories = await Category.find({}).populate('subcategories');
+        const brands = await Brand.find({ isListed: true })
+        const categories = await Category.find({ isListed: true })
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },  
+            });
+        // const categories = await Category.find({}).populate('subcategories');
         // products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
 

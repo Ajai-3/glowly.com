@@ -914,10 +914,10 @@ a {
 
 /* When the image is zoomed */
 .zoom-container.zoomed #main-display-image {
-  transform: scale(1.9);  /* Zoom in */
+  transform: scale(1.9);  
   position: relative;
-  top: 30px;  /* Move the image down */
-  z-index: 1000;
+  top: 30px;  
+  z-index: 400;
 }
 
 .add-to-bag-btn,

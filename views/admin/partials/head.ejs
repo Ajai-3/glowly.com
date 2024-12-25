@@ -19,8 +19,8 @@
         <h2 class="mx-4 mb-3 mt-2">Glowly</h2>
         <a href="/dashboard" class="<%= currentPath === '/dashboard' ? 'active' : '' %>">Dashboard</a>
         <a href="/users" class="<%= currentPath === '/users' ? 'active' : '' %>">Users</a>
-        <a href="/products" class="<%= currentPath.startsWith('/products') || currentPath === '/add-products' ? 'active' : '' %>">Products</a>
-        <a href="/brands" class="<%= currentPath === '/brands' || currentPath === '/add-new-brand' ? 'active' : '' %>">Brands</a>
+        <a href="/products" class="<%= currentPath.startsWith('/products') || currentPath === '/add-products' || currentPath.match(/^\/edit-product\/[a-f0-9]{24}$/) ? 'active' : '' %>">Products</a>
+        <a href="/brands" class="<%= currentPath === '/brands' || currentPath === '/add-new-brand' || currentPath.match(/^\/edit-brand\/[a-f0-9]{24}$/) ? 'active' : '' %>">Brands</a>
         <a href="/category" class="<%= currentPath.startsWith('/category') || currentPath === '/add-category' ? 'active' : '' %>">Category</a>
         <a href="/coupons" class="<%= currentPath === '/coupons' ? 'active' : '' %>">Coupons</a> 
         <a href="/orderlists" class="<%= currentPath === '/orderlists' ? 'active' : '' %>">Order Lists</a>

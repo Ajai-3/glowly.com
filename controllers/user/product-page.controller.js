@@ -15,13 +15,32 @@ export const renderProductPage = async (req, res) => {
             return res.status(404).send("Product not found");
         }
 
-        const categories = await Category.find({}).populate('subcategories');
-        const brands = await Brand.find({});
+        // const categories = await Category.find({}).populate('subcategories');
+        // const brands = await Brand.find({});
 
+        const brands = await Brand.find({ isListed: true })
+        const categories = await Category.find({ isListed: true })
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },  
+            });
+            
         const relatedProducts = await Product.find({
-            _id: { $ne: productId },  // Exclude the current product
-            subcategory_id: product.subcategory_id,   // Match the subcategory only
-        }).limit(5); 
+            _id: { $ne: productId },
+            subcategory_id: product.subcategory_id,
+        }).limit(5);
+        
+
+        if (relatedProducts.length < 5) {
+            const additionalProducts = await Product.find({
+                _id: { 
+                    $nin: [productId, ...relatedProducts.map(p => p._id)],
+                },
+                category_id: product.category_id,
+            }).limit(5 - relatedProducts.length);
+
+            relatedProducts.push(...additionalProducts);
+        }
 
         return res.render('user/product-page', {
             name: user ? user.name : "",

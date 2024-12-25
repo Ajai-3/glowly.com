@@ -165,7 +165,14 @@
                     </div>
                 <% }) %>
             </div>
+            <div class="d-flex justify-content-center mt-3">
+                <a href="">
+                    <button class="large-button-pink px-4">Load More</button>
+                </a>
+            </div>
+            
         </div>
+        
     </div>  
 
     <%- include('partials/footerforhome') %> 
@@ -189,24 +196,26 @@
           zoomContainer.classList.toggle('zoomed');
         });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const quantityInput = document.getElementById('quantity');
             const increaseButton = document.getElementById('increase-btn');
             const decreaseButton = document.getElementById('decrease-btn');
 
-            // Increase Quantity
-            increaseButton.addEventListener('click', function() {
-                let quantity = parseInt(quantityInput.value);
-                quantityInput.value = quantity + 1;
-            });
-
-            // Decrease Quantity
-            decreaseButton.addEventListener('click', function() {
-                let quantity = parseInt(quantityInput.value);
-                if (quantity > 1) {
-                    quantityInput.value = quantity - 1;
+            increaseButton.addEventListener('click', function () {
+                if (quantityInput.value < 7) {
+                    quantityInput.value++;
                 }
             });
+            decreaseButton.addEventListener('click', function () {
+                if (quantityInput.value > 1) {
+                    quantityInput.value--;
+                }
+            });
+
+            quantityInput.addEventListener('input', function () {
+                quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
+            });
         });
+
     </script>
 </html>

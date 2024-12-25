@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+
+    <div class="user-contents">
+
+        
+        <div class="product-grid">
+            <% products.forEach(product => { %>
+                <div class="product-card">
+                    <a href="/product/<%= product._id %>">
+                        <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" />
+                    </a>    
+                        <div class="product-card-like"><i class="fa-regular fa-heart"></i></div>
+                        <a href="/product/<%= product._id %>">
+                        <p class="product-title"><%= product.title %></p>
+                        </a>
+                        <div class="product-prices-box">
+                            <p class="sale-price">&#8377;<%= product.price %></p>
+                            <p class="original-price mx-2">&#8377;<%= product.sales_price %></p>
+                            <p class="product-rating">★★★★☆</p>
+                        </div>
+                        <a href="/product/<%= product._id %>">
+                            <button class="add-to-cart-btn">Add to Cart</button>
+                        </a>
+                </div>
+            <% }) %>
+        </div>
+        
+        
+
+</div>  
+    
+
+
+
+
+
+
+</body>
+<%- include('partials/footerforhome') %> 
+</html>
