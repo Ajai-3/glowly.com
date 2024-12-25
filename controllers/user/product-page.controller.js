@@ -1,6 +1,7 @@
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
 import Brand from "../../models/brand.model.js"
+import Subcategory from "../../models/subcategory.model.js"
 
 export const renderProductPage = async (req, res) => {
     try {
@@ -24,7 +25,7 @@ export const renderProductPage = async (req, res) => {
                 path: 'subcategories',
                 match: { isListed: true },  
             });
-            
+
         const relatedProducts = await Product.find({
             _id: { $ne: productId },
             subcategory_id: product.subcategory_id,
@@ -55,3 +56,77 @@ export const renderProductPage = async (req, res) => {
         return res.status(500).send("Server Error");
     }
 };
+
+
+
+// Render The Page With Category
+export const renderPageWithCategory = async (req, res) => {
+    try {
+        const { categoryName } = req.params;
+
+        const category = await Category.findOne({ name: categoryName }) 
+
+        if (!category) {
+            return res.status(404).send('Category not found');
+        }
+
+        const products = await Product.find({
+            category_id: category._id,
+            isDeleted: false
+        });
+
+        const categories = await Category.find({ isListed: true })
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },  
+            });
+
+        return res.render("user/category", {
+            products,
+            category,
+            categories,
+            name: req.session.user ? req.session.user.name : ""
+        });
+
+    } catch (error) {
+        console.error("Error in rendering product page with category", error);
+        return res.status(500).send("Error in rendering product with category");
+    }
+}
+
+// Render The Sub Category Only
+export const renderPageWithSubcategory = async (req, res) => {
+    try {
+        const { subcategoryName } = req.params;
+
+
+        const subcategory = await Subcategory.findOne({ name: subcategoryName });
+
+        if (!subcategory) {
+            return res.status(404).send('Subcategory not found');
+        }
+
+        const products = await Product.find({
+            subcategory_id: subcategory._id,  
+            isDeleted: false
+        });
+
+        const categories = await Category.find({})
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },  
+            });
+
+        return res.render("user/subcategory", {
+            products,
+            subcategory,
+            categories,
+            name: req.session.user ? req.session.user.name : ""
+        });
+
+    } catch (error) {
+        console.error("Error rendering subcategory page", error);
+        return res.status(500).send("Error in rendering subcategory");
+    }
+};
+

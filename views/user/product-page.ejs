@@ -9,8 +9,16 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="/">Home</a></li>
-                        <li class="breadcrumb-item"><a href="/category/<%= product.category_id._id %>"><%= product.category_id.name %></a></li>
-                        <li class="breadcrumb-item"><a href="/subcategory/<%= product.subcategory_id._id %>"><%= product.subcategory_id.name %></a></li>
+                        <li class="breadcrumb-item">
+                            <a href="/category/<%= product.category_id.name %>">
+                                <%= product.category_id.name %>
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <a href="/subcategory/<%= product.subcategory_id.name %>">
+                                <%= product.subcategory_id.name %>
+                            </a>
+                        </li>
                         <li class="breadcrumb-item active" aria-current="page">
                             <%= product.title.split(' ').slice(0, 5).join(' ') %>
                         </li>
@@ -166,7 +174,7 @@
                 <% }) %>
             </div>
             <div class="d-flex justify-content-center mt-3">
-                <a href="">
+                <a href="/category/<%= product.category_id.name %>">
                     <button class="large-button-pink px-4">Load More</button>
                 </a>
             </div>
