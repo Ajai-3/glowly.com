@@ -73,7 +73,7 @@ async function sendOTPToUserEmail (email, OTP) {
             pass: process.env.NODEMAILER_PASSWORD
         }
     })
-    console.log("Transporter initialized:", transporter);
+    // console.log("Transporter initialized:", transporter);
 
     const info = await transporter.sendMail({
         from: process.env.NODEMAILER_EMAIL,
@@ -163,16 +163,14 @@ export const handleOTPVerification = async (req, res) => {
             password: passwordHash
         })
 
-        await saveUserData.save()
-        // Save The User ID To The Session 
-        // req.session.user = saveUserData._id;
-        req.flash('msg', { type: 'success', msg: "Signup Successful, login now" });
+        await saveUserData.save();
+
         return res.status(200).json({
             success: true,
             message: "Signup Successful, login now!",
-            redirectUrl: "/user/login", // Redirect to login page
+            redirectUrl: "/user/login?msg=Signup%20Successful%2C%20login%20now!&type=success", 
         });
-        // return res.render('user/login', { msg: req.flash('msg') });        
+     
        } else {
         // OTP Is Incorrect
          res.status(400).json({ success: false, msg: "Invalid OTP Please try again." })
@@ -211,6 +209,7 @@ export const handleResendOTP = async (req, res) => {
 export const handleUserLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+
         // Finding The User
         const user = await User.findOne({ email, role: 'user' });
         // If The User Is Not Found
@@ -234,8 +233,7 @@ export const handleUserLogin = async (req, res) => {
             const msg = { type: 'error', msg: "Invalid Password" };
             return res.render("user/login", { msg });            
         }
-        // req.session.user = user._id;
-        // res.render('user/home')
+
         req.session.user = {
             _id: user._id,
             name: user.name
@@ -250,6 +248,33 @@ export const handleUserLogin = async (req, res) => {
         res.render("user/login", { msg });
     }
 }
+// Hnadle The Login With Google Account
+export const googleCallbackHandler = async (req, res) => {
+    try {
+        if (req.user.status === 'blocked') {
+            req.logout((err) => {
+                if (err) {
+                    console.error("Logout error:", err);
+                    return res.status(500).send("An error occurred during logout");
+                }
+                const msg = { type: 'error', msg: "Account blocked by admin...!" };
+                return res.render('user/login', { msg });
+            });
+            return;
+        }
+
+        req.session.user = { 
+            _id: req.user._id, 
+            name: req.user.name,
+        };
+
+        res.redirect('/home');
+    } catch (error) {
+        console.error("Error in Google callback handler:", error);
+        res.status(500).send("An error occurred during authentication");
+    }
+};
+
 
 // Handle Page Not Found 
 export const pageNotFound = async (req, res) => {

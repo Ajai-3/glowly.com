@@ -241,6 +241,7 @@ a {
   font-size: 0.71875rem; /* 11.5px */
   border-radius: 3px;
   cursor: pointer;
+  padding: 6px 94px;
   color: var(--text-color);
   border: 1px solid var(--second-text-color);
 }
@@ -366,7 +367,7 @@ a {
 /* OTP Verification Page */
 #timervalue {
   position: absolute;
-  top: 50%;
+  top: 40%;
   right: 10px;
   transform: translateY(-50%);
   font-size: 0.875rem; /* 14px */
@@ -1770,7 +1771,8 @@ p2 {
 .delete-btn,
 .unlist-btn,
 .list-btn,
-.restore-btn {
+.restore-btn,
+.add-offer-btn {
   border: none;
   padding: 2px 8px;
   border-radius: 4px;
@@ -1779,7 +1781,8 @@ p2 {
   color: var(--yellow-text-color-2);
   background-color: var(--yellow-text-color-3);
 }
-.restore-btn {
+.restore-btn,
+.add-offer-btn {
   color: var(--blue-text-color-2);
   background-color: var(--blue-text-color-3);
 }
@@ -1795,7 +1798,8 @@ p2 {
 .delete-btn:hover {
   color: var(--red-text-color);
 }
-.restore-btn:hover {
+.restore-btn:hover,
+.add-offer-btn:hover {
    color: var(--blue-text-color);
 }
 

@@ -1,9 +1,9 @@
 import express from 'express';
 import path from 'path';
 import nocache from 'nocache';
-import { dirname } from 'path';
+// import { dirname } from 'path';
 import flash from 'connect-flash';
-import { fileURLToPath } from 'url';
+// import { fileURLToPath } from 'url';
 import session from 'express-session';
 import passport from './config/passport.js';
 import dotenv from 'dotenv'; dotenv.config();
@@ -17,8 +17,8 @@ const DB_URL = process.env.DB_URL;
 const SESSION_SECRET = process.env.SESSION_SECRET;
 
 // Get the current directory
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = dirname(__filename);
 
 // Serve static files from the 'public' directory
 // app.use(express.static(path.join(__dirname, 'public')));

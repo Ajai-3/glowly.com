@@ -3,17 +3,16 @@ import passport from "../config/passport.js";
 const router = express.Router();
 import {
     renderForgotPasswordPage,
-    // renderHomePage,
     renderLoginPage,
     renderNewPasswordPage,
     renderpOtpVerificationPage,
-    renderOtpStatusPage,
     renderSignupPage,
     handleUserSignup,
     handleUserLogin,
     handleOTPVerification,
     handleResendOTP,
     pageNotFound,
+    googleCallbackHandler,
     handleUserLogout,
 } from "../controllers/user/user.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -35,9 +34,7 @@ router.get("/otp-verification", authMiddleware, renderpOtpVerificationPage); // 
 
 router.get("/logout", handleUserLogout);
 router.get("/auth/google", passport.authenticate('google', { scope: ['profile', 'email'] }))
-router.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: '/signup' }), (req, res) => {
-    res.redirect('/home')
-})
+router.get("/auth/google/callback", passport.authenticate('google', { failureRedirect: '/signup' }), googleCallbackHandler)
 
 router.post("/login", handleUserLogin);
 router.post("/signup", handleUserSignup);

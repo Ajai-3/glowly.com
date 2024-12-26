@@ -138,15 +138,22 @@ export const renderEditCategoryPage = async (req, res) => {
     }
 };
 
+// Update Category 
 export const updateCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
         const { name, description } = req.body;
 
+        const existingCategory = await Category.findOne({ name, _id: { $ne: categoryId } });
+
+        if (existingCategory) {
+            return res.status(400).send("Category name already exists");
+        }
+
         const updatedCategory = await Category.findByIdAndUpdate(
             categoryId,
             { name, description },
-            { new: true } // Returns the updated document
+            { new: true }
         );
 
         if (!updatedCategory) {
@@ -159,6 +166,7 @@ export const updateCategory = async (req, res) => {
         res.status(500).send("Error updating category");
     }
 };
+
 
 
 export const toggleCategory = async (req, res) => {
@@ -230,3 +238,24 @@ export const deleteCategory = async (req, res) => {
     }
 };
 
+// Add Offer For Category
+export const renderAddOfferPage = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+
+        const category = await Category.findById(categoryId);
+
+        if (!category) {
+            return res.status(404).send("Category not found");
+        }
+
+        return res.render('admin/offer', {
+            category: category,   
+            categoryId: categoryId,
+        });
+
+    } catch (error) {
+        console.error("Error in adding offer in category page", error);
+        return res.status(500).send("Server Error")
+    }
+}

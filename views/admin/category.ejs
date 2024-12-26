@@ -63,6 +63,7 @@
                     <th>Category name</th>
                     <th>Sub categories</th>
                     <th>Created At</th>
+                    <th>Offer</th>
                     <th>List / Unlist</th>
                     <th>Action</th>
                 </tr>
@@ -90,6 +91,18 @@
                         </ul>
                     </td>
                       <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
+                      <td>
+                        <% if (cat.offer) { %>
+                            <p>Offer: <%= cat.offer %> (<%= cat.offerPercentage %>%)</p>
+                            <a href="/remove-offer/<%= cat._id %>">
+                                <button class="remove-offer-btn">Remove Offer</button>
+                            </a>
+                        <% } else { %>
+                            <a href="/add-offer/<%= cat._id %>">
+                                <button class="add-offer-btn">Add Offer</button>
+                            </a>
+                        <% } %>
+                    </td>
                       <td>
                         <% if (!cat.isListed) { %>
                             <a href="/toggle-category/<%= cat._id %>">

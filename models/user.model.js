@@ -7,14 +7,14 @@ const userSchema = new mongoose.Schema ({
     },
     phone_no: {
         type: Number,
-        required: false,
         unique: true,
-        sparse: true, 
-        default: null,
+        sparse: true,
+        default: null 
     },
     googleId: {
-      type: String,
-      unique: true,
+        type: String,
+        unique: true,
+        default: null,
     },
     email: {
         type: String,

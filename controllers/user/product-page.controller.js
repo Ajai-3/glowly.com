@@ -111,7 +111,7 @@ export const renderPageWithSubcategory = async (req, res) => {
             isDeleted: false
         });
 
-        const categories = await Category.find({})
+        const categories = await Category.find({ isListed: true })
             .populate({
                 path: 'subcategories',
                 match: { isListed: true },  

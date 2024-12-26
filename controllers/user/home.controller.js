@@ -6,6 +6,7 @@ import Category from "../../models/category.model.js";
 export const renderHomePage = async (req, res) => {
     try {
         const user = req.session.user;
+        // console.log(user)
 
         const products = await Product.find({ isDeleted: false });
         const brands = await Brand.find({ isListed: true })
