@@ -157,67 +157,101 @@
 <%- include('partials/footer') %> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script>
-    let cropper;
-    let currentPreviewId;
+let cropper;
+let currentPreviewId;
+let croppedFiles = {}; // To store cropped files for each image input
 
-    // Open the cropper modal and set up the cropper
-    function openCropper(event, previewId) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
+// Open the cropper modal and set up the cropper
+function openCropper(event, previewId) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-        reader.onload = function () {
-            const imageUrl = reader.result;
+    reader.onload = function () {
+        const imageUrl = reader.result;
 
+        const imageElement = document.getElementById('imageToCrop');
+        imageElement.src = imageUrl; // Set image to crop
 
-            
-            const imageElement = document.getElementById('imageToCrop');
-            imageElement.src = imageUrl; // Set image to crop
+        // Show cropper modal
+        const modal = document.getElementById('cropperModal');
+        modal.style.display = 'flex';
 
-            // Show cropper modal only after file is selected
-            const modal = document.getElementById('cropperModal');
-            modal.style.display = 'flex';
+        // Set the current preview id to update it after cropping
+        currentPreviewId = previewId;
 
-            // Set the current preview id to update it after cropping
-            currentPreviewId = previewId;
+        // Initialize the cropper
+        if (cropper) {
+            cropper.destroy();
+        }
+        cropper = new Cropper(imageElement, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 0.5,
+            scalable: false,
+            zoomable: false,
+            responsive: true,
+        });
+    };
 
-            // Initialize the cropper
-            if (cropper) {
-                cropper.destroy();
-            }
-            cropper = new Cropper(imageElement, {
-                aspectRatio: 1,
-                viewMode: 1,
-                autoCropArea: 0.5,
-                scalable: false,
-                zoomable: false,
-                responsive: true,
-            });
-        };
+    reader.readAsDataURL(file);
+}
 
-        reader.readAsDataURL(file);
-    }
+// Crop the image and store it as a File object
+function cropImage() {
+    const canvas = cropper.getCroppedCanvas();
+    canvas.toBlob(function (blob) {
+        const croppedFile = new File([blob], `cropped_image_${currentPreviewId}.jpg`, { type: 'image/jpeg' });
 
-    // Crop the image and update the preview
-    function cropImage() {
-        const canvas = cropper.getCroppedCanvas();
-        const croppedImage = canvas.toDataURL('image/jpeg');
+        // Store the cropped file
+        croppedFiles[currentPreviewId] = croppedFile;
 
         // Update the preview image with the cropped image
         const previewElement = document.getElementById(`productImagePreview${currentPreviewId}`);
-        previewElement.src = croppedImage;
+        const reader = new FileReader();
+        reader.onload = function () {
+            previewElement.src = reader.result;
+        };
+        reader.readAsDataURL(croppedFile);
 
         // Close the cropper modal
         closeCropperModal();
-    }
+    }, 'image/jpeg');
+}
 
-    // Close the cropper modal
-    function closeCropperModal() {
-        const modal = document.getElementById('cropperModal');
-        modal.style.display = 'none';
+// Close the cropper modal
+function closeCropperModal() {
+    const modal = document.getElementById('cropperModal');
+    modal.style.display = 'none';
 
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
+    if (cropper) {
+        cropper.destroy();
+        cropper = null;
     }
+}
+
+// Intercept form submission to replace files with cropped versions
+document.querySelector('form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const formData = new FormData(event.target);
+
+    // Replace the original files with cropped files
+    Object.keys(croppedFiles).forEach((key) => {
+        formData.set(`productImages`, croppedFiles[key]);
+    });
+
+    // Submit the form using fetch or other methods
+    fetch('/add-products', {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data); // Handle the response from the server
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+});
+
 </script>

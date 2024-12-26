@@ -1,12 +1,14 @@
-
-
+import sharp from "sharp"
+import fs from 'fs';
+import path from 'path';
 import mongoose from "mongoose"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
 import Subcategory from "../../models/subcategory.model.js"
 import Brand from "../../models/brand.model.js"
 
-
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const uploadDir = path.resolve(process.cwd(), 'public/uploads'); 
 
 // Rendre Products Page
 export const renderProductsPage = async (req, res) => {
@@ -109,6 +111,7 @@ export const renderAddProductsPage = async (req, res) => {
     }
 }
 
+// Add Ne Product
 export const addProduct = async (req, res) => {
     try {
         const {
@@ -120,8 +123,26 @@ export const addProduct = async (req, res) => {
             return res.status(400).json({ message: 'No product images uploaded' });
         }
 
-        // Extract filenames (not the full paths)
-        const productImages = req.files.map(file => file.filename);  // Only store the file name (not the full path)
+        // Ensure the upload directory exists
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        // Move files to the upload directory and store filenames
+        const productImages = req.files.map(file => {
+            const outputPath = path.join(uploadDir, file.filename);
+
+            // Generate a unique output path for resized images
+            const resizedOutputPath = path.join(uploadDir, 'resized_' + file.filename);
+
+            // Resize the image and save it to the output path
+            sharp(file.path)
+                .resize(300, 300)  // Resize to exactly 300x300
+                .jpeg({ quality: 100 })  // 100% quality
+                .toFile(resizedOutputPath);
+
+            return 'resized_' + file.filename;  // Store only resized filenames
+        });
 
         // Check for missing required fields
         if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
@@ -138,7 +159,7 @@ export const addProduct = async (req, res) => {
             price: regularPrice,
             sales_price: salePrice,
             available_quantity: availableQuantity,
-            product_imgs: productImages,  // Store only filenames (no paths)
+            product_imgs: productImages,  // Store only resized filenames
             created_at: Date.now(),
             updated_at: Date.now(),
         });
@@ -149,10 +170,56 @@ export const addProduct = async (req, res) => {
         // Send a success response
         return res.redirect('/products?msg=Product%20added%20successfully&type=success');
     } catch (error) {
-        console.error("Error in adding product:", error);
-        res.status(500).send("Internal Server Error, Error in adding product");
+        console.error('Error in adding product:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 };
+
+
+// export const addProduct = async (req, res) => {
+//     try {
+//         const {
+//             productName, brand, description, category, subCategory, availableQuantity, regularPrice, salePrice
+//         } = req.body;
+
+//         // Check if files are uploaded
+//         if (!req.files || req.files.length === 0) {
+//             return res.status(400).json({ message: 'No product images uploaded' });
+//         }
+
+//         // Extract filenames (not the full paths)
+//         const productImages = req.files.map(file => file.filename);  // Only store the file name (not the full path)
+
+//         // Check for missing required fields
+//         if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
+//             return res.status(400).json({ message: 'Missing required fields' });
+//         }
+
+//         // Create a new product object
+//         const newProduct = new Product({
+//             title: productName,
+//             brand_id: new mongoose.Types.ObjectId(brand),
+//             category_id: new mongoose.Types.ObjectId(category),
+//             subcategory_id: new mongoose.Types.ObjectId(subCategory),
+//             description: description,
+//             price: regularPrice,
+//             sales_price: salePrice,
+//             available_quantity: availableQuantity,
+//             product_imgs: productImages,  // Store only filenames (no paths)
+//             created_at: Date.now(),
+//             updated_at: Date.now(),
+//         });
+
+//         // Save the product to the database
+//         await newProduct.save();
+
+//         // Send a success response
+//         return res.redirect('/products?msg=Product%20added%20successfully&type=success');
+//     } catch (error) {
+//         console.error("Error in adding product:", error);
+//         res.status(500).send("Internal Server Error, Error in adding product");
+//     }
+// };
 
 
 

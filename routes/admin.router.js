@@ -35,6 +35,7 @@ router.use(pageMiddlware);
 router.post("/admin-login", handleAdminLogin);
 // Dashboard Routes
 router.get("/dashboard", renderDashboardPage);
+
 // Product Routes
 router.get("/products", renderProductsPage);
 router.get('/search-products', renderProductsPage)
