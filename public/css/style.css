@@ -1829,3 +1829,14 @@ p2 {
 .coupoun-div input:focus {
   border: 1px solid var(--bg-color-btn-hover3);
 }
+/* Offer Page */
+.add-offer-box {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 10px;
+  flex-wrap: wrap;
+  border-radius: 10px;
+  font-size: var(--font-size-second);
+  background-color: var(--bg-color-2);
+}

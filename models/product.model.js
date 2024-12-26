@@ -20,6 +20,10 @@ const productSchema = new mongoose.Schema({
       ref: 'Brand', // Link to the Brand collection
       required: true
     },
+    offer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Offer', // Link to the Offer collection
+    },
     price: {
       type: Number,
       required: true

@@ -41,6 +41,8 @@ export const renderProductsPage = async (req, res) => {
             { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
             { $unwind: '$subcategory' },
             { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
+            { $lookup: { from: 'offers', localField: 'offer_id', foreignField: '_id', as: 'offer' } },
+            { $unwind: { path: '$offer', preserveNullAndEmptyArrays: true } },
             { $unwind: '$brand' },
             { $match: matchConditions },
             { $sort: { created_at: -1 } },

@@ -70,6 +70,7 @@
                     <th>Sub category</th>
                     <th>Price</th>
                     <th>Sales Price</th>
+                    <th>Offer</th>
                     <th>Pieces</th> 
                     <th>Action</th>
                 </tr>
@@ -95,10 +96,22 @@
                         
                         <td><%= product.price %></td>
                         <td><%= product.sales_price %></td>
+
+                        <td>
+                            <% if (product.offer) { %>
+                                <% if (product.offer.offerType === 'percentage') { %>
+                                    <%= product.offer.offerValue %>%
+                                <% } else { %>
+                                    <%= product.offer.offerValue %>
+                                <% } %>
+                            <% } else { %>
+                                No offer
+                            <% } %>
+                        </td>
+                        
                         <td><%= product.available_quantity %></td>
                         <td>
                             <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
-                            <!-- <a href="delete-product/<%= product._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a> -->
                             <% if (!product.isDeleted) { %>
                                 <a href="/toggle-product/<%= product._id %>" onclick="return confirm('Are you sure you want to delete this product?')">
                                     <button class="delete-btn">Delete</button>
@@ -121,7 +134,7 @@
             
             <% for (let i = 1; i <= totalPages; i++) { %>
                 <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" 
-                   <%= currentPage === i ? 'style="font-weight: bold;"' : '' %>>
+                   class="<%= currentPage === i ? 'active' : '' %>">
                     <%= i %>
                 </a>
             <% } %>

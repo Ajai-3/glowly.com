@@ -59,29 +59,24 @@ export const addCategory = async (req, res) => {
         const newCategory = new Category({
             name: categoryName,
             description: description,
-            subcategories: []  // Initialize with an empty array for subcategories
+            subcategories: []  
         });
 
-        // Save the new category to the database
         await newCategory.save();
 
-        // Create the new subcategory and associate it with the newly created category
         const newSubcategory = new Subcategory({
             name: subcategoryName,
             description: subcategoryDescription,
             categoryId: newCategory._id // Link subcategory to the category
         });
 
-        // Save the new subcategory to the database
         await newSubcategory.save();
 
         // Add the subcategory's ID to the category's subcategories array
         newCategory.subcategories.push(newSubcategory._id);
 
-        // Save the updated category with the new subcategory's ID
         await newCategory.save();
 
-        // Send the success response with a message
         res.redirect('/admin/category?msg=Category and Subcategory added successfully&type=success');
     } catch (error) {
         console.error(error);
@@ -243,7 +238,7 @@ export const renderAddOfferPage = async (req, res) => {
     try {
         const categoryId = req.params.id;
 
-        const category = await Category.findById(categoryId);
+        const category = await Category.findById(categoryId).populate('subcategories');;
 
         if (!category) {
             return res.status(404).send("Category not found");
@@ -252,6 +247,7 @@ export const renderAddOfferPage = async (req, res) => {
         return res.render('admin/offer', {
             category: category,   
             categoryId: categoryId,
+            subCategories: category.subcategories,
         });
 
     } catch (error) {
