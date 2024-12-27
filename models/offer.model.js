@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose"
 
 const offerSchema = new mongoose.Schema({
   offerType: {
@@ -10,7 +10,7 @@ const offerSchema = new mongoose.Schema({
     type: Number,
     required: true, 
   },
-  description: {
+  name: {
     type: String,
     default: '', 
   },
@@ -26,11 +26,11 @@ const offerSchema = new mongoose.Schema({
     type: Boolean,
     default: true, 
   },
-  appliedToCategory: {
+  category_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category', 
   },
-  appliedToProduct: {
+  product_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product', 
   },
@@ -38,4 +38,4 @@ const offerSchema = new mongoose.Schema({
 
 const Offer = mongoose.model('Offer', offerSchema);
 
-module.exports = Offer;
+export default Offer;

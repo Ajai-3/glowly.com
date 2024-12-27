@@ -18,7 +18,13 @@
                         <div class="product-prices-box">
                             <p class="sale-price">&#8377;<%= product.price %></p>
                             <p class="original-price mx-2">&#8377;<%= product.sales_price %></p>
-                            <p class="product-rating">★★★★☆</p>
+                            <!-- <p class="product-rating">★★★★☆</p> -->
+                            <% if (product.price > product.sales_price) { %>
+                                <span class="discount-percentage">
+                                    <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off 
+                                </span>
+                            <% } %>
+                            
                         </div>
                         <a href="/product/<%= product._id %>">
                             <button class="add-to-cart-btn">Add to Cart</button>

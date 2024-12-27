@@ -2,6 +2,7 @@ import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
 import Brand from "../../models/brand.model.js"
 import Subcategory from "../../models/subcategory.model.js"
+import Offer from "../../models/offer.model.js"
 
 export const renderProductPage = async (req, res) => {
     try {
@@ -11,7 +12,8 @@ export const renderProductPage = async (req, res) => {
         const product = await Product.findById({ _id: productId, isDeleted: false })
             .populate('brand_id')
             .populate('category_id')
-            .populate('subcategory_id');
+            .populate('subcategory_id')
+            .populate('offer_id');
         if (!product) {
             return res.status(404).send("Product not found");
         }

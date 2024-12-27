@@ -247,7 +247,7 @@ export const renderEditProductPage = async (req, res) => {
     }
 };
 
-
+// Update Product
 export const editProduct = async (req, res) => {
     try {
         console.log('Uploaded files:', req.files);

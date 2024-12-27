@@ -839,7 +839,6 @@ a {
 .product-stock {
   font-size: var(--font-size-second);
 }
-
 .product-color {
   font-size: var(--font-size-second);
   color: var(--text-color-3);
@@ -880,7 +879,17 @@ a {
   color: var(--text-color-2);
   font-size: var(--font-size-second);
 }
-
+/* product discount */
+.discount-percentage {
+  color: var(--bg-green-color); 
+}
+.discount-flat,
+.discount-percentage {
+  font-size: var(--font-size-second);
+}
+.no-offer {
+  color: var(--text-color-2);
+}
 .product-images div {
   height: 60px;
   width: 60px;

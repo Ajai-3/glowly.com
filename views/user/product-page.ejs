@@ -82,7 +82,31 @@
                         <div class="product-page-product-price mt-1 mb-2"> 
                             <span class="mrp">MRP: </span>      
                             <span class="original-price"> ₹<%= product.price %></span>
-                            <span class="sales-price">₹<%= product.sales_price %>&nbsp;</span>
+                            <span class="sales-price">₹<%= product.sales_price %>&nbsp;|</span>
+                            <% if (product.offer_id && product.offer_id !== null) { %>
+                                <% if (product.offer_id.offerType === 'percentage') { %>
+                                    <span class="discount-percentage">
+                                        <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off
+                                    </span>
+                                <% } else if (product.offer_id.offerType === 'flat') { %>
+                                    <span class="discount-flat">
+                                        <span class="discount-percentage">
+                                            ₹<%= product.offer_id.offerValue %> Off
+                                        </span>
+                                         | <%= product.offer_id.name %>
+                                    </span>
+                                <% } %>
+                            <% } else { %>
+                                <% if (product.price > product.sales_price) { %>
+                                    <span class="discount-percentage">
+                                        <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off 
+                                        <spa class="no-offer">| No offers available</span> 
+                                    </span>
+                                <% } %>
+                            <% } %>
+
+                            
+                            
                         </div>
         
                         <a href="/add-to-cart/<%= product.id %>">
