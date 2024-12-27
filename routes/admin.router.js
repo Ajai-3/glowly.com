@@ -28,7 +28,7 @@ router.get("/admin-logout", handleAdminLogout);
 
 
 // Pages Are Protected With adminAuthMiddleware
-// router.use(adminAuthMiddleware);
+router.use(adminAuthMiddleware);
 router.use(pageMiddlware);
 
 // Admin Login

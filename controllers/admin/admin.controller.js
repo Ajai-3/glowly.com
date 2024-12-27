@@ -12,7 +12,7 @@ export const renderLoginPage = (req, res) => {
     if (req.session.admin) {
         return res.redirect("/admin/dashboard");
     }
-    const msg = '';
+    const msg = req.query.msg || '';
     res.render("admin/admin-login", { msg });
 };
 
@@ -77,13 +77,10 @@ export const handleAdminLogin = async (req, res) => {
 // Handle Admin Log Out
 export const handleAdminLogout = async (req, res) => {
     try {
-       req.session.destroy(err => {
-        if (err) {
-            console.error("Error destroying session", err);
-            return res.redirect("/pageerror")
-        }
-        res.redirect("/admin/admin-login")
-       }) 
+  
+        delete req.session.admin;
+        res.redirect("/admin/admin-login?msg=Logged%20out%20successfully")
+
     } catch (error) {
        console.error("Unnexpected error during logout", error);
        res.redirect("/pageerror") 

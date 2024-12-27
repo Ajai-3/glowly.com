@@ -773,6 +773,9 @@ a {
   display: flex;
   font-size: var(--font-size-second);
 }
+.product-prices-box p {
+  margin: 0;
+}
 .original-price {
   text-decoration: line-through;
   color: var(--second-text-color);
@@ -782,7 +785,7 @@ a {
 }
 .product-card .add-to-cart-btn {
   width: 100%;
-  border-radius: 6px;
+  border-radius: 5px;
   font-weight: 700;
   font-size: var(--font-size-second);
   color: var(--main-color);

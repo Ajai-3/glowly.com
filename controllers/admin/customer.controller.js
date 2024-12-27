@@ -55,21 +55,23 @@ export const renderUsersPage = async (req, res) => {
 export const blockUser = async (req, res) => {
     try {
         const userId = req.query.id;
-        await User.updateOne({ _id: userId }, { $set: {status: "blocked" } });
-        // Delete The User Session
-        req.session.destroy((err) => {
-            if (err) {
-                console.error("Error while destroying session:", err);
-                return res.status(500).send("An error occurred while logging out.");
-            }
-            res.redirect('/admin/users');
-        });
+
+        // Update the user status to 'blocked'
+        await User.updateOne({ _id: userId }, { $set: { status: "blocked" } });
+
+        if (req.session.user && req.session.user._id.toString() === userId.toString()) {
+            delete req.session.user; 
+            console.log("Blocked user's session deleted");
+        }
+
+        res.redirect('/admin/users');
 
     } catch (error) {
         console.error("Error in blocking:", error);
-    res.status(500).send("An error occurred while updating the user status.");
+        res.status(500).send("An error occurred while updating the user status.");
     }
-} 
+};
+
 
 // UnBlock User
 export const unBlockUser = async (req, res) => {

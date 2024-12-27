@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema ({
     },
     phone_no: {
         type: Number,
-        unique: true,
+        unique: false, // Because Duplicate Index
         sparse: true,
         default: null 
     },
