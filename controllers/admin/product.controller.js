@@ -118,12 +118,10 @@ export const addProduct = async (req, res) => {
             productName, brand, description, category, subCategory, availableQuantity, regularPrice, salePrice
         } = req.body;
 
-        // Check if files are uploaded
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ message: 'No product images uploaded' });
         }
 
-        // Ensure the upload directory exists
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
@@ -132,19 +130,16 @@ export const addProduct = async (req, res) => {
         const productImages = req.files.map(file => {
             const outputPath = path.join(uploadDir, file.filename);
 
-            // Generate a unique output path for resized images
             const resizedOutputPath = path.join(uploadDir, 'resized_' + file.filename);
 
-            // Resize the image and save it to the output path
             sharp(file.path)
-                .resize(300, 300)  // Resize to exactly 300x300
-                .jpeg({ quality: 100 })  // 100% quality
+                .resize(300, 300)  
+                .jpeg({ quality: 100 }) 
                 .toFile(resizedOutputPath);
 
-            return 'resized_' + file.filename;  // Store only resized filenames
+            return 'resized_' + file.filename; 
         });
 
-        // Check for missing required fields
         if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
@@ -159,15 +154,13 @@ export const addProduct = async (req, res) => {
             price: regularPrice,
             sales_price: salePrice,
             available_quantity: availableQuantity,
-            product_imgs: productImages,  // Store only resized filenames
+            product_imgs: productImages,  // Store resized filenames
             created_at: Date.now(),
             updated_at: Date.now(),
         });
 
-        // Save the product to the database
         await newProduct.save();
 
-        // Send a success response
         return res.redirect('/products?msg=Product%20added%20successfully&type=success');
     } catch (error) {
         console.error('Error in adding product:', error);
@@ -176,59 +169,13 @@ export const addProduct = async (req, res) => {
 };
 
 
-// export const addProduct = async (req, res) => {
-//     try {
-//         const {
-//             productName, brand, description, category, subCategory, availableQuantity, regularPrice, salePrice
-//         } = req.body;
-
-//         // Check if files are uploaded
-//         if (!req.files || req.files.length === 0) {
-//             return res.status(400).json({ message: 'No product images uploaded' });
-//         }
-
-//         // Extract filenames (not the full paths)
-//         const productImages = req.files.map(file => file.filename);  // Only store the file name (not the full path)
-
-//         // Check for missing required fields
-//         if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
-//             return res.status(400).json({ message: 'Missing required fields' });
-//         }
-
-//         // Create a new product object
-//         const newProduct = new Product({
-//             title: productName,
-//             brand_id: new mongoose.Types.ObjectId(brand),
-//             category_id: new mongoose.Types.ObjectId(category),
-//             subcategory_id: new mongoose.Types.ObjectId(subCategory),
-//             description: description,
-//             price: regularPrice,
-//             sales_price: salePrice,
-//             available_quantity: availableQuantity,
-//             product_imgs: productImages,  // Store only filenames (no paths)
-//             created_at: Date.now(),
-//             updated_at: Date.now(),
-//         });
-
-//         // Save the product to the database
-//         await newProduct.save();
-
-//         // Send a success response
-//         return res.redirect('/products?msg=Product%20added%20successfully&type=success');
-//     } catch (error) {
-//         console.error("Error in adding product:", error);
-//         res.status(500).send("Internal Server Error, Error in adding product");
-//     }
-// };
-
-
-
+// Render Edit Product Page
 export const renderEditProductPage = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id)
-            .populate('brand_id')   // Populate brand
-            .populate('category_id') // Populate category
-            .populate('subcategory_id') // Populate subcategory
+            .populate('brand_id')  
+            .populate('category_id') 
+            .populate('subcategory_id') 
             .exec();
         
         const brands = await Brand.find();
@@ -252,28 +199,23 @@ export const editProduct = async (req, res) => {
     try {
         console.log('Uploaded files:', req.files);
 
-        // Retrieve the existing product from the database
         const product = await Product.findById(req.params.id);
         if (!product) {
             return res.status(404).send('Product not found');
         }
 
-        // If new files are uploaded, replace the old images
         let updatedImages = [];
 
         if (req.files && req.files.length > 0) {
-            // Extract the filenames from the uploaded files
             updatedImages = req.files.map(file => file.filename);
             console.log('New images to be saved:', updatedImages);
         }
 
-        // If no new images were uploaded, keep the existing ones
         if (updatedImages.length === 0) {
-            updatedImages = product.product_imgs; // Keep the old images if none were uploaded
+            updatedImages = product.product_imgs; 
             console.log('No new images, keeping existing ones:', updatedImages);
         }
 
-        // Update the product with the new list of images, replace the old ones
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
             title: req.body.productName,
             description: req.body.description,

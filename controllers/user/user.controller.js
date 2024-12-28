@@ -19,6 +19,7 @@ dotenv.config();
 // Render Login Page
 export const renderLoginPage = (req, res) => {
     const msg = req.session.msg || null; 
+    req.session.msg = null
     return res.render('user/login', { msg })
 }
 // Render Signup Page
@@ -150,6 +151,9 @@ export const handleUserSignup = async (req, res) => {
 // Hndle OTP Verification
 export const handleOTPVerification = async (req, res) => {
     try {
+        req.session.msg = "Successful Login now";
+        req.session.type = "success";
+        
        const { otp } = req.body;
        //  Compare OTP From Session And User's Input 
        if (String(otp).trim() === String(req.session.userOTP).trim()) {
@@ -168,7 +172,7 @@ export const handleOTPVerification = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: "Signup Successful, login now!",
-            redirectUrl: "/user/login?msg=Signup%20Successful%2C%20login%20now!&type=success", 
+            redirectUrl: "/login", 
         });
      
        } else {
@@ -209,6 +213,7 @@ export const handleResendOTP = async (req, res) => {
 export const handleUserLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(req.body)
 
         // Finding The User
         const user = await User.findOne({ email, role: 'user' });

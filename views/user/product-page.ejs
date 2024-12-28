@@ -214,15 +214,12 @@
         const sideImages = document.querySelectorAll('.side-image');
         const mainImage = document.getElementById('main-display-image');
 
-        // Add a click event listener to each side image
         sideImages.forEach(image => {
             image.addEventListener('click', () => {
-                // Update the src of the main image with the data-src of the clicked side image
                 mainImage.src = image.dataset.src;
             });
         });
 
-        // Add event listener for zooming and shifting
         const zoomContainer = document.querySelector('.zoom-container');
         zoomContainer.addEventListener('click', () => {
           zoomContainer.classList.toggle('zoomed');

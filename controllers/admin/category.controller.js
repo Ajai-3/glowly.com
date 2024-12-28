@@ -55,6 +55,15 @@ export const addCategory = async (req, res) => {
             return res.status(400).send("All fields (category and subcategory) are required");
         }
 
+        const existingCategory = await Category.findOne({ 
+            name: { $regex: `^${categoryName}$`, $options: "i" } 
+        });
+        
+        if (existingCategory) {
+            return res.status(400).send("Category already exists");
+        }
+        
+        
         // Create the new category first
         const newCategory = new Category({
             name: categoryName,
@@ -67,7 +76,7 @@ export const addCategory = async (req, res) => {
         const newSubcategory = new Subcategory({
             name: subcategoryName,
             description: subcategoryDescription,
-            categoryId: newCategory._id // Link subcategory to the category
+            categoryId: newCategory._id
         });
 
         await newSubcategory.save();
@@ -84,7 +93,7 @@ export const addCategory = async (req, res) => {
     }
 };
 
-
+// Add Sub Category To Existing CAtegory
 export const addSubcategoryToExistingCategory = async (req, res) => {
     try {
         const { categoryId, subcategoryName, subcategoryDescription } = req.body;
@@ -93,9 +102,17 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
             return res.status(400).send("All fields are required");
         }
 
-        const category = await Category.findById(categoryId);
+        const category = await Category.findById(categoryId).populate('subcategories');
         if (!category) {
             return res.status(404).send("Category not found");
+        }
+
+        const duplicateSubcategory = category.subcategories.find(
+            (subcategory) => subcategory.name.toLowerCase() === subcategoryName.toLowerCase()
+        );
+
+        if (duplicateSubcategory) {
+            return res.status(400).send("Sub Category already exists");
         }
 
         const newSubcategory = new Subcategory({
@@ -115,6 +132,7 @@ export const addSubcategoryToExistingCategory = async (req, res) => {
     }
 };
 
+// Edit Category Page
 export const renderEditCategoryPage = async (req, res) => {
     try {
         const categoryId = req.params.id;
@@ -124,7 +142,8 @@ export const renderEditCategoryPage = async (req, res) => {
             return res.status(404).send("Category not found");
         }
 
-        const msg = req.query.msg || null; // Optional query parameter for messages
+
+        const msg = req.query.msg || null; 
 
         res.render('admin/edit-category', { category, msg });
     } catch (error) {
@@ -222,7 +241,6 @@ export const deleteCategory = async (req, res) => {
             return res.status(404).send("Category not found");
         }
 
-        // Optionally delete related subcategories
         await Subcategory.deleteMany({ categoryId: categoryId });
 
         // Redirect to categories page with a success message

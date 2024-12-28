@@ -60,8 +60,8 @@ export const handleAdminLogin = async (req, res) => {
         if (admin) {
             const passwordMatch = await bcrypt.compare(password, admin.password);
             if (passwordMatch) {
-                req.session.admin = true; // Set the session for admin login
-                return res.redirect("/admin/dashboard"); // Redirect to dashboard after login
+                req.session.admin = true; // Set The Session For Admin Login
+                return res.redirect("/admin/dashboard"); 
             } else {
                 return res.render('admin/admin-login', { msg: 'Invalid credentials!' });
             }

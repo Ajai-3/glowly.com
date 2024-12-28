@@ -90,12 +90,12 @@
             </tbody>
         </table>
         <div class="pagination">
-            <!-- Example for the previous page -->
+            <!-- Previous Page -->
             <% if (currentPage > 1) { %>
                 <a href="/admin/users?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
             <% } %>
         
-            <!-- Example for individual page numbers -->
+            <!-- Individual Page Numbers -->
             <% for (let i = 1; i <= totalPages; i++) { %>
                 <a href="/admin/users?page=<%= i %>&<%= queryParams %>" 
                    class="<%= currentPage === i ? 'active' : '' %>">
@@ -103,7 +103,7 @@
                 </a>
             <% } %>
         
-            <!-- Example for the next page -->
+            <!-- Next Page -->
             <% if (currentPage < totalPages) { %>
                 <a href="/admin/users?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
             <% } %>

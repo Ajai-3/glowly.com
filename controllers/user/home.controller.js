@@ -18,7 +18,6 @@ export const renderHomePage = async (req, res) => {
         // const categories = await Category.find({}).populate('subcategories');
         // products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-
         function shuffleArray(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1)); 
@@ -26,8 +25,8 @@ export const renderHomePage = async (req, res) => {
             }
           }
           
-          // Shuffle the products array
-          shuffleArray(products);
+        // Shuffle the products array
+        shuffleArray(products);
 
         return res.render('user/home', {
             name: user ? user.name : "",
