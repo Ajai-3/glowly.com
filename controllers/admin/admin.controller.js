@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
-import mongoose from "mongoose";
+import jwt from "jsonwebtoken"
+import dotenv from "dotenv";dotenv.config();
 import User from "../../models/user.model.js"
 
 
@@ -57,33 +58,46 @@ export const handleAdminLogin = async (req, res) => {
         const { email, password } = req.body;
         const admin = await User.findOne({ email, role: 'admin' });
 
-        if (admin) {
-            const passwordMatch = await bcrypt.compare(password, admin.password);
-            if (passwordMatch) {
-                req.session.admin = true; // Set The Session For Admin Login
-                return res.redirect("/admin/dashboard"); 
-            } else {
-                return res.render('admin/admin-login', { msg: 'Invalid credentials!' });
-            }
-        } else {
+        if (!admin) {
             return res.render('admin/admin-login', { msg: 'Admin not found!' });
         }
+
+        const passwordMatch = await bcrypt.compare(password, admin.password);
+        if (!passwordMatch) {
+            return res.render('admin/admin-login', { msg: 'Invalid credentials!' });
+        }
+
+        // Generate JWT token
+        const token = jwt.sign(
+            { id: admin._id, role: admin.role },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: "2h" }
+        );
+
+        // Store the token in a cookie
+        res.cookie("adminToken", token, {
+            httpOnly: true,
+            maxAge: 2 * 60 * 60 * 1000 // 2 hours
+        });
+
+        res.redirect("/admin/dashboard");
     } catch (error) {
         console.error("Error during admin login:", error);
-        return res.status(500).send("An error occurred during login.");
+        res.status(500).send("An error occurred during login.");
     }
 };
 
-// Handle Admin Log Out
-export const handleAdminLogout = async (req, res) => {
-    try {
-  
-        delete req.session.admin;
-        res.redirect("/admin/admin-login?msg=Logged%20out%20successfully")
 
+// Handle Admin Log Out
+export const handleAdminLogout = (req, res) => {
+    try {
+        // Clear the admin token cookie
+        res.clearCookie("adminToken");
+        
+        return res.redirect("/admin-login?msg=Logged%20out%20successfully");
     } catch (error) {
-       console.error("Unnexpected error during logout", error);
-       res.redirect("/pageerror") 
+        console.error("Unexpected error during logout:", error);
+        res.redirect("/pageerror");
     }
-}
+};
 
