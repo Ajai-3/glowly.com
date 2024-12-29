@@ -177,7 +177,7 @@ export const handleOTPVerification = async (req, res) => {
         );
 
         res.cookie('token', token, { httpOnly: true, secure: true });
-        req.session.token = token;
+        // req.session.token = token;
 
         return res.status(200).json({
             success: true,
@@ -256,7 +256,7 @@ export const handleUserLogin = async (req, res) => {
             { expiresIn: '1h' }
         )
         res.cookie('token', token, { httpOnly: true, secure: true });
-        req.session.token = token;
+        // req.session.token = token;
 
         // Redirect to the home page
         return res.redirect("/home");
@@ -322,3 +322,4 @@ export const handleUserLogout = async (req, res) => {
         return res.status(500).send("Server error during logout");
     }
 };
+

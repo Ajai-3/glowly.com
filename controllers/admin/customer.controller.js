@@ -53,34 +53,64 @@ export const renderUsersPage = async (req, res) => {
 
 // Block User
 export const blockUser = async (req, res) => {
+    const userId = req.query.id; 
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.status = 'blocked';
+        await user.save();  
+
+        res.clearCookie('token');
+        
+        return res.redirect("/admin/users")
+    } catch (error) {
+        console.error('Error in blocking user:', error);
+        return res.status(500).json({ message: 'An error occurred while blocking the user.' });
+    }
+};
+
+
+export const unBlockUser = async (req, res) => {
     try {
         const userId = req.query.id;
 
-        // Update the user status to 'blocked'
-        await User.updateOne({ _id: userId }, { $set: { status: "blocked" } });
+        await User.updateOne({ _id: userId }, { $set: { status: "active" } });
 
-        if (req.session.user && req.session.user._id.toString() === userId.toString()) {
-            delete req.session.user; 
-            console.log("Blocked user's session deleted");
-        }
-
-        res.redirect('/admin/users');
-
+        return res.redirect("/admin/users")
     } catch (error) {
-        console.error("Error in blocking:", error);
+        console.error("Error in unblocking:", error);
         res.status(500).send("An error occurred while updating the user status.");
     }
 };
 
 
-// UnBlock User
-export const unBlockUser = async (req, res) => {
-    try {
-        const userId = req.query.id;
-        await User.updateOne({ _id: userId }, { $set: {status: "active" } })
-        res.redirect('/admin/users')
-    } catch (error) {
-        console.error("Error in unblocking:", error);
-    res.status(500).send("An error occurred while updating the user status.");
+
+
+export const checkUserStatus = async (req, res) => {
+    const userId = req.userId;  // Assuming you're storing the user ID in the request object (via middleware)
+
+    if (!userId) {
+        return res.status(401).json({ message: 'User not authenticated' });
     }
-} 
+
+    try {
+        const user = await User.findById(userId);  // Assuming you have a 'User' model to query the database
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Return the user's status (blocked or active)
+        res.json({ status: user.status });
+    } catch (error) {
+        console.error('Error checking user status:', error);
+        res.status(500).json({ message: 'Error checking user status' });
+    }
+};

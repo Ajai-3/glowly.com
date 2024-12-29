@@ -69,22 +69,16 @@
                      <!-- <td><%= user.created_at %></td>  -->
                      <td><%= new Date(user.created_at).toLocaleString() %></td>
                      <td>
-                        <!-- Form for blocking user (update) -->
-                        <form action="/update" method="POST">
-                            <input type="hidden" name="userId" value="<%= user._id %>"> <!-- User ID for identification -->
-
-                            <% if (user.status === 'active') { %>
-                                <a href="/block-user?id=<%= user._id %>" class="block-btn">Block</a>
-                            <% } else if (user.status === 'blocked')  { %>
-                                <a href="/unblock-user?id=<%= user._id %>" class="unblock-btn">Unblock</a>
-                            <% } %>
-                            
-                            <!-- <button type="submit" class=" <%= user.status === 'active' ? 'block-btn' : 'unblock-btn' %>">
-                                <%= user.status === 'active' ? 'Block' : 'Unblock' %>
-                            </button>   -->
-                            
-                        </form>
-                     </td>
+                        <% if (user.status === 'active') { %>
+                            <a href="/block-user?id=<%= user._id %>">
+                                <button class="block-btn">Block</button>
+                            </a>
+                        <% } else if (user.status === 'blocked') { %>
+                            <a href="/unblock-user?id=<%= user._id %>">
+                                <button class="unblock-btn">Unblock</button>
+                            </a>
+                        <% } %>
+                    </td>
                    </tr>
                 <% }); %>
             </tbody>

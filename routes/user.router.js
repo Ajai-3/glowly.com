@@ -25,6 +25,9 @@ import {
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
+
+
+
 router.get("/", renderHomePage); // Home Page
 router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/login", verifyToken, renderLoginPage); // Login Page

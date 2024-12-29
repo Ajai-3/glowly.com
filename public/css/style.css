@@ -358,6 +358,31 @@ a {
   width: 50%;
 }
 
+/* Target autofill background and text color */
+input[type="email"]:-webkit-autofill {
+  background-color: transparent !important; /* Ensure transparent background */
+  color: white !important; /* Set text color to white */
+  box-shadow: 0 0 0px 1000px transparent inset !important; /* Remove autofill shadow */
+  border: 1px solid transparent !important; /* Optional: Ensure border is consistent */
+  transition: background-color 5000s ease-in-out 0s !important; /* Prevents background changes after autofill */
+}
+
+/* Apply to the whole input text */
+input[type="email"]:not(:-webkit-autofill) {
+  color: white !important; /* Ensure white color when not autofilled */
+}
+
+/* Ensuring text remains white when autofilled */
+input[type="email"]:-webkit-autofill::first-line {
+  color: white !important; /* Make first line white */
+}
+
+/* Addressing the issue where Chrome may force black text for autofilled values */
+input[type="email"]:-webkit-autofill::-webkit-input-placeholder {
+  color: white !important; /* Force placeholder text to be white */
+}
+
+
 /* OTP Message Page */
 .otp-icon {
   font-size: 3.125rem; /* 50px */
