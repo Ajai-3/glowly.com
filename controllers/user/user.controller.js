@@ -1,11 +1,12 @@
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
+import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";dotenv.config();
 import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
 import User from "../../models/user.model.js";
-dotenv.config();
+
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -106,14 +107,14 @@ export const handleUserSignup = async (req, res) => {
     const { name, phone_no, email, password, repeatPassword } = req.body;
 
     try {
-        // Check if the user email already exists
+        // Check If The User Email Already Exists
         const userExists = await User.findOne({ email });
         if (userExists) {
             const msg = "User with this email already exists.";
             return res.render("user/signup", { msg });
         }
 
-        // Check if the phone number already exists
+        // Check If The Phone Number Already Exists
         const userPhoneNoExists = await User.findOne({ phone_no });
         if (userPhoneNoExists) {
             const msg = "Phone number already in use.";
@@ -169,6 +170,15 @@ export const handleOTPVerification = async (req, res) => {
 
         await saveUserData.save();
 
+        const token = jwt.sign(
+            { userId: saveUserData._id, name: saveUserData.name },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+        );
+
+        res.cookie('token', token, { httpOnly: true, secure: true });
+        req.session.token = token;
+
         return res.status(200).json({
             success: true,
             message: "Signup Successful, login now!",
@@ -213,7 +223,7 @@ export const handleResendOTP = async (req, res) => {
 export const handleUserLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log(req.body)
+        // console.log(req.body)
 
         // Finding The User
         const user = await User.findOne({ email, role: 'user' });
@@ -239,10 +249,14 @@ export const handleUserLogin = async (req, res) => {
             return res.render("user/login", { msg });            
         }
 
-        req.session.user = {
-            _id: user._id,
-            name: user.name
-        };
+        // JWT Token
+        const token = jwt.sign(
+            { userId: user._id, name: user.name },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1h' }
+        )
+        res.cookie('token', token, { httpOnly: true, secure: true });
+        req.session.token = token;
 
         // Redirect to the home page
         return res.redirect("/home");
@@ -294,24 +308,14 @@ export const pageNotFound = async (req, res) => {
 // Handle The User Logout
 export const handleUserLogout = async (req, res) => {
     try {
-        const products = await Product.find({});
-        const brands = await Brand.find({})
-        const categories = await Category.find({}).populate('subcategories');
-
         req.session.destroy((err) => {
             if (err) {
                 console.error("Logout error:", err);
                 return res.status(500).send("Error during logout");
             }
-            // Clear session cookie
-            res.clearCookie("connect.sid");
+            res.clearCookie('token');
             // Redirect to the login or home page
-            return res.render("user/home", { 
-                name: "",
-                brands,
-                products,
-                categories
-            })
+            return res.redirect("/home");
         });
     } catch (error) {
         console.error("Unexpected error during logout:", error);

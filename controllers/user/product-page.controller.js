@@ -1,12 +1,22 @@
+import jwt from "jsonwebtoken"
+import Brand from "../../models/brand.model.js"
+import Offer from "../../models/offer.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js"
-import Brand from "../../models/brand.model.js"
 import Subcategory from "../../models/subcategory.model.js"
-import Offer from "../../models/offer.model.js"
+
 
 export const renderProductPage = async (req, res) => {
     try {
-        const user = req.session.user;
+        const token = req.cookies.token;
+        let user = null; 
+        
+        if (token) {
+            const decoded = jwt.decode(token);
+            user = decoded; 
+        }
+ 
+
         const productId = req.params.id;
 
         const product = await Product.findById({ _id: productId, isDeleted: false })
@@ -64,6 +74,14 @@ export const renderProductPage = async (req, res) => {
 // Render The Page With Category
 export const renderPageWithCategory = async (req, res) => {
     try {
+        const token = req.cookies.token;
+        let user = null; 
+        
+        if (token) {
+            const decoded = jwt.decode(token);
+            user = decoded; 
+        }
+ 
         const { categoryName } = req.params;
 
         const category = await Category.findOne({ name: categoryName }) 
@@ -84,10 +102,10 @@ export const renderPageWithCategory = async (req, res) => {
             });
 
         return res.render("user/category", {
+            name: user ? user.name : "",
             products,
             category,
             categories,
-            name: req.session.user ? req.session.user.name : ""
         });
 
     } catch (error) {
@@ -99,6 +117,14 @@ export const renderPageWithCategory = async (req, res) => {
 // Render The Sub Category Only
 export const renderPageWithSubcategory = async (req, res) => {
     try {
+        const token = req.cookies.token;
+        let user = null; 
+        
+        if (token) {
+            const decoded = jwt.decode(token);
+            user = decoded; 
+        }
+
         const { subcategoryName } = req.params;
 
 
@@ -120,10 +146,10 @@ export const renderPageWithSubcategory = async (req, res) => {
             });
 
         return res.render("user/subcategory", {
+            name: user ? user.name : "",
             products,
             subcategory,
             categories,
-            name: req.session.user ? req.session.user.name : ""
         });
 
     } catch (error) {

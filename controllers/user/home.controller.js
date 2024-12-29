@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
@@ -5,8 +6,10 @@ import Category from "../../models/category.model.js";
 // Render Home Page
 export const renderHomePage = async (req, res) => {
     try {
-        const user = req.session.user;
-        // console.log(user)
+        const token = req.cookies.token;
+        const decoded = jwt.decode(token);
+        const user = decoded; 
+        // console.log("User Name:", user.name); 
 
         const products = await Product.find({ isDeleted: false });
         const brands = await Brand.find({ isListed: true })
