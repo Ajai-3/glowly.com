@@ -6,29 +6,34 @@ export const pageMiddlware = (req, res, next) => {
 }  
 
 export const verifyAdminToken = (req, res, next) => {
-    const token = req.cookies.adminToken;
+    if (req.path.startsWith('/admin')) {
+        const token = req.cookies.adminToken;
 
-    // If the user is already logged in, redirect them to the dashboard or another page
-    if (req.path === "/admin-login" && token) {
-        return res.redirect("/admin/dashboard");  // Redirect to dashboard if logged in
-    }
-
-    // Skip the token check for non-login pages
-    if (req.path === "/admin-login") {
-        return next();
-    }
-    
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        if (decoded.role !== 'admin') {
-            return res.redirect("/admin-login?msg=Unauthorized");
+        if (req.path === "/admin-login" && token) {
+            return res.redirect("/admin/dashboard");
         }
 
-        req.admin = decoded; // Attach admin info to the request
+        if (req.path === "/admin-login") {
+            return next();
+        }
+
+        if (!token) {
+            return res.redirect("/admin-login?msg=Token%20not%20provided");
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            if (decoded.role !== 'admin') {
+                return res.redirect("/admin-login?msg=Unauthorized");
+            }
+
+            req.admin = decoded;
+            next();
+        } catch (error) {
+            console.error("Token verification error:", error.message);
+            return res.redirect("/admin-login?msg=Session%20expired");
+        }
+    } else {
         next();
-    } catch (error) {
-        console.error("Token verification error:", error);
-        return res.redirect("/admin-login?msg=Session%20expired");
     }
 };
-

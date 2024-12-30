@@ -32,13 +32,13 @@ export const verifyToken = (req, res, next) => {
         try {
             const decoded = jwt.verify(token, JWT_SECRET_KEY);
             if (decoded) {
+                req.user = decoded;
                 return next();
             }
         } catch (error) {
-            return next();
+            return res.status(401).json({ message: "Invalid token. Please log in again." });
         }
-    } else {
-        return next();
     }
-};
 
+    return res.status(401).json({ message: "Access denied. Please log in to continue." });
+};
