@@ -11,6 +11,7 @@ import {
   renderSignupPage,
   handleUserSignup,
   handleUserLogin,
+  // renderOtpStatusPage,
   handleOTPVerification,
   handleResendOTP,
   pageNotFound,
@@ -24,8 +25,6 @@ import {
 } from "../controllers/user/product-page.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
-
-
 
 
 router.get("/", renderHomePage); // Home Page

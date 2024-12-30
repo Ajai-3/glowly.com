@@ -14,7 +14,7 @@ import {
   handleAdminLogout,
 } from "../controllers/admin/admin.controller.js";
 import { verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
-import { renderUsersPage, blockUser, unBlockUser, checkUserStatus } from '../controllers/admin/customer.controller.js'
+import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
@@ -23,20 +23,16 @@ import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from 
 
 
 // Pages Are Protected With adminAuthMiddleware
-router.use(verifyAdminToken);
-router.use(pageMiddlware);
+
 
 // Admin login and logout routes
 router.get("/admin-login", renderLoginPage);
 router.post("/admin-login", handleAdminLogin);
 router.get("/admin-logout", handleAdminLogout);
-router.get('/check-user-status', checkUserStatus);
 
+router.use(verifyAdminToken);
+router.use(pageMiddlware);
 
-
-// Admin Login
-// router.post("/admin-login", handleAdminLogin);
-// Dashboard Routes
 router.get("/dashboard", renderDashboardPage);
 
 // Product Routes

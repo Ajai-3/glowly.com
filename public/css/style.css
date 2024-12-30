@@ -127,7 +127,9 @@ a {
   font-size: var(--font-size-p); /* 12px */
   margin: 0;
 }
-
+.login-logo {
+  color: var(--main-color);
+}
 /* Login Page Error Message */
 .alert {
   padding: 0;

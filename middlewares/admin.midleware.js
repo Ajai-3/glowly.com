@@ -4,36 +4,34 @@ export const pageMiddlware = (req, res, next) => {
     res.locals.currentPath = req.path;
     next();
 }  
-
 export const verifyAdminToken = (req, res, next) => {
-    if (req.path.startsWith('/admin')) {
-        const token = req.cookies.adminToken;
+    const token = req.cookies.adminToken;
 
-        if (req.path === "/admin-login" && token) {
-            return res.redirect("/admin/dashboard");
-        }
+    if (!token) {
+        return res.render("admin/admin-login", { 
+            msg: { type: "error", msg: "Please log in to access the admin panel" } 
+        });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        req.admin = decoded;
 
         if (req.path === "/admin-login") {
-            return next();
+            return res.render("admin/dashboard", { 
+                admin: req.admin 
+            });
         }
 
-        if (!token) {
-            return res.redirect("/admin-login?msg=Token%20not%20provided");
-        }
-
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            if (decoded.role !== 'admin') {
-                return res.redirect("/admin-login?msg=Unauthorized");
-            }
-
-            req.admin = decoded;
-            next();
-        } catch (error) {
-            console.error("Token verification error:", error.message);
-            return res.redirect("/admin-login?msg=Session%20expired");
-        }
-    } else {
         next();
+    } catch (error) {
+        console.error("Token verification error:", error.message);
+        res.clearCookie("adminToken");
+        return res.render("admin/admin-login", { 
+            msg: { type: "error", msg: "Invalid or expired token. Please log in again." } 
+        });
     }
 };
+
+
+

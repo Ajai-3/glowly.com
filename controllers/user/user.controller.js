@@ -149,6 +149,7 @@ export const handleUserSignup = async (req, res) => {
     }
 };
 
+
 // Hndle OTP Verification
 export const handleOTPVerification = async (req, res) => {
     try {
@@ -198,26 +199,32 @@ export const handleOTPVerification = async (req, res) => {
 // Hnadle The Resed OTP
 export const handleResendOTP = async (req, res) => {
     try {
-       const { email } = req.session.userData;
-       if (!email) {
-        return res.status(400).json({ success: false, msg: "Email not found in session" })
-       } 
-       const { OTP } = generateOTP();
-       req.session.userOTP = OTP;
+        const token = req.cookies.token;
+        
+        if (!token) {
+            return res.status(400).json({ success: false, msg: "User not authenticated." });
+        }
 
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
-       const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
-       if (sendOTPEmail) {
-        console.log("Resend OTP : ", OTP);
-        res.status(200).json({success: true, msg: "OTP Resend successfully" })
-       } else {
-        res.status(500).json({ success: false, msg: "Failed to resend OTP." })
-       }
+        if (!decoded) {
+            return res.status(401).json({ success: false, msg: "Invalid token. Please log in again." });
+        }
+
+        const { email, phone_no } = decoded;
+
+        const otp = generateOTP();
+        req.session.userOTP = otp;
+
+        await sendOtpToUser(email, phone_no, otp);
+
+        return res.status(200).json({ success: true, msg: "OTP resent successfully." });
+
     } catch (error) {
-        console.error("Error resending OTP.", error)
-        res.status(500).json({ success:false, msg: "Internal server Error. Please try again" })
+        console.error("Error resending OTP:", error);
+        return res.status(500).json({ success: false, msg: "Error resending OTP. Please try again later." });
     }
-}
+};
 
 // Handle User Login
 export const handleUserLogin = async (req, res) => {
@@ -270,6 +277,7 @@ export const handleUserLogin = async (req, res) => {
 // Hnadle The Login With Google Account
 export const googleCallbackHandler = async (req, res) => {
     try {
+        // Check if the user is blocked
         if (req.user.status === 'blocked') {
             req.logout((err) => {
                 if (err) {
@@ -282,17 +290,37 @@ export const googleCallbackHandler = async (req, res) => {
             return;
         }
 
-        req.session.user = { 
-            _id: req.user._id, 
-            name: req.user.name,
-        };
+        const existingUser = await User.findOne({ email: req.user.email });
 
-        res.redirect('/home');
+        if (existingUser) {
+            if (!existingUser.googleId) {
+                const msg = { type: 'error', msg: "Google ID is missing. Please log in again." };
+                return res.render('user/login', { msg });
+            }
+            req.session.user = { 
+                _id: existingUser._id, 
+                name: existingUser.name,
+            };
+
+            // JWT Token
+            const token = jwt.sign(
+                { userId: existingUser._id, name: existingUser.name },
+                process.env.JWT_SECRET_KEY,
+                { expiresIn: '1h' }
+            );
+            res.cookie('token', token, { httpOnly: true, secure: true });
+
+            return res.redirect("/home");
+        } else {
+            return res.status(400).send("User not found.");
+        }
+
     } catch (error) {
         console.error("Error in Google callback handler:", error);
         res.status(500).send("An error occurred during authentication");
     }
 };
+
 
 
 // Handle Page Not Found 

@@ -74,6 +74,7 @@ export const handleAdminLogin = async (req, res) => {
             { expiresIn: "2h" }
         );
 
+        // console.log("Generated JWT Token:", token);
         // Store the token in a cookie
         res.cookie("adminToken", token, {
             httpOnly: true,
@@ -92,7 +93,7 @@ export const handleAdminLogin = async (req, res) => {
 export const handleAdminLogout = (req, res) => {
     try {
         // Clear the admin token cookie
-        res.clearCookie("adminToken");
+        res.clearCookie("adminToken", { httpOnly: true, secure: false });
         
         return res.redirect("/admin-login?msg=Logged%20out%20successfully");
     } catch (error) {
@@ -100,4 +101,3 @@ export const handleAdminLogout = (req, res) => {
         res.redirect("/pageerror");
     }
 };
-
