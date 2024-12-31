@@ -108,20 +108,21 @@
                     <button class="nav-bar-last-signup-btn">
                         <a href="/signup">Sign Up</a>
                     </button>
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <i class="fa-regular fa-heart"></i>
+                    <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                    <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a>
                 <% } else { %> 
                     <!-- If User IS Logged In -->
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <i class="fa-regular fa-heart"></i>
+                     <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                     <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a>
+                    
                     <div class="profile-section dropdown">
                         <span class="username"><%= name %></span>
                         <i class="fa-solid fa-circle-user"></i>
                         <div class="dropdown-menu2">
-                            <a href="/myaccount"><i class="fas fa-user"></i> &nbsp; My Account</a>
-                            <a href="/settings"><i class="fa-solid fa-gear"></i> &nbsp; Settings</a>
-                            <a href="/orders"><i class="fa-solid fa-truck"></i> &nbsp; Orders</a>
-                            <a href="/logout"><i class="fas fa-sign-out"></i> &nbsp; Logout</a>
+                            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
+                            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
+                            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
+                            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
                         </div>
                         <span class="arrow"><i class="fas fa-triangle"></i></span>   
                     </div>

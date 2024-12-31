@@ -1,7 +1,9 @@
 import jwt from 'jsonwebtoken';
-import Brand from "../../models/brand.model.js"
-import Product from "../../models/product.model.js"
+import Brand from "../../models/brand.model.js";
+import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
+import Wishlist from "../../models/wishlist.model.js";
+
 
 // Render Home Page
 export const renderHomePage = async (req, res) => {
@@ -12,7 +14,7 @@ export const renderHomePage = async (req, res) => {
         // console.log("User Name:", user.name); 
 
         const products = await Product.find({ isDeleted: false });
-        const brands = await Brand.find({ isListed: true })
+        const brands = await Brand.find({ isListed: true });
         const categories = await Category.find({ isListed: true })
             .populate({
                 path: 'subcategories',
@@ -20,6 +22,14 @@ export const renderHomePage = async (req, res) => {
             });
         // const categories = await Category.find({}).populate('subcategories');
         // products.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        let wishlist = [];
+        if (user) {
+            wishlist = await Wishlist.find({ user_id: user.userId });
+        }
+
+        // console.log("User Wishlist:", userWishlist);
+        // console.log("Decoded User:", user);
 
         function shuffleArray(arr) {
             for (let i = arr.length - 1; i > 0; i--) {
@@ -32,9 +42,11 @@ export const renderHomePage = async (req, res) => {
         shuffleArray(products);
 
         return res.render('user/home', {
+            user: user,
             name: user ? user.name : "",
             brands,
             products,
+            wishlist,
             categories
         });
     } catch (error) {

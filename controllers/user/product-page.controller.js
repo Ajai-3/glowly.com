@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import Brand from "../../models/brand.model.js"
 import Offer from "../../models/offer.model.js"
 import Product from "../../models/product.model.js"
+import Wishlist from "../../models/wishlist.model.js"
 import Category from "../../models/category.model.js"
 import Subcategory from "../../models/subcategory.model.js"
 
@@ -75,12 +76,8 @@ export const renderProductPage = async (req, res) => {
 export const renderPageWithCategory = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
-        
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-        }
+        const decoded = jwt.decode(token);
+        const user = decoded;
  
         const { categoryName } = req.params;
 
@@ -94,17 +91,23 @@ export const renderPageWithCategory = async (req, res) => {
             category_id: category._id,
             isDeleted: false
         });
-
         const categories = await Category.find({ isListed: true })
             .populate({
                 path: 'subcategories',
                 match: { isListed: true },  
             });
 
+        let wishlist = [];
+        if (user) {
+            wishlist = await Wishlist.find({ user_id: user.userId });
+        }  
+
         return res.render("user/category", {
             name: user ? user.name : "",
+            user: user,
             products,
             category,
+            wishlist,
             categories,
         });
 
@@ -118,12 +121,8 @@ export const renderPageWithCategory = async (req, res) => {
 export const renderPageWithSubcategory = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
-        
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-        }
+        const decoded = jwt.decode(token);
+        const user = decoded;
 
         const { subcategoryName } = req.params;
 
@@ -145,10 +144,16 @@ export const renderPageWithSubcategory = async (req, res) => {
                 match: { isListed: true },  
             });
 
+        let wishlist = [];
+        if (user) {
+            wishlist = await Wishlist.find({ user_id: user.userId });
+        }                   
         return res.render("user/subcategory", {
             name: user ? user.name : "",
+            user: user,
             products,
             subcategory,
+            wishlist,
             categories,
         });
 

@@ -296,6 +296,8 @@ function resendOTP() {
     });
 }
 
+
+
 // function checkUserStatus() {
 //     fetch('/check-user-status', {
 //         method: 'GET',

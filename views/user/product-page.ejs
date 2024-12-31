@@ -74,9 +74,9 @@
                         </div>
         
                         <div class="quantity-selector m-1">
-                            <button class="decrease-quantity me-1 mt-0" id="decrease-btn">-</button>
+                            <button class="decrease-quantity mt-0" id="decrease-btn">-</button>
                             <input type="number" id="quantity" value="1" min="1" readonly />
-                            <button class="increase-quantity ms-1 mt-0" id="increase-btn">+</button>
+                            <button class="increase-quantity mt-0" id="increase-btn">+</button>
                         </div>
         
                         <div class="product-page-product-price mt-1 mb-2"> 
@@ -108,13 +108,16 @@
                             
                             
                         </div>
-        
-                        <a href="/add-to-cart/<%= product.id %>">
-                            <button class="add-to-bag-btn">Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i></button>
-                        </a>
-                        <a href="/buy-now/<%= product.id %>">
-                            <button class="buy-now-btn">Buy Now</button>
-                        </a>
+                        <div class="d-flex">
+                            <form action="/add-to-cart/<%= product.id %>" method="POST" class="me-3">
+                                <button class="add-to-bag-btn">Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i></button>
+                            </form>
+                            
+                            <a href="/buy-now/<%= product.id %>">
+                                <button class="buy-now-btn">Buy Now</button>
+                            </a>
+                        </div>
+                        
                     </div>
                 </div>
             </div>

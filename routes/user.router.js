@@ -23,6 +23,8 @@ import {
   renderPageWithCategory,
   renderPageWithSubcategory,
 } from "../controllers/user/product-page.controller.js";
+import { renderCartPage, addToCart } from "../controllers/user/cart.controller.js";
+import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -36,8 +38,6 @@ router.get("/page-not-found", verifyToken, pageNotFound);
 router.get("/new-password", verifyToken, renderNewPasswordPage); // New Password Page
 router.get("/forgot-password", verifyToken, renderForgotPasswordPage); // Forgot Password Page
 router.get("/otp-verification", verifyToken,  renderpOtpVerificationPage); // OTP Verification Page
-
-
 router.get(
   "/auth/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -53,10 +53,18 @@ router.post("/signup",verifyToken,  handleUserSignup);
 router.post("/resend-otp", verifyToken, handleResendOTP);
 router.post("/otp-verification", verifyToken, handleOTPVerification);
 
+// Product, Category & Sub Category Management 
 router.get("/product/:id", renderProductPage);
 router.get("/category/:categoryName", renderPageWithCategory);
 router.get("/subcategory/:subcategoryName", renderPageWithSubcategory);
 
+// Cart Management
+router.get("/my-cart", renderCartPage)
+router.post("/add-to-cart/:productId", addToCart);
+
+//Wish list Management
+router.get("/my-wishlist", renderWishlistPage)
+router.post("/add-to-wishlist/:productId", addToWishlist)
 
 router.get("/logout", handleUserLogout);
 
