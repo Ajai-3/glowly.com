@@ -10,26 +10,26 @@ export const verifyToken = async (req, res, next) => {
     const restrictedUrls = [
         '/login',
         '/signup',
-        '/forgot-password',
+        '/otp-message',
         '/new-password',
+        '/forgot-password',
         '/otp-verification',
-        '/page-not-found',
     ];
 
     if (restrictedUrls.includes(req.path)) {
         if (token) {
             try {
                 const decoded = jwt.verify(token, JWT_SECRET_KEY);
-
+                // console.log('Decoded JWT:', decoded);
                 if (decoded) {
                     return res.redirect("/home");
                 }
             } catch (error) {
-                console.error("JWT Verification Error:", error.message);
+                console.error("JWT Verification Error:", error);
                 return next();
             }
         }
-        return next(); n
+        return next(); 
     }
 
     if (token) {

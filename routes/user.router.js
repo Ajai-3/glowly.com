@@ -4,19 +4,22 @@ const router = express.Router();
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
 import {
-  renderForgotPasswordPage,
   renderLoginPage,
-  renderNewPasswordPage,
-  renderpOtpVerificationPage,
   renderSignupPage,
-  handleUserSignup,
+  renderOtpStatusPage,
+  renderNewPasswordPage,
+  renderForgotPasswordPage,
+  renderpOtpVerificationPage,
+  pageNotFound,
   handleUserLogin,
+  handleResendOTP,
+  handleUserSignup,
+  handleUserLogout,
+  handleResetPassword,
   handleForgotPassword,
   handleOTPVerification,
-  handleResendOTP,
-  pageNotFound,
   googleCallbackHandler,
-  handleUserLogout,
+
 } from "../controllers/user/user.controller.js";
 import {
   renderProductPage,
@@ -35,8 +38,8 @@ router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/login", verifyToken, renderLoginPage); // Login Page
 router.get("/signup",  verifyToken, renderSignupPage); // Signup Page
 router.get("/page-not-found", verifyToken, pageNotFound);
-// router.get("/otp-message", verifyToken, renderOtpStatusPage); // OTP Message Page
-router.get("/new-password", verifyToken, renderNewPasswordPage); // New Password Page
+router.get("/reset-password/:token", renderNewPasswordPage); // New Password Page
+router.get("/otp-message", verifyToken, renderOtpStatusPage); // OTP Message Page
 router.get("/forgot-password", verifyToken, renderForgotPasswordPage); // Forgot Password Page
 router.get("/otp-verification", verifyToken,  renderpOtpVerificationPage); // OTP Verification Page
 router.get(
@@ -51,9 +54,10 @@ router.get(
 
 router.post("/login", verifyToken, handleUserLogin);
 router.post("/signup",verifyToken,  handleUserSignup);
-router.post("/resend-otp",  handleResendOTP);
+router.post("/resend-otp", handleResendOTP);
 router.post("/forgot-password", verifyToken, handleForgotPassword);
 router.post("/otp-verification", verifyToken, handleOTPVerification);
+router.post("/new-password", verifyToken, handleResetPassword)
 
 // Product, Category & Sub Category Management 
 router.get("/product/:id", renderProductPage);

@@ -267,7 +267,7 @@ function resendOTP() {
                 Swal.fire({
                     icon: "error",
                     title: "Error",
-                    text: response.message, // Use the message from the server response
+                    text: response.msg, 
                     customClass: {
                         popup: "swal-dark-popup",
                         title: "swal-dark-title",
@@ -276,7 +276,7 @@ function resendOTP() {
                 }).then(() => {
                     // Redirect to the Create Account page if session is not found
                     if (response.message.includes("User session not found")) {
-                        window.location.href = '/create-account';
+                        window.location.href = '/signup';
                     }
                 });
             }
