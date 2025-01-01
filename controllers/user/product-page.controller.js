@@ -10,11 +10,17 @@ import Subcategory from "../../models/subcategory.model.js"
 export const renderProductPage = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
+        let user = null;
+        let wishlist = []; 
         
         if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+                user = decoded; 
+                wishlist = await Wishlist.findOne({ user_id: user.userId }).populate('products.product_id');
+            } catch (error) {
+                console.log("Invalid or expired token:", error);
+            }
         }
  
 
@@ -62,6 +68,7 @@ export const renderProductPage = async (req, res) => {
             categories,
             product,
             brands,
+            wishlist,
             relatedProducts,
         });
 

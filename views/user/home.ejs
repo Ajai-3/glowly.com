@@ -83,14 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     forms.forEach(form => {
         form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Preventing page refresh
+            event.preventDefault(); 
 
             const button = form.querySelector('button');
             const icon = button.querySelector('i');
-            const productId = form.action.split('/').pop(); // Extracting productId from the form action
+            const productId = form.action.split('/').pop(); 
             const url = form.action;
 
-            // Send request to add or remove product from wishlist
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -100,20 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => response.json())
             .then(data => {
-                // Update the icon and button title based on the server response
                 if (data.action === 'added') {
                     icon.classList.remove('not-in-wishlist');
                     icon.classList.add('in-wishlist');
                     button.title = 'Remove from Wishlist';
 
-                    // Show success notification
                     notification.innerHTML = `
                         <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
                         <p>Product has been added to Wishlist.</p>
                     `;
                     notification.classList.add('show');
 
-                    // Remove notification after 3 seconds
                     setTimeout(() => {
                         notification.classList.remove('show');
                     }, 3000);
@@ -122,14 +118,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.classList.add('not-in-wishlist');
                     button.title = 'Add to Wishlist';
 
-                    // Show success notification
                     notification.innerHTML = `
                         <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
                         <p>Product has been removed from Wishlist.</p>
                     `;
                     notification.classList.add('show');
 
-                    // Remove notification after 3 seconds
                     setTimeout(() => {
                         notification.classList.remove('show');
                     }, 3000);
