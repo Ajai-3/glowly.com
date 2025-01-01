@@ -87,10 +87,6 @@ export const addToCart = async (req, res) => {
                     return res.json({ success: false, message: 'Cannot add more than 6 of this product.' });
                 }
 
-                if (product.available_quantity < existingProduct.quantity) {
-                    return res.json({ success: false, message: 'Not enough stock available' });
-                }
-
                 await cart.save();
                 const updatedStock = product.available_quantity - quantity;
                 await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });

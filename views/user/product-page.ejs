@@ -222,6 +222,9 @@
     <%- include('partials/footerforhome') %> 
 
     <script>
+        window.onload = function () {
+            window.scrollTo(0, 0);
+        };
         // Select all side images and the main display image
         const sideImages = document.querySelectorAll('.side-image');
         const mainImage = document.getElementById('main-display-image');

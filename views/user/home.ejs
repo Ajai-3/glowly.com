@@ -186,6 +186,7 @@ document.querySelectorAll('.add-to-cart-btn').forEach(button => {
 function showCartNotification(message) {
     const notification = document.getElementById('cart-notification');
     notification.textContent = message;
+    
     notification.classList.add('show');
 
     setTimeout(() => {

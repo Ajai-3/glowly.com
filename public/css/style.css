@@ -919,12 +919,13 @@ input[type="number"]::-webkit-input-placeholder {
 .product-card .add-to-cart-btn:hover {
   color: var(--main-color2);
 }
+
 .notification {
   position: fixed;
   top: 88%;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #4CAF50; /* Green background */
+  background-color: var(--bg-green-color);
   box-shadow: 0 4px 6px rgb(0, 0, 0, 1);
   padding: 8px;
   border-radius: 3px;
@@ -935,6 +936,13 @@ input[type="number"]::-webkit-input-placeholder {
 
 .notification.show {
   display: block;
+}
+
+.notification.success {
+  background-color: green; 
+}
+.notification.error {
+  background-color: red;  
 }
 
 
