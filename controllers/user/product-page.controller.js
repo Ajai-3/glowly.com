@@ -23,7 +23,6 @@ export const renderProductPage = async (req, res) => {
             }
         }
  
-
         const productId = req.params.id;
 
         const product = await Product.findById({ _id: productId, isDeleted: false })

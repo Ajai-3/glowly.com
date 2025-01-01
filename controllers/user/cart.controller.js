@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 import dotenv from "dotenv";dotenv.config();
+import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
@@ -12,11 +14,8 @@ import Category from "../../models/category.model.js";
 export const renderCartPage = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-        }  
+        let user = null;
+        let cart = null;
 
         const products = await Product.find({ isDeleted: false });
         const brands = await Brand.find({ isListed: true })
@@ -24,14 +23,43 @@ export const renderCartPage = async (req, res) => {
         .populate({
             path: 'subcategories',
             match: { isListed: true },  
-        });      
-                     
+        }); 
 
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+                user = decoded; 
+                cart = await Cart.findOne({ user_id: user.userId })              
+            } catch (error) {
+                console.log("Invalid or expired token:", error);
+            }
+        } 
+
+        if (!cart || !cart.products || cart.products.length === 0) {
+            return res.render('user/cart', { 
+                name: user ? user.name : "",
+                categories, 
+                msg: 'Your cart is empty.',
+                cartProducts: [] 
+            });
+        }
+
+        const cartProducts = await Promise.all(
+            cart.products.map(async (cartProduct) => {
+              const productDetails = await Product.findById(cartProduct.product_id);
+              return {
+                ...cartProduct.toObject(),
+                product_details: productDetails
+              };
+            })
+          );     
+        
         return res.render("user/cart", {
            name: user ? user.name : "",
            brands,
            products,
-           categories
+           categories,
+           cartProducts
         })
     } catch (error) {
         console.error("Error renderinf cart Page", error);
@@ -39,6 +67,9 @@ export const renderCartPage = async (req, res) => {
     }
 }
 
+// Add Product To Cart
+
+// Here Need The Change About The Stock And Cart
 export const addToCart = async (req, res) => {
     const { id } = req.params;
     let { quantity } = req.body;
@@ -67,7 +98,7 @@ export const addToCart = async (req, res) => {
         if (product.available_quantity < quantity) {
             return res.json({ success: false, message: 'Not enough stock available' });
         }
-
+       
         if (!cart) {
             cart = new Cart({
                 user_id: userId,

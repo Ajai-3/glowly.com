@@ -49,7 +49,7 @@ function validatePhone() {
 
 function validateEmail() {
     const emailValue = emailInput.value;
-    const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z][a-zA-Z0-9-]*\.[a-zA-Z]{2,}$/;
     if (!emailPattern.test(emailValue)) {
         emailError.style.display = "block";
         emailError.textContent = "Please enter a valid email address.";
@@ -282,6 +282,8 @@ function resendOTP() {
             }
         },
         error: function(xhr, status, error) {
+            console.error('AJAX error:', error); 
+            console.log('XHR response:', xhr); 
             Swal.fire({
                 icon: "error",
                 title: "Error",
@@ -297,6 +299,14 @@ function resendOTP() {
 }
 
 
+document.addEventListener('DOMContentLoaded', function () {
+    const priceElements = document.querySelectorAll('.price-inr'); 
+
+    priceElements.forEach(element => {
+        const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10); 
+        element.textContent = '₹ ' + price.toLocaleString('en-IN');  
+    });
+});
 
 // function checkUserStatus() {
 //     fetch('/check-user-status', {

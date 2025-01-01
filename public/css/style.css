@@ -38,12 +38,13 @@
 
   /* Admin Panel  */
   /* --bg-color: #000000; */
-  --bg-color: #0f0f0f;
+  --bg-color: #121212;
   --bg-color-2: #161927;
   --bg-color-3: #232942;
   --bg-color-4: #1a1a1a;
   --bg-color-5: #222222;
   --bg-color-6: #212121;
+  --bg-color-7: #242424;
   --bg-color-btn-hover: #242d56;
   --bg-color-tbl-hover: #242d5673;
   --bg-color-btn-hover2: #212e64;
@@ -60,6 +61,10 @@
   --pink-text-color: #ff2fd5;
   --pink-text-color-2: #cd00bc;
   --pink-text-color-3: #ff00cc57;
+
+  --main-text-color: #ff2e93;
+  --main-text-color-2: #e80071;
+  --main-text-color-3: #e800705c;
 
   --green-text-color: #3aff33;
   --green-text-color-2: #00ca11;
@@ -84,6 +89,11 @@ body {
   background-color: var(--bg-color);
   font-family: "DM Sans", sans-serif;
 }
+.home-body {
+  font-family: "DM Sans", sans-serif;
+  background-color: var(--bg-color-6);
+}
+
 a {
   text-decoration: none;
 }
@@ -389,16 +399,19 @@ input[type="email"]:-webkit-autofill::-webkit-input-placeholder {
   color: white !important;
 }
 
-/* Apply forceful color change to number inputs */
 input[type="number"] {
-  color: white !important; /* Ensure white text for number input */
+  color: white !important; 
   background-color: transparent !important;
 }
 
 input[type="number"]::-webkit-input-placeholder {
-  color: white !important; /* White placeholder */
+  color: white !important; 
 }
-
+.phone_no::-webkit-outer-spin-button,
+.phone_no::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+   margin: 0;
+}
 
 /* OTP Message Page */
 .otp-icon {
@@ -776,7 +789,9 @@ input[type="number"]::-webkit-input-placeholder {
   padding: 5px;
   text-align: center;
   border-radius: 4px;
-  background-color: var(--bg-color-6);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
 .product-card a {
   color: var(--text-color);
@@ -938,12 +953,7 @@ input[type="number"]::-webkit-input-placeholder {
   display: block;
 }
 
-.notification.success {
-  background-color: green; 
-}
-.notification.error {
-  background-color: red;  
-}
+
 
 
 /* *************************************************************************************** */
@@ -970,7 +980,9 @@ input[type="number"]::-webkit-input-placeholder {
 
 
 .product-container {
-  background-color: var(--bg-color-6);
+    /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
 .product-img  img {
   border-radius: 0;
@@ -1027,7 +1039,12 @@ input[type="number"]::-webkit-input-placeholder {
   background-color: transparent;
 }
 
-
+.quantity-selector-new input {
+  width: 50px;
+  padding: 8px;
+  outline: none;
+  border-style: none;
+}
 .product-page-product-price .original-price {
    font-size: var(--font-size-second);
 }
@@ -1106,7 +1123,9 @@ input[type="number"]::-webkit-input-placeholder {
   margin: 0;
   min-height: 400px;
   padding: 10px 20px;
-  background-color: var(--bg-color-6);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
 
 #productTab {
@@ -1152,21 +1171,38 @@ input[type="number"]::-webkit-input-placeholder {
  Cart Page */
  .cart-box {
   position: relative;
-  background-color: var(--bg-color-6);
+  font-weight: 400;
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
  }
  .cart-box h5 {
   font-size: var(--font-size-normal);
   color: var(--text-color-4);
  }
  .cart-box h6 {
+  font-weight: 400;
   font-size: var(--font-size-second);
   color: var(--text-color-4);
  }
-
+.cart-box a {
+  font-weight: 300;
+  text-decoration: underline;
+  color: var(--blue-text-color-2);
+}
+.cart-box-quantity-selector input {
+  width: 45px;
+  padding-left: 8px;
+  outline: none;
+  border-style: none;
+}
+.cart-box-quantity-selector .qty {
+  color: var(--text-color-4);
+}
  .remove-cart-item {
   position: absolute;
   top: 10px;
-  right: 20px;
+  right: 15px;
  }
  .remove-cart-item i {
   font-size: 25px;
@@ -1188,7 +1224,9 @@ input[type="number"]::-webkit-input-placeholder {
 
 .price-summary {
   color: var(--text-color-4);
-  background-color: var(--bg-color-6);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
 .price-summary h5 {
   font-size: var(--font-size-normal);
@@ -1197,8 +1235,17 @@ input[type="number"]::-webkit-input-placeholder {
   font-size: var(--font-size-second);
 }
 
-
-
+.empty-cart-section {
+  height: 380px;
+  border-radius: 5px;
+  background-color: var(--bg-color);
+}
+.empty-cart-section a {
+  cursor: pointer;
+}
+.empty-cart-section img {
+  width: 200px;
+}
 /* Wish list */
 .brudcrumbs-user-menu a {
   font-size: var(--font-size-second);
@@ -1206,7 +1253,9 @@ input[type="number"]::-webkit-input-placeholder {
 }
 .user-menu {
   border-radius: 2px;
-  background-color: var(--bg-color-6);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
 .user-menu a {
   margin: 10px 0px 10px 15px;
@@ -1215,6 +1264,7 @@ input[type="number"]::-webkit-input-placeholder {
 }
 .user-menu a:hover {
   color: var(--main-color);
+  border-right: 2px solid var(--main-color);
 }
 .user-menu a.active {
   color: var(--main-color);
@@ -1228,8 +1278,52 @@ input[type="number"]::-webkit-input-placeholder {
 .user-menu-wishlist {
   min-height: 500px;
   color: var(--text-color-4);
-  background-color: var(--bg-color-6);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
 }
+
+/* My Acoount */
+.user-menu-account {
+  min-height: 500px;
+  color: var(--text-color-4);
+  /* ******************************************* */
+  /* background-color: var(--bg-color-6); */
+  background-color: var(--bg-color);
+}
+.user-menu-account .fa-circle-user {
+  font-size: 100px;
+}
+
+
+#alternative-no::-webkit-outer-spin-button,
+#alternative-no::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#alternative-no {
+    -moz-appearance: textfield; 
+    appearance: textfield;      
+}
+
+#pincode::-webkit-outer-spin-button,
+#pincode::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+#hone-no::-webkit-outer-spin-button,
+#hone-no::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+
+
+
+
+
+
 
 /* *footer******************************************** */
 .footer {
@@ -1245,7 +1339,7 @@ input[type="number"]::-webkit-input-placeholder {
 /* div 1******** */
 .footer-div-1 {
   padding: 15px;
-  background-color: var(--bg-color-6);
+  background-color: var(--bg-color-4);
 }
 /* div 2************************************************* */
 .footer-div-2 {
@@ -1305,7 +1399,7 @@ input[type="number"]::-webkit-input-placeholder {
   justify-content: center;
   gap: 70px;
   padding: 10px 80px;
-  background-color: var(--bg-color-6);
+  background-color: var(--bg-color-4);
 }
 .footer-div-3 div {
   display: flex;
@@ -1903,7 +1997,8 @@ p2 {
 .add-btn,
 .large-button-blue,
 .large-button-pink,
-.large-button-green {
+.large-button-green,
+.large-button-main {
   font-size: var(--font-size-second);
   padding: 6px;
   border: 0px;
@@ -1937,6 +2032,10 @@ p2 {
   color: var(--green-text-color-2);
   background-color: var(--green-text-color-3);
 }
+.large-button-main {
+  color: var(--main-text-color-2);
+  background-color: var(--main-text-color-3);
+}
 .add-product-btn2:hover,
 .add-product-btn:hover,
 .add-btn:hover {
@@ -1948,6 +2047,9 @@ p2 {
 }
 .large-button-pink:hover {
   color: var(--pink-text-color);
+}
+.large-button-main:hover {
+  color: var(--main-text-color); 
 }
 .add-new-brand-btn i {
   padding-left: 10px;
@@ -2083,4 +2185,33 @@ p2 {
   border-radius: 10px;
   font-size: var(--font-size-second);
   background-color: var(--bg-color-2);
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield; 
+    appearance: textfield;     
+}
+
+input[type="number"] {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input#quantity::-webkit-outer-spin-button,
+input#quantity::-webkit-inner-spin-button,
+input.quantity-input::-webkit-outer-spin-button,
+input.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: auto;
+}
+
+input#quantity,
+input.quantity-input {
+    -webkit-appearance: textfield;
+    appearance: textfield; 
 }

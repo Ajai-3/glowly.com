@@ -8,7 +8,7 @@
     <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
     <title>Glowly.com: Buy Cosmetic Products</title>
 </head>
-<body>
+<body class="home-body">
     <nav>
         <div class="nav-offer">
             <div class="nav-offer1">Nav offer and app</div>
@@ -116,8 +116,12 @@
                      <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a>
                     
                     <div class="profile-section dropdown">
-                        <span class="username"><%= name %></span>
-                        <i class="fa-solid fa-circle-user"></i>
+                        <div class="d-flex align-items-center">
+                            <span class="username"><%= name %></span>
+                            <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+                        </div>
+
+                        
                         <div class="dropdown-menu2">
                             <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
                             <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>

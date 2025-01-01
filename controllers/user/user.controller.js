@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";dotenv.config();
+import { sendOTPToUserEmail } from "../../config/email.js";
 import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
@@ -38,11 +39,12 @@ export const renderpOtpVerificationPage = (req, res) => {
 }
 // Render Forgot Password Page
 export const renderForgotPasswordPage = (req, res) => {
-    return res.render('user/forgot-password')
+    const msg = req.session.msg || null;    
+    return res.render('user/forgot-password', { msg })
 }
 // Render New Password Page
 export const renderNewPasswordPage = (req, res) => {
-    return res.render('user/new-password')
+    return res.render('user/new-password', { email })
 }
 
 
@@ -61,103 +63,104 @@ function generateOTP () {
     return { OTP, expiryTime }
 }
 
-// Send The OTP To The User
-async function sendOTPToUserEmail (email, OTP) {
-   try {
+
+// const sendOTPToUserEmail = async (email, OTP) => {
+//    try {
      
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        port: 587,
-        secure: false,
-        requireTLS: true,
-        auth: {
-            user: process.env.NODEMAILER_EMAIL,
-            pass: process.env.NODEMAILER_PASSWORD
-        }
-    })
-    // console.log("Transporter initialized:", transporter);
+//     const transporter = nodemailer.createTransport({
+//         service: 'gmail',
+//         port: 587,
+//         secure: false,
+//         requireTLS: true,
+//         auth: {
+//             user: process.env.NODEMAILER_EMAIL,
+//             pass: process.env.NODEMAILER_PASSWORD
+//         }
+//     })
 
-    const info = await transporter.sendMail({
-        from: process.env.NODEMAILER_EMAIL,
-        to: email,
-        subject: "Your OTP for Glowly E-commerce Registration", 
-        text: `Hi, 
-               Thank you for registering with Glowly E-commerce! 
-               Your OTP is: ${OTP}.
-               If you didn't request this OTP, please ignore this message.
-               Best regards, 
-               Glowly Team`,  
-        html: `
-        <html>
-          <head>
-            <style>
-              body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                padding: 0;
-                background-color: #f7f7f7;
-              }
-              .container {
-                width: 100%;
-                max-width: 600px;
-                margin: 0 auto;
-                background-color: #ffffff;
-                padding: 20px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-              }
-              .header {
-                background-color: #e80071;
-                padding: 20px;
-                text-align: center;
-                color: white;
-              }
-              .content {
-                padding: 20px;
-                font-size: 16px;
-                color: #333333;
-              }
-              .otp {
-                font-size: 24px;
-                font-weight: bold;
-                color: #e80071;
-                margin-top: 20px;
-              }
-              .footer {
-                text-align: center;
-                font-size: 12px;
-                color: #888888;
-                margin-top: 30px;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="container">
-              <div class="header">
-                <h1>Glowly E-commerce</h1>
-              </div>
-              <div class="content">
-                <p>Hi,</p>
-                <p>Thank you for registering with Glowly E-commerce! To complete your registration, please use the following One-Time Password (OTP):</p>
-                <div class="otp">${OTP}</div>
-                <p>If you did not request this OTP, please ignore this message.</p>
-                <p>Best regards,</p>
-                <p><strong>Glowly Team</strong></p>
-              </div>
-              <div class="footer">
-                <p>© 2024 Glowly E-commerce. All rights reserved.</p>
-              </div>
-            </div>
-          </body>
-        </html>
-      `,  // Your styled HTML content
-    });
+//     const info = await transporter.sendMail({
+//         from: process.env.NODEMAILER_EMAIL,
+//         to: email,
+//         subject: "Your OTP for Glowly E-commerce Registration", 
+//         text: `Hi, 
+//                Thank you for registering with Glowly E-commerce! 
+//                Your OTP is: ${OTP}.
+//                If you didn't request this OTP, please ignore this message.
+//                Best regards, 
+//                Glowly Team`,  
+//         html: `
+//         <html>
+//           <head>
+//             <style>
+//               body {
+//                 font-family: Arial, sans-serif;
+//                 margin: 0;
+//                 padding: 0;
+//                 background-color: #f7f7f7;
+//               }
+//               .container {
+//                 width: 100%;
+//                 max-width: 600px;
+//                 margin: 0 auto;
+//                 background-color: #ffffff;
+//                 padding: 20px;
+//                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+//               }
+//               .header {
+//                 background-color: #e80071;
+//                 padding: 20px;
+//                 text-align: center;
+//                 color: white;
+//               }
+//               .content {
+//                 padding: 20px;
+//                 font-size: 16px;
+//                 color: #333333;
+//               }
+//               .otp {
+//                 font-size: 24px;
+//                 font-weight: bold;
+//                 color: #e80071;
+//                 margin-top: 20px;
+//               }
+//               .footer {
+//                 text-align: center;
+//                 font-size: 12px;
+//                 color: #888888;
+//                 margin-top: 30px;
+//               }
+//             </style>
+//           </head>
+//           <body>
+//             <div class="container">
+//               <div class="header">
+//                 <h1>Glowly E-commerce</h1>
+//               </div>
+//               <div class="content">
+//                 <p>Hi,</p>
+//                 <p>Thank you for registering with Glowly E-commerce! To complete your registration, please use the following One-Time Password (OTP):</p>
+//                 <div class="otp">${OTP}</div>
+//                 <p>If you did not request this OTP, please ignore this message.</p>
+//                 <p>Best regards,</p>
+//                 <p><strong>Glowly Team</strong></p>
+//               </div>
+//               <div class="footer">
+//                 <p>© 2024 Glowly E-commerce. All rights reserved.</p>
+//               </div>
+//             </div>
+//           </body>
+//         </html>
+//       `,  // Your styled HTML content
+//     });
 
-    return info.accepted.length > 0
-   } catch (error) {
-      console.error("Error sending email.", error);
-      return false
-   }
-}
+//     return info.accepted.length > 0
+//    } catch (error) {
+//       console.error("Error sending email.", error);
+//       return false
+//    }
+// }
+
+
 
 // Hashed Password
 const hashedPassword= async (password) => {
@@ -267,13 +270,14 @@ export const handleOTPVerification = async (req, res) => {
 export const handleResendOTP = async (req, res) => {
     try {
         const token = req.cookies.token;
+        console.log("token", token)
         
         if (!token) {
             return res.status(400).json({ success: false, msg: "User not authenticated." });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-
+        console.log("decoded", decoded)
         if (!decoded) {
             return res.status(401).json({ success: false, msg: "Invalid token. Please log in again." });
         }
@@ -282,6 +286,7 @@ export const handleResendOTP = async (req, res) => {
 
         const otp = generateOTP();
         req.session.userOTP = otp;
+        console.log("resend otp", otp)
 
         await sendOtpToUser(email, phone_no, otp);
 
@@ -388,7 +393,31 @@ export const googleCallbackHandler = async (req, res) => {
     }
 };
 
+// Hndle The Forgot Password
+export const handleForgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        // console.log(email)
 
+        const existUser = await User.findOne({ email, role: 'user' })
+        if (!existUser) {
+            const msg = { type: 'error', msg: "No user found with this email." };
+            return res.render("user/forgot-password", { msg });
+        }
+
+        const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
+        if (!sendOTPEmail) {
+            const msg = "Error sending OTP to your email.";
+            return res.render("user/forgot-password", { msg });
+        }
+
+
+
+    } catch (error) {
+        console.error("Error in forgot password", error);
+
+    }
+}
 
 // Handle Page Not Found 
 export const pageNotFound = async (req, res) => {
@@ -409,7 +438,6 @@ export const handleUserLogout = async (req, res) => {
                 return res.status(500).send("Error during logout");
             }
             res.clearCookie('token');
-            // Redirect to the login or home page
             return res.redirect("/home");
         });
     } catch (error) {

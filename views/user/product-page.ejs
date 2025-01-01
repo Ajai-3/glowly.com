@@ -64,25 +64,33 @@
                              / 5 &nbsp;  <p class="mb-1">| &nbsp;&nbsp;<%= product.ratings_count ? product.ratings_count + ' ratings' : '0 ratings' %>  & <%= product.reviews_count ? product.reviews_count + ' reviews' : '0 reviews' %> </p>  
                         </div>
                         
-                        <div class="product-stock m-0 <%= product.available_quantity > 0 ? 'available' : 'unavailable' %>">
+                        <!-- <div class="product-stock m-0 <%= product.available_quantity > 0 ? 'available' : 'unavailable' %>">
                             Stocks: <%= product.available_quantity > 0 ? product.available_quantity : "Unavailable" %>
-                        </div>
+                        </div> -->
                         
 
                         <div class="product-color">
                             Colors: <%= product.color ? product.color : "Unavailable" %>
                         </div>
         
-                        <div class="quantity-selector m-1">
+                        <div class="d-flex align-items-center">
+                            <div class="quantity-selector-new m-1">
+                                QTY: <input type="number" id="quantity" value="1" min="1" />
+                            </div>
+                            <div class="product-stock ms-4 <%= product.available_quantity > 0 ? 'available' : 'unavailable' %>">
+                              Stocks: <%= product.available_quantity > 0 ? product.available_quantity : "Unavailable" %>
+                            </div>
+                          </div>
+                        <!-- <div class="quantity-selector m-1">
                             <button class="decrease-quantity mt-0" id="decrease-btn">-</button>
                             <input type="number" id="quantity" value="1" min="1" readonly />
                             <button class="increase-quantity mt-0" id="increase-btn">+</button>
-                        </div>
+                        </div> -->
         
                         <div class="product-page-product-price mt-1 mb-2"> 
                             <span class="mrp">MRP: </span>      
-                            <span class="original-price"> ₹<%= product.price %></span>
-                            <span class="sales-price">₹<%= product.sales_price %>&nbsp;|</span>
+                            <span class="original-price price-inr"> ₹<%= product.price %></span>
+                            <span class="sales-price price-inr">₹<%= product.sales_price %>&nbsp; |</span>
                             <% if (product.offer_id && product.offer_id !== null) { %>
                                 <% if (product.offer_id.offerType === 'percentage') { %>
                                     <span class="discount-percentage">
@@ -192,18 +200,15 @@
                             <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
                                 <% if (user) { %> 
                                     <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString())) { %>
-                                        <!-- Button to remove product from wishlist -->
                                         <button type="submit" title="Remove from Wishlist" class="wishlist-button">
                                             <i class="fa-solid fa-heart in-wishlist"></i>
                                         </button>
                                     <% } else { %>
-                                        <!-- Button to add product to wishlist -->
                                         <button type="submit" title="Add to Wishlist" class="wishlist-button">
                                             <i class="fa-solid fa-heart not-in-wishlist"></i>
                                         </button>
                                     <% } %> 
                                 <% } else { %>
-                                    <!-- Button for users not logged in -->
                                     <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
                                         <i class="fa-solid fa-heart"></i>
                                     </button>
@@ -214,8 +219,8 @@
                             <p class="product-title"><%= product.title %></p>
                         </a>
                         <div class="product-prices-box">
-                            <p class="sale-price">&#8377;<%= product.sales_price %></p>
-                            <p class="original-price mx-2">&#8377;<%= product.price %></p>
+                            <p class="sale-price price-inr">&#8377;<%= product.sales_price %></p>
+                            <p class="original-price price-inr mx-2">&#8377;<%= product.price %></p>
                             <!-- <p class="product-rating">★★★★☆</p> -->
                             <% if (product.price > product.sales_price) { %>
                                 <span class="discount-percentage">
@@ -250,6 +255,14 @@
         window.onload = function () {
             window.scrollTo(0, 0);
         };
+        document.addEventListener('DOMContentLoaded', function () {
+            const priceElements = document.querySelectorAll('.price-inr'); 
+
+            priceElements.forEach(element => {
+                const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10); 
+                element.textContent = '₹ ' + price.toLocaleString('en-IN');  
+            });
+        });
         // Select all side images and the main display image
         const sideImages = document.querySelectorAll('.side-image');
         const mainImage = document.getElementById('main-display-image');
@@ -265,27 +278,39 @@
           zoomContainer.classList.toggle('zoomed');
         });
 
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const quantityInput = document.getElementById('quantity');
+        //     const increaseButton = document.getElementById('increase-btn');
+        //     const decreaseButton = document.getElementById('decrease-btn');
+
+        //     increaseButton.addEventListener('click', function () {
+        //         if (quantityInput.value < 7) {
+        //             quantityInput.value++;
+        //         }
+        //     });
+        //     decreaseButton.addEventListener('click', function () {
+        //         if (quantityInput.value > 1) {
+        //             quantityInput.value--;
+        //         }
+        //     });
+
+        //     quantityInput.addEventListener('input', function () {
+        //         quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
+        //     });
+        // });
         document.addEventListener('DOMContentLoaded', function () {
             const quantityInput = document.getElementById('quantity');
-            const increaseButton = document.getElementById('increase-btn');
-            const decreaseButton = document.getElementById('decrease-btn');
-
-            increaseButton.addEventListener('click', function () {
-                if (quantityInput.value < 7) {
-                    quantityInput.value++;
-                }
-            });
-            decreaseButton.addEventListener('click', function () {
-                if (quantityInput.value > 1) {
-                    quantityInput.value--;
-                }
-            });
 
             quantityInput.addEventListener('input', function () {
-                quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
+                let value = parseInt(quantityInput.value, 10);
+                if (value < 1) {
+                    quantityInput.value = 1; 
+                } else if (value > 7) {
+                    quantityInput.value = 7; 
+                }
             });
         });
-
+        
     // Wishlist    
     document.addEventListener('DOMContentLoaded', () => {
         const forms = document.querySelectorAll('.wishlist-form');
@@ -421,10 +446,8 @@
     function updateStockOnPage(newQuantity) {
         const stockElement = document.querySelector('.product-stock');
         if (stockElement) {
-            // Update the text content of the stock element
             stockElement.textContent = `Stocks: ${newQuantity > 0 ? newQuantity : 'Unavailable'}`;
             
-            // Optionally, you can change the CSS class if the stock is zero
             if (newQuantity <= 0) {
                 stockElement.classList.remove('available');
                 stockElement.classList.add('unavailable');

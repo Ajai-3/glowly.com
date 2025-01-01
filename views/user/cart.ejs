@@ -4,116 +4,72 @@
 
     <div class="user-contents">
       <div class="container my-4">
+        <% if (cartProducts.length > 0) { %>
         <div class="row">
           <!-- Left Column: Cart Items -->
           <div class="col-md-8">
-            <!-- Cart Item 1 -->
-            <div class="card mb-1 px-2 shadow-sm cart-box">
-              <div class="row g-0">
-                <div class="col-md-2 text-center mt-2">
-                  <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Product 1">
-                </div>
-                <div class="col-md-10">
-                  <div class="card-body px-3 py-1">
-                    <!-- <h5>Brand name</h5> -->
-                    <h6 class="card-title">L'Oreal Paris Infallible Matte Resistance Liquid Lipstick</h6>
-                    <div class="quantity-selector my-1">
-                      <button class="decrease-quantity mt-0" id="decrease-btn"><i class="fa-solid fa-minus"></i></button>
-                      <input type="number" id="quantity" value="1" min="1" readonly />
-                      <button class="increase-quantity mt-0" id="increase-btn"><i class="fa-solid fa-plus"></i></button>
-                      <p class="cart-stock">Hurry! Only 5 Left</p>
-                    </div>
-                    <a href="/details">details</a>
-                    <div class="d-flex justify-content-between cart-price">
-                      <p class="card-text">Unit Price: <span class="original-price">₹799</span> <span class="sales-price">₹599</span> <span class="discount-percentage">| 25% Off</span></p>
-                      <p class="card-text"><span class="sales-price">Total: ₹599</span></p>
-                    </div>
-                    <div class="remove-cart-item">
-                      <a href="/remove"><i class="fa-solid fa-trash-arrow-up"></i></a>
+            <% cartProducts.forEach(({ product_details, quantity }) => { %>
+              <!-- Cart Item -->
+              <div class="card mb-1 px-2 shadow-sm cart-box">
+                <div class="row g-0">
+                  <div class="col-md-2 text-center mt-2">
+                    <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
+                    class="img-fluid rounded" alt="<%= product_details.title %>">
+                  </div>
+                  <div class="col-md-10">
+                    <div class="card-body px-3 py-2">
+                      <h6 class="card-title"><%= product_details.title %></h6>
+                      <div class="cart-box-quantity-selector d-flex my-1">
+                        <p class="qty m-0">QTY : <input type="number" class="quantity-input" value="<%= quantity %>" min="1" /></p>
+                        <p class="cart-stock">
+                          <%= product_details.available_quantity === 0 ? 'Unavailable' : 'Hurry! Only ' + product_details.available_quantity + ' Left' %>
+                        </p>                        
+                      </div>
+                      <a href="/product/<%= product_details._id %>">details</a>
+                      <div class="d-flex justify-content-between cart-price">
+                        <p class="card-text">Unit Price: <span class="original-price price-inr">₹<%= product_details.price %></span> 
+                        <span class="sales-price price-inr">₹<%= product_details.sales_price %></span> 
+                        <span class="discount-percentage">| 
+                          <% if (product_details.price > product_details.sales_price) { %>
+                            <span class="discount-percentage">
+                                <%= Math.round(((product_details.price - product_details.sales_price) / product_details.price) * 100) %>% Off 
+                            </span>
+                          <% } %>
+                          Off</span></p>
+                        <p class="card-text">Total: <span class="sales-price price-inr">Total: ₹<%= product_details.sales_price * quantity %></span></p>
+                      </div>
+                      <div class="remove-cart-item">
+                        <a href="/remove/<%= product_details._id %>"><i class="fa-solid fa-trash-arrow-up"></i></a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <!-- Cart Item 2 -->
-            <div class="card mb-1 px-2 shadow-sm cart-box">
-              <div class="row g-0">
-                <div class="col-md-2 text-center mt-2">
-                  <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Product 2">
-                </div>
-                <div class="col-md-10">
-                  <div class="card-body px-3 py-1">
-                    <h5>Brand name</h5>
-                    <h6 class="card-title">Product 2</h6>
-                    <div class="quantity-selector my-1">
-                      <button class="decrease-quantity mt-0"><i class="fa-solid fa-minus"></i></button>
-                      <input type="number" id="quantity" value="2" min="1" readonly />
-                      <button class="increase-quantity mt-0"><i class="fa-solid fa-plus"></i></button>
-                      <p class="cart-stock">Hurry! Only 3 Left</p>
-                    </div>
-                    <a href="/details">details</a>
-                    <div class="d-flex justify-content-between cart-price">
-                      <p class="card-text">Unit Price: <span class="original-price">₹1,500</span> <span class="sales-price">₹1,200</span> <span class="discount-percentage">| 20% Off</span></p>
-                      <p class="card-text"><span class="sales-price">Total: ₹2,400</span></p>
-                    </div>
-                    <div class="remove-cart-item">
-                      <a href="/remove"><i class="fa-solid fa-trash-arrow-up"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <!-- Cart Item 3 -->
-            <div class="card mb-1 px-2 shadow-sm cart-box">
-              <div class="row g-0">
-                <div class="col-md-2 text-center mt-2">
-                  <img src="https://via.placeholder.com/150" class="img-fluid rounded" alt="Product 3">
-                </div>
-                <div class="col-md-10">
-                  <div class="card-body px-3 py-1">
-                    <h5>Brand name</h5>
-                    <h6 class="card-title">Product 3</h6>
-                    <div class="quantity-selector my-1">
-                      <button class="decrease-quantity mt-0"><i class="fa-solid fa-minus"></i></button>
-                      <input type="number" id="quantity" value="1" min="1" readonly />
-                      <button class="increase-quantity mt-0"><i class="fa-solid fa-plus"></i></button>
-                      <p class="cart-stock">Hurry! Only 10 Left</p>
-                    </div>
-                    <a href="/details">details</a>
-                    <div class="d-flex justify-content-between cart-price">
-                      <p class="card-text">Unit Price: <span class="original-price">₹2,000</span> <span class="sales-price">₹1,600</span> <span class="discount-percentage">| 20% Off</span></p>
-                      <p class="card-text"><span class="sales-price">Total: ₹1,600</span></p>
-                    </div>
-                    <div class="remove-cart-item">
-                      <a href="/remove"><i class="fa-solid fa-trash-arrow-up"></i></a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <% }); %>
           </div>
+    
           <!-- Right Column: Price Summary -->
           <div class="col-md-4">
             <div class="card shadow-sm price-summary">
               <div class="card-body">
-                <h5 class="card-title">PRICE SUMMARY (3 ITEMS)</h5>
+                <h5 class="card-title">PRICE SUMMARY (<%= cartProducts.length %> ITEMS)</h5>
                 <hr>
                 <p class="d-flex justify-content-between">
                   <span>Total MRP</span>
-                  <span>₹14,150</span>
+                  <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
                 </p>
                 <p class="d-flex justify-content-between">
                   <span>Discount</span>
-                  <span class="discount-percentage">₹-6,640</span>
+                  <span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
                 </p>
                 <p class="d-flex justify-content-between">
                   <span>Subtotal</span>
-                  <span>₹7,510</span>
+                  <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></span>
                 </p>
                 <hr>
                 <p class="d-flex justify-content-between">
                   <strong>Total</strong>
-                  <strong>₹7,510</strong>
+                  <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
                 </p>
                 <a href="user/check-out">
                   <button class="buy-now-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
@@ -122,8 +78,20 @@
             </div>
           </div>
         </div>
+        <% } else { %>
+          <!-- Empty Cart Section -->
+          <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
+            <a href="/home">
+              <img src="/assets/logo/cart-empty-img.png" alt="Empty Cart Image" class="empty-cart-image" />
+            </a>
+            <h3>Your cart is currently empty</h3>
+            <p>Start shopping now to add items to your cart!</p>
+            <a href="/home" class="large-button-main">Continue Shopping</a>
+        </div>       
+       <% } %>
       </div>
     </div>
+    
     
     
 
@@ -136,26 +104,15 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const quantityInput = document.getElementById('quantity');
-      const increaseButton = document.getElementById('increase-btn');
-      const decreaseButton = document.getElementById('decrease-btn');
+document.addEventListener('DOMContentLoaded', function () {
+  const quantityInputs = document.querySelectorAll('.quantity-input');
 
-      increaseButton.addEventListener('click', function () {
-          if (quantityInput.value < 7) {
-              quantityInput.value++;
-          }
-      });
-      decreaseButton.addEventListener('click', function () {
-          if (quantityInput.value > 1) {
-              quantityInput.value--;
-          }
-      });
-
-      quantityInput.addEventListener('input', function () {
-          quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
-      });
+  quantityInputs.forEach((input) => {
+    input.addEventListener('input', function () {
+      input.value = Math.max(1, Math.min(7, input.value)); 
+    });
   });
+});
 
 </script>
 </html>
