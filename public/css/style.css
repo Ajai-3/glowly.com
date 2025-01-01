@@ -803,9 +803,6 @@ input[type="number"]::-webkit-input-placeholder {
   animation: heart-beat 0.6s ease-in-out; 
 }
 
-/* .product-card-like .fa-heart:hover {
-  color: var(--main-color);
-} */
 @keyframes heart-beat {
   0% {
       transform: scale(1);
@@ -922,6 +919,24 @@ input[type="number"]::-webkit-input-placeholder {
 .product-card .add-to-cart-btn:hover {
   color: var(--main-color2);
 }
+.notification {
+  position: fixed;
+  top: 88%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50; /* Green background */
+  box-shadow: 0 4px 6px rgb(0, 0, 0, 1);
+  padding: 8px;
+  border-radius: 3px;
+  display: none;
+  z-index: 9999;
+  font-size: 16px;
+}
+
+.notification.show {
+  display: block;
+}
+
 
 /* *************************************************************************************** */
 /* Product Page When The User Click The Product Thsi Page Will Show The Product & Details */

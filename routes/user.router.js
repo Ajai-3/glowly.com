@@ -60,7 +60,7 @@ router.get("/subcategory/:subcategoryName", renderPageWithSubcategory);
 
 // Cart Management
 router.get("/my-cart", renderCartPage)
-router.post("/add-to-cart/:productId", addToCart);
+router.post("/add-to-cart/:id", addToCart);
 
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)

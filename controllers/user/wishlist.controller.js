@@ -50,33 +50,35 @@ export const addToWishlist = async (req, res) => {
         const userId = decoded.userId;
         const productId = req.params.productId;
 
-        const existingWishlist = await Wishlist.findOne({ 
-            user_id: userId, 
-            product_id: productId 
-        });
+        // Find the wishlist for the user, creating it if it doesn't exist
+        let wishlist = await Wishlist.findOne({ user_id: userId });
 
-        if (existingWishlist) {
-            await Wishlist.deleteOne({ _id: existingWishlist._id });
-            return res.json({ 
-                message: 'Product removed from wishlist',
-                action: 'removed', 
-            });
+        // If the wishlist doesn't exist, create one with an empty products array
+        if (!wishlist) {
+            wishlist = new Wishlist({ user_id: userId, products: [] });
         }
 
-        const newWishlistItem = new Wishlist({
-            user_id: userId,
-            product_id: productId,
-        });
+        // Check if the product is already in the wishlist
+        const isProductInWishlist = wishlist.products.some(item => item.product_id.toString() === productId);
 
-        await newWishlistItem.save();
-
-        return res.json({ 
-            message: 'Product added to wishlist',
-            action: 'added', 
-        });
+        if (isProductInWishlist) {
+            // Product is in the wishlist, remove it
+            await Wishlist.updateOne(
+                { _id: wishlist._id },
+                { $pull: { products: { product_id: productId } } }
+            );
+            return res.json({ action: 'removed' });
+        } else {
+            // Product is not in the wishlist, add it
+            await Wishlist.updateOne(
+                { _id: wishlist._id },
+                { $push: { products: { product_id: productId } } }
+            );
+            return res.json({ action: 'added' });
+        }
 
     } catch (error) {
-        console.error("Error adding products in wishlist", error);
-        return res.status(500).send("Error in add to wishlist");
+        console.error("Error adding/removing product in wishlist", error);
+        return res.status(500).send("Error in add/remove to wishlist");
     }
-}
+};

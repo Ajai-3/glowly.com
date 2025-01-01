@@ -109,9 +109,12 @@
                             
                         </div>
                         <div class="d-flex">
-                            <form action="/add-to-cart/<%= product.id %>" method="POST" class="me-3">
-                                <button class="add-to-bag-btn">Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i></button>
+                            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                                <button type="button" id="add-to-cart-btn" class="add-to-bag-btn me-2">
+                                    Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i>
+                                </button>                                 
                             </form>
+                            
                             
                             <a href="/buy-now/<%= product.id %>">
                                 <button class="buy-now-btn">Buy Now</button>
@@ -192,11 +195,16 @@
                         <div class="product-prices-box">
                             <p class="sale-price">&#8377;<%= product.sales_price %></p>
                             <p class="original-price mx-2">&#8377;<%= product.price %></p>
-                            <p class="product-rating">★★★★☆</p>
+                            <!-- <p class="product-rating">★★★★☆</p> -->
+                            <% if (product.price > product.sales_price) { %>
+                                <span class="discount-percentage">
+                                    <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off 
+                                </span>
+                            <% } %>
                         </div>
-                        <a href="/product/<%= product._id %>">
-                            <button class="add-to-cart-btn">Add to Cart</button>
-                        </a>
+                        <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                            <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
+                        </form>
                     </div>
                 <% }) %>
             </div>
@@ -209,6 +217,7 @@
         </div>
         
     </div>  
+    <div id="cart-notification" class="notification">Cart Notification</div>
 
     <%- include('partials/footerforhome') %> 
 
@@ -249,5 +258,93 @@
             });
         });
 
+        // Add To Cart
+        document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+        button.addEventListener('click', (event) => {
+            event.preventDefault();
+            const productId = event.target.dataset.id;
+            const quantity = 1;
+
+            handleCart(productId, quantity);
+        });
+    });
+
+    // Main Cart Button Handling (Single Button)
+    const mainButton = document.getElementById('add-to-cart-btn');
+        if (mainButton) {
+            mainButton.addEventListener('click', () => {
+                const productId = '<%= product._id %>';
+                const quantity = document.getElementById('quantity').value || 1;
+
+                handleCart(productId, quantity);
+            });
+        }
+    });
+
+    function handleCart(productId, quantity) {
+        if ('<%= user %>') {
+            fetch(`/add-to-cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showCartNotification(data.message);
+                    updateStockOnPage(data.newAvailableQuantity);  
+               } else {
+                    showCartNotification(data.message);              
+               }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showCartNotification('An error occurred while adding the product to the cart.');
+            });
+        } else {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.productId === productId);
+
+            if (existingItem) {
+                existingItem.quantity += parseInt(quantity, 10);
+            } else {
+                cart.push({ productId, quantity: parseInt(quantity, 10) });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCartNotification('Product added to cart!');
+        }
+    }
+
+    function showCartNotification(message) {
+        const notification = document.getElementById('cart-notification');
+        notification.textContent = message;
+        notification.classList.add('show');
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+        }, 3000);
+    }
+
+
+    function updateStockOnPage(newQuantity) {
+        const stockElement = document.querySelector('.product-stock');
+        if (stockElement) {
+            // Update the text content of the stock element
+            stockElement.textContent = `Stocks: ${newQuantity > 0 ? newQuantity : 'Unavailable'}`;
+            
+            // Optionally, you can change the CSS class if the stock is zero
+            if (newQuantity <= 0) {
+                stockElement.classList.remove('available');
+                stockElement.classList.add('unavailable');
+            } else {
+                stockElement.classList.remove('unavailable');
+                stockElement.classList.add('available');
+            }
+        }
+    }
     </script>
-</html>
+    </html>

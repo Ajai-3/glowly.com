@@ -58,6 +58,7 @@ export const renderProductPage = async (req, res) => {
 
         return res.render('user/product-page', {
             name: user ? user.name : "",
+            user,
             categories,
             product,
             brands,
@@ -75,14 +76,24 @@ export const renderProductPage = async (req, res) => {
 // Render The Page With Category
 export const renderPageWithCategory = async (req, res) => {
     try {
+        let user = null;
+        let wishlist = [];
+
         const token = req.cookies.token;
-        const decoded = jwt.decode(token);
-        const user = decoded;
- 
+
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+                user = decoded; 
+                wishlist = await Wishlist.findOne({ user_id: user.userId }).populate('products.product_id');
+            } catch (error) {
+                console.log("Invalid or expired token:", error);
+            }
+        }
+
         const { categoryName } = req.params;
 
-        const category = await Category.findOne({ name: categoryName }) 
-
+        const category = await Category.findOne({ name: categoryName });
         if (!category) {
             return res.status(404).send('Category not found');
         }
@@ -91,19 +102,15 @@ export const renderPageWithCategory = async (req, res) => {
             category_id: category._id,
             isDeleted: false
         });
+
         const categories = await Category.find({ isListed: true })
             .populate({
                 path: 'subcategories',
                 match: { isListed: true },  
             });
 
-        let wishlist = [];
-        if (user) {
-            wishlist = await Wishlist.find({ user_id: user.userId });
-        }  
-
         return res.render("user/category", {
-            name: user ? user.name : "",
+            name: user ? user.name : "", 
             user: user,
             products,
             category,
@@ -115,26 +122,35 @@ export const renderPageWithCategory = async (req, res) => {
         console.error("Error in rendering product page with category", error);
         return res.status(500).send("Error in rendering product with category");
     }
-}
+};
 
 // Render The Sub Category Only
 export const renderPageWithSubcategory = async (req, res) => {
     try {
+        let user = null;
+        let wishlist = [];
+
         const token = req.cookies.token;
-        const decoded = jwt.decode(token);
-        const user = decoded;
+
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+                user = decoded;
+                wishlist = await Wishlist.findOne({ user_id: user.userId }).populate('products.product_id');
+            } catch (error) {
+                console.log("Invalid or expired token:", error);
+            }
+        }
 
         const { subcategoryName } = req.params;
 
-
         const subcategory = await Subcategory.findOne({ name: subcategoryName });
-
         if (!subcategory) {
             return res.status(404).send('Subcategory not found');
         }
 
         const products = await Product.find({
-            subcategory_id: subcategory._id,  
+            subcategory_id: subcategory._id,
             isDeleted: false
         });
 
@@ -144,10 +160,6 @@ export const renderPageWithSubcategory = async (req, res) => {
                 match: { isListed: true },  
             });
 
-        let wishlist = [];
-        if (user) {
-            wishlist = await Wishlist.find({ user_id: user.userId });
-        }                   
         return res.render("user/subcategory", {
             name: user ? user.name : "",
             user: user,
@@ -162,4 +174,3 @@ export const renderPageWithSubcategory = async (req, res) => {
         return res.status(500).send("Error in rendering subcategory");
     }
 };
-

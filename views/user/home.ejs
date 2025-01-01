@@ -14,21 +14,25 @@
                     <div class="product-card-like">
                         <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
                             <% if (user) { %> 
-                                <% if (wishlist.some(w => w.product_id._id.toString() === product._id.toString())) { %>
+                                <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString())) { %>
+                                    <!-- Button to remove product from wishlist -->
                                     <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                                        <i class="fa-solid fa-heart in-wishlist"></i> 
+                                        <i class="fa-solid fa-heart in-wishlist"></i>
                                     </button>
                                 <% } else { %>
+                                    <!-- Button to add product to wishlist -->
                                     <button type="submit" title="Add to Wishlist" class="wishlist-button">
                                         <i class="fa-solid fa-heart not-in-wishlist"></i>
                                     </button>
-                                <% } %>
+                                <% } %> 
                             <% } else { %>
+                                <!-- Button for users not logged in -->
                                 <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
                                     <i class="fa-solid fa-heart"></i>
                                 </button>
                             <% } %>
                         </form>
+                        
                     </div>                    
                         <a href="/product/<%= product._id %>">
                         <p class="product-title"><%= product.title %></p>
@@ -44,9 +48,10 @@
                             <% } %>
                             
                         </div>
-                        <form action="/add-to-cart/<%= product.id %>" method="POST">
-                            <button class="add-to-cart-btn">Add to Bag</button>
+                        <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                            <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
                         </form>
+                        
                 </div>
             <% }) %>
         </div>
@@ -55,7 +60,7 @@
             <i class="fas fa-check-circle"></i>&nbsp;&nbsp; 
             <p id="wishlist-notification">Product has been added to Wishlist.</p>
         </div>
-                
+        <div id="cart-notification" class="notification">Cart Notification</div>
 
 </div>  
     
@@ -68,19 +73,24 @@
 </body>
 <%- include('partials/footerforhome') %> 
 <script>
+    // Scroll to top on page load
+window.onload = function () {
+    window.scrollTo(0, 0);
+};
 document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('.wishlist-form');
     const notification = document.querySelector('.wishlist-notification');
 
     forms.forEach(form => {
         form.addEventListener('submit', function (event) {
-            event.preventDefault(); // Preventing Peage Refresh 
-            
-            const button = form.querySelector('button');
-            const icon = button.querySelector('i'); 
-            const productId = form.action.split('/').pop(); 
-            const url = form.action; 
+            event.preventDefault(); // Preventing page refresh
 
+            const button = form.querySelector('button');
+            const icon = button.querySelector('i');
+            const productId = form.action.split('/').pop(); // Extracting productId from the form action
+            const url = form.action;
+
+            // Send request to add or remove product from wishlist
             fetch(url, {
                 method: 'POST',
                 headers: {
@@ -90,18 +100,20 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(response => response.json())
             .then(data => {
-                
+                // Update the icon and button title based on the server response
                 if (data.action === 'added') {
                     icon.classList.remove('not-in-wishlist');
                     icon.classList.add('in-wishlist');
                     button.title = 'Remove from Wishlist';
 
+                    // Show success notification
                     notification.innerHTML = `
                         <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
                         <p>Product has been added to Wishlist.</p>
                     `;
                     notification.classList.add('show');
 
+                    // Remove notification after 3 seconds
                     setTimeout(() => {
                         notification.classList.remove('show');
                     }, 3000);
@@ -110,12 +122,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     icon.classList.add('not-in-wishlist');
                     button.title = 'Add to Wishlist';
 
+                    // Show success notification
                     notification.innerHTML = `
                         <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
                         <p>Product has been removed from Wishlist.</p>
                     `;
                     notification.classList.add('show');
 
+                    // Remove notification after 3 seconds
                     setTimeout(() => {
                         notification.classList.remove('show');
                     }, 3000);
@@ -128,10 +142,59 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const productId = event.target.dataset.id;
+        const quantity = 1;
 
-window.onload = function() {
-      window.scrollTo(0, 0);
-  }
+        if ('<%= user %>') {
+            fetch(`/add-to-cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showCartNotification(data.message);
+                } else {
+                    showCartNotification(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showCartNotification('An error occurred while adding the product to the cart.');
+            });
+        } else {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.productId === productId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ productId, quantity });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCartNotification('Product added to cart!');
+        }
+    });
+});
+function showCartNotification(message) {
+    const notification = document.getElementById('cart-notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
+
+
+
 
 </script>
 

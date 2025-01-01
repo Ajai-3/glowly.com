@@ -14,21 +14,24 @@
                     <div class="product-card-like">
                         <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
                             <% if (user) { %> 
-                                <% if (wishlist.some(w => w.product_id._id.toString() === product._id.toString())) { %>
+                                <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString())) { %>
+                                    <!-- Button to remove product from wishlist -->
                                     <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                                        <i class="fa-solid fa-heart in-wishlist"></i> 
+                                        <i class="fa-solid fa-heart in-wishlist"></i>
                                     </button>
                                 <% } else { %>
+                                    <!-- Button to add product to wishlist -->
                                     <button type="submit" title="Add to Wishlist" class="wishlist-button">
                                         <i class="fa-solid fa-heart not-in-wishlist"></i>
                                     </button>
-                                <% } %>
+                                <% } %> 
                             <% } else { %>
+                                <!-- Button for users not logged in -->
                                 <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
                                     <i class="fa-solid fa-heart"></i>
                                 </button>
                             <% } %>
-                        </form>
+                        </form>                        
                     </div>
                         <a href="/product/<%= product._id %>">
                         <p class="product-title"><%= product.title %></p>
@@ -43,9 +46,9 @@
                                 </span>
                             <% } %>
                         </div>
-                        <a href="/product/<%= product._id %>">
-                            <button class="add-to-cart-btn">Add to Bag</button>
-                        </a>
+                        <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                            <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
+                        </form>
                 </div>
             <% }) %>
         </div>
@@ -53,7 +56,7 @@
             <i class="fas fa-check-circle"></i>&nbsp;&nbsp; 
             <p id="wishlist-notification">Product has been added to Wishlist.</p>
         </div>
-        
+        <div id="cart-notification" class="notification">Cart Notification</div>
 
 </div>  
     
@@ -67,6 +70,9 @@
 <%- include('partials/footerforhome') %>
  
 <script>
+      window.onload = function() {
+        window.scrollTo(0, 0);
+      }
     document.addEventListener('DOMContentLoaded', () => {
         const forms = document.querySelectorAll('.wishlist-form');
         const notification = document.querySelector('.wishlist-notification');
@@ -126,11 +132,58 @@
             });
         });
     });
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const productId = event.target.dataset.id;
+        const quantity = 1;
+
+        if ('<%= user %>') {
+            fetch(`/add-to-cart/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ quantity })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showCartNotification(data.message);
+                } else {
+                    showCartNotification(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showCartNotification('An error occurred while adding the product to the cart.');
+            });
+        } else {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const existingItem = cart.find(item => item.productId === productId);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({ productId, quantity });
+            }
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCartNotification('Product added to cart!');
+        }
+    });
+});
+function showCartNotification(message) {
+    const notification = document.getElementById('cart-notification');
+    notification.textContent = message;
+    notification.classList.add('show');
+
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 3000);
+}
     
-    
-    window.onload = function() {
-          window.scrollTo(0, 0);
-      }
+
     
     </script> 
 </html>
