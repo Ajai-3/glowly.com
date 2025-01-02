@@ -50,10 +50,17 @@ export const addToWishlist = async (req, res) => {
         const userId = decoded.userId;
         const productId = req.params.productId;
 
+        // console.log("Decoded User ID:", userId);
+        // console.log("Product ID:", productId);
+
+
         let wishlist = await Wishlist.findOne({ user_id: userId });
+
+        // console.log("Wishlist", wishlist)
 
         if (!wishlist) {
             wishlist = new Wishlist({ user_id: userId, products: [] });
+            await wishlist.save();
         }
 
         const isProductInWishlist = wishlist.products.some(item => item.product_id.toString() === productId);
