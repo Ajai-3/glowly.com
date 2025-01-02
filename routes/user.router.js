@@ -38,7 +38,9 @@ router.get("/home", renderHomePage); // Home Page User After Login
 router.get("/login", verifyToken, renderLoginPage); // Login Page
 router.get("/signup",  verifyToken, renderSignupPage); // Signup Page
 router.get("/page-not-found", verifyToken, pageNotFound);
-router.get("/reset-password/:token", renderNewPasswordPage); // New Password Page
+
+router.get("/reset-password/:code", renderNewPasswordPage); // New Password Page
+
 router.get("/otp-message", verifyToken, renderOtpStatusPage); // OTP Message Page
 router.get("/forgot-password", verifyToken, renderForgotPasswordPage); // Forgot Password Page
 router.get("/otp-verification", verifyToken,  renderpOtpVerificationPage); // OTP Verification Page
@@ -57,7 +59,8 @@ router.post("/signup",verifyToken,  handleUserSignup);
 router.post("/resend-otp", handleResendOTP);
 router.post("/forgot-password", verifyToken, handleForgotPassword);
 router.post("/otp-verification", verifyToken, handleOTPVerification);
-router.post("/new-password", verifyToken, handleResetPassword)
+
+router.post("/reset-password", handleResetPassword)
 
 // Product, Category & Sub Category Management 
 router.get("/product/:id", renderProductPage);

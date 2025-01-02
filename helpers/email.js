@@ -1,6 +1,14 @@
+import crypto from 'crypto';
 import nodemailer from "nodemailer"
 import dotenv from "dotenv";dotenv.config();
 
+
+// Genarate Random String For The Resend Email
+export const generateResetCode = () => {
+  return crypto.randomBytes(20).toString('hex');
+};
+
+// Genarate OTP 
 export const  generateOTP = () => {
   const OTP = Math.floor(100000 + Math.random() * 900000).toString();
   const expiryTime = Date.now() + 5 * 60 * 1000; 
@@ -104,7 +112,7 @@ export const sendOTPToUserEmail = async (email, OTP) => {
 }
 
 // Reset Password Email
-export const sendResetPasswordEmail = async (email, otp, resetPasswordUrl) => {
+export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
   try {
       // Create a transporter object for nodemailer (example with Gmail)
       const transporter = nodemailer.createTransport({
@@ -174,11 +182,11 @@ export const sendResetPasswordEmail = async (email, otp, resetPasswordUrl) => {
                           </div>
                           <div class="content">
                               <p>Hi,</p>
-                              <p>You requested a password reset for your Glowly E-commerce account. Please use the OTP below to proceed:</p>
-                              <div class="otp">${otp}</div>
-                              <p>If you didn't request this, please ignore this email.</p>
+                              <p>You requested a password reset for your Glowly E-commerce account.</p>
                               <p>To reset your password, click the link below:</p>
+                              <p>This link will expire after 6 minutes. </p>
                               <p><a href="${resetPasswordUrl}">Reset Password</a></p>
+                              <p>If you didn't request this, please ignore this email.</p>
                               <p>Best regards,</p>
                               <p><strong>Glowly Team</strong></p>
                           </div>

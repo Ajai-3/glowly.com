@@ -16,11 +16,42 @@ export const verifyToken = async (req, res, next) => {
         '/otp-verification',
     ];
 
+    const resetPasswordPattern = /^\/reset-password\/[a-f0-9]{24}$/;
+    if (resetPasswordPattern.test(req.path)) {
+        if (!token) {
+            return next(); // Allow access to reset password page if no token
+        }
+
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET_KEY);
+            if (decoded) {
+                return res.redirect("/home"); // Redirect to home if user is logged in and tries to access reset password page
+            }
+        } catch (error) {
+            console.error("JWT Verification Error:", error);
+            return next(); // Allow access to reset password page if token is invalid
+        }
+    }
+    if (resetPasswordPattern.test(req.path)) {
+        if (!token) {
+            return next(); 
+        }
+
+        try {
+            const decoded = jwt.verify(token, JWT_SECRET_KEY);
+            if (decoded) {
+                return res.redirect("/home");
+            }
+        } catch (error) {
+            console.error("JWT Verification Error:", error);
+            return next();
+        }
+    }
+    
     if (restrictedUrls.includes(req.path)) {
         if (token) {
             try {
                 const decoded = jwt.verify(token, JWT_SECRET_KEY);
-                // console.log('Decoded JWT:', decoded);
                 if (decoded) {
                     return res.redirect("/home");
                 }
@@ -40,7 +71,7 @@ export const verifyToken = async (req, res, next) => {
             }
         } catch (error) {
             console.error("JWT Verification Error:", error.message);
-            return next(); 
+            return res.redirect("/login"); 
         }
     } else {
         return res.redirect("/home"); 

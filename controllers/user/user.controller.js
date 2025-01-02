@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";dotenv.config();
-import { generateOTP, sendOTPToUserEmail, sendResetPasswordEmail } from "../../helpers/email.js";
+import { generateOTP, generateResetCode, sendOTPToUserEmail, sendResetPasswordEmail } from "../../helpers/email.js";
 import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
@@ -39,18 +39,27 @@ export const renderpOtpVerificationPage = (req, res) => {
 }
 // Render Forgot Password Page
 export const renderForgotPasswordPage = (req, res) => {
-    const msg = req.session.msg || null;    
+    const msg = req.session.msg || null;  
+    req.session.msg = null  
     return res.render('user/forgot-password', { msg })
 }
 // Render New Password Page
-export const renderNewPasswordPage = (req, res) => {
+export const renderNewPasswordPage = async (req, res) => {
     try {
-        const { token } = req.params;
+        const { code } = req.params;
+        let msg = '';
+        
+        const user = await User.findOne({
+            resetPasswordCode: code,
+            resetPasswordExpires: { $gt: Date.now() },
+        });
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        if (!user) {
+            req.session.msg = { type: "error", msg: "Reset link is expired or invalid." };
+            return res.redirect('/login');
+        }
 
-        // const { email } = decoded;
-        return res.render('user/new-password', { email: decoded.email })
+        return res.render('user/new-password', { email: user.email, msg });
     } catch (error) {
         console.log("Erorr rendering new password page", error)
     }
@@ -316,31 +325,32 @@ export const googleCallbackHandler = async (req, res) => {
 export const handleForgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
-        // console.log(email)
 
         const existUser = await User.findOne({ email, role: 'user' })
         if (!existUser) {
             const msg = { type: 'error', msg: "No user found with this email." };
             return res.render("user/forgot-password", { msg });
         }
-        const { OTP, expiryTime } = generateOTP();
 
-        req.session.otp = OTP; 
-        req.session.otpExpiryTime = expiryTime;
+        const resetCode = generateResetCode();
+        const expiryTime = Date.now() + 6 * 60 * 1000; // 6 Minuts
 
-        const resetToken = jwt.sign({ email: existUser.email }, process.env.JWT_SECRET_KEY, { expiresIn: '15m' });
 
-        const resetPasswordUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetToken}`;
+        existUser.resetPasswordCode = resetCode;
+        existUser.resetPasswordExpires = expiryTime;
+        await existUser.save();
 
-        const sendOTPEmail = await sendResetPasswordEmail(email, OTP, resetPasswordUrl);
-        if (!sendOTPEmail) {
-            const msg = "Error sending OTP to your email.";
+
+        const resetPasswordUrl = `${req.protocol}://${req.get('host')}/reset-password/${resetCode}`;
+
+        const sendResetEmail = await sendResetPasswordEmail(email, resetPasswordUrl);
+        if (!sendResetEmail) {
+            const msg = { type: 'error', msg: "Error sending reset link to your email." };
             return res.render("user/forgot-password", { msg });
         }
 
-
-        res.render("user/otp-message");  
-        console.log("OTP sent to email:", OTP)
+        req.session.msg = { type: "success", msg: "Password reset link sent to your email." };
+        return res.redirect("user/forgot-password");  
 
     } catch (error) {
         console.error("Error in forgot password", error);
@@ -352,25 +362,30 @@ export const handleForgotPassword = async (req, res) => {
 export const handleResetPassword = async (req, res) => {
     try {
         const { email, password, confirmPassword } = req.body;
+
         if (password !== confirmPassword) {
-            return res.render("user/new-password", { msg: "Passwords do not match", email });
+            return res.render("user/new-password", { email, msg: "Passwords do not match" });
         }
 
         const user = await User.findOne({ email });
         if (!user) {
-            return res.render("user/new-password", { msg: "User not found", email });
+            return res.render("user/new-password", { email, msg: "User not found" });
         }
 
-        user.password = await hashedPassword(password);
-        console.log(user.password)
+        const updatedPassword = await hashedPassword(password);
+        user.password = updatedPassword;
 
+        user.resetPasswordCode = undefined; 
+        user.resetPasswordExpires = undefined; 
         await user.save();
-        res.render("user/login", { msg: "Password reset successful. Please login with your new password." });
+
+        req.session.msg = { type: "success", msg: "Password reset successful. Please log in." };
+        return res.redirect("/user/login");
     } catch (error) {
         console.error("Error resetting password", error);
-        res.redirect("/page-not-found");
+        return res.redirect("/page-not-found");
     }
-}
+};
 // Handle Page Not Found 
 export const pageNotFound = async (req, res) => {
     try {
