@@ -7,16 +7,16 @@
         <h3 class="m-0">Log in to Exclusive</h3>
         <p>Enter your details below</p>
         
-          <% if (msg) { %>
+        <% if (msg) { %>
             <div class="alert <%= msg.type === 'error' ? 'alert-error' : 'alert-success' %>">
-              <%= msg.msg %>
+                <%= msg.msg %>
             </div>
-          <% } %>
-           
-        <form action="/login" method="POST">
+        <% } %>
+        
+        <form id="loginForm" action="/login" method="POST" onsubmit="return validateEmptyFields();">
             <!-- email -->
             <div class="wave-group">
-                <input type="email" class="input" name="email" required>
+                <input type="email" id="email" class="input" name="email" placeholder=""/>
                 <span class="bar"></span>
                 <label class="label">
                     <span class="label-char" style="--index: 0">E</span>
@@ -26,9 +26,11 @@
                     <span class="label-char" style="--index: 4">l</span>
                 </label>
             </div>
+            <div id="error1" class="error-message" style="color: red; display: none;"></div>
+            
             <!-- password -->
             <div class="wave-group">
-                <input type="password" class="input password" name="password" required>
+                <input type="password" id="password" class="input password" name="password" placeholder="" />
                 <span class="bar"></span>
                 <label class="label">
                     <span class="label-char" style="--index: 0">P</span>
@@ -42,27 +44,57 @@
                 </label>
                 <button type="button" class="togglePassword" aria-label="Show password"><i class="fa-solid fa-eye"></i></button>
             </div>
+            <div id="error2" class="error-message" style="color: red; display: none;"></div>
+            
             <a href="/forgot-password" id="forgot-password">Forgot Password ?</a>
             <button type="submit" class="btn auth-btn">Login</button>
         </form>
         <div class="social-auth-btn-container m-2">
-            <a href="/auth/google" >
-               <button  class="btn social-google social-auth-btn">
-                   <i class="fa-brands fa-google"></i>
-                   Log in with Google
-               </button>
-             </a>
-             
-             <!-- <a href="/auth/facebook" >
-               <button class="btn social-facebook social-auth-btn">
-                   <i class="fab fa-facebook-f"></i>
-                   Login in with facebook
-               </button>
-             </a>           -->
-         </div>
+            <a href="/auth/google">
+                <button class="btn social-google social-auth-btn">
+                    <i class="fa-brands fa-google"></i>
+                    Log in with Google
+                </button>
+            </a>
+        </div>
         <p>Don’t have an account? <a href="/signup">Signup</a></p>
     </div>
 
 </body>
 <%- include('partials/footer') %> 
+
+<script>
+    function validateEmptyFields() {
+        const emailError = document.getElementById('error1');
+        const passwordError = document.getElementById('error2');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        const emailValue = emailInput.value.trim();
+        const passwordValue = passwordInput.value.trim();
+
+        // Reset previous errors
+        emailError.style.display = "none"; 
+        emailError.textContent = "";
+        passwordError.style.display = "none";
+        passwordError.textContent = "";
+
+        let isValid = true;
+
+        if (emailValue === "") {
+            emailError.style.display = "block"; 
+            emailError.textContent = "Email field cannot be empty.";
+            isValid = false;
+        }
+
+        if (passwordValue === "") {
+            passwordError.style.display = "block"; 
+            passwordError.textContent = "Password field cannot be empty.";
+            isValid = false;
+        }
+
+        return isValid;  
+    }
+</script>
+
 </html>

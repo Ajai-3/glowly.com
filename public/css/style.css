@@ -339,8 +339,14 @@ a {
   transition: 0.2s ease all;
   transition-delay: calc(var(--index) * 0.05s);
 }
-.wave-group .input:focus ~ label .label-char,
+/* .wave-group .input:focus ~ label .label-char,
 .wave-group .input:valid ~ label .label-char {
+  transform: translateY(-20px);
+  font-size: var(--font-size-p); /* 12px */
+  /* color: var(--main-color); */
+/* } */ 
+.wave-group .input:focus ~ .label .label-char,
+.wave-group .input:not(:placeholder-shown) ~ .label .label-char {
   transform: translateY(-20px);
   font-size: var(--font-size-p); /* 12px */
   color: var(--main-color);
@@ -1295,28 +1301,93 @@ input[type="number"]::-webkit-input-placeholder {
   font-size: 100px;
 }
 
-
-#alternative-no::-webkit-outer-spin-button,
-#alternative-no::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.user-menu-account label {
+  color: var(--text-color-3);
+}
+.user-menu-account input::placeholder,
+.user-menu-account textarea::placeholder {
+  color: var(--text-color-3);
 }
 
-#alternative-no {
-    -moz-appearance: textfield; 
-    appearance: textfield;      
+.user-menu-account input {
+  outline: none;
+  padding: 5px;
+  padding-left: 10px;
+  border-radius: 5px;
+  color: var(--text-color-3);
+  font-size: var(--font-size-second);
+  border: 1px solid var(--second-text-color);
+  background-color: var(--bg-color-7);
+  width: 280px;
+}
+.user-menu-account textarea {
+  outline: none;
+  color: var(--text-color-4);
+  border-radius: 5px;
+  padding: 5px;
+  font-size: var(--font-size-second);
+  border: 1px solid var(--second-text-color);
+  background-color: var(--bg-color-7);
+  width: 600px;
 }
 
-#pincode::-webkit-outer-spin-button,
-#pincode::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.user-menu-account .center-div input {
+  width: 200px;
 }
-#hone-no::-webkit-outer-spin-button,
-#hone-no::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+.left-align {
+  width: 600px;
+  text-align: left; 
 }
+
+.user-menu-account .center-div-checkbox input {
+  font-size: 16px; 
+  width: 30px;
+
+}
+
+.user-menu-account email {
+  color: var(--text-color-3);
+}
+
+.user-menu-account #alternative-no,
+.user-menu-account #phone-no,
+.user-menu-account #pincode {
+  background-color: var(--bg-color-7) !important;
+}
+
+.user-menu-account #alternative-no label,
+.user-menu-account #phone-no label,
+.user-menu-account #pincode label {
+  background-color: var(--bg-color-3) !important;
+}
+
+.user-menu-account #alternative-no::placeholder,
+.user-menu-account #phone-no::placeholder,
+.user-menu-account #pincode::placeholder {
+  color: var(--text-color-3);
+}
+
+
+
+.user-menu-account input,
+.user-menu-account textarea {
+  color: var(--text-color-4); 
+}
+
+.user-menu-account input:focus {
+  border: 1px solid var(--text-color-2);
+}
+.user-menu-account label.focused {
+  color: var(--text-color-4);
+}
+
+.user-menu-account textarea:focus {
+  border: 1px solid var(--text-color-2);
+}
+
+
+
+
 
 
 

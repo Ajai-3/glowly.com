@@ -242,7 +242,7 @@ export const handleUserLogin = async (req, res) => {
         }
         // Check The User Is Blocked By Admin
         if (user.status === 'blocked') {
-            const msg = { type: 'error', msg: "Account blocked by admin...!" };
+            const msg = { type: 'error', msg: "Account blocked by Admin...!" };
             return res.render("user/login", { msg });
 
         }
@@ -252,7 +252,7 @@ export const handleUserLogin = async (req, res) => {
 
         // If The Password Dosn't Match
         if (!passwordMatch) {
-            const msg = { type: 'error', msg: "Invalid Password" };
+            const msg = { type: 'error', msg: "Invalid Credential..!" };
             return res.render("user/login", { msg });            
         }
 

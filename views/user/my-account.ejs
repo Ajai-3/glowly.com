@@ -30,72 +30,30 @@
                         <p>Personal information</p>
                         <div class="mb-3"><i class="fa-solid fa-circle-user"></i></div>
                         
-                        <div class="d-flex">
+                        <div class="d-flex justify-content-between gap-5 mb-2">
                             <div>
                                 <label for="name">Name</label><br>
-                                <input type="text" name="name" id="name" placeholder="hai">
+                                <input type="text" name="name" id="name" placeholder="Name">
                             </div>
                             <div>
                                 <label for="date-of-birth">Date Of Birth</label><br>
                                 <input type="date" name="date-of-birth" id="date-of-birth">
                             </div>
                         </div>
-                        <div class="d-flex">
-                            <div>
-                                <label for="city">City</label><br>
-                                <input type="text" name="city" id="city" placeholder="hai">
-                            </div>
-                            <div>
-                                <label for="district">District</label><br>
-                                <input type="text" name="district" id="district">
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <div>
-                                <label for="state">State</label><br>
-                                <input type="text" name="state" id="state" placeholder="hai">
-                            </div>
-                            <div>
-                                <label for="country">Country</label><br>
-                                <input type="text" name="country" id="country">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="address">Address</label><br>
-                            <textarea name="address" id="address"></textarea>
-                        </div>
-                        <div class="d-flex">
-                            <div>
-                                <label for="pincode">Pincode</label><br>
-                                <input type="number" name="pincode" id="pincode">
-                            </div>
-                            <div>
-                                <label for="address-type">Address Type</label><br>
-                                <input type="checkbox" id="address-type" name="address-type" value="home"> Home
-                                <input type="checkbox" id="address-type" name="address-type" value="work"> Work
-                            </div>
-                            <div>
-                                <label for="land-mark">landMark</label><br>
-                                <input type="text" name="landMark" id="landMark">
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column"> 
+                        <div class="d-flex flex-column mb-2"> 
                             <div class="d-block"><h5>Contact information</h5>  </div>
-                            <div class="d-flex">
+                            <div class="d-flex justify-content-between gap-5">
                                 <div>     
                                     <label for="phone-no">Phone Number</label><br>
                                     <input type="number" name="phone-no" id="phone-no" placeholder="+91 9987452314">
                                 </div>
                                 <div>
                                     <label for="email">Email</label><br>
-                                    <input type="email" name="email" id="email" placeholder="anndearmas@gmail.com">
+                                    <input type="email" name="email" id="email" placeholder="anndearmas@gmail.com" readonly>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label for="alternative-no">Alternate Number (optional)</label><br>
-                            <input type="number" name="alternative-no" id="alternative-no" placeholder="+91 9834274898">
-                        </div>
+                        <button type="submit" class="large-button-green px-5 my-3">UPDATE</button>
                     </div>
                   </form>
                 </div>
@@ -116,26 +74,32 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-      const quantityInput = document.getElementById('quantity');
-      const increaseButton = document.getElementById('increase-btn');
-      const decreaseButton = document.getElementById('decrease-btn');
+  document.querySelectorAll('.user-menu-account input').forEach(input => {
+        input.addEventListener('focus', function() {
+            const label = document.querySelector(`label[for="${this.id}"]`);
+            if (label) {
+                label.classList.add('focused');
+            }
+        });
 
-      increaseButton.addEventListener('click', function () {
-          if (quantityInput.value < 7) {
-              quantityInput.value++;
-          }
-      });
-      decreaseButton.addEventListener('click', function () {
-          if (quantityInput.value > 1) {
-              quantityInput.value--;
-          }
-      });
+        input.addEventListener('blur', function() {
+            const label = document.querySelector(`label[for="${this.id}"]`);
+            if (label) {
+                label.classList.remove('focused');
+            }
+        });
+    });
 
-      quantityInput.addEventListener('input', function () {
-          quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
-      });
-  });
+    const textarea = document.getElementById('address');
+    const label = document.querySelector('label[for="address"]');
+
+    textarea.addEventListener('focus', () => {
+        label.style.color = 'var(--text-color-4)';
+    });
+
+    textarea.addEventListener('blur', () => {
+        label.style.color = ''; 
+    });
 
 </script>
 </html>

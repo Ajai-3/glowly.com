@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+
+    <div class="user-contents">
+        <div class="container my-2">
+            <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a></div>
+            <div class="row">
+              <!-- Left Side Box -->
+              <div class="col-md-3">
+                <div class="card shadow-sm user-menu">
+                    <hr>
+                    <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
+                    <a href="/manage-address"  class="active"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
+                    <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
+                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
+                    <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
+                    <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
+                    <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
+                </div>
+              </div>
+              
+              <!-- Right Side Box -->
+              <div class="col-md-9">
+                <div class="card shadow-sm p-4 user-menu-account">
+                  <form action="/my-account" method="POST">
+                    <div class="d-flex flex-column align-items-center">
+                        <h5 class="card-title m-0">Your Details</h5>
+                        <p>Personal information</p>
+                        <div class="mb-3"><i class="fa-solid fa-circle-user"></i></div>
+                        
+                        <div class="d-flex justify-content-between gap-5 mb-2">
+                            <div>
+                                <label for="name">Name</label><br>
+                                <input type="text" name="name" id="name" placeholder="Name">
+                            </div>
+                            <div>
+                                <label for="date-of-birth">Date Of Birth</label><br>
+                                <input type="date" name="date-of-birth" id="date-of-birth">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between gap-5 mb-2">
+                            <div>
+                                <label for="city">City</label><br>
+                                <input type="text" name="city" id="city" placeholder="City">
+                            </div>
+                            <div>
+                                <label for="district">District</label><br>
+                                <input type="text" name="district" id="district" placeholder="District">
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between gap-5 mb-2">
+                            <div>
+                                <label for="state">State</label><br>
+                                <input type="text" name="state" id="state" placeholder="State">
+                            </div>
+                            <div>
+                                <label for="country">Country</label><br>
+                                <input type="text" name="country" id="country" placeholder="Country">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="address">Address</label><br>
+                            <textarea name="address" id="address" placeholder="Address"></textarea>
+                        </div>
+                        <div class="d-flex mb-2 ">
+                            <div class="center-div me-">
+                                <label for="pincode">Pincode</label><br>
+                                <input type="number" name="pincode" id="pincode" placeholder="682311">
+                            </div>
+                            <div class="center-div-checkbox mx-4">
+                                <label for="address-type">Address Type</label><br>
+                                <input type="checkbox" class="checkbox-user" id="address-type" name="address-type" value="home"> Home
+                                <input type="checkbox" class="checkbox-user" id="address-type" name="address-type" value="work"> Work
+                            </div>
+                            <div class=" center-div ms-">
+                                <label for="land-mark">LandMark</label><br>
+                                <input type="text" name="land-mark" id="land-mark" placeholder="LandMark">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-2 left-align">
+                            <label for="alternative-no">Alternate Number (optional)</label><br>
+                            <input type="number" name="alternative-no" id="alternative-no" placeholder="+91 9834274898">
+                        </div>
+                        <button type="submit" class="large-button-green px-5 my-3">UPDATE</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+    </div>
+    
+    
+
+
+
+
+
+
+</body>
+<%- include('partials/footerforhome') %> 
+
+
+</html>
