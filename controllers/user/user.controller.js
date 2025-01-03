@@ -258,7 +258,7 @@ export const handleUserLogin = async (req, res) => {
 
         // JWT Token
         const token = jwt.sign(
-            { userId: user._id, name: user.name },
+            { userId: user._id, name: user.name, profilePic: user.profilePic || null },
             process.env.JWT_SECRET_KEY,
             { expiresIn: '1h' }
         )
@@ -304,7 +304,7 @@ export const googleCallbackHandler = async (req, res) => {
 
             // JWT Token
             const token = jwt.sign(
-                { userId: existingUser._id, name: existingUser.name },
+                { userId: existingUser._id, name: existingUser.name,  profilePic: existingUser.profilePic || null },
                 process.env.JWT_SECRET_KEY,
                 { expiresIn: '1h' }
             );

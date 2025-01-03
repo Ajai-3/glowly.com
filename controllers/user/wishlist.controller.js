@@ -27,6 +27,7 @@ export const renderWishlistPage = async (req, res) => {
                      
         return res.render("user/wishlist", {
            name: user ? user.name : "",
+           user: user,
         //    brands,
         //    products,
            categories

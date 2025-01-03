@@ -56,6 +56,7 @@ export const renderCartPage = async (req, res) => {
         
         return res.render("user/cart", {
            name: user ? user.name : "",
+           user: user,
            brands,
            products,
            categories,

@@ -27,6 +27,7 @@ export const renderMyAccountPage = async (req, res) => {
              
       return res.render("user/my-account", {
         name: user ? user.name : "",
+        user: user,
         categories,
         activeUser
 
@@ -53,8 +54,6 @@ export const handleProfileUpdate = async (req, res) => {
         if (req.file) {
             updatedData.profilePic = `/uploads/profile-pics/${req.file.filename}`;
         }
-      
-        console.log(user)
 
         const updatedUser = await User.findByIdAndUpdate(
             user.userId, 
@@ -66,13 +65,22 @@ export const handleProfileUpdate = async (req, res) => {
             return res.status(404).send("User not found");
         }
 
-        res.redirect('/my-account');
+        // Create a new token using your model
+        const newToken = jwt.sign(
+            { userId: updatedUser._id, name: updatedUser.name, profilePic: updatedUser.profilePic || null  },
+            process.env.JWT_SECRET_KEY,
+            { expiresIn: '1h' } // Token expiration
+        );
 
+        // Set the new token as a cookie
+        res.cookie('token', newToken, { httpOnly: true, secure: true });
+
+        res.redirect('/my-account');
     } catch (error) {
         console.log("Error in update profile", error);
-        return res.status(500).send("Error in update profile")
+        return res.status(500).send("Error in update profile");
     }
-}
+};
 
 
 // export const removeProfilePicture = async (req, res) => {
@@ -124,6 +132,7 @@ export const renderManageAddressPage = async (req, res) => {
              
       return res.render("user/manage-address", {
         name: user ? user.name : "",
+        user: user,
         categories
 
       })  

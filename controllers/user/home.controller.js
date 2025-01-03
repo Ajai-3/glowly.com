@@ -23,6 +23,8 @@ export const renderHomePage = async (req, res) => {
                 console.log("Invalid or expired token:", error);
             }
         }
+
+        // console.log(user)
         const products = await Product.find({ isDeleted: false });
         const brands = await Brand.find({ isListed: true });
         const categories = await Category.find({ isListed: true })

@@ -117,8 +117,13 @@
                     
                     <div class="profile-section dropdown">
                         <div class="d-flex align-items-center">
-                            <span class="username"><%= name %></span>
-                            <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+                            <span class="username ms-2"><%= name %></span>
+                            <% if (user && user.profilePic) { %>
+                                <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
+                                
+                            <% } else { %>
+                                <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+                            <% } %>
                         </div>
 
                         
