@@ -1282,7 +1282,7 @@ input[type="number"]::-webkit-input-placeholder {
 }
 
 .user-menu-wishlist {
-  min-height: 500px;
+  min-height: 450px;
   color: var(--text-color-4);
   /* ******************************************* */
   /* background-color: var(--bg-color-6); */
@@ -1291,14 +1291,21 @@ input[type="number"]::-webkit-input-placeholder {
 
 /* My Acoount */
 .user-menu-account {
-  min-height: 500px;
+  min-height: 450px;
   color: var(--text-color-4);
   /* ******************************************* */
   /* background-color: var(--bg-color-6); */
   background-color: var(--bg-color);
 }
 .user-menu-account .fa-circle-user {
-  font-size: 100px;
+  font-size: 90px;
+}
+.user-menu-account img {
+ width: 90px; 
+ height: 90px; 
+ object-fit: cover; 
+ border-radius: 50%; 
+ cursor: pointer;
 }
 
 .user-menu-account label {

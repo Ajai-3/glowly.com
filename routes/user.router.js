@@ -1,6 +1,9 @@
 import express from "express";
 import passport from "../config/passport.js";
 const router = express.Router();
+import multer from "multer";
+import storage from "../helpers/multer.js"
+const upload = multer({ storage: storage });
 import { verifyToken } from "../middlewares/auth.middleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
 import {
@@ -28,7 +31,7 @@ import {
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart } from "../controllers/user/cart.controller.js";
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
-import { renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
+import { handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -69,6 +72,8 @@ router.get("/subcategory/:subcategoryName", renderPageWithSubcategory);
 
 // Account Mangement
 router.get("/my-account", renderMyAccountPage)
+router.post("/my-account",  upload.single('profile-pic'), handleProfileUpdate)
+// router.post("/remove-profile-pic", removeProfilePicture);
 
 // Address Management
 router.get("/manage-address", renderManageAddressPage)

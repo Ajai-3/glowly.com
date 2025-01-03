@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema ({
         type: Date,
         default: null 
     },
+    profilePic: { 
+        type: String, 
+        required: false 
+    },
     resetPasswordCode: { 
         type: String 
     },

@@ -24,20 +24,32 @@
               <div class="col-md-9">
                 <div class="card shadow-sm p-4 user-menu-account">
                   
-                  <form action="/my-account" method="POST">
+                  <form id="myAccountForm" action="/my-account" method="POST" enctype="multipart/form-data">
                     <div class="d-flex flex-column align-items-center">
                         <h5 class="card-title m-0">Your Details</h5>
                         <p>Personal information</p>
-                        <div class="mb-3"><i class="fa-solid fa-circle-user"></i></div>
-                        
+                        <div class="profile-icon">
+                            <label for="profile-pic">
+                                <% if (activeUser.profilePic) { %>
+                                    <img src="<%= activeUser.profilePic %>" 
+                                         alt="Profile Image">
+                                <% } else { %>
+                                    <i class="fa-solid fa-circle-user"></i>
+                                <% } %>
+                            </label>
+                            <input type="file" name="profile-pic" id="profile-pic" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                        </div>
                         <div class="d-flex justify-content-between gap-5 mb-2">
                             <div>
                                 <label for="name">Name</label><br>
-                                <input type="text" name="name" id="name" placeholder="Name">
+                                <input type="text" name="name" id="name" value="<%= activeUser.name %>" placeholder="Name">
+                                <div id="nameError" class="error-message"></div>
                             </div>
+                            
                             <div>
                                 <label for="date-of-birth">Date Of Birth</label><br>
-                                <input type="date" name="date-of-birth" id="date-of-birth">
+                                <input type="date" name="date-of-birth" id="date-of-birth" value="<%= activeUser.dateOfBirth ? activeUser.dateOfBirth.toISOString().split('T')[0] : '' %>">
+                                <div id="dobError" class="error-message"></div>
                             </div>
                         </div>
                         <div class="d-flex flex-column mb-2"> 
@@ -45,11 +57,12 @@
                             <div class="d-flex justify-content-between gap-5">
                                 <div>     
                                     <label for="phone-no">Phone Number</label><br>
-                                    <input type="number" name="phone-no" id="phone-no" placeholder="+91 9987452314">
+                                    <input type="number" name="phone-no" id="phone-no" value="<%= activeUser.phone_no ? activeUser.phone_no : 'Not available' %>">
+                                    <div id="phoneError" class="error-message"></div>
                                 </div>
                                 <div>
                                     <label for="email">Email</label><br>
-                                    <input type="email" name="email" id="email" placeholder="anndearmas@gmail.com" readonly>
+                                    <input type="email" name="email" id="email" value="<%= activeUser.email %>" readonly>
                                 </div>
                             </div>
                         </div>
@@ -60,46 +73,117 @@
               </div>
             </div>
           </div>
-          
     </div>
-    
-    
-
-
-
-
-
 
 </body>
 <%- include('partials/footerforhome') %> 
 
 <script>
-  document.querySelectorAll('.user-menu-account input').forEach(input => {
+    document.querySelectorAll('.user-menu-account input').forEach(input => {
         input.addEventListener('focus', function() {
             const label = document.querySelector(`label[for="${this.id}"]`);
-            if (label) {
-                label.classList.add('focused');
-            }
+            if (label) label.classList.add('focused');
         });
 
         input.addEventListener('blur', function() {
             const label = document.querySelector(`label[for="${this.id}"]`);
-            if (label) {
-                label.classList.remove('focused');
-            }
+            if (label) label.classList.remove('focused');
         });
     });
 
-    const textarea = document.getElementById('address');
-    const label = document.querySelector('label[for="address"]');
+    function previewImage(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
 
-    textarea.addEventListener('focus', () => {
-        label.style.color = 'var(--text-color-4)';
+        reader.onload = function () {
+            const label = document.querySelector('label[for="profile-pic"]');
+            
+            const image = document.createElement('img');
+            image.src = reader.result;
+            image.alt = "Profile Image";
+            
+            image.style.width = '90px';
+            image.style.height = '90px';
+            image.style.objectFit = 'cover';
+            image.style.borderRadius = '50%';
+            image.style.cursor = 'pointer';
+
+            label.innerHTML = '';
+            label.appendChild(image); 
+        };
+
+        if (file) {
+            reader.readAsDataURL(file); 
+        }
+    }
+
+
+    document.getElementById('myAccountForm').addEventListener('submit', function(event) {
+        if (!validateMyAccount()) {
+            event.preventDefault();
+        }
     });
 
-    textarea.addEventListener('blur', () => {
-        label.style.color = ''; 
-    });
+    function validateMyAccount() {
+        let isValid = true;
 
+        // Name validation
+        const nameInput = document.getElementById('name');
+        const nameError = document.getElementById('nameError');
+        const nameValue = nameInput.value.trim();
+
+        if (!nameValue || !/^[a-zA-Z\s]+$/.test(nameValue)) {
+            nameError.textContent = "Please enter a valid name (letters and spaces only).";
+            nameError.style.display = "block";
+            isValid = false;
+        } else {
+            nameError.style.display = "none";
+        }
+
+        // Phone number validation
+        const phoneInput = document.getElementById('phone-no');
+        const phoneError = document.getElementById('phoneError');
+        const phoneValue = phoneInput.value.trim();
+
+        if (phoneValue && phoneValue.length !== 10) {
+            phoneError.textContent = "Please enter a valid 10-digit phone number.";
+            phoneError.style.display = "block";
+            isValid = false;
+        } else {
+            phoneError.style.display = "none";
+        }
+
+
+        const dobInput = document.getElementById('date-of-birth');
+        const dobError = document.getElementById('dobError');
+        const dobValue = dobInput.value;
+
+        if (dobValue) {
+            const dobDate = new Date(dobValue);
+            const currentDate = new Date();
+
+            const age = currentDate.getFullYear() - dobDate.getFullYear();
+            const monthDifference = currentDate.getMonth() - dobDate.getMonth();
+            const dayDifference = currentDate.getDate() - dobDate.getDate();
+
+            const isBirthdayPassedThisYear = (monthDifference > 0) || (monthDifference === 0 && dayDifference >= 0);
+            const correctedAge = isBirthdayPassedThisYear ? age : age - 1;
+
+            if (dobDate > currentDate) {
+                dobError.textContent = "Date of birth cannot be in the future.";
+                dobError.style.display = "block";
+                isValid = false;
+            } else if (correctedAge < 12) {
+                dobError.textContent = "You must be at least 12 years old.";
+                dobError.style.display = "block";
+                isValid = false;
+            } else {
+                dobError.style.display = "none";
+            }
+        }
+
+        return isValid;
+    }
 </script>
+
 </html>
