@@ -44,6 +44,9 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
+  window.onload = function () {
+    window.scrollTo(10, 10);
+  };
   document.addEventListener('DOMContentLoaded', function () {
       const quantityInput = document.getElementById('quantity');
       const increaseButton = document.getElementById('increase-btn');

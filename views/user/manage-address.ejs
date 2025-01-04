@@ -1,109 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <%- include('partials/headforhome') %>
+<%- include('partials/headforhome') %>
 
-
-    <div class="user-contents">
-        <div class="container my-2">
-            <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/manage-address">Manage Address</a></div>
-            <div class="row">
-              <!-- Left Side Box -->
-              <div class="col-md-3">
-                <div class="card shadow-sm user-menu">
-                    <hr>
-                    <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                    <a href="/manage-address"  class="active"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
-                    <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
-                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
-                    <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                    <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                    <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
-                </div>
-              </div>
-              
-              <!-- Right Side Box -->
-              <div class="col-md-9">
-                <div class="card shadow-sm p-4 user-menu-account">
-                  <form action="/my-account" method="POST">
-                    <div class="d-flex flex-column align-items-center">
-                        <h5 class="card-title m-0">Your Details</h5>
-                        <p>Personal information</p>
-                        <div class="mb-3"><i class="fa-solid fa-circle-user"></i></div>
-                        
-                        <div class="d-flex justify-content-between gap-5 mb-2">
-                            <div>
-                                <label for="name">Name</label><br>
-                                <input type="text" name="name" id="name" placeholder="Name">
+<body>
+  <div class="user-contents">
+    <div class="container my-2">
+      <div id="breadcrumbs" class="brudcrumbs-user-menu">
+        <a href="/home">Home</a> > <a href="/manage-address">Manage Address</a>
+      </div>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="card shadow-sm user-menu">
+            <hr>
+            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
+            <a href="/manage-address" class="active"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
+            <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
+            <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
+            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
+            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
+            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
+          </div>
+        </div>
+        <div class="col-md-9">
+          <div id="view-address" class="card shadow-sm p-4 user-menu-account">
+            <div class="d-flex justify-content-between">
+                <h5>Your Saved Addresses</h5>
+                <button id="add-address-btn" class="large-button-blue mt-4 mb-2">Add Address</button>
+            </div>
+            <div class="d-flex flex-wrap">
+                <% if (addresses.length > 0) { %>
+                        <% addresses.forEach(address => { %>
+                            <div class="user-address-display">
+                                <div class="user-address-display-button">
+                                   <button class="edit-btn">Edit</button>
+                                   <button class="block-btn">Remove</button>
+                                </div>
+                               <p><strong>Address Type: </strong> <%= address.address_type %> </p>
+                               <p><%= address.address %></p>
+                               <p><%= address.land_mark %></p>
+                               <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
+                                <p><%= address.country %></p>
+                                <p>Alternate Contact:</p>
+                                <% if (address.alternative_phone_no) { %>
+                                    <p><%= address.alternative_phone_no %></p>
+                                <% } %>
+                                <% if (address.alternative_email) { %>
+                                    <p><%= address.alternative_email %></p>
+                                <% } %>
                             </div>
-                            <div>
-                                <label for="date-of-birth">Date Of Birth</label><br>
-                                <input type="date" name="date-of-birth" id="date-of-birth">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between gap-5 mb-2">
-                            <div>
-                                <label for="city">City</label><br>
-                                <input type="text" name="city" id="city" placeholder="City">
-                            </div>
-                            <div>
-                                <label for="district">District</label><br>
-                                <input type="text" name="district" id="district" placeholder="District">
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between gap-5 mb-2">
-                            <div>
-                                <label for="state">State</label><br>
-                                <input type="text" name="state" id="state" placeholder="State">
-                            </div>
-                            <div>
-                                <label for="country">Country</label><br>
-                                <input type="text" name="country" id="country" placeholder="Country">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="address">Address</label><br>
-                            <textarea name="address" id="address" placeholder="Address"></textarea>
-                        </div>
-                        <div class="d-flex mb-2 ">
-                            <div class="center-div me-">
-                                <label for="pincode">Pincode</label><br>
-                                <input type="number" name="pincode" id="pincode" placeholder="682311">
-                            </div>
-                            <div class="center-div-checkbox mx-4">
-                                <label for="address-type">Address Type</label><br>
-                                <input type="checkbox" class="checkbox-user" id="address-type" name="address-type" value="home"> Home
-                                <input type="checkbox" class="checkbox-user" id="address-type" name="address-type" value="work"> Work
-                            </div>
-                            <div class=" center-div ms-">
-                                <label for="land-mark">LandMark</label><br>
-                                <input type="text" name="land-mark" id="land-mark" placeholder="LandMark">
-                            </div>
-                        </div>
-                        
-                        <div class="mb-2 left-align">
-                            <label for="alternative-no">Alternate Number (optional)</label><br>
-                            <input type="number" name="alternative-no" id="alternative-no" placeholder="+91 9834274898">
-                        </div>
-                        <button type="submit" class="large-button-green px-5 my-3">UPDATE</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+                        <% }) %>
+                <% } else { %>
+                    <p>No addresses found. Add a new address!</p>
+                <% } %>
             </div>
           </div>
-          
+
+          <div id="add-address" class="card shadow-sm p-4 user-menu-account" style="display: none;">
+            <form id="addAddressForm" action="/add-address" method="POST" onsubmit="return addressFormValidation()">
+              <div class="d-flex flex-column align-items-center">
+                <h5 class="mb-4">Add a New Address</h5>
+                <div class="d-flex justify-content-between gap-5 mb-2">
+                  <div>
+                    <label for="city">City</label><br>
+                    <input type="text" name="city" id="city" placeholder="City">
+                    <div id="cityError" class="error-message"></div>
+                  </div>
+                  <div>
+                    <label for="district">District</label><br>
+                    <input type="text" name="district" id="district" placeholder="District">
+                    <div id="districtError" class="error-message"></div> 
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between gap-5 mb-2">
+                  <div>
+                    <label for="state">State</label><br>
+                    <input type="text" name="state" id="state" placeholder="State">
+                    <div id="stateError" class="error-message"></div>
+                  </div>
+                  <div>
+                    <label for="country">Country</label><br>
+                    <input type="text" name="country" id="country" placeholder="Country">
+                    <div id="countryError" class="error-message"></div>
+                  </div>
+                </div>
+                <div>
+                  <label for="address">Address</label><br>
+                  <textarea name="address" id="address" placeholder="Address"></textarea>
+                  <div id="addressError" class="error-message"></div>
+                </div>
+                <div class="d-flex mb-2">
+                  <div class="center-div me-">
+                    <label for="pin_code">Pincode</label><br>
+                    <input type="number" name="pin_code" id="pincode" placeholder="682311">
+                    <div id="pincodeError" class="error-message"></div>
+                  </div>
+                  <div class="center-div-checkbox mx-4">
+                    <label for="address_type">Address Type</label><br>
+                    <input type="radio" class="checkbox-user" id="address_type_home" name="address_type" value="home"> Home
+                    <input type="radio" class="checkbox-user" id="address_type_work" name="address_type" value="work"> Work
+                    <div id="checkboxError" class="error-message"></div>
+                  </div>
+                  <div class="center-div ms-">
+                    <label for="land_mark">LandMark</label><br>
+                    <input type="text" name="land_mark" id="land_mark" placeholder="LandMark">
+                    <div id="LandMarkError" class="error-message"></div>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between gap-5 mb-1">
+                  <div>
+                    <label for="alternative_phone_no">Alternate Number (optional)</label><br>
+                    <input type="number" name="alternative_phone_no" id="alternative_phone_no" placeholder="+91 9834274898">
+                    <div id="phoneError" class="error-message"></div>
+                  </div>
+                  <div>
+                    <label for="alternative_email">Alternate Email (optional)</label><br>
+                    <input type="email" name="alternative_email" id="alternative_email" placeholder="annadearmas@gmail.com">
+                    <div id="email" class="error-message"></div>
+                  </div>
+                </div>
+                <button type="submit" class="large-button-green px-5 my-2"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;ADD ADDRESS</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    
-    
+  </div>
+
+  <script>
+    window.onload = function () {
+       window.scrollTo(0, 0);
+    };
+   
+    document.addEventListener("DOMContentLoaded", () => {
+      const addAddressBtn = document.getElementById("add-address-btn");
+      const cancelBtn = document.getElementById("cancel-btn");
+      const viewAddressDiv = document.getElementById("view-address");
+      const addAddressDiv = document.getElementById("add-address");
+      const breadcrumbs = document.getElementById("breadcrumbs");
+
+      addAddressBtn.addEventListener("click", () => {
+        viewAddressDiv.style.display = "none";
+        addAddressDiv.style.display = "block";
+
+        breadcrumbs.innerHTML = `
+          <a href="/home">Home</a> > 
+          <a href="/manage-address">Manage Address</a> > 
+          <a href="###">Add New Address</a>
+        `;
+      });
+
+      cancelBtn.addEventListener("click", () => {
+        addAddressDiv.style.display = "none";
+        viewAddressDiv.style.display = "block";
+
+        breadcrumbs.innerHTML = `
+          <a href="/home">Home</a> > 
+          <a href="/manage-address">Manage Address</a>
+        `;
+      });
+    });
 
 
 
+    document.getElementById('addAddressForm').addEventListener('submit', function(event) {
+        if (!addressFormValidation()) {
+            event.preventDefault();
+        }
+    });
+
+    function addressFormValidation() {
+        let isValid = true;
+
+        const addErrorBorder = (element) => {
+            element.style.border = "1px solid var(--red-text-color-4)";
+        };
+
+        const addValidBorder = (element) => {
+            element.style.border = "1px solid var(--green-text-color-2)";
+        };
+
+        const resetBorder = (element) => {
+            element.style.border = "";
+        };
+
+        const city = document.getElementById('city');
+        const cityError = document.getElementById('cityError');
+        if (!city.value.trim() || !/^[a-zA-Z\s]+$/.test(city.value.trim())) {
+            cityError.textContent = "Please enter a valid city name (letters and spaces only).";
+            cityError.style.display = "block";
+            addErrorBorder(city);
+            isValid = false;
+        } else {
+            cityError.style.display = "none";
+            addValidBorder(city);
+        }
+
+        const district = document.getElementById('district');
+        const districtError = document.getElementById('districtError');
+        if (!district.value.trim() || !/^[a-zA-Z\s]+$/.test(district.value.trim())) {
+            districtError.textContent = "Please enter a valid district name (letters and spaces only).";
+            districtError.style.display = "block";
+            addErrorBorder(district);
+            isValid = false;
+        } else {
+            districtError.style.display = "none";
+            addValidBorder(district);
+        }
+
+        const state = document.getElementById('state');
+        const stateError = document.getElementById('stateError');
+        if (!state.value.trim() || !/^[a-zA-Z\s]+$/.test(state.value.trim())) {
+            stateError.textContent = "Please enter a valid state name (letters and spaces only).";
+            stateError.style.display = "block";
+            addErrorBorder(state);
+            isValid = false;
+        } else {
+            stateError.style.display = "none";
+            addValidBorder(state);
+        }
+
+        const country = document.getElementById('country');
+        const countryError = document.getElementById('countryError');
+        if (!country.value.trim() || !/^[a-zA-Z\s]+$/.test(country.value.trim())) {
+            countryError.textContent = "Please enter a valid country name (letters and spaces only).";
+            countryError.style.display = "block";
+            addErrorBorder(country);
+            isValid = false;
+        } else {
+            countryError.style.display = "none";
+            addValidBorder(country);
+        }
+
+        const address = document.getElementById('address');
+        const addressError = document.getElementById('addressError');
+        if (!address.value.trim()) {
+            addressError.textContent = 'Address is required';
+            addressError.style.display = "block";
+            addErrorBorder(address);
+            isValid = false;
+        } else {
+            addressError.style.display = "none";
+            addValidBorder(address);
+        }
+
+        const pincode = document.getElementById('pincode');
+        const pincodeError = document.getElementById('pincodeError');
+        if (!pincode.value.trim() || isNaN(pincode.value.trim()) || pincode.value.trim().length !== 6) {
+            pincodeError.textContent = 'Enter a valid 6-digit Pincode';
+            pincodeError.style.display = "block";
+            addErrorBorder(pincode);
+            isValid = false;
+        } else {
+            pincodeError.style.display = "none";
+            addValidBorder(pincode);
+        }
+
+        const landmark = document.getElementById('land_mark');
+        const landmarkError = document.getElementById('LandMarkError');
+        if (landmark.value.trim() && landmark.value.trim().length >= 3) {
+            landmarkError.style.display = "none";
+            addValidBorder(landmark);
+        } else if (landmark.value.trim()) {
+            landmarkError.textContent = 'Landmark should be at least 3 characters long';
+            landmarkError.style.display = "block";
+            addErrorBorder(landmark);
+            isValid = false;
+        } else {
+            resetBorder(landmark);
+            landmarkError.style.display = "none";
+        }
+
+        const alternativePhone = document.getElementById('alternative_phone_no');
+        const phoneError = document.getElementById('phoneError');
+        if (alternativePhone.value.trim() && alternativePhone.value.trim().length >= 10 && !isNaN(alternativePhone.value.trim())) {
+            phoneError.style.display = "none";
+            addValidBorder(alternativePhone);
+        } else if (alternativePhone.value.trim()) {
+            phoneError.textContent = 'Enter a valid phone number';
+            phoneError.style.display = "block";
+            addErrorBorder(alternativePhone);
+            isValid = false;
+        } else {
+            resetBorder(alternativePhone);
+            phoneError.style.display = "none";
+        }
+
+        const alternativeEmail = document.getElementById('alternative_email');
+        const emailError = document.getElementById('email');
+        if (alternativeEmail.value.trim() && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(alternativeEmail.value.trim())) {
+            emailError.style.display = "none";
+            addValidBorder(alternativeEmail);
+        } else if (alternativeEmail.value.trim()) {
+            emailError.textContent = 'Enter a valid email address';
+            emailError.style.display = "block";
+            addErrorBorder(alternativeEmail);
+            isValid = false;
+        } else {
+            resetBorder(alternativeEmail);
+            emailError.style.display = "none";
+        }
+
+        const addressType = document.querySelector('input[name="address_type"]:checked');
+        const checkboxError = document.getElementById('checkboxError');
+        if (!addressType) {
+            checkboxError.textContent = 'Please select an address type.';
+            checkboxError.style.display = "block";
+            isValid = false;
+        } else {
+            checkboxError.style.display = "none";
+        }
+
+        return isValid;
+    }
 
 
 
+  </script>
+
+  <%- include('partials/footerforhome') %>
 </body>
-<%- include('partials/footerforhome') %> 
-
 
 </html>

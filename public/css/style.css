@@ -57,6 +57,7 @@
   --red-text-color: #ff2a2a;
   --red-text-color-2: #cd0000;
   --red-text-color-3: #ff000057;
+  --red-text-color-4: #ff0000;
 
   --pink-text-color: #ff2fd5;
   --pink-text-color-2: #cd00bc;
@@ -1345,6 +1346,7 @@ input[type="number"]::-webkit-input-placeholder {
   width: 600px;
 }
 
+
 .user-menu-account .center-div input {
   width: 200px;
 }
@@ -1363,20 +1365,20 @@ input[type="number"]::-webkit-input-placeholder {
   color: var(--text-color-3);
 }
 
-.user-menu-account #alternative-no,
-.user-menu-account #phone-no,
+.user-menu-account #alternative_phone_no,
+.user-menu-account #phone_no,
 .user-menu-account #pincode {
   background-color: var(--bg-color-7) !important;
 }
 
-.user-menu-account #alternative-no label,
-.user-menu-account #phone-no label,
+.user-menu-account #alternative_phone_no label,
+.user-menu-account #phone_no label,
 .user-menu-account #pincode label {
   background-color: var(--bg-color-3) !important;
 }
 
-.user-menu-account #alternative-no::placeholder,
-.user-menu-account #phone-no::placeholder,
+.user-menu-account #alternative_no::placeholder,
+.user-menu-account #phone_no::placeholder,
 .user-menu-account #pincode::placeholder {
   color: var(--text-color-3);
 }
@@ -1400,10 +1402,32 @@ input[type="number"]::-webkit-input-placeholder {
 }
 
 
+.user-address-display {
+  position: relative;
+  flex: 0 0 calc(50% - 10px);
+  padding: 20px 10px 10px 15px;
+  border-radius: 5px;
+  margin: 5px;
+  width: 400px;
+  background-color: var(--bg-color-4);
+  border: 1px solid var(--second-text-color);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+}
+.user-address-display-button {
+  position: absolute;
+  top: 20px;
+  right: 10px;
+}
 
-
-
-
+.user-address-display p {
+  margin: 3px 0;
+  font-size: var(--font-size-second);
+}
+.user-address-display:hover {
+  background-color: var(--bg-color-7);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px) scale(1.02);
+}
 
 
 

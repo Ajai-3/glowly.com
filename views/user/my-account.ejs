@@ -47,17 +47,17 @@
                             </div>
                             
                             <div>
-                                <label for="date-of-birth">Date Of Birth</label><br>
-                                <input type="date" name="date-of-birth" id="date-of-birth" value="<%= activeUser.dateOfBirth ? activeUser.dateOfBirth.toISOString().split('T')[0] : '' %>">
+                                <label for="dateOfBirth">Date Of Birth</label><br>
+                                <input type="date" name="dateOfBirth" id="dateOfBirth" value="<%= activeUser.dateOfBirth ? activeUser.dateOfBirth.toISOString().split('T')[0] : '' %>">
                                 <div id="dobError" class="error-message"></div>
                             </div>
                         </div>
                         <div class="d-flex flex-column mb-2"> 
-                            <div class="d-block"><h5>Contact information</h5>  </div>
+                            <div class="d-block"><h6 class="mb-2 mt-3">Contact information</h6>  </div>
                             <div class="d-flex justify-content-between gap-5">
                                 <div>     
-                                    <label for="phone-no">Phone Number</label><br>
-                                    <input type="number" name="phone-no" id="phone-no" value="<%= activeUser.phone_no ? activeUser.phone_no : 'Not available' %>">
+                                    <label for="phone_no">Phone Number</label><br>
+                                    <input type="number" name="phone_no" id="phone_no" value="<%= activeUser.phone_no ? activeUser.phone_no : 'Not available' %>">
                                     <div id="phoneError" class="error-message"></div>
                                 </div>
                                 <div>
@@ -79,6 +79,10 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
+    window.onload = function () {
+      window.scrollTo(10, 10);
+    };
+
     document.querySelectorAll('.user-menu-account input').forEach(input => {
         input.addEventListener('focus', function() {
             const label = document.querySelector(`label[for="${this.id}"]`);

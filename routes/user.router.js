@@ -31,7 +31,7 @@ import {
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart } from "../controllers/user/cart.controller.js";
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
-import { handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
+import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -75,8 +75,10 @@ router.get("/my-account", renderMyAccountPage)
 router.post("/my-account",  upload.single('profile-pic'), handleProfileUpdate)
 // router.post("/remove-profile-pic", removeProfilePicture);
 
+
 // Address Management
 router.get("/manage-address", renderManageAddressPage)
+router.post("/add-address", handleAddAddress)
 
 // Cart Management
 router.get("/my-cart", renderCartPage)

@@ -17,6 +17,10 @@ export const renderWishlistPage = async (req, res) => {
             user = decoded; 
         }  
 
+        if (!token) {
+            return res.redirect('/home')
+        }
+        
         const products = await Product.find({ isDeleted: false });
         const brands = await Brand.find({ isListed: true })
         const categories = await Category.find({ isListed: true })
