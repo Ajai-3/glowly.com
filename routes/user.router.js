@@ -29,7 +29,7 @@ import {
   renderPageWithCategory,
   renderPageWithSubcategory,
 } from "../controllers/user/product-page.controller.js";
-import { renderCartPage, addToCart } from "../controllers/user/cart.controller.js";
+import { renderCartPage, addToCart, removeCartProduct } from "../controllers/user/cart.controller.js";
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
 // Apply Middleware To All Routes
@@ -83,6 +83,7 @@ router.post("/add-address", handleAddAddress)
 // Cart Management
 router.get("/my-cart", renderCartPage)
 router.post("/add-to-cart/:id", addToCart);
+router.post("/remove-cart-product/:productId", removeCartProduct);
 
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)

@@ -1216,10 +1216,10 @@ input[type="number"]::-webkit-input-placeholder {
  .remove-cart-item {
   position: absolute;
   top: 10px;
-  right: 15px;
+  right: 10px;
  }
  .remove-cart-item i {
-  font-size: 25px;
+  font-size: 17px;
   color: var(--bg-red-color);
  }
  .remove-cart-item i:hover {
@@ -1247,6 +1247,115 @@ input[type="number"]::-webkit-input-placeholder {
 }
 .price-summary span {
   font-size: var(--font-size-second);
+}
+
+
+.hidden {
+  display: none;
+}
+
+.popup {
+  position: fixed;
+  width: 350px;
+  height: 150px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  opacity: 0;
+  background-color: var(--bg-color-6);
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  z-index: 1000;
+  animation: fadeInScale 0.3s forwards;
+}
+
+.popup-content {
+  text-align: center;
+}
+.remove-product {
+  background-color: transparent;
+}
+
+.popup-button {
+  margin: 5px;
+  padding: 5px 20px;
+  border: none;
+  font-size: var(--font-size-third);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.popup-button.confirm {
+  background-color: var(--bg-green-color);
+  color: #fff;
+}
+
+.popup-button.cancel {
+  background-color: var(--bg-red-color);
+  color: #fff;
+}
+
+@keyframes fadeInScale {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOutScale {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+}
+
+.cartpage-toast-msg {
+  position: fixed;
+  top: 14%;
+  right: 50%;
+  transform: translateX(50%, 0);
+  z-index: 1000;
+  padding: 5px 10px;
+  border-radius: 4px;
+  color: var(--text-color-4);
+  font-size: 14px;
+  animation: fadeIn 0.5s ease, fadeOut 0.5s ease 2.7s; 
+}
+
+.cartpage-toast-msg-success {
+  background-color: var(--bg-green-color); 
+}
+
+.cartpage-toast-msg-error {
+  background-color: var(--bg-red-color);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .empty-cart-section {
@@ -1430,6 +1539,12 @@ input[type="number"]::-webkit-input-placeholder {
 }
 
 
+.empty-address img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 0;
+}
 
 
 

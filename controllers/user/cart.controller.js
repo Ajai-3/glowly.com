@@ -38,6 +38,7 @@ export const renderCartPage = async (req, res) => {
         if (!cart || !cart.products || cart.products.length === 0) {
             return res.render('user/cart', { 
                 name: user ? user.name : "",
+                user: user,
                 categories, 
                 msg: 'Your cart is empty.',
                 cartProducts: [] 
@@ -45,14 +46,16 @@ export const renderCartPage = async (req, res) => {
         }
 
         const cartProducts = await Promise.all(
-            cart.products.map(async (cartProduct) => {
-              const productDetails = await Product.findById(cartProduct.product_id);
-              return {
-                ...cartProduct.toObject(),
-                product_details: productDetails
-              };
-            })
-          );     
+            cart.products
+                .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) 
+                .map(async (cartProduct) => {
+                    const productDetails = await Product.findById(cartProduct.product_id);
+                    return {
+                        ...cartProduct.toObject(),
+                        product_details: productDetails
+                    };
+                })
+        );  
         
         return res.render("user/cart", {
            name: user ? user.name : "",
@@ -69,8 +72,6 @@ export const renderCartPage = async (req, res) => {
 }
 
 // Add Product To Cart
-
-// Here Need The Change About The Stock And Cart
 export const addToCart = async (req, res) => {
     const { id } = req.params;
     let { quantity } = req.body;
@@ -103,12 +104,12 @@ export const addToCart = async (req, res) => {
         if (!cart) {
             cart = new Cart({
                 user_id: userId,
-                products: [{ product_id: id, quantity }],
+                products: [{ product_id: id, quantity, created_at: new Date() }],
             });
             await cart.save();
-            const updatedStock = product.available_quantity - quantity;
-            await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
-            return res.json({ success: true, message: 'Product added to cart', newAvailableQuantity: updatedStock, });
+            // const updatedStock = product.available_quantity - quantity;
+            // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+            return res.json({ success: true, message: 'Product added to cart' });
         } else {
             const existingProduct = cart.products.find(item => item.product_id.equals(id));
 
@@ -118,17 +119,18 @@ export const addToCart = async (req, res) => {
                 if (existingProduct.quantity > 6) {
                     return res.json({ success: false, message: 'Cannot add more than 6 of this product.' });
                 }
+                existingProduct.created_at = new Date();
 
                 await cart.save();
-                const updatedStock = product.available_quantity - quantity;
-                await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
-                return res.json({ success: true, message: 'Product quantity updated in cart', newAvailableQuantity: updatedStock, });
+                // const updatedStock = product.available_quantity - quantity;
+                // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+                return res.json({ success: true, message: 'Product quantity updated in cart' });
             } else {
-                cart.products.push({ product_id: id, quantity });
+                cart.products.push({ product_id: id, quantity, created_at: new Date() });
                 await cart.save();
-                const updatedStock = product.available_quantity - quantity;
-                await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
-                return res.json({ success: true, message: 'Product added to cart', newAvailableQuantity: updatedStock, });
+                // const updatedStock = product.available_quantity - quantity;
+                // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+                return res.json({ success: true, message: 'Product added to cart' });
             }
         }
 
@@ -137,3 +139,59 @@ export const addToCart = async (req, res) => {
         return res.status(500).json({ success: false, message: "Error adding product to cart" });
     }
 };
+
+
+// Remove Product From Cart
+export const removeCartProduct = async (req, res) => {
+    try {
+      const token = req.cookies.token;
+      if (!token) {
+        return res.render('/home');
+      }
+  
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      } catch (error) {
+        console.error("Invalid token:", error);
+        return res.json({ success: false, message: 'Invalid token' });
+      }
+  
+      const userId = decoded.userId;
+  
+      const cart = await Cart.findOne({ user_id: userId });
+      if (!cart) {
+        return res.json({ success: false, message: 'Cart not found' });
+      }
+  
+      const { productId } = req.params;
+  
+      if (!productId) {
+        return res.json({ success: false, message: 'Product ID is required' });
+      }
+  
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.json({ success: false, message: 'Product not found' });
+      }
+  
+      const result = await Cart.updateOne(
+        { user_id: userId },
+        { $pull: { products: { product_id: productId } } }
+      );
+  
+      if (result.modifiedCount === 0) {
+        return res.json({ success: false, message: 'Product not found in cart' });
+      }
+  
+      return res.json({ 
+        success: true, 
+        message: 'Product removed from cart successfully', 
+        productId 
+      });
+  
+    } catch (error) {
+      console.error("Error in removing product from cart:", error);
+      return res.status(500).send("Error in removing product");
+    }
+  };

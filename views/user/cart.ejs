@@ -10,7 +10,7 @@
           <div class="col-md-8">
             <% cartProducts.forEach(({ product_details, quantity }) => { %>
               <!-- Cart Item -->
-              <div class="card mb-1 px-2 shadow-sm cart-box">
+              <div class="card mb-1 px-2 shadow-sm cart-box" data-product-id="<%= product_details._id %>">
                 <div class="row g-0">
                   <div class="col-md-2 text-center mt-2">
                     <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
@@ -35,11 +35,13 @@
                                 <%= Math.round(((product_details.price - product_details.sales_price) / product_details.price) * 100) %>% Off 
                             </span>
                           <% } %>
-                          Off</span></p>
+                          </span></p>
                         <p class="card-text">Total: <span class="sales-price price-inr">Total: ₹<%= product_details.sales_price * quantity %></span></p>
                       </div>
                       <div class="remove-cart-item">
-                        <a href="/remove/<%= product_details._id %>"><i class="fa-solid fa-trash-arrow-up"></i></a>
+                        <button class="remove-product" data-product-id="<%= product_details._id %>">
+                          <i class="fa-solid fa-trash-arrow-up"></i>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -92,9 +94,18 @@
       </div>
     </div>
     
+    <div id="customPopup" class="popup hidden">
+      <div class="popup-content">
+        <h5 class="popup-title">Are you sure?</h5>
+        <p class="popup-text">You won't be able to revert this!</p>
+        <div class="popup-buttons">
+          <button id="confirmButton" class="popup-button confirm">Yes, remove it!</button>
+          <button id="cancelButton" class="popup-button cancel">No, keep it</button>
+        </div>
+      </div>
+    </div>
     
-    
-
+    <div id="toast-container" class="cartpage-toast-msg"></div>
 
 
 
@@ -104,15 +115,93 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const quantityInputs = document.querySelectorAll('.quantity-input');
+    document.addEventListener('DOMContentLoaded', function () {
+      const quantityInputs = document.querySelectorAll('.quantity-input');
 
-  quantityInputs.forEach((input) => {
-    input.addEventListener('input', function () {
-      input.value = Math.max(1, Math.min(7, input.value)); 
+      quantityInputs.forEach((input) => {
+        input.addEventListener('input', function () {
+          input.value = Math.max(1, Math.min(7, input.value)); 
+        });
+      });
     });
-  });
+
+    const popup = document.getElementById('customPopup');
+    const confirmButton = document.getElementById('confirmButton');
+    const cancelButton = document.getElementById('cancelButton');
+
+    let currentProductId = null;
+
+    function showPopup(productId) {
+        currentProductId = productId; 
+        popup.classList.remove('hidden');
+        popup.style.animation = 'fadeInScale 0.3s forwards';
+    }
+
+
+    function hidePopup() {
+        popup.style.animation = 'fadeOutScale 0.3s forwards';
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 300);
+    }
+
+    confirmButton.addEventListener('click', () => {
+    if (currentProductId) {
+        fetch(`/remove-cart-product/${currentProductId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                hidePopup();
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
+                displayToast(data.message, 'success');
+            } else {
+                throw new Error(data.message);
+            }
+        })
+        .catch(error => {
+            displayToast(error.message || 'An error occurred. Please try again.', 'error');
+        });
+    }
 });
+
+
+    cancelButton.addEventListener('click', hidePopup);
+
+    document.querySelectorAll('.remove-product').forEach(button => {
+        button.addEventListener('click', function () {
+            const productId = this.getAttribute('data-product-id');
+            showPopup(productId); 
+        });
+    });
+
+
+    function displayToast(message, type) {
+      const toastContainer = document.getElementById('toast-container');
+
+      if (!toastContainer) {
+        console.error("Toast container not found in the DOM!");
+        return;
+      }
+
+      toastContainer.innerText = message;
+      toastContainer.className = `cartpage-toast-msg ${type === 'success' ? 'cartpage-toast-msg-success' : 'cartpage-toast-msg-error'}`;
+      toastContainer.style.animation = 'fadeIn 0.5s ease, fadeOut 0.5s ease 2.7s';
+
+      setTimeout(() => {
+        toastContainer.innerText = '';
+        toastContainer.className = '';
+        toastContainer.style.animation = '';
+      }, 3000);
+    }
+
+
 
 </script>
 </html>

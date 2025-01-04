@@ -11,7 +11,11 @@ const cartSchema = new mongoose.Schema({
             quantity: { 
                 type: Number,
                  default: 1
-            }
+            },
+            created_at: {
+                type: Date,
+                default: Date.now
+            },
         }
     ],
     user_id: {

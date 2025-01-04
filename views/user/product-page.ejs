@@ -408,7 +408,7 @@
             .then(data => {
                 if (data.success) {
                     showCartNotification(data.message);
-                    updateStockOnPage(data.newAvailableQuantity);  
+                    // updateStockOnPage(data.newAvailableQuantity);  
                } else {
                     showCartNotification(data.message);              
                }
@@ -443,19 +443,19 @@
     }
 
 
-    function updateStockOnPage(newQuantity) {
-        const stockElement = document.querySelector('.product-stock');
-        if (stockElement) {
-            stockElement.textContent = `Stocks: ${newQuantity > 0 ? newQuantity : 'Unavailable'}`;
+    // function updateStockOnPage(newQuantity) {
+    //     const stockElement = document.querySelector('.product-stock');
+    //     if (stockElement) {
+    //         stockElement.textContent = `Stocks: ${newQuantity > 0 ? newQuantity : 'Unavailable'}`;
             
-            if (newQuantity <= 0) {
-                stockElement.classList.remove('available');
-                stockElement.classList.add('unavailable');
-            } else {
-                stockElement.classList.remove('unavailable');
-                stockElement.classList.add('available');
-            }
-        }
-    }
+    //         if (newQuantity <= 0) {
+    //             stockElement.classList.remove('available');
+    //             stockElement.classList.add('unavailable');
+    //         } else {
+    //             stockElement.classList.remove('unavailable');
+    //             stockElement.classList.add('available');
+    //         }
+    //     }
+    // }
     </script>
     </html>

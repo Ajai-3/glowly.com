@@ -51,7 +51,12 @@
                             </div>
                         <% }) %>
                 <% } else { %>
+                  <div class="empty-address d-flex flex-column justify-content-center align-items-center w-100">
+                    <a href="#">
+                      <img src="/assets/logo/address.empty.jpg" alt="Address not found" class="empty-address" />
+                    </a>
                     <p>No addresses found. Add a new address!</p>
+                  </div>
                 <% } %>
             </div>
           </div>
