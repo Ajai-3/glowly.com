@@ -130,6 +130,7 @@ export const renderManageAddressPage = async (req, res) => {
             return res.redirect('/home')
         }
        
+        const activeUser = await User.findById(user.userId)
         // const products = await Product.find({ isDeleted: false });
         // const brands = await Brand.find({ isListed: true })
         const categories = await Category.find({ isListed: true })
@@ -145,6 +146,7 @@ export const renderManageAddressPage = async (req, res) => {
         user: user,
         categories,
         addresses: addresses,
+        activeUser
 
       })  
     } catch (error) {
@@ -186,18 +188,19 @@ export const handleAddAddress = async (req, res) => {
         
         // console.log(req.body)
 
-        const existUser = await User.findById(user.userId);
+        const activeUser = await User.findById(user.userId);
         // console.log(existUser)
-        if (!existUser) {
+        if (!activeUser) {
             return res.status(404).send("User not found");
         }
         
         const addressCount = await Address.countDocuments({ user_id: user.userId });
-        if (addressCount >= 4) {
+        if (addressCount >= 3) {
             return res.render("user/manage-address", {
                 name: user ? user.name : "",
                 user: user,
                 categories,
+                activeUser,
                 addresses: await Address.find({ user_id: user.userId }),
             });
         }
@@ -240,6 +243,7 @@ export const handleAddAddress = async (req, res) => {
             name: user ? user.name : "",
             user: user,
             categories,
+            activeUser,
             addresses: addresses
     
           })  

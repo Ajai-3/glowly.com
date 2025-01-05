@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+    <%- include('partials/headforhome', { user: user, categories: categories }) %>
 
     <div class="user-contents">
 
@@ -45,9 +45,19 @@
                             <% } %>
                             
                         </div>
+                        <!-- <% if (product.available_quantity == 0) { %>
+                            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                                <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Out Of Stock</button>
+                            </form>
+                        <% } else { %>
+                            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
+                                <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
+                            </form>
+                        <% } %> -->
                         <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
                             <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
                         </form>
+                        
                         
                 </div>
             <% }) %>

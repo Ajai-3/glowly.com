@@ -43,7 +43,6 @@ export const renderHomePage = async (req, res) => {
 
         return res.render('user/home', {
             user: user,
-            name: user ? user.name : "", 
             brands,
             products,
             wishlist, 

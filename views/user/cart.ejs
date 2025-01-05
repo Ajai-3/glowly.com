@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+    <%- include('partials/headforhome', { user, categories }) %>
 
     <div class="user-contents">
       <div class="container my-4">
@@ -10,7 +10,7 @@
           <div class="col-md-8">
             <% cartProducts.forEach(({ product_details, quantity }) => { %>
               <!-- Cart Item -->
-              <div class="card mb-1 px-2 shadow-sm cart-box" data-product-id="<%= product_details._id %>">
+              <div class="card mb-1 px-2 shadow-sm cart-box" id="cart-box" data-product-id="<%= product_details._id %>">
                 <div class="row g-0">
                   <div class="col-md-2 text-center mt-2">
                     <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
@@ -20,10 +20,26 @@
                     <div class="card-body px-3 py-2">
                       <h6 class="card-title"><%= product_details.title %></h6>
                       <div class="cart-box-quantity-selector d-flex my-1">
-                        <p class="qty m-0">QTY : <input type="number" class="quantity-input" value="<%= quantity %>" min="1" /></p>
+                        <!-- <p class="qty m-0">QTY : <input type="number" class="quantity-input" value="<%= quantity %>" min="1" /></p> -->
+                        <p class="qty m-0">QTY:
+                          <select class="quantity-select">
+                            <% for (let i = 1; i <= 6; i++) { %>
+                              <option value="<%= i %>" <%= i === quantity ? 'selected' : '' %>><%= i %></option>
+                            <% } %>
+                          </select>
+                        </p>
                         <p class="cart-stock">
-                          <%= product_details.available_quantity === 0 ? 'Unavailable' : 'Hurry! Only ' + product_details.available_quantity + ' Left' %>
-                        </p>                        
+                          <% 
+                            if (product_details.available_quantity === 0) {
+                              out = 'Unavailable';
+                            } else if (quantity > product_details.available_quantity) {
+                              out = 'Not enough stock. Only ' + product_details.available_quantity + ' Left';
+                            } else {
+                              out = 'Hurry! Only ' + product_details.available_quantity + ' Left';
+                            }
+                          %>
+                          <%= out %>
+                        </p>                     
                       </div>
                       <a href="/product/<%= product_details._id %>">details</a>
                       <div class="d-flex justify-content-between cart-price">
@@ -73,7 +89,7 @@
                   <strong>Total</strong>
                   <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
                 </p>
-                <a href="user/check-out">
+                <a href="/checkout">
                   <button class="buy-now-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
                 </a>
               </div>
@@ -115,6 +131,19 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const cartBoxes = document.querySelectorAll(".cart-box");
+      cartBoxes.forEach(cartBox => {
+        const cartStockElement = cartBox.querySelector(".cart-stock");
+        if (cartStockElement) {
+          const stockText = cartStockElement.innerText;
+          if (stockText === "Unavailable" || stockText.includes("Not enough stock")) {
+            cartBox.classList.add("faded");
+          }
+        }
+      });
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
       const quantityInputs = document.querySelectorAll('.quantity-input');
 
@@ -124,6 +153,39 @@
         });
       });
     });
+
+    document.querySelectorAll('.quantity-select').forEach(select => {
+      select.addEventListener('change', function () {
+        const productElement = this.closest('.cart-box');
+        const productId = productElement.getAttribute('data-product-id');
+        const newQuantity = Number(this.value);
+
+        fetch(`/update-cart-product/${productId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: productId,  
+            quantity: newQuantity,  
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            location.reload(); 
+          } else {
+            displayToast(data.message, 'error');
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+          }
+        })
+        .catch(error => {
+          console.error('Error updating quantity:', error);
+        });
+      })
+    })
 
     const popup = document.getElementById('customPopup');
     const confirmButton = document.getElementById('confirmButton');

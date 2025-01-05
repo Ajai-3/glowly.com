@@ -102,39 +102,38 @@
                 
             </div>
             <div class="nav-bar-last">
-                <% if (!name) { %> 
-                    <!-- If User Is NOT Logged In -->
+                <% if (user && user.name) { %> 
+                    <!-- If User Is Logged In -->
+                    <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                    <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a>
+                   
+                   <div class="profile-section dropdown">
+                       <div class="d-flex align-items-center">
+                           <span class="username ms-2"><%= user.name %></span>
+                           <% if (user && user.profilePic) { %>
+                               <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
+                               
+                           <% } else { %>
+                               <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+                           <% } %>
+                       </div>
+                       
+                       <div class="dropdown-menu2">
+                           <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
+                           <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
+                           <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
+                           <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+                       </div>
+                       <span class="arrow"><i class="fas fa-triangle"></i></span>   
+                   </div> 
+                <% } else { %> 
+                    <!-- If User Not Logged In -->
                     <a href="/login">Log in</a>
                     <button class="nav-bar-last-signup-btn">
                         <a href="/signup">Sign Up</a>
                     </button>
                     <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
                     <!-- <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a> -->
-                <% } else { %> 
-                    <!-- If User IS Logged In -->
-                     <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
-                     <a href="/my-wishlist"><i class="fa-regular fa-heart"></i></i></a>
-                    
-                    <div class="profile-section dropdown">
-                        <div class="d-flex align-items-center">
-                            <span class="username ms-2"><%= name %></span>
-                            <% if (user && user.profilePic) { %>
-                                <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
-                                
-                            <% } else { %>
-                                <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
-                            <% } %>
-                        </div>
-
-                        
-                        <div class="dropdown-menu2">
-                            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
-                        </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>   
-                    </div>
                 <% } %>
             </div>
             

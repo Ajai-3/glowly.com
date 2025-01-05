@@ -135,7 +135,6 @@
         const nameInput = document.getElementById('name');
         const nameError = document.getElementById('nameError');
         const nameValue = nameInput.value.trim();
-
         if (!nameValue || !/^[a-zA-Z\s]+$/.test(nameValue)) {
             nameError.textContent = "Please enter a valid name (letters and spaces only).";
             nameError.style.display = "block";
@@ -144,11 +143,10 @@
             nameError.style.display = "none";
         }
 
-        // Phone number validation
-        const phoneInput = document.getElementById('phone-no');
+        // Phone Number validation
+        const phoneInput = document.getElementById('phone_no'); // Fixed the ID to 'phone_no'
         const phoneError = document.getElementById('phoneError');
         const phoneValue = phoneInput.value.trim();
-
         if (phoneValue && phoneValue.length !== 10) {
             phoneError.textContent = "Please enter a valid 10-digit phone number.";
             phoneError.style.display = "block";
@@ -157,15 +155,14 @@
             phoneError.style.display = "none";
         }
 
-
-        const dobInput = document.getElementById('date-of-birth');
+        // Date of Birth validation
+        const dobInput = document.getElementById('dateOfBirth'); // Fixed the ID to 'dateOfBirth'
         const dobError = document.getElementById('dobError');
         const dobValue = dobInput.value;
 
         if (dobValue) {
             const dobDate = new Date(dobValue);
             const currentDate = new Date();
-
             const age = currentDate.getFullYear() - dobDate.getFullYear();
             const monthDifference = currentDate.getMonth() - dobDate.getMonth();
             const dayDifference = currentDate.getDate() - dobDate.getDate();

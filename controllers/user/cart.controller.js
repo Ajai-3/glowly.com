@@ -56,6 +56,7 @@ export const renderCartPage = async (req, res) => {
                     };
                 })
         );  
+
         
         return res.render("user/cart", {
            name: user ? user.name : "",
@@ -94,7 +95,7 @@ export const addToCart = async (req, res) => {
         }
 
         if (quantity > 6) {
-            return res.json({ success: false, message: 'Cannot add more than 6 products' });
+            return res.json({ success: false, message: 'Cannot add more than 6 quantity' });
         }
 
         if (product.available_quantity < quantity) {
@@ -114,7 +115,7 @@ export const addToCart = async (req, res) => {
             const existingProduct = cart.products.find(item => item.product_id.equals(id));
 
             if (existingProduct) {
-                existingProduct.quantity += Number(quantity);
+                existingProduct.quantity = Number(quantity);
 
                 if (existingProduct.quantity > 6) {
                     return res.json({ success: false, message: 'Cannot add more than 6 of this product.' });
@@ -139,6 +140,9 @@ export const addToCart = async (req, res) => {
         return res.status(500).json({ success: false, message: "Error adding product to cart" });
     }
 };
+
+
+
 
 
 // Remove Product From Cart
@@ -195,3 +199,52 @@ export const removeCartProduct = async (req, res) => {
       return res.status(500).send("Error in removing product");
     }
   };
+
+
+// Update Product Quantity In Cart Page
+export const updateCartPageProduct = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        let user = null;
+        let cart = null;
+
+        if (!token) {
+            return res.render('/home');
+        }
+        if (token) {
+            try {
+                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+                user = decoded; 
+                cart = await Cart.findOne({ user_id: user.userId })              
+            } catch (error) {
+                console.log("Invalid or expired token:", error);
+            }
+        } 
+
+
+        const { productId } = req.params; 
+        const { quantity } = req.body;
+
+
+        const productInCart = cart.products.find(item => item.product_id.equals(productId));
+        if (!productInCart) {
+            return res.json({ success: false, message: 'Product not found in cart' });
+        }
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        if (product.available_quantity < quantity) {
+            return res.json({ success: false, message: 'Not enough stock available' });
+        }
+
+        productInCart.quantity = quantity;
+
+        await cart.save();
+        return res.json({ success: true, message: 'Cart updated successfully' });
+
+    } catch (error) {
+        console.error("Error in updating cart product")
+    }
+}

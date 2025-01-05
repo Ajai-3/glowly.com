@@ -208,12 +208,12 @@ export const editProduct = async (req, res) => {
 
         if (req.files && req.files.length > 0) {
             updatedImages = req.files.map(file => file.filename);
-            console.log('New images to be saved:', updatedImages);
+            // console.log('New images to be saved:', updatedImages);
         }
 
         if (updatedImages.length === 0) {
             updatedImages = product.product_imgs; 
-            console.log('No new images, keeping existing ones:', updatedImages);
+            // console.log('No new images, keeping existing ones:', updatedImages);
         }
 
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
@@ -230,7 +230,7 @@ export const editProduct = async (req, res) => {
 
 
         if (updatedProduct && updatedProduct.product_imgs) {
-            console.log('Updated product images:', updatedProduct.product_imgs);
+            // console.log('Updated product images:', updatedProduct.product_imgs);
             res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
         } else {
             res.status(500).send('Error updating product images');

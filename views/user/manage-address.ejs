@@ -41,13 +41,19 @@
                                <p><%= address.land_mark %></p>
                                <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
                                 <p><%= address.country %></p>
-                                <p>Alternate Contact:</p>
-                                <% if (address.alternative_phone_no) { %>
-                                    <p><%= address.alternative_phone_no %></p>
+                                <!-- <p>Alternate Contact:</p> -->
+                                <% if (activeUser && activeUser.phone_no) { %>
+                                  <p>Contact: <%= activeUser.phone_no %></p>
+                                <% } %>
+                                <!-- <% if (activeUser.email) { %>
+                                  <p>Contact: <%= activeUser.email %></p>
+                                <% } %>  -->
+                                <!-- <% if (address.alternative_phone_no) { %>
+                                    <p>Contact: <%= address.alternative_phone_no %></p>
                                 <% } %>
                                 <% if (address.alternative_email) { %>
-                                    <p><%= address.alternative_email %></p>
-                                <% } %>
+                                    <p>Email: <%= address.alternative_email %></p>
+                                <% } %> -->
                             </div>
                         <% }) %>
                 <% } else { %>

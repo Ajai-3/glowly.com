@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+    <%- include('partials/headforhome', { user, categories }) %>
+
+    <div class="user-contents">
+      <!-- STEP 1 ----------------------------------------------------------------------------------------------------------->
+        <div class="container my-2 px-4 checkout-page-main-div" id="step1">
+            <div class="row g-5">
+              <div class="mb-3">
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">1</div>
+                  </div>
+                  <div class="line line-in-step1"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle circle-in-step1">2</div>
+                    
+                  </div>
+                  <div class="line line-in-step1"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle circle-in-step1">3</div>
+                    
+                  </div>
+                </div>
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="label">Address</div>
+                  <div class="label label-in-step1">Order Summary</div>
+                  <div class="label label-in-step1">Payment</div>
+                </div>
+              </div>
+              <div class="left-box-checkout-page col-md-6 m-0">
+                <div class="div1 mb-3">
+                    <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+                        <div class="checked-page-numbers">1</div>
+                        <div>
+                            <h5>Delivery Address</h5>
+                            <p>Enter your delivery address or search for the specific area</p>
+                        </div>
+                        <div>
+                            <button class="large-button-blue"><i class="fa-solid fa-plus"></i> Add address</button>
+                        </div>
+                    </div>
+                    <hr>
+                    <% if (addresses.length > 0) { %>
+                      <% addresses.forEach((address, index) => { %>
+                          <div class="address-card-checkout-page">
+                              <input type="radio" name="address" id="address<%= index + 1 %>" value="<%= address._id %>">
+                              <label for="address<%= index + 1 %>">
+                                  <div class="address-content">
+                                      <p><strong>Address <%= index + 1 %></strong> (<%= address.address_type %>)</p>
+                                      <p><%= address.pin_code %> <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %></p>
+                                      <p>Phone: <%= userDetails.phone_no %>, <%= address.alternative_phone_no ?  `Alternative: ${address.alternative_phone_no}` : '' %></p>
+                                  </div>
+                              </label>
+                              <button class="large-button-green address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
+                              <div class="checkout-edit-remove">
+                                  <a href="/">Edit</a> | <a href="/">Remove</a>
+                              </div>
+                          </div>
+                      <% }) %>
+                  <% } else { %>
+                      <p>No addresses found. Please add a new address.</p>
+                  <% } %>                  
+                </div>
+                <div class="div2 mb-2">
+                    <div class="checked-page-step1 d-flex align-items-center">
+                        <div class="checked-page-numbers">2</div>
+                        <div class="ms-4 ps-3">
+                            <h5 class="m-0">Order Summary</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="div2">
+                    <div class="checked-page-step1 d-flex align-items-center">
+                        <div class="checked-page-numbers">3</div>
+                        <div class="ms-4 ps-3">
+                            <h5 class="m-0">Payment Method</h5>
+                        </div>
+                    </div>
+                </div>                        
+              </div> 
+              
+              <!-- Order Summary -->
+              <div class="col-md-6 m-0">
+                <div class="card shadow-sm price-summary">
+                    <div class="card-body">
+                      <h5 class="card-title">ORDER SUMMARY</h5>
+                      <hr>
+                      <p class="d-flex justify-content-between">
+                        <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                        <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Discount</span>
+                        <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Delivery Charges</span>
+                        <% if (cartProducts.delivery_charge) { %>
+                          <span class="price-inr">sfsdf</span>
+                        <% }else { %>
+                          <span>
+                            <span class="original-price price-inr mx-2">₹ 60</span>
+                            <span class="discount-percentage">Free</span>
+                          </span>
+                        <% } %>
+                      </p>
+                      <hr>
+                      <p class="d-flex justify-content-between mb-1">
+                        <strong>Total</strong>
+                        <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
+                      </p>
+                    </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2 ----------------------------------------------------------------------------------------------------------->
+          <div class="container my-2 px-4 checkout-page-main-div" id="step2" style="display: none;">
+            <div class="row g-5">
+              <div class="mb-3">
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">1</div>
+                  </div>
+                  <div class="line"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">2</div>
+                    
+                  </div>
+                  <div class="line line-in-step2"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle circle-in-step2">3</div>
+                    
+                  </div>
+                </div>
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="label">Address</div>
+                  <div class="label">Order Summary</div>
+                  <div class="label label-in-step2">Payment</div>
+                </div>
+              </div>
+              
+              <div class="left-box-checkout-page col-md-6 m-0">
+                <div class="div1 mb-2">
+                  <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+                      
+                      <div class="d-flex align-items-center">
+                        <div class="checked-page-numbers me-3">1</div>
+                        <div>
+                          <h5 class="m-0">Delivery Address</h5>
+                          <div id="step2-content"></div>
+                        </div>
+                          
+                      </div>
+                      <div>
+                          <button class="go-to-step1 large-button-blue px-3">Edit</button>
+                    </div>
+                  </div>
+              </div>
+                <div class="div1 mb-3">
+                    <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                          <div class="checked-page-numbers mb-2 me-3">2</div>
+                          <h5>Order Summary</h5>
+                        </div>
+                        <div>
+                          <a href="/my-cart">
+                            <button class="large-button-blue">Go To Cart</button>
+                          </a>
+                        </div>
+                    </div>
+                    <hr>
+                    <% if (cartProducts.length > 0) { %>
+                      <% cartProducts.forEach(({ product_details, quantity }) => { %>
+                        <!-- Cart Item -->
+                        <div class="card mb-1 px-2 shadow-sm cart-box-in-checkout" data-product-id="<%= product_details._id %>">
+                          <div class="row g-0">
+                            <div class="col-md-2 text-center mt-2">
+                              <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
+                              class="img-fluid rounded" alt="<%= product_details.title %>">
+                            </div>
+                            <div class="col-md-10">
+                              <div class="card-body px-3 py-2">
+                                <h6 class="card-title"><%= product_details.title %></h6>
+                                <div class="cart-box-quantity-selector d-flex my-1">
+                                  <p class="qty m-0">QTY: <%= quantity %>
+                                  </p>                      
+                                </div>
+                                <!-- <a href="/product/<%= product_details._id %>">details</a> -->
+                                <div class="d-flex justify-content-between cart-price">
+                                  <p class="card-text">Unit Price: <span class="original-price price-inr">₹<%= product_details.price %></span> 
+                                  <span class="sales-price price-inr">₹<%= product_details.sales_price %></span> 
+                                  <span class="discount-percentage">| 
+                                    <% if (product_details.price > product_details.sales_price) { %>
+                                      <span class="discount-percentage">
+                                          <%= Math.round(((product_details.price - product_details.sales_price) / product_details.price) * 100) %>% Off 
+                                      </span>
+                                    <% } %>
+                                    </span></p>
+                                  <p class="card-text">Total: <span class="sales-price price-inr">Total: ₹<%= product_details.sales_price * quantity %></span></p>
+                                </div>
+
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      <% }); %>
+                  <% } else { %>
+                      <p>No addresses found. Please add a new address.</p>
+                  <% } %>   
+                  <!-- <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>             -->
+                </div>
+                <div class="div2">
+                    <div class="checked-page-step1 d-flex align-items-center">
+                        <div class="checked-page-numbers">3</div>
+                        <div class="ms-4 ps-3">
+                            <h5 class="m-0">Payment Method</h5>
+                        </div>
+                    </div>
+                </div>                        
+              </div> 
+              
+              <!-- Order Summary -->
+              <div class="col-md-6 m-0">
+                <div class="card shadow-sm price-summary">
+                    <div class="card-body">
+                      <h5 class="card-title">ORDER SUMMARY</h5>
+                      <hr>
+                      <p class="d-flex justify-content-between">
+                        <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                        <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Discount</span>
+                        <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Delivery Charges</span>
+                        <% if (cartProducts.delivery_charge) { %>
+                          <span class="price-inr">sfsdf</span>
+                        <% }else { %>
+                          <span>
+                            <span class="original-price price-inr mx-2">₹ 60</span>
+                            <span class="discount-percentage">Free</span>
+                          </span>
+                        <% } %>
+                      </p>
+                      <hr>
+                      <p class="d-flex justify-content-between mb-1">
+                        <strong>Total</strong>
+                        <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
+                      </p>
+                    </div>
+                  </div>
+                  <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>   
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3 ------------------------------------------------------------------------------------------------------------->
+          <div class="container my-2 px-4 checkout-page-main-div" id="step3" style="display: none;">
+            <div class="row g-5">
+              <div class="mb-3">
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">1</div>
+                  </div>
+                  <div class="line"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">2</div>
+                    
+                  </div>
+                  <div class="line"></div>
+                  <div class="d-flex flex-column align-items-center">
+                    <div class="circle">3</div>
+                    
+                  </div>
+                </div>
+                <div class="circle-container d-flex justify-content-between align-items-center">
+                  <div class="label">Address</div>
+                  <div class="label">Order Summary</div>
+                  <div class="label">Payment</div>
+                </div>
+              </div>
+              
+              <div class="left-box-checkout-page col-md-6 m-0">
+                <div class="div1 mb-1">
+                  <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+                      
+                      <div class="d-flex align-items-center">
+                        <div class="checked-page-numbers me-3">1</div>
+                        <div>
+                          <h5 class="m-0">Address</h5>
+                          <% if (addresses.length > 0) { %>
+                            <p><%= addresses[0].pin_code %> <%= addresses[0].city %>, <%= addresses[0].district %>, <%= addresses[0].state %>, <%= addresses[0].country %></p>
+                            <p>Phone: <%= user.phone %>, Alternative: <%= addresses[0].alternative_phone_no %></p>
+                          <% } %>
+                        </div>
+                          
+                      </div>
+                      <div>
+                          <button class="go-to-step1 large-button-blue px-3">Edit</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="div1 mb-1">
+                    <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                          <div class="checked-page-numbers mb-2 me-3">2</div>
+                          <div>
+                            <h5>Order Summary</h5>
+                            <p><%= cartProducts.length %> Shipments</p>
+                          </div>
+                        </div>
+                        <div>
+                            <button class="go-to-step2 large-button-blue px-3">Edit</button>
+                        </div>
+                    </div>               
+                </div>
+                <div class="div1">
+                    <div class="checked-page-step1 d-flex align-items-center">
+                        <div class="checked-page-numbers">3</div>
+                        <div class="ms-4 ps-3">
+                            <h5 class="m-0">Payment Method</h5>
+                        </div>
+                    </div>
+                    <hr>
+                    <!-- <div class="payment-div ms-2">
+                      <h5 class=" mt-3">Payment Methods</h5>
+                      <hr class="my-1"> -->
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                        <label class="form-check-label" for="creditCard">Debit Card / Credit Card</label>
+                      </div>
+                      <div class="form-check">
+                          <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                          <label class="form-check-label" for="creditCard">Wallet</label>
+                        </div>
+                      <div class="form-check">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
+                        <label class="form-check-label" for="paypal">PayPal</label>
+                      </div>
+                      <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
+                        <label class="form-check-label" for="cash">Cash on Delivery</label>
+                      </div>
+                      <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span class=" price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></span></button> 
+                   </div>
+              </div> 
+              
+              <!-- Order Summary -->
+              <div class="col-md-6 m-0">
+                <div class="card shadow-sm price-summary">
+                    <div class="card-body">
+                      <h5 class="card-title">ORDER SUMMARY</h5>
+                      <hr>
+                      <p class="d-flex justify-content-between">
+                        <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                        <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Discount</span>
+                        <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
+                      </p>
+                      <p class="d-flex justify-content-between">
+                        <span>Delivery Charges</span>
+                        <% if (cartProducts.delivery_charge) { %>
+                          <span class="price-inr">sfsdf</span>
+                        <% }else { %>
+                          <span>
+                            <span class="original-price price-inr mx-2">₹ 60</span>
+                            <span class="discount-percentage">Free</span>
+                          </span>
+                        <% } %>
+                      </p>
+                      <hr>
+                      <p class="d-flex justify-content-between mb-1">
+                        <strong>Total</strong>
+                        <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
+                      </p>
+                    </div>
+                  </div> 
+                  <!-- Coupn -->
+                 <div class="check-coupon m-2">
+                  <form action="/check-coupn">
+                      <label for="coupn">Do you have any Coupon</label><br>
+                      <input type="text" name="coupn" id="coupn" placeholder="Enter code">
+                      <button type="submit" class="large-button-green p-1 px-3">Verify</button>
+                  </form>
+               </div> 
+               </div>
+            </div>
+          </div>
+    </div> 
+</body>
+<%- include('partials/footerforhome') %>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const step1 = document.getElementById("step1");
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+
+  showStep(step1);
+
+  step1.addEventListener("click", (event) => {
+    if (event.target && event.target.classList.contains("address-select")) {
+      const selectedAddressId = event.target.getAttribute("data-id");
+      const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
+
+      const selectedAddress = {
+        id: selectedAddressId,
+        details: selectedAddressDetails,
+      };
+
+      renderStep2(selectedAddress);
+      showStep(step2);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+
+  function renderStep2(address) {
+    const step2Content = document.getElementById("step2-content");
+    step2Content.innerHTML = `<p>${address.details}</p>`;
+  }
+
+  document.getElementById("proceed-to-pay").addEventListener("click", () => {
+    showStep(step3);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  const payButton = document.querySelector(".pay-btn-checkoutpage");
+  payButton.addEventListener("click", async () => {
+    const selectedAddressId = getSelectedAddressId();
+    const cartProducts = getCartProducts();
+
+    const orderData = {
+      address_id: selectedAddressId,
+      cart: cartProducts,
+    };
+
+    try {
+      const response = await fetch("/place-product", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        showStep(step1);
+        alert("Order placed successfully!");
+        window.location.href = "/";
+      } else {
+        alert(result.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      alert("There was an error placing your order. Please try again.");
+    }
+  });
+
+  function getSelectedAddressId() {
+    return document.querySelector(".address-select.active")?.getAttribute("data-id");
+  }
+
+  function getCartProducts() {
+    return JSON.parse(document.querySelector("#cart-products").value) || [];
+  }
+
+  function showStep(stepToShow) {
+    step1.style.display = "none";
+    step2.style.display = "none";
+    step3.style.display = "none";
+
+    stepToShow.style.display = "block";
+  }
+
+  document.addEventListener("click", (event) => {
+    if (event.target.classList.contains("go-to-step1")) {
+      showStep(step1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    if (event.target.classList.contains("go-to-step2")) {
+      showStep(step2);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  });
+});
+
+
+
+</script> 
+</html>
