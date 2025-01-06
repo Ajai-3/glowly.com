@@ -32,7 +32,7 @@ import {
 import { renderCartPage, addToCart, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
-import { renderCheckoutPage } from "../controllers/user/checkout.controller.js";
+import { placeOrder, renderCheckoutPage, renderOrderListPage } from "../controllers/user/checkout.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -87,11 +87,18 @@ router.post("/add-to-cart/:id", addToCart);
 router.post("/remove-cart-product/:productId", removeCartProduct);
 router.post("/update-cart-product/:productId", updateCartPageProduct)
 // Checkout Mangement
-router.get("/checkout", renderCheckoutPage)
+router.get("/checkout", renderCheckoutPage);
+router.get("/place-order", placeOrder);
 
+// Order Management
+router.get("/my-orders", renderOrderListPage);
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)
 router.post("/add-to-wishlist/:productId", addToWishlist)
+
+
+
+
 
 router.get("/logout", handleUserLogout);
 

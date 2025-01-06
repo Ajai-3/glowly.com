@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+    <%- include('partials/headforhome', { user, categories}) %>
 
     <div class="user-contents">
         <div class="container my-2">
@@ -13,9 +13,9 @@
                     <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
                     <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
                     <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
-                    <a href="/my-wishlist" class="active"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
+                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
                     <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                    <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
+                    <a href="/my-orders" class="active"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
                     <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
                 </div>
               </div>
@@ -44,29 +44,6 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-  // window.onload = function () {
-  //   window.scrollTo(10, 10);
-  // };
-  // document.addEventListener('DOMContentLoaded', function () {
-  //     const quantityInput = document.getElementById('quantity');
-  //     const increaseButton = document.getElementById('increase-btn');
-  //     const decreaseButton = document.getElementById('decrease-btn');
-
-  //     increaseButton.addEventListener('click', function () {
-  //         if (quantityInput.value < 7) {
-  //             quantityInput.value++;
-  //         }
-  //     });
-  //     decreaseButton.addEventListener('click', function () {
-  //         if (quantityInput.value > 1) {
-  //             quantityInput.value--;
-  //         }
-  //     });
-
-  //     quantityInput.addEventListener('input', function () {
-  //         quantityInput.value = Math.max(1, Math.min(7, quantityInput.value));
-  //     });
-  // });
 
 </script>
 </html>

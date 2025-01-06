@@ -2026,8 +2026,36 @@ input[type="number"]::-webkit-input-placeholder {
     padding: 10px;
   }
 }
+.notyf-container {
+  max-width: 350px;    /* Make the container smaller */
+  width: auto;         /* Automatically adjust the width based on content */
+  font-size: 14px;     /* Adjust font size for readability */
+  padding: 8px 16px;   /* Set padding to make the container more compact */
+  top: 50px !important; /* Move the notification 50px from the top */
+}
 
+.notyf-container {
+  max-width: 300px !important;     /* Set the max-width for the notification */
+  padding: 10px !important;        /* Adjust padding */
+  top: 80px !important;            /* Move the container 80px from the top (adjust as needed) */
+  font-size: 14px !important;      /* Adjust font size for a compact look */
+}
 
+/* Adjust the success and error types (optional) */
+.notyf-success {
+  background-color: rgb(45, 255, 45) !important;  /* Custom success color */
+}
+
+.notyf-error {
+  background-color: rgb(255, 11, 11) !important;    /* Custom error color */
+}
+
+/* Ensure responsiveness */
+@media (max-width: 600px) {
+  .notyf-container {
+      width: 80% !important;  /* Reduce width on smaller screens */
+  }
+}
 /* ===================================================================
 /* ===================================================================
 /* ===================================================================

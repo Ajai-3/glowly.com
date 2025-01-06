@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { name: name, categories: categories }) %>
+    <%- include('partials/headforhome', { user, categories }) %>
 
     <div class="user-contents">
         <div class="container my-2">
@@ -79,9 +79,6 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-    window.onload = function () {
-      window.scrollTo(10, 10);
-    };
 
     document.querySelectorAll('.user-menu-account input').forEach(input => {
         input.addEventListener('focus', function() {

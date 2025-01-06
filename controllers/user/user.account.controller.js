@@ -65,7 +65,7 @@ export const handleProfileUpdate = async (req, res) => {
             updatedData,
             { new: true }
         );
-        console.log(req.body)
+        // console.log(req.body)
         // console.log(updatedUser)
 
         if (!updatedUser) {

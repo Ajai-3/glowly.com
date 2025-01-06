@@ -9,7 +9,7 @@ export const renderCheckoutPage = async (req, res) => {
     try {
         const token = req.cookies.token;
         if (!token) {
-            return res.redirect('user/home'); 
+            return res.redirect('user/login'); 
         }
 
         let user = null;
@@ -53,7 +53,6 @@ export const renderCheckoutPage = async (req, res) => {
               .map(async (cartProduct) => {
                 const productDetails = await Product.findById(cartProduct.product_id);
                 
-                // Ensure the product has valid details and available quantity
                 if (productDetails && productDetails.available_quantity > 0 && cartProduct.quantity <= productDetails.available_quantity) {
                   return {
                     ...cartProduct.toObject(),
@@ -64,7 +63,7 @@ export const renderCheckoutPage = async (req, res) => {
               })
           );
           
-          const validCartProducts = cartProducts.filter(product => product !== null);
+        const validCartProducts = cartProducts.filter(product => product !== null);
 
         return res.render('user/checkout', {
             user: user,
@@ -79,3 +78,75 @@ export const renderCheckoutPage = async (req, res) => {
         return res.status(500).send("Internal Server Error");
     }
 };
+
+
+// Place Order
+export const placeOrder = async (req, res) => {
+    try {
+        const { address_id, cart, payment_method } = req.body;
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: "User not authenticated." });
+        }
+
+        let user;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            user = decoded; 
+        } catch (error) {
+            console.error("Invalid token:", error);
+            return res.status(401).json({ success: false, message: "Invalid token." });
+        }
+
+        if (!address_id || !cart || !payment_method) {
+            return res.status(400).json({ success: false, message: "Missing required fields." });
+        }
+
+        const categories = await Category.find({ isListed: true })
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },
+            });
+
+        console.log("Order Data:", { user, address_id, cart, payment_method });
+
+        res.status(200).json({ success: true, message: "Order placed successfully!" });
+    } catch (error) {
+        console.error("Error in place order:", error);
+        return res.status(500).json({ success: false, message: "Internal server error." });
+    }
+};
+
+
+export const renderOrderListPage = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.redirect('user/home'); 
+        }
+
+        let user;
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            user = decoded; 
+        } catch (error) {
+            console.error("Invalid token:", error);
+            // return res.json({ success: false, message: 'Invalid token' });
+        }
+
+        const categories = await Category.find({ isListed: true })
+        .populate({
+            path: 'subcategories',
+            match: { isListed: true },
+        });
+
+        return res.render("user/my-orders", {
+            user: user,
+            categories
+        })
+
+    } catch (error) {
+       console.log("Error in rendering order list") 
+    }
+}

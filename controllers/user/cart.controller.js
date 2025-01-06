@@ -153,15 +153,16 @@ export const removeCartProduct = async (req, res) => {
         return res.render('/home');
       }
   
-      let decoded;
+      let user;
       try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        user = decoded; 
       } catch (error) {
         console.error("Invalid token:", error);
-        return res.json({ success: false, message: 'Invalid token' });
+        // return res.json({ success: false, message: 'Invalid token' });
       }
   
-      const userId = decoded.userId;
+      const userId = user.userId;
   
       const cart = await Cart.findOne({ user_id: userId });
       if (!cart) {
@@ -190,7 +191,7 @@ export const removeCartProduct = async (req, res) => {
   
       return res.json({ 
         success: true, 
-        message: 'Product removed from cart successfully', 
+        message: 'Product removed from cart.', 
         productId 
       });
   
@@ -248,3 +249,46 @@ export const updateCartPageProduct = async (req, res) => {
         console.error("Error in updating cart product")
     }
 }
+
+// export const updatedCart = async (req, res) => {
+//     try {
+//         const token = req.cookies.token;
+//         let user = null;
+//         let cart = null;
+
+//         if (!token) return res.redirect('/home');
+
+//         if (token) {
+//             try {
+//                 const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); 
+//                 user = decoded; 
+//                 cart = await Cart.findOne({ user_id: user.userId })              
+//             } catch (error) {
+//                 console.log("Invalid or expired token:", error);
+//             }
+//         } 
+
+//         const products = await Product.find({ isDeleted: false });
+//         const cartProducts = await Promise.all(
+//             cart.products
+//                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at)) 
+//                 .map(async (cartProduct) => {
+//                     const productDetails = await Product.findById(cartProduct.product_id);
+//                     return {
+//                         ...cartProduct.toObject(),
+//                         product_details: productDetails
+//                     };
+//                 })
+//         ); 
+//         const categories = await Category.find({ isListed: true })
+//         .populate({
+//             path: 'subcategories',
+//             match: { isListed: true },  
+//         }); 
+
+//         res.render('user/cart', { user, categories, cartProducts, products });
+//     } catch (error) {
+//         console.error('Error fetching updated cart:', error);
+//         res.status(500).send('Error fetching cart');
+//     }
+// };

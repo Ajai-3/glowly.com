@@ -120,10 +120,6 @@
         </div>
       </div>
     </div>
-    
-    <div id="toast-container" class="cartpage-toast-msg"></div>
-
-
 
 
 
@@ -131,61 +127,77 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const cartBoxes = document.querySelectorAll(".cart-box");
-      cartBoxes.forEach(cartBox => {
-        const cartStockElement = cartBox.querySelector(".cart-stock");
-        if (cartStockElement) {
-          const stockText = cartStockElement.innerText;
-          if (stockText === "Unavailable" || stockText.includes("Not enough stock")) {
-            cartBox.classList.add("faded");
-          }
-        }
-      });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-      const quantityInputs = document.querySelectorAll('.quantity-input');
-
-      quantityInputs.forEach((input) => {
-        input.addEventListener('input', function () {
-          input.value = Math.max(1, Math.min(7, input.value)); 
-        });
-      });
+document.addEventListener("DOMContentLoaded", function () {
+      const notyf = new Notyf({
+        duration: 1500,  
+        ripple: true,  
+        position: { x: 'right', y: 'bottom' },
+        dismissible: true,  
+        types: [
+            { type: 'success', background: 'green' },  
+            { type: 'error', background: 'red' },     
+        ],
     });
 
     document.querySelectorAll('.quantity-select').forEach(select => {
-      select.addEventListener('change', function () {
-        const productElement = this.closest('.cart-box');
-        const productId = productElement.getAttribute('data-product-id');
-        const newQuantity = Number(this.value);
+        select.addEventListener('change', function () {
+            const productElement = this.closest('.cart-box');
+            const productId = productElement.getAttribute('data-product-id');
+            const newQuantity = Number(this.value);
 
-        fetch(`/update-cart-product/${productId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            productId: productId,  
-            quantity: newQuantity,  
-          }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            location.reload(); 
-          } else {
-            displayToast(data.message, 'error');
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
-          }
-        })
-        .catch(error => {
-          console.error('Error updating quantity:', error);
+            fetch(`/update-cart-product/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    productId: productId,  
+                    quantity: newQuantity,  
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {  
+                    notyf.success(data.message);
+                    setTimeout(() => {
+                      location.reload(); 
+                    }, 1000);
+                    
+                } else {
+                    notyf.error(data.message || 'Error updating quantity.');  
+                    // setTimeout(() => {
+                    //     location.reload();
+                    // }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error updating quantity:', error);
+                notyf.error('Something went wrong, please try again later.'); 
+            });
         });
-      })
-    })
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const cartBoxes = document.querySelectorAll(".cart-box");
+        cartBoxes.forEach(cartBox => {
+            const cartStockElement = cartBox.querySelector(".cart-stock");
+            if (cartStockElement) {
+                const stockText = cartStockElement.innerText;
+                if (stockText === "Unavailable" || stockText.includes("Not enough stock")) {
+                    cartBox.classList.add("faded");
+                }
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantityInputs = document.querySelectorAll('.quantity-input');
+        quantityInputs.forEach((input) => {
+            input.addEventListener('input', function () {
+                input.value = Math.max(1, Math.min(7, input.value)); 
+            });
+        });
+    });
 
     const popup = document.getElementById('customPopup');
     const confirmButton = document.getElementById('confirmButton');
@@ -199,7 +211,6 @@
         popup.style.animation = 'fadeInScale 0.3s forwards';
     }
 
-
     function hidePopup() {
         popup.style.animation = 'fadeOutScale 0.3s forwards';
         setTimeout(() => {
@@ -208,31 +219,30 @@
     }
 
     confirmButton.addEventListener('click', () => {
-    if (currentProductId) {
-        fetch(`/remove-cart-product/${currentProductId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                hidePopup();
-                setTimeout(() => {
-                    location.reload();
-                }, 1000);
-                displayToast(data.message, 'success');
-            } else {
-                throw new Error(data.message);
-            }
-        })
-        .catch(error => {
-            displayToast(error.message || 'An error occurred. Please try again.', 'error');
-        });
-    }
-});
-
+        if (currentProductId) {
+            fetch(`/remove-cart-product/${currentProductId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    hidePopup();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                    notyf.success(data.message);  
+                } else {
+                    throw new Error(data.message);
+                }
+            })
+            .catch(error => {
+                notyf.error(error.message || 'An error occurred. Please try again.');  
+            });
+        }
+    });
 
     cancelButton.addEventListener('click', hidePopup);
 
@@ -242,27 +252,7 @@
             showPopup(productId); 
         });
     });
-
-
-    function displayToast(message, type) {
-      const toastContainer = document.getElementById('toast-container');
-
-      if (!toastContainer) {
-        console.error("Toast container not found in the DOM!");
-        return;
-      }
-
-      toastContainer.innerText = message;
-      toastContainer.className = `cartpage-toast-msg ${type === 'success' ? 'cartpage-toast-msg-success' : 'cartpage-toast-msg-error'}`;
-      toastContainer.style.animation = 'fadeIn 0.5s ease, fadeOut 0.5s ease 2.7s';
-
-      setTimeout(() => {
-        toastContainer.innerText = '';
-        toastContainer.className = '';
-        toastContainer.style.animation = '';
-      }, 3000);
-    }
-
+});
 
 
 </script>

@@ -175,7 +175,7 @@
                     <% if (cartProducts.length > 0) { %>
                       <% cartProducts.forEach(({ product_details, quantity }) => { %>
                         <!-- Cart Item -->
-                        <div class="card mb-1 px-2 shadow-sm cart-box-in-checkout" data-product-id="<%= product_details._id %>">
+                        <div class="cart-item card cart-box-in-checkout mb-1 px-2 shadow-sm " data-product-id="<%= product_details._id %>">
                           <div class="row g-0">
                             <div class="col-md-2 text-center mt-2">
                               <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
@@ -185,7 +185,7 @@
                               <div class="card-body px-3 py-2">
                                 <h6 class="card-title"><%= product_details.title %></h6>
                                 <div class="cart-box-quantity-selector d-flex my-1">
-                                  <p class="qty m-0">QTY: <%= quantity %>
+                                  <p class="product-quantity qty m-0">QTY: <%= quantity %>
                                   </p>                      
                                 </div>
                                 <!-- <a href="/product/<%= product_details._id %>">details</a> -->
@@ -208,7 +208,7 @@
                         </div>
                       <% }); %>
                   <% } else { %>
-                      <p>No addresses found. Please add a new address.</p>
+                      <p>No Products.</p>
                   <% } %>   
                   <!-- <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>             -->
                 </div>
@@ -335,8 +335,8 @@
                         <label class="form-check-label" for="creditCard">Debit Card / Credit Card</label>
                       </div>
                       <div class="form-check">
-                          <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
-                          <label class="form-check-label" for="creditCard">Wallet</label>
+                          <input class="form-check-input" type="radio" name="paymentMethod" id="wallet" checked>
+                          <label class="form-check-label" for="wallet">Wallet</label>
                         </div>
                       <div class="form-check">
                         <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
@@ -430,46 +430,77 @@ document.addEventListener("DOMContentLoaded", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
 
+
+  function getSelectedPaymentMethod() {
+    const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
+    return paymentMethodElement ? paymentMethodElement.id : null;
+  }
+
   const payButton = document.querySelector(".pay-btn-checkoutpage");
-  payButton.addEventListener("click", async () => {
-    const selectedAddressId = getSelectedAddressId();
-    const cartProducts = getCartProducts();
+    payButton.addEventListener("click", async () => {
+      const selectedAddressId = getSelectedAddressId();
+      const cartProducts = getCartProducts();
+      const selectedPaymentMethod = getSelectedPaymentMethod();
 
-    const orderData = {
-      address_id: selectedAddressId,
-      cart: cartProducts,
-    };
-
-    try {
-      const response = await fetch("/place-product", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        showStep(step1);
-        alert("Order placed successfully!");
-        window.location.href = "/";
-      } else {
-        alert(result.message || "Something went wrong. Please try again.");
+      // Ensure a payment method is selected
+      if (!selectedPaymentMethod) {
+        alert("Please select a payment method.");
+        return;
       }
-    } catch (error) {
-      alert("There was an error placing your order. Please try again.");
-    }
-  });
+
+      const orderData = {
+        address_id: selectedAddressId,
+        cart: cartProducts,
+        payment_method: selectedPaymentMethod,
+      };
+
+      try {
+        const response = await fetch("/place-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showStep(step1);
+          alert("Order placed successfully!");
+          window.location.href = "/my-orders";
+        } else {
+          alert(result.message || "Something went wrong. Please try again.");
+        }
+      } catch (error) {
+        alert("There was an error placing your order. Please try again.");
+      }
+    });
 
   function getSelectedAddressId() {
     return document.querySelector(".address-select.active")?.getAttribute("data-id");
   }
 
   function getCartProducts() {
-    return JSON.parse(document.querySelector("#cart-products").value) || [];
+    const productElements = document.querySelectorAll(".cart-box-in-checkout");
+    const cartProducts = Array.from(productElements).map((productElement) => {
+      const productId = productElement.getAttribute("data-product-id");
+      const quantityText = productElement
+        .previousElementSibling?.textContent.trim()
+        .match(/QTY:\s*(\d+)/i);
+
+      const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
+
+      return { product_id: productId, quantity };
+    });
+
+    if (cartProducts.length === 0) {
+      console.error("No products found in the cart.");
+    }
+
+    return cartProducts;
   }
+
 
   function showStep(stepToShow) {
     step1.style.display = "none";
