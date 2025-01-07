@@ -92,26 +92,24 @@ export const renderProductsPage = async (req, res) => {
 // Rendre Add Products Page
 export const renderAddProductsPage = async (req, res) => {
     try {
-
-        const brands = await Brand.find()
-        const categories = await Category.find()
+        const brands = await Brand.find();
+        const categories = await Category.find().populate('subcategories');
         const subcategories = await Subcategory.find()
 
         const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
 
         return res.render("admin/add-products", {
             brands,
-            categories,
             subcategories,
+            categories,
             msg,
-            // error: null,
-            // success: null
-        })
+        });
     } catch (error) {
         console.error("Error fetching categories, brands, and subcategories:", error);
         res.status(500).send("Internal Server Error");
     }
-}
+};
+
 
 // Add Ne Product
 export const addProduct = async (req, res) => {
