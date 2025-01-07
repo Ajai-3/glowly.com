@@ -280,17 +280,12 @@
         const sideImages = document.querySelectorAll('.side-image');
         const mainImage = document.getElementById('main-display-image');
 
-        const originalImageSrc = mainImage.src;
-
         sideImages.forEach(image => {
             image.addEventListener('click', () => {
                 mainImage.src = image.dataset.src;
             });
             image.addEventListener('mouseover', () => {
                 mainImage.src = image.dataset.src;
-            });
-            image.addEventListener('mouseout', () => {
-                mainImage.src = originalImageSrc;
             });
         });
 
