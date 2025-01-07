@@ -43,7 +43,7 @@
                     <div class="add-products-container-center">
                         <div>
                             <label for="category">Category</label> <br>
-                            <select name="category" id="category">
+                            <select name="category" id="category" onchange="updateSubCategories()">
                                 <option value="">Select Category</option>
                                 <% categories.forEach(category => { %>
                                     <option value="<%= category._id %>"><%= category.name %></option>
@@ -54,9 +54,6 @@
                             <label for="subCategory">Sub Category</label> <br>
                             <select name="subCategory" id="subCategory">
                                 <option value="">Select Sub Category</option>
-                                <% subcategories.forEach(subcategory => { %>
-                                    <option value="<%= subcategory._id %>"><%= subcategory.name %></option>
-                                <% }) %>
                             </select>
                         </div>
                     </div>
@@ -168,6 +165,43 @@ const notyf = new Notyf({
     ],
     className: 'custom-notify',
 });
+
+const categories = [
+        <% categories.forEach(category => { %>
+            {
+                _id: "<%= category._id %>",
+                name: "<%= category.name %>",
+                subcategories: [
+                    <% category.subcategories.forEach(subcategory => { %>
+                        { _id: "<%= subcategory._id %>", name: "<%= subcategory.name %>" },
+                    <% }) %>
+                ]
+            },
+        <% }) %>
+    ];
+
+    function updateSubCategories() {
+        const categorySelect = document.getElementById('category');
+        const subCategorySelect = document.getElementById('subCategory');
+        const selectedCategoryId = categorySelect.value;
+
+        console.log('Selected Category ID:', selectedCategoryId);
+        subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+        const selectedCategory = categories.find(category => category._id === selectedCategoryId);
+        console.log('Selected Category:', selectedCategory);
+
+        if (selectedCategory && selectedCategory.subcategories) {
+            selectedCategory.subcategories.forEach(subcategory => {
+                const option = document.createElement('option');
+                option.value = subcategory._id;
+                option.textContent = subcategory.name;
+                subCategorySelect.appendChild(option);
+            });
+        }
+    }
+
+
 
 let croppedFiles = {};
 let currentPreviewId = null;
