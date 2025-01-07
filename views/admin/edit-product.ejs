@@ -1,7 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <%- include('partials/head') %>
+
+<!-- Main Content Section -->
 <div class="main-content">
+  <!-- Header Section -->
   <div class="header">
     <div class="search-bar m-0">
       <form action="/search" method="GET">
@@ -16,13 +20,19 @@
     </div>
   </div>
 
+  <!-- Breadcrumbs Section -->
   <div class="breadcrumbs">
     <a href="/products">Products</a> > <a href="/edit-product/<%= product._id %>"> Edit Product</a>
   </div>
-
+  <% if (msg) { %>
+  <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
+    <%= msg.text %>
+  </div>
+  <% } %>
+  <!-- Edit Products Container -->
   <div class="edit-products-container">
     <div class="add-products-container1">
-      <!-- Form to Edit Product -->
+      <!-- Form To Edit Product -->
       <form action="/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
         <h4>Edit Product</h4>
 
@@ -49,7 +59,7 @@
         <label for="description">Description</label><br>
         <textarea id="description" name="description" placeholder="Enter product description here..."><%= product.description %></textarea>
 
-        <!-- Category and Subcategory -->
+        <!-- Category And Subcategory -->
         <div class="add-products-container-center">
           <div>
             <label for="category">Category</label><br>
@@ -62,7 +72,7 @@
           </div>
           <div>
             <label for="subCategory">Sub Category</label><br>
-            <select name="subCategory" id="subCategory">
+            <select name="subCategory" id="subCategory" onchange="handleSubCategoryChange()">
               <option value="">Select Sub Category</option>
               <% if (product.subcategory_id) { %>
               <% product.category_id.subcategories.forEach(subcategory => { %>
@@ -72,8 +82,8 @@
             </select>
           </div>
         </div>
-        <!-- <input type="color" id="color" name="color" value="#ff0000"> -->
-        <!-- Stock Quantity and Prices -->
+
+        <!-- Stock Quantity And Prices -->
         <div class="add-products-container-center">
           <div>
             <label for="availableQuantity">Stock Quantity</label>
@@ -91,13 +101,13 @@
 
         <!-- Submit Button -->
         <button type="submit" class="add-product-btn2 my-3">Update Product</button>
-
     </div>
 
+    <!-- Edit Product Images Section -->
     <div class="add-products-container2">
       <h4>Edit Product Images</h4>
 
-      <!-- Image previews and file uploads -->
+      <!-- Image Previews And File Uploads -->
       <% if (product.product_imgs && product.product_imgs.length > 0) { %>
       <% for (let i = 0; i < product.product_imgs.length; i++) { %>
       <div class="image-upload-slot">
@@ -115,10 +125,10 @@
   </div>
 </div>
 
+<!-- JavaScript Section -->
 <script>
   const categorySubcategories = {};
-  const product = <%- JSON.stringify(product) %>; // Pass product data to JavaScript
-
+  const product = <%- JSON.stringify(product) %>;
   <% categories.forEach(category => { %>
   categorySubcategories["<%= category._id %>"] = [
     <% category.subcategories.forEach(subcategory => { %> {
@@ -126,59 +136,64 @@
       name: "<%= subcategory.name %>"
     },
     <% }) %>
-  ];
+  ]
   <% }) %>
+  console.log(categorySubcategories);
 
   function updateSubCategories() {
     const categorySelect = document.getElementById('category');
     const subCategorySelect = document.getElementById('subCategory');
     const selectedCategoryId = categorySelect.value;
 
-    // Clear existing subcategories
     subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
 
-    // Check if the selected category has subcategories
     if (categorySubcategories[selectedCategoryId]) {
       const subcategories = categorySubcategories[selectedCategoryId];
-
-      // Populate the subcategory dropdown
       subcategories.forEach(subcategory => {
         const option = document.createElement('option');
         option.value = subcategory.id;
-        option.textContent = subcategory.name; 
+        option.textContent = subcategory.name;
         subCategorySelect.appendChild(option);
       });
-    }
 
-    // Set the default subcategory if it exists
-    if (product && product.subcategory_id) {
-      subCategorySelect.value = product.subcategory_id._id; // Set the selected subcategory
+      if (product && product.subcategory_id && product.category_id && product.category_id._id === selectedCategoryId) {
+        subCategorySelect.value = product.subcategory_id._id;
+      }
+    }
+  }
+
+  function handleSubCategoryChange() {
+    const subCategorySelect = document.getElementById('subCategory');
+    const selectedSubCategoryId = subCategorySelect.value;
+    console.log('Selected Subcategory ID:', selectedSubCategoryId);
+    const subcategoryInput = document.getElementById('subcategoryInput');
+    if (subcategoryInput) {
+      subcategoryInput.value = selectedSubCategoryId;
     }
   }
 
   document.addEventListener('DOMContentLoaded', function() {
     updateSubCategories();
-
-    // Explicitly select the category on page load
-    // const categorySelect = document.getElementById('category');
-    // categorySelect.value = product.category_id ? product.category_id._id : '';
+    const subCategorySelect = document.getElementById('subCategory');
+    subCategorySelect.addEventListener('change', handleSubCategoryChange);
   });
 
-  // JavaScript function for previewing product images before upload
   function previewProductImage(event, previewId) {
     const file = event.target.files[0];
     const reader = new FileReader();
     reader.onload = function() {
       const productImagePreview = document.getElementById(previewId);
       productImagePreview.src = reader.result;
-      productImagePreview.style.display = "block"; // Display image preview
+      productImagePreview.style.display = "block";
     };
     if (file) {
-      reader.readAsDataURL(file); // Read file as data URL for preview
+      reader.readAsDataURL(file);
     }
   }
+
+  
 </script>
-</body>
+
 <%- include('partials/footer') %>
 
 </html>

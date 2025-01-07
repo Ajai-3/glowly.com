@@ -191,6 +191,7 @@ export const addProduct = async (req, res) => {
 // Render Edit Product Page
 export const renderEditProductPage = async (req, res) => {
     try {
+        const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
         const product = await Product.findById(req.params.id)
             .populate('brand_id')  
             .populate('category_id') 
@@ -203,7 +204,8 @@ export const renderEditProductPage = async (req, res) => {
         res.render('admin/edit-product', {
             product,
             brands,
-            categories
+            categories,
+            msg
         });
     } catch (err) {
         console.error(err);
@@ -221,6 +223,14 @@ export const editProduct = async (req, res) => {
             return res.status(404).send('Product not found');
         }
 
+        const { productName, brand, description, category, subCategory, availableQuantity, regularPrice, salePrice } = req.body;
+
+        // Validate fields
+        if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
+            return res.redirect('/admin/edit-product/${req.params.id}?msg=Please%20fill%20in%20all%20required%20fields&type=error');
+        }
+
+
         let updatedImages = [];
 
         if (req.files && req.files.length > 0) {
@@ -230,30 +240,34 @@ export const editProduct = async (req, res) => {
         if (updatedImages.length === 0) {
             updatedImages = product.product_imgs; 
         }
-        
-        console.log(req.body.subCategory)
+
+
+        console.log('Request body:', req.body);
+        console.log('Subcategory ID:', req.body.subCategory);
+        // console.log(req.body.subCategory)
         
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
             title: req.body.productName,
             description: req.body.description,
             brand_id: req.body.brand,
             category_id: req.body.category,
-            subCategory_id: req.body.subCategory,
+            subcategory_id: req.body.subCategory,
             available_quantity: req.body.availableQuantity,
             price: req.body.regularPrice,
             sales_price: req.body.salePrice,
             product_imgs: updatedImages,
         }, { new: true });
 
-
+        console.log('Updated Product:', updatedProduct);
         if (updatedProduct && updatedProduct.product_imgs) {
-            res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
+            return res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
         } else {
-            res.status(500).send('Error updating product images');
+            return res.status(404).send('Error updating product images');
         }
     } catch (err) {
         console.log(err);
-        res.status(500).send('Error updating product');
+        // res.redirect('/admin/edit-product?msg=Error20%updating20%product&type=error');
+        res.status(500).send('Internal server error');
     }
 }
 
