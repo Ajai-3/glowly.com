@@ -1,6 +1,7 @@
 window.onload = function () {
      window.scrollTo(0, 0);
 }; 
+
 // Sign-Up Form Elements
 const nameInput = document.getElementById('name');
 const emailInput = document.getElementById('email');

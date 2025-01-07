@@ -266,6 +266,7 @@
         window.onload = function () {
             window.scrollTo(0, 0);
         };
+
         document.addEventListener('DOMContentLoaded', function () {
             const priceElements = document.querySelectorAll('.price-inr'); 
 
@@ -274,13 +275,22 @@
                 element.textContent = '₹ ' + price.toLocaleString('en-IN');  
             });
         });
+
         // Select all side images and the main display image
         const sideImages = document.querySelectorAll('.side-image');
         const mainImage = document.getElementById('main-display-image');
 
+        const originalImageSrc = mainImage.src;
+
         sideImages.forEach(image => {
             image.addEventListener('click', () => {
                 mainImage.src = image.dataset.src;
+            });
+            image.addEventListener('mouseover', () => {
+                mainImage.src = image.dataset.src;
+            });
+            image.addEventListener('mouseout', () => {
+                mainImage.src = originalImageSrc;
             });
         });
 
