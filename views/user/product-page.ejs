@@ -247,11 +247,22 @@
         <i class="fas fa-check-circle"></i>&nbsp;&nbsp; 
         <p id="wishlist-notification">Product has been added to Wishlist.</p>
     </div>
-    <div id="cart-notification" class="notification">Cart Notification</div>
+    <!-- <div id="cart-notification" class="notification">Cart Notification</div> -->
 
     <%- include('partials/footerforhome') %> 
 
     <script>
+        const notyf = new Notyf({
+            duration: 2000, 
+            ripple: true,
+            position: { x: 'right', y: 'bottom' },
+            dismissible: false,
+            types: [
+                { type: 'success', background: 'green' },
+                { type: 'error', background: 'red' },
+            ],
+            className: 'custom-notify',
+        });
         window.onload = function () {
             window.scrollTo(0, 0);
         };
@@ -407,15 +418,15 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showCartNotification(data.message);
-                    // updateStockOnPage(data.newAvailableQuantity);  
+                    notyf.success(data.message);
                } else {
-                    showCartNotification(data.message);              
+                    notyf.error(data.message);             
                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showCartNotification('An error occurred while adding the product to the cart.');
+                notyf.error(data.message || 'An error occurred while adding the product to the cart.');
+                // showCartNotification('An error occurred while adding the product to the cart.');
             });
         } else {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -432,15 +443,15 @@
         }
     }
 
-    function showCartNotification(message) {
-        const notification = document.getElementById('cart-notification');
-        notification.textContent = message;
-        notification.classList.add('show');
+    // function showCartNotification(message) {
+    //     const notification = document.getElementById('cart-notification');
+    //     notification.textContent = message;
+    //     notification.classList.add('show');
 
-        setTimeout(() => {
-            notification.classList.remove('show');
-        }, 3000);
-    }
+    //     setTimeout(() => {
+    //         notification.classList.remove('show');
+    //     }, 3000);
+    // }
 
 
     // function updateStockOnPage(newQuantity) {

@@ -51,8 +51,8 @@
   --bg-color-tbl-hover: #242d5673;
   --bg-color-btn-hover2: #212e64;
   --bg-color-btn-hover3: #1a3294;
-  --bg-green-color: #249542;
-  --bg-red-color: #d93333;
+  --bg-green-color: #009829;
+  --bg-red-color: #e51e1e;
   --bg-blue-color: #3d99f5;
   --bg-purple-color: #6261cc;
 
@@ -83,6 +83,26 @@
   
   --orange-text-color: #df431b;
   --white-text-color: #83838338;
+
+  --pastel-blue-color: #47afd4;
+  --pastel-red-color: #e74e4e;
+}
+
+.pastel-btn-red {
+  color: var(--text-color-4);
+  background-color: var(--pastel-red-color);
+}
+.pastel-btn-blue {
+  color: var(--text-color-4);
+  background-color: var(--pastel-blue-color);
+}
+.pastel-btn-red ,
+.pastel-btn-blue {
+font-size: var(--font-size-second);
+padding: 6px;
+border: 0px;
+border-radius: 4px;
+cursor: pointer;
 }
 
 body {
@@ -100,6 +120,7 @@ body {
 a {
   text-decoration: none;
 }
+
 
 /* ===================================================================
   * # Authentication Pages Styles
@@ -1748,15 +1769,9 @@ input[type="number"]::-webkit-input-placeholder {
   font-weight: 300;
 }
 
-
 .large-button-blue:hover {
   color: var(--blue-text-color);
 }
-
-
-
-
-
 
 .payment-div label,
 .payment-div input {
@@ -1775,6 +1790,27 @@ input[type="number"]::-webkit-input-placeholder {
    font-size: var(--font-size-second);
    border: 1px solid var(--second-text-color);
 }
+
+
+
+.modal-content {
+  color: var(--text-color-4);
+  background-color: var(--bg-color);
+}
+.modal-content p {
+  color: var(--text-color-3);
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* *footer******************************************** */
@@ -2026,36 +2062,8 @@ input[type="number"]::-webkit-input-placeholder {
     padding: 10px;
   }
 }
-.notyf-container {
-  max-width: 350px;    /* Make the container smaller */
-  width: auto;         /* Automatically adjust the width based on content */
-  font-size: 14px;     /* Adjust font size for readability */
-  padding: 8px 16px;   /* Set padding to make the container more compact */
-  top: 50px !important; /* Move the notification 50px from the top */
-}
 
-.notyf-container {
-  max-width: 300px !important;     /* Set the max-width for the notification */
-  padding: 10px !important;        /* Adjust padding */
-  top: 80px !important;            /* Move the container 80px from the top (adjust as needed) */
-  font-size: 14px !important;      /* Adjust font size for a compact look */
-}
 
-/* Adjust the success and error types (optional) */
-.notyf-success {
-  background-color: rgb(45, 255, 45) !important;  /* Custom success color */
-}
-
-.notyf-error {
-  background-color: rgb(255, 11, 11) !important;    /* Custom error color */
-}
-
-/* Ensure responsiveness */
-@media (max-width: 600px) {
-  .notyf-container {
-      width: 80% !important;  /* Reduce width on smaller screens */
-  }
-}
 /* ===================================================================
 /* ===================================================================
 /* ===================================================================
@@ -2617,7 +2625,8 @@ p2 {
 .large-button-blue,
 .large-button-pink,
 .large-button-green,
-.large-button-main {
+.large-button-main,
+.large-button-red {
   font-size: var(--font-size-second);
   padding: 6px;
   border: 0px;
@@ -2651,6 +2660,10 @@ p2 {
   color: var(--green-text-color-2);
   background-color: var(--green-text-color-3);
 }
+.large-button-red {
+  color: var(--red-text-color-2);
+  background-color: var(--red-text-color-3);
+}
 .large-button-main {
   color: var(--main-text-color-2);
   background-color: var(--main-text-color-3);
@@ -2666,6 +2679,9 @@ p2 {
 }
 .large-button-pink:hover {
   color: var(--pink-text-color);
+}
+.large-button-red:hover {
+  color: var(--red-text-color); 
 }
 .large-button-main:hover {
   color: var(--main-text-color); 

@@ -394,26 +394,67 @@
             </div>
           </div>
     </div> 
+
+    <div
+      class="modal fade check-out-modal-fade"
+      id="orderConfirmationModal"
+      tabindex="-1"
+      aria-labelledby="orderConfirmationModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="text-center">
+            <div class="mb-3">
+              <i class="fas fa-check-circle" style="font-size: 50px;color: green;"></i>
+            </div>
+            <div>
+              <h5 class="modal-title" id="orderConfirmationModalLabel">Your order is Completed</h5>
+            </div>
+          </div>
+          <div class="modal-body text-center">
+            <p >Thank You for your order, Sit tight we are processing your order
+              we will update you with your order in email
+               </p>
+            <button id="goToOrders" class="pastel-btn-red px-4"><i class="fas fa-truck me-2"></i>Go to Orders</button>
+            <button id="continueShopping" class="pastel-btn-blue px-4">Continue Shopping<i class="fa-solid fa-bag-shopping ms-2"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 </body>
 <%- include('partials/footerforhome') %>
 <script>
+const notyf = new Notyf({
+    duration: 2000,
+    ripple: true,  
+    position: { x: 'center', y: 'bottom' },
+    types: [
+        { type: 'success', background: 'green' },  
+        { type: 'error', background: 'red' },     
+    ],
+    className: 'custom-notify',
+});
 document.addEventListener("DOMContentLoaded", () => {
   const step1 = document.getElementById("step1");
   const step2 = document.getElementById("step2");
   const step3 = document.getElementById("step3");
 
+  let selectedAddressId = null;
+
   showStep(step1);
 
   step1.addEventListener("click", (event) => {
     if (event.target && event.target.classList.contains("address-select")) {
-      const selectedAddressId = event.target.getAttribute("data-id");
+      selectedAddressId = event.target.getAttribute("data-id");
       const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
 
       const selectedAddress = {
         id: selectedAddressId,
         details: selectedAddressDetails,
       };
-
       renderStep2(selectedAddress);
       showStep(step2);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -438,13 +479,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const payButton = document.querySelector(".pay-btn-checkoutpage");
     payButton.addEventListener("click", async () => {
-      const selectedAddressId = getSelectedAddressId();
       const cartProducts = getCartProducts();
       const selectedPaymentMethod = getSelectedPaymentMethod();
 
-      // Ensure a payment method is selected
       if (!selectedPaymentMethod) {
-        alert("Please select a payment method.");
+        notyf.error("Please select a payment method.");
         return;
       }
 
@@ -453,6 +492,7 @@ document.addEventListener("DOMContentLoaded", () => {
         cart: cartProducts,
         payment_method: selectedPaymentMethod,
       };
+      console.log(orderData)
 
       try {
         const response = await fetch("/place-order", {
@@ -467,19 +507,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (response.ok) {
           showStep(step1);
-          alert("Order placed successfully!");
-          window.location.href = "/my-orders";
+          notyf.success("Order placed successfully!");
+           const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
+            orderConfirmationModal.show();
+
+            document.getElementById("continueShopping").addEventListener("click", () => {
+              orderConfirmationModal.hide();
+              window.location.href = "/home"; 
+            });
+
+            document.getElementById("goToOrders").addEventListener("click", () => {
+              orderConfirmationModal.hide(); 
+              window.location.href = "/my-orders"; 
+            });
+
         } else {
           alert(result.message || "Something went wrong. Please try again.");
         }
       } catch (error) {
-        alert("There was an error placing your order. Please try again.");
+        notyf.error("There was an error placing your order. Please try again.");
       }
     });
-
-  function getSelectedAddressId() {
-    return document.querySelector(".address-select.active")?.getAttribute("data-id");
-  }
 
   function getCartProducts() {
     const productElements = document.querySelectorAll(".cart-box-in-checkout");

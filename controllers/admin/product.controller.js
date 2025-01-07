@@ -103,7 +103,9 @@ export const renderAddProductsPage = async (req, res) => {
             brands,
             categories,
             subcategories,
-            msg
+            msg,
+            // error: null,
+            // success: null
         })
     } catch (error) {
         console.error("Error fetching categories, brands, and subcategories:", error);
@@ -119,14 +121,14 @@ export const addProduct = async (req, res) => {
         } = req.body;
 
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ message: 'No product images uploaded' });
+            return res.status(400).json({ sucess: false, message: 'No product images uploaded' });
+            // res.json({ error: "There was an error with adding the product." });
         }
 
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
 
-        // Move files to the upload directory and store filenames
         const productImages = req.files.map(file => {
             const outputPath = path.join(uploadDir, file.filename);
 
@@ -141,7 +143,7 @@ export const addProduct = async (req, res) => {
         });
 
         if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
-            return res.status(400).json({ message: 'Missing required fields' });
+            return res.status(400).json({ sucess: false, message: 'Missing required fields' });
         }
 
         // Create a new product object
@@ -154,7 +156,7 @@ export const addProduct = async (req, res) => {
             price: regularPrice,
             sales_price: salePrice,
             available_quantity: availableQuantity,
-            product_imgs: productImages,  // Store resized filenames
+            product_imgs: productImages,  
             created_at: Date.now(),
             updated_at: Date.now(),
         });
@@ -162,6 +164,8 @@ export const addProduct = async (req, res) => {
         await newProduct.save();
 
         return res.redirect('/products?msg=Product%20added%20successfully&type=success');
+  
+        // res.status(200).json({ sucess: true, message: 'Product added successfully!' });
     } catch (error) {
         console.error('Error in adding product:', error);
         res.status(500).json({ message: 'Internal Server Error', error: error.message });

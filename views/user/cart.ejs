@@ -127,6 +127,18 @@
 <%- include('partials/footerforhome') %> 
 
 <script>
+     document.addEventListener("DOMContentLoaded", () => {
+      const cartBoxes = document.querySelectorAll(".cart-box");
+      cartBoxes.forEach(cartBox => {
+        const cartStockElement = cartBox.querySelector(".cart-stock");
+        if (cartStockElement) {
+          const stockText = cartStockElement.innerText;
+          if (stockText === "Unavailable" || stockText.includes("Not enough stock")) {
+            cartBox.classList.add("faded");
+          }
+        }
+      });
+    });
 document.addEventListener("DOMContentLoaded", function () {
       const notyf = new Notyf({
         duration: 1500,  
@@ -165,9 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                 } else {
                     notyf.error(data.message || 'Error updating quantity.');  
-                    // setTimeout(() => {
-                    //     location.reload();
-                    // }, 1000);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
                 }
             })
             .catch(error => {

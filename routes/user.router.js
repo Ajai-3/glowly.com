@@ -88,7 +88,7 @@ router.post("/remove-cart-product/:productId", removeCartProduct);
 router.post("/update-cart-product/:productId", updateCartPageProduct)
 // Checkout Mangement
 router.get("/checkout", renderCheckoutPage);
-router.get("/place-order", placeOrder);
+router.post("/place-order", placeOrder);
 
 // Order Management
 router.get("/my-orders", renderOrderListPage);

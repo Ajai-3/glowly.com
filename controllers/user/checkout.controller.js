@@ -62,7 +62,7 @@ export const renderCheckoutPage = async (req, res) => {
                 return null;
               })
           );
-          
+
         const validCartProducts = cartProducts.filter(product => product !== null);
 
         return res.render('user/checkout', {

@@ -56,7 +56,7 @@
             <i class="fas fa-check-circle"></i>&nbsp;&nbsp; 
             <p id="wishlist-notification">Product has been added to Wishlist.</p>
         </div>
-        <div id="cart-notification" class="notification">Cart Notification</div>
+        <!-- <div id="cart-notification" class="notification">Cart Notification</div> -->
 
 </div>  
     
@@ -70,9 +70,17 @@
 <%- include('partials/footerforhome') %>
  
 <script>
-      window.onload = function() {
-        window.scrollTo(0, 0);
-      }
+    const notyf = new Notyf({
+            duration: 2000, 
+            ripple: true,
+            position: { x: 'right', y: 'bottom' },
+            types: [
+                { type: 'success', background: 'green' },
+                { type: 'error', background: 'red' },
+            ],
+            className: 'custom-notify',
+        });
+
       document.addEventListener('DOMContentLoaded', function () {
             const priceElements = document.querySelectorAll('.price-inr'); 
 
@@ -157,9 +165,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showCartNotification(data.message);
+                    notyf.success(data.message);
                 } else {
-                    showCartNotification(data.message);
+                    notyf.success(data.message);
                 }
             })
             .catch(error => {
@@ -177,7 +185,7 @@
             }
 
             localStorage.setItem('cart', JSON.stringify(cart));
-            showCartNotification('Product added to cart!');
+            notyf.success('Product added to cart!');
         }
     });
 });

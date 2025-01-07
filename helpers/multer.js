@@ -12,11 +12,10 @@ const storage = multer.diskStorage({
 
         const profilePicsDir = path.join(uploadsDir, 'profile-pics');
 
-        fs.mkdirSync(profilePicsDir, { recursive: true }); 
-        cb(null, profilePicsDir); 
+        const targetDir = file.fieldname === 'profile-pic' ? profilePicsDir : uploadsDir;
 
-        fs.mkdirSync(uploadsDir, { recursive: true });
-        cb(null, uploadsDir);
+        fs.mkdirSync(targetDir, { recursive: true });
+        cb(null, targetDir);
     },
     filename: (req, file, cb) => {
         cb(null, Date.now() + "-" + file.originalname);

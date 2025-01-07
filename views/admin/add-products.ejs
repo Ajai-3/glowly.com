@@ -157,11 +157,37 @@
 <%- include('partials/footer') %> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script>
+const notyf = new Notyf({
+    duration: 2000,
+    ripple: true,  
+    position: { x: 'right', y: 'bottom' },
+    // dismissible: true,  
+    types: [
+        { type: 'success', background: 'green' },  
+        { type: 'error', background: 'red' },     
+    ],
+    className: 'custom-notify',
+});
+var serverError = "<%= typeof error !== 'undefined' && error ? error.replace(/'/g, '\\\'') : '' %>";
+    var serverSuccess = "<%= typeof success !== 'undefined' && success ? success.replace(/'/g, '\\\'') : '' %>";
+
+    // Show notifications if error or success is present
+    if (serverError) {
+        notyf.error(serverError);
+    }
+
+    if (serverSuccess) {
+        notyf.success(serverSuccess);
+    }
+
+notyf.success('Test success notification!');
+notyf.error('Test error notification!');
 let cropper;
 let currentPreviewId;
-let croppedFiles = {}; // To store cropped files for each image input
+let croppedFiles = {};
 
-// Open the cropper modal and set up the cropper
+
+
 function openCropper(event, previewId) {
     const file = event.target.files[0];
     const reader = new FileReader();
@@ -170,16 +196,14 @@ function openCropper(event, previewId) {
         const imageUrl = reader.result;
 
         const imageElement = document.getElementById('imageToCrop');
-        imageElement.src = imageUrl; // Set image to crop
+        imageElement.src = imageUrl;
 
         // Show cropper modal
         const modal = document.getElementById('cropperModal');
         modal.style.display = 'flex';
 
-        // Set the current preview id to update it after cropping
         currentPreviewId = previewId;
 
-        // Initialize the cropper
         if (cropper) {
             cropper.destroy();
         }
@@ -196,16 +220,13 @@ function openCropper(event, previewId) {
     reader.readAsDataURL(file);
 }
 
-// Crop the image and store it as a File object
 function cropImage() {
     const canvas = cropper.getCroppedCanvas();
     canvas.toBlob(function (blob) {
         const croppedFile = new File([blob], `cropped_image_${currentPreviewId}.jpg`, { type: 'image/jpeg' });
 
-        // Store the cropped file
         croppedFiles[currentPreviewId] = croppedFile;
 
-        // Update the preview image with the cropped image
         const previewElement = document.getElementById(`productImagePreview${currentPreviewId}`);
         const reader = new FileReader();
         reader.onload = function () {
@@ -213,12 +234,10 @@ function cropImage() {
         };
         reader.readAsDataURL(croppedFile);
 
-        // Close the cropper modal
         closeCropperModal();
     }, 'image/jpeg');
 }
 
-// Close the cropper modal
 function closeCropperModal() {
     const modal = document.getElementById('cropperModal');
     modal.style.display = 'none';
@@ -229,29 +248,33 @@ function closeCropperModal() {
     }
 }
 
-// Intercept form submission to replace files with cropped versions
-document.querySelector('form').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent default form submission
+// document.querySelector('form').addEventListener('submit', function (event) {
+//     event.preventDefault(); 
 
-    const formData = new FormData(event.target);
+//     const formData = new FormData(event.target);
 
-    // Replace the original files with cropped files
-    Object.keys(croppedFiles).forEach((key) => {
-        formData.set(`productImages`, croppedFiles[key]);
-    });
+//     Object.keys(croppedFiles).forEach((key) => {
+//         formData.set(`productImages`, croppedFiles[key]);
+//     });
 
-    // Submit the form using fetch or other methods
-    fetch('/add-products', {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            console.log(data); // Handle the response from the server
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-        });
-});
+ 
+//     fetch('/add-products', {
+//         method: 'POST',
+//         body: formData,
+//     })
+//         .then((response) => response.json())
+//         .then((data) => {
+//             console.log(data);
+//             if (data.success) {
+//                 notyf.success(data.success);
+//             } else if (data.error) {
+//                 notyf.error(data.error);
+//             } 
+//         })
+//         .catch((error) => {
+//             console.error('Error:', error);
+//             notyf.error('An unexpected error occurred.');
+//         });
+// });
 
 </script>

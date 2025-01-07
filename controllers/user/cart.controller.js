@@ -95,13 +95,17 @@ export const addToCart = async (req, res) => {
         }
 
         if (quantity > 6) {
-            return res.json({ success: false, message: 'Cannot add more than 6 quantity' });
+            return res.json({ success: false, message: 'Cannot add more than 6.' });
         }
 
         if (product.available_quantity < quantity) {
             return res.json({ success: false, message: 'Not enough stock available' });
         }
-       
+
+        if (cart.products.length === 16) {
+            return res.json({ success: false, message: 'Your cart rech maximum limit.' });
+        }
+
         if (!cart) {
             cart = new Cart({
                 user_id: userId,
@@ -118,14 +122,14 @@ export const addToCart = async (req, res) => {
                 existingProduct.quantity = Number(quantity);
 
                 if (existingProduct.quantity > 6) {
-                    return res.json({ success: false, message: 'Cannot add more than 6 of this product.' });
+                    return res.json({ success: false, message: 'Cannot add more than 6.' });
                 }
                 existingProduct.created_at = new Date();
 
                 await cart.save();
                 // const updatedStock = product.available_quantity - quantity;
                 // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
-                return res.json({ success: true, message: 'Product quantity updated in cart' });
+                return res.json({ success: true, message: 'Cart updated successfully' });
             } else {
                 cart.products.push({ product_id: id, quantity, created_at: new Date() });
                 await cart.save();
