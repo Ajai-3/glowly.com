@@ -117,61 +117,80 @@ export const renderAddProductsPage = async (req, res) => {
 export const addProduct = async (req, res) => {
     try {
         const {
-            productName, brand, description, category, subCategory, availableQuantity, regularPrice, salePrice
+            productName,
+            brand,
+            description,
+            category,
+            subCategory,
+            availableQuantity,
+            regularPrice,
+            salePrice,
         } = req.body;
 
+        if (
+            !productName ||
+            !brand ||
+            !description ||
+            !category ||
+            !subCategory ||
+            !availableQuantity ||
+            !regularPrice ||
+            !salePrice
+        ) {
+            return res.status(400).json({ success: false, message: 'Missing required fields' });
+        }
+
         if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ sucess: false, message: 'No product images uploaded' });
-            // res.json({ error: "There was an error with adding the product." });
+            return res.status(400).json({ success: false, message: 'No product images uploaded' });
         }
 
+        // Ensure Upload Directory Exists
         if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
+            await fs.promises.mkdir(uploadDir, { recursive: true });
         }
 
-        const productImages = req.files.map(file => {
-            const outputPath = path.join(uploadDir, file.filename);
+        // Resize And Store Product Images
+        const productImages = await Promise.all(
+            req.files.map(async (file) => {
+                try {
+                    const resizedOutputPath = path.join(uploadDir, 'resized_' + file.filename);
+        
+                    await sharp(file.path)
+                        .resize(300, 300)
+                        .jpeg({ quality: 100 })
+                        .toFile(resizedOutputPath);
+        
+                    return 'resized_' + file.filename;
+                } catch (err) {
+                    console.error('Error resizing image:', err);
+                    throw new Error('Error processing image');
+                }
+            })
+        );
 
-            const resizedOutputPath = path.join(uploadDir, 'resized_' + file.filename);
 
-            sharp(file.path)
-                .resize(300, 300)  
-                .jpeg({ quality: 100 }) 
-                .toFile(resizedOutputPath);
-
-            return 'resized_' + file.filename; 
-        });
-
-        if (!productName || !brand || !description || !category || !subCategory || !availableQuantity || !regularPrice || !salePrice) {
-            return res.status(400).json({ sucess: false, message: 'Missing required fields' });
-        }
-
-        // Create a new product object
         const newProduct = new Product({
             title: productName,
             brand_id: new mongoose.Types.ObjectId(brand),
             category_id: new mongoose.Types.ObjectId(category),
             subcategory_id: new mongoose.Types.ObjectId(subCategory),
-            description: description,
+            description,
             price: regularPrice,
             sales_price: salePrice,
             available_quantity: availableQuantity,
-            product_imgs: productImages,  
+            product_imgs: productImages,
             created_at: Date.now(),
             updated_at: Date.now(),
         });
 
         await newProduct.save();
 
-        return res.redirect('/products?msg=Product%20added%20successfully&type=success');
-  
-        // res.status(200).json({ sucess: true, message: 'Product added successfully!' });
+        return res.status(200).json({ success: true, message: "Product added successfull" });
     } catch (error) {
         console.error('Error in adding product:', error);
-        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+        res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
     }
 };
-
 
 // Render Edit Product Page
 export const renderEditProductPage = async (req, res) => {

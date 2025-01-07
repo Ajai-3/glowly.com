@@ -19,7 +19,7 @@
 
         <div class="add-products-container">
             <div class="add-products-container1">
-                <form action="/add-products" method="POST" enctype="multipart/form-data">
+                <form id="productForm" enctype="multipart/form-data">
                     <h4>Add New Product</h4>
 
                     <div class="add-products-container-center">
@@ -76,7 +76,7 @@
                         </div>    
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="/add-products"><button class="add-product-btn2 my-1">Add Product</button></a> 
+                        <a href="/add-products"><button type="submit" class="add-product-btn2 my-1">Add Product</button></a> 
                     </div>
                 </div>
                 <div class="add-products-container2">
@@ -160,7 +160,7 @@
 const notyf = new Notyf({
     duration: 2000,
     ripple: true,  
-    position: { x: 'right', y: 'bottom' },
+    position: { x: 'right', y: 'top' },
     // dismissible: true,  
     types: [
         { type: 'success', background: 'green' },  
@@ -168,25 +168,10 @@ const notyf = new Notyf({
     ],
     className: 'custom-notify',
 });
-var serverError = "<%= typeof error !== 'undefined' && error ? error.replace(/'/g, '\\\'') : '' %>";
-    var serverSuccess = "<%= typeof success !== 'undefined' && success ? success.replace(/'/g, '\\\'') : '' %>";
 
-    // Show notifications if error or success is present
-    if (serverError) {
-        notyf.error(serverError);
-    }
-
-    if (serverSuccess) {
-        notyf.success(serverSuccess);
-    }
-
-notyf.success('Test success notification!');
-notyf.error('Test error notification!');
-let cropper;
-let currentPreviewId;
 let croppedFiles = {};
-
-
+let currentPreviewId = null;
+let cropper = null;
 
 function openCropper(event, previewId) {
     const file = event.target.files[0];
@@ -194,7 +179,6 @@ function openCropper(event, previewId) {
 
     reader.onload = function () {
         const imageUrl = reader.result;
-
         const imageElement = document.getElementById('imageToCrop');
         imageElement.src = imageUrl;
 
@@ -241,40 +225,47 @@ function cropImage() {
 function closeCropperModal() {
     const modal = document.getElementById('cropperModal');
     modal.style.display = 'none';
-
     if (cropper) {
         cropper.destroy();
         cropper = null;
     }
 }
 
-// document.querySelector('form').addEventListener('submit', function (event) {
-//     event.preventDefault(); 
+// Prevent form submission to manually handle image upload
+document.getElementById('productForm').addEventListener('submit', (e) => {
+    e.preventDefault(); 
 
-//     const formData = new FormData(event.target);
+    const formData = new FormData();
 
-//     Object.keys(croppedFiles).forEach((key) => {
-//         formData.set(`productImages`, croppedFiles[key]);
-//     });
+    const formElements = e.target.elements;
+    for (let element of formElements) {
+        if (element.name && element.type !== 'file') {
+            formData.append(element.name, element.value);
+        }
+    }
 
- 
-//     fetch('/add-products', {
-//         method: 'POST',
-//         body: formData,
-//     })
-//         .then((response) => response.json())
-//         .then((data) => {
-//             console.log(data);
-//             if (data.success) {
-//                 notyf.success(data.success);
-//             } else if (data.error) {
-//                 notyf.error(data.error);
-//             } 
-//         })
-//         .catch((error) => {
-//             console.error('Error:', error);
-//             notyf.error('An unexpected error occurred.');
-//         });
-// });
+    // Append cropped images to FormData
+    for (let [key, file] of Object.entries(croppedFiles)) {
+        formData.append('productImages', file);
+    }
+
+    fetch('/add-products', {
+        method: 'POST',
+        body: formData,
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.success) {
+                notyf.success(data.message);
+            } else {
+                notyf.error(data.message);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+            notyf.error("Error in addinging new product");
+        });
+});
+
 
 </script>
