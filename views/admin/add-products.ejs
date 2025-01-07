@@ -291,6 +291,9 @@ document.getElementById('productForm').addEventListener('submit', (e) => {
         .then((data) => {
             if (data.success) {
                 notyf.success(data.message);
+                setTimeout( () => {
+                    window.location.href = '/products';
+                }, 2000)
             } else {
                 notyf.error(data.message);
             }

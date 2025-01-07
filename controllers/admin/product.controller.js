@@ -94,13 +94,11 @@ export const renderAddProductsPage = async (req, res) => {
     try {
         const brands = await Brand.find();
         const categories = await Category.find().populate('subcategories');
-        const subcategories = await Subcategory.find()
 
         const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
 
         return res.render("admin/add-products", {
             brands,
-            subcategories,
             categories,
             msg,
         });
@@ -200,14 +198,12 @@ export const renderEditProductPage = async (req, res) => {
             .exec();
         
         const brands = await Brand.find();
-        const categories = await Category.find();
-        const subcategories = await Subcategory.find();
+        const categories = await Category.find().populate('subcategories'); 
 
         res.render('admin/edit-product', {
             product,
             brands,
-            categories,
-            subcategories
+            categories
         });
     } catch (err) {
         console.error(err);
@@ -229,14 +225,14 @@ export const editProduct = async (req, res) => {
 
         if (req.files && req.files.length > 0) {
             updatedImages = req.files.map(file => file.filename);
-            // console.log('New images to be saved:', updatedImages);
         }
 
         if (updatedImages.length === 0) {
             updatedImages = product.product_imgs; 
-            // console.log('No new images, keeping existing ones:', updatedImages);
         }
-
+        
+        console.log(req.body.subCategory)
+        
         const updatedProduct = await Product.findByIdAndUpdate(req.params.id, {
             title: req.body.productName,
             description: req.body.description,
@@ -251,7 +247,6 @@ export const editProduct = async (req, res) => {
 
 
         if (updatedProduct && updatedProduct.product_imgs) {
-            // console.log('Updated product images:', updatedProduct.product_imgs);
             res.redirect('/admin/products?msg=Product%20updated%20successfully&type=success');
         } else {
             res.status(500).send('Error updating product images');
@@ -261,6 +256,9 @@ export const editProduct = async (req, res) => {
         res.status(500).send('Error updating product');
     }
 }
+
+
+
 
 export const toggleProduct = async (req, res) => {
     try {
