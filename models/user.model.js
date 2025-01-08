@@ -60,6 +60,6 @@ const userSchema = new mongoose.Schema ({
     }
 });
 
-const User = mongoose.model('user', userSchema) // Create A Model To Work With The Database
+const User = mongoose.model('User', userSchema) // Create A Model To Work With The Database
 
 export default User;

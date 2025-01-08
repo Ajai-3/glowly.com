@@ -23,9 +23,7 @@ export const renderDashboardPage = (req, res) => {
 }
 
 // Rendre Orderlists Page
-export const renderOrderlistsPage = (req, res) => {
-    return res.render("admin/orderlists")
-}
+
 
 // Rendre Sales Report Page
 export const renderSalesReportPage = (req, res) => {

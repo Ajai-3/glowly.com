@@ -2,12 +2,11 @@
 <html lang="en">
 <%- include('partials/head') %> 
     <div class="main-content">
-            
         <div class="header">
             <div class="search-bar">
                 <form action="/search-category" method="GET">
                     <input type="text" name="search" placeholder="Search User" disabled>
-                    <button  class="admin-search-button" disabled><i class="fas fa-search"></i></button>
+                    <button class="admin-search-button" disabled><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
@@ -56,24 +55,57 @@
             <thead>
                 <tr>
                     <th>S.No</th>
-                    <th>Category name</th>
-                    <th>Sub categories</th>
-                    <th>Created At</th>
-                    <th>Offer</th>
-                    <th>List / Unlist</th>
+                    <th>Order ID</th>
+                    <th>User Name</th>
+                    <th>Address</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                    <th>Total Amount</th>
+                    <th>Order Status</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                
-              </tbody>
-              
+                <% orders.forEach((order, index) => { %>
+                    <% order.products.forEach((product, productIndex) => { %>
+                        <tr>
+                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
+                            <td><%= order._id %></td>
+                            <td><%= order.user_id.name %></td>
+                            <td><%= order.address_id.address_line1 %>, <%= order.address_id.city %>, <%= order.address_id.state %>, <%= order.address_id.zip %></td>
+                            <td>
+                                <img src="/uploads/<%= encodeURIComponent(product.product_id.product_imgs[0]) %>" alt="<%= product.product_id.title %>"  width="30" height="30" style="margin-right: 10px; vertical-align: middle;">
+                                <%= product.product_id.title.slice(0, 20) %>...
+                            </td>
+                            <td><%= product.quantity %></td>
+                            <td>₹<%= product.product_id.price * product.quantity %></td>
+                            <td><%= product.status %></td>
+                            <td>
+                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info btn-sm">View</a>
+                            </td>
+                        </tr>
+                    <% }) %>
+                <% }) %>
+            </tbody>
         </table>
+        
+    </div> 
 
-        
-        
-        
-    </div>  
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="/admin/orders?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
+        <% } %>
+    
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="/admin/orders?page=<%= i %>&<%= queryParams %>" class="<%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+            </a>
+        <% } %>
+    
+        <% if (currentPage < totalPages) { %>
+            <a href="/admin/orders?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
+        <% } %>
+    </div> 
 </body>
 <%- include('partials/footer') %> 
 </html>

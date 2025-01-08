@@ -6,7 +6,7 @@ const uploads = multer ({ storage:storage })
 import {
   renderLoginPage,
   renderDashboardPage,
-  renderOrderlistsPage,
+  // renderOrderlistsPage,
   renderSalesReportPage,
   renderSettingsPage,
   renderBannerManagementPage,
@@ -19,6 +19,7 @@ import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCate
 import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from "../controllers/admin/coupon.controller.js";
+import { renderOrderPage } from "../controllers/admin/order.controller.js";
 
 
 
@@ -79,7 +80,7 @@ router.post("/add-coupon", verifyAdminToken, addCoupon);
 router.get("/edit-coupon", verifyAdminToken, renderEditCouponPage);
 router.post("/edit-coupon", verifyAdminToken, editCoupon);
 // Order Routes
-router.get("/orderlists", verifyAdminToken, renderOrderlistsPage);
+router.get("/orderlists", verifyAdminToken, renderOrderPage);
 //
 router.get("/sales-report", verifyAdminToken, renderSalesReportPage);
 
