@@ -79,6 +79,7 @@ export const renderProductPage = async (req, res) => {
 
 
 
+
 // Render The Page With Category
 export const renderPageWithCategory = async (req, res) => {
     try {

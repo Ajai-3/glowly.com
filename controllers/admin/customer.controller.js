@@ -3,6 +3,8 @@ import User from "../../models/user.model.js";
 
 export const renderUsersPage = async (req, res) => {
     try {
+        const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
+
         const perPage = 9; 
         const page = parseInt(req.query.page) || 1;
         const search = req.query.search || '';
@@ -40,6 +42,7 @@ export const renderUsersPage = async (req, res) => {
             perPage, 
             search, 
             status,
+            msg,
             queryParams: `search=${search}&status=${status}` 
         });
 
@@ -53,61 +56,72 @@ export const renderUsersPage = async (req, res) => {
 
 // Block User
 export const blockUser = async (req, res) => {
-    const userId = req.query.id; 
+    const userId = req.query.id;
 
     if (!userId) {
-        return res.status(400).json({ message: 'User ID is required' });
+        return res.redirect('/admin/users?msg=User+ID+is+required&type=error');
     }
 
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.redirect('/admin/users?msg=User+not+found&type=error');
         }
 
         user.status = 'blocked';
-        await user.save();  
+        await user.save();
 
         res.clearCookie('token');
-        
-        return res.redirect("/admin/users")
+
+        return res.redirect('/admin/users?msg=User+has+been+successfully+blocked&type=success');
     } catch (error) {
         console.error('Error in blocking user:', error);
-        return res.status(500).json({ message: 'An error occurred while blocking the user.' });
+        return res.redirect('/admin/users?msg=An+error+occurred+while+blocking+the+user.&type=error');
     }
 };
 
-
+// Unblock User
 export const unBlockUser = async (req, res) => {
+    const userId = req.query.id;
+
+    if (!userId) {
+        return res.redirect('/admin/users?msg=User+ID+is+required&type=error');
+    }
+
     try {
-        const userId = req.query.id;
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.redirect('/admin/users?msg=User+not+found&type=error');
+        }
 
-        await User.updateOne({ _id: userId }, { $set: { status: "active" } });
+        user.status = 'active';
+        await user.save();
 
-        return res.redirect("/admin/users")
+        return res.redirect('/admin/users?msg=User+has+been+successfully+unblocked&type=success');
     } catch (error) {
-        console.error("Error in unblocking:", error);
-        res.status(500).send("An error occurred while updating the user status.");
+        console.error('Error in unblocking user:', error);
+        return res.redirect('/admin/users?msg=An+error+occurred+while+unblocking+the+user.&type=error');
     }
 };
+
+
 
 
 
 
 export const checkUserStatus = async (req, res) => {
-    const userId = req.userId;  // Assuming you're storing the user ID in the request object (via middleware)
+    const userId = req.userId; 
 
     if (!userId) {
         return res.status(401).json({ message: 'User not authenticated' });
     }
 
     try {
-        const user = await User.findById(userId);  // Assuming you have a 'User' model to query the database
+        const user = await User.findById(userId);  
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
 
-        // Return the user's status (blocked or active)
         res.json({ status: user.status });
     } catch (error) {
         console.error('Error checking user status:', error);

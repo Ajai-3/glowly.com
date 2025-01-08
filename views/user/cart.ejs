@@ -150,7 +150,27 @@ document.addEventListener("DOMContentLoaded", function () {
             { type: 'error', background: 'red' },     
         ],
     });
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');  // Get the message parameter
+    const success = urlParams.get('success');  // Get the success parameter
 
+    console.log("Message:", message);
+    console.log("Success:", success);
+
+    // If there is a message, show the notification
+    if (message) {
+        if (success === 'true') {
+            console.log("Displaying success message");
+            notyf.success(message);  // Show success message
+        } else {
+            console.log("Displaying error message");
+            notyf.error(message);  // Show error message
+        }
+    } else {
+        console.log("No message parameter found in the URL");
+    }
+
+    
     document.querySelectorAll('.quantity-select').forEach(select => {
         select.addEventListener('change', function () {
             const productElement = this.closest('.cart-box');

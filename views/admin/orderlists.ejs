@@ -1,10 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
+    <div class="main-content">
+            
+        <div class="header">
+            <div class="search-bar">
+                <form action="/search-category" method="GET">
+                    <input type="text" name="search" placeholder="Search User" disabled>
+                    <button  class="admin-search-button" disabled><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="admin-profile mx-3">
+                <a href="/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+        <div class="brudcrumbs"><a href="/category">Category</a></div>
+        <div class="filter-container">
+            <div class="filter-div1">
+                <div class="filter-box">
+                    <i class="fa-solid fa-filter"></i>
+                </div>
+                
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="filter">Filter By
+                            <select name="filter" id="filter">
+                                <option value="date">14 feb 2014</option>
+                            </select>
+                        </label>
+                       </div>
+                </form>
+                <form action="/users" method="GET">
+                    <div class="filter-box">
+                        <label for="status">Status
+                            <select name="status" id="status" onchange="this.form.submit()">
+                                <option value="all" >Pending</option>
+                                <option value="block" >Processing</option>
+                                <option value="unblock">Shipped</option>
+                            </select>
+                        </label>
+                    </div>
+                </form>
+            </div>
 
+            <a href="/add-category">
+                <button class="add-btn">
+                    Add Category
+                </button>
+            </a>
+        </div>
+        
+        <table class="all-table">
+            <thead>
+                <tr>
+                    <th>S.No</th>
+                    <th>Category name</th>
+                    <th>Sub categories</th>
+                    <th>Created At</th>
+                    <th>Offer</th>
+                    <th>List / Unlist</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+              </tbody>
+              
+        </table>
 
-    </div> <!-- <div class="main-content"></div> -->
-
+        
+        
+        
+    </div>  
 </body>
 <%- include('partials/footer') %> 
 </html>

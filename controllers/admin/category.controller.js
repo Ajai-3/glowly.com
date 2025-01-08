@@ -243,7 +243,6 @@ export const deleteCategory = async (req, res) => {
 
         await Subcategory.deleteMany({ categoryId: categoryId });
 
-        // Redirect to categories page with a success message
         res.redirect('/admin/category?msg=Category deleted successfully&type=success');
     } catch (error) {
         console.error("Error deleting category:", error);

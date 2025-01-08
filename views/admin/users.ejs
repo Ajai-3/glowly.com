@@ -1,110 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-            
-        <div class="header">
-            <div class="search-bar">
-                <form action="/search-user" method="GET">
-                    <input type="text" name="search" placeholder="Search User">
-                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs">brudcrumbs</div>
+<%- include('partials/head') %>
+<div class="main-content">
 
-        <div class="filter-container">
-            <div class="filter-div1">
-                <div class="filter-box">
-                    <i class="fa-solid fa-filter"></i>
-                </div>
-                
-                <form action="/users" method="GET">
-                    <div class="filter-box">
-                        <label for="filter">Filter By
-                            <select name="filter" id="filter">
-                                <option value="date">14 feb 2014</option>
-                            </select>
-                        </label>
-                       </div>
-                </form>
-                <form action="/users" method="GET">
-                    <div class="filter-box">
-                        <label for="status">Status
-                            <select name="status" id="status" onchange="this.form.submit()">
-                                <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
-                                <option value="block" <%= status === 'block' ? 'selected' : '' %>>Blocked</option>
-                                <option value="unblock" <%= status === 'unblock' ? 'selected' : '' %>>Active</option>
-                            </select>
-                        </label>
-                    </div>
-                </form>
-            </div>
+  <div class="header">
+    <div class="search-bar">
+      <form action="/search-user" method="GET">
+        <input type="text" name="search" placeholder="Search User">
+        <button class="admin-search-button"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+    <div class="admin-profile mx-3">
+      <a href="/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
+    </div>
+  </div>
+  <div class="brudcrumbs">brudcrumbs</div>
+  <!-- <% if (msg) { %>
+  <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
+    <%= msg.text %>
+  </div>
+  <% } %> -->
+
+  <div class="filter-container">
+    <div class="filter-div1">
+      <div class="filter-box">
+        <i class="fa-solid fa-filter"></i>
+      </div>
+
+      <form action="/users" method="GET">
+        <div class="filter-box">
+          <label for="filter">Filter By
+            <select name="filter" id="filter">
+              <option value="date">14 feb 2014</option>
+            </select>
+          </label>
         </div>
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone No</th>
-                    <th>Role</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% users.forEach((user, index) => { %>
-                   <tr>
-                    <td><%= (currentPage - 1) * perPage + index + 1 %></td>
-                     <td><%= user.name %></td>
-                     <td><%= user.email %></td>
-                     <td><%= user.phone_no %></td>
-                     <td><%= user.role %></td>
-                     <!-- <td><%= user.created_at %></td>  -->
-                     <td><%= new Date(user.created_at).toLocaleString() %></td>
-                     <td>
-                        <% if (user.status === 'active') { %>
-                            <a href="/block-user?id=<%= user._id %>">
-                                <button class="block-btn">Block</button>
-                            </a>
-                        <% } else if (user.status === 'blocked') { %>
-                            <a href="/unblock-user?id=<%= user._id %>">
-                                <button class="unblock-btn">Unblock</button>
-                            </a>
-                        <% } %>
-                    </td>
-                   </tr>
-                <% }); %>
-            </tbody>
-        </table>
-        <div class="pagination">
-            <!-- Previous Page -->
-            <% if (currentPage > 1) { %>
-                <a href="/admin/users?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
-            <% } %>
-        
-            <!-- Individual Page Numbers -->
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/users?page=<%= i %>&<%= queryParams %>" 
-                   class="<%= currentPage === i ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-        
-            <!-- Next Page -->
-            <% if (currentPage < totalPages) { %>
-                <a href="/admin/users?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
-            <% } %>
+      </form>
+      <form action="/users" method="GET">
+        <div class="filter-box">
+          <label for="status">Status
+            <select name="status" id="status" onchange="this.form.submit()">
+              <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+              <option value="block" <%= status === 'block' ? 'selected' : '' %>>Blocked</option>
+              <option value="unblock" <%= status === 'unblock' ? 'selected' : '' %>>Active</option>
+            </select>
+          </label>
         </div>
-        
-        
-    </div>  <!-- <div class="main-content"></div> -->
+      </form>
+    </div>
+  </div>
+  <table class="all-table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone No</th>
+        <th>Role</th>
+        <th>Created At</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% users.forEach((user, index) => { %>
+      <tr>
+        <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+        <td><%= user.name %></td>
+        <td><%= user.email %></td>
+        <td><%= user.phone_no %></td>
+        <td><%= user.role %></td>
+        <!-- <td><%= user.created_at %></td>  -->
+        <td><%= new Date(user.created_at).toLocaleString() %></td>
+        <td>
+          <% if (user.status === 'active') { %>
+          <a href="/block-user?id=<%= user._id %>">
+            <button class="block-btn">Block</button>
+          </a>
+          <% } else if (user.status === 'blocked') { %>
+          <a href="/unblock-user?id=<%= user._id %>">
+            <button class="unblock-btn">Unblock</button>
+          </a>
+          <% } %>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <div class="pagination">
+    <!-- Previous Page -->
+    <% if (currentPage > 1) { %>
+    <a href="/admin/users?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
+    <% } %>
+
+    <!-- Individual Page Numbers -->
+    <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="/admin/users?page=<%= i %>&<%= queryParams %>" class="<%= currentPage === i ? 'active' : '' %>">
+      <%= i %>
+    </a>
+    <% } %>
+
+    <!-- Next Page -->
+    <% if (currentPage < totalPages) { %>
+    <a href="/admin/users?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
+    <% } %>
+  </div>
+
+
+</div> <!-- <div class="main-content"></div> -->
 </body>
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+<script>
+  const notyf = new Notyf({
+    duration: 2000,
+    ripple: true,
+    position: {
+      x: 'right',
+      y: 'top'
+    },
+    types: [{
+        type: 'success',
+        background: 'green'
+      },
+      {
+        type: 'error',
+        background: 'red'
+      },
+    ],
+    className: 'custom-notify',
+  });
+
+  function showNotyfNotification(message, type) {
+    if (type === 'success') {
+      notyf.success(message);
+    } else if (type === 'error') {
+      notyf.error(message);
+    } else {
+      notyf.open({
+        type: type,
+        message: message
+      });
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const msg = urlParams.get('msg'); // Corrected to 'msg'
+    const type = urlParams.get('type'); // 'type' remains consistent
+
+    if (msg && type) {
+      showNotyfNotification(decodeURIComponent(msg), type);
+
+      // Clear the query parameters from the URL
+      if (window.history.replaceState) {
+        const url = window.location.origin + window.location.pathname + window.location.hash;
+        window.history.replaceState(null, null, url);
+      }
+    }
+  });
+</script>
+
 </html>
