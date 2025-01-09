@@ -146,13 +146,12 @@
 
   document.addEventListener('DOMContentLoaded', function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const msg = urlParams.get('msg'); // Corrected to 'msg'
-    const type = urlParams.get('type'); // 'type' remains consistent
+    const msg = urlParams.get('msg'); 
+    const type = urlParams.get('type'); 
 
     if (msg && type) {
       showNotyfNotification(decodeURIComponent(msg), type);
 
-      // Clear the query parameters from the URL
       if (window.history.replaceState) {
         const url = window.location.origin + window.location.pathname + window.location.hash;
         window.history.replaceState(null, null, url);

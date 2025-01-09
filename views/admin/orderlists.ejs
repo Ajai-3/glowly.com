@@ -31,24 +31,28 @@
           </label>
         </div>
       </form>
-      <form action="/users" method="GET">
+      <form action="/admin/orderlists" method="GET">
         <div class="filter-box">
-          <label for="status">Status
-            <select name="status" id="status" onchange="this.form.submit()">
-              <option value="all">Pending</option>
-              <option value="block">Processing</option>
-              <option value="unblock">Shipped</option>
-            </select>
-          </label>
+            <label for="status">Status
+                <select name="status" id="status" onchange="this.form.submit()">
+                    <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+                    <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="canceled" <%= status === 'canceled' ? 'selected' : '' %>>Canceled</option>
+                    <option value="return_req" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
+                    <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
+                </select>
+            </label>
         </div>
-      </form>
+    </form>
+    
+    
+    
     </div>
 
-    <a href="/add-category">
-      <button class="add-btn">
-        Add Category
-      </button>
-    </a>
+
   </div>
 
   <table class="all-table">
@@ -68,43 +72,40 @@
     <tbody>
       <% let serialNumber = (currentPage - 1) * 10; %>
       <% orders.forEach((order) => { %>
-      <% order.products.forEach((product) => { %>
-      <tr>
-        <td><%= ++serialNumber %></td>
-        <td><%= order._id %></td>
-        <td><%= order.user_id.name %></td>
-        <td><%= order.address_id.address_line1 %>, <%= order.address_id.city %>, <%= order.address_id.state %>, <%= order.address_id.zip %></td>
-        <td>
-          <img src="/uploads/<%= encodeURIComponent(product.product_id.product_imgs[0]) %>" alt="<%= product.product_id.title %>" width="30" height="30" style="margin-right: 10px; vertical-align: middle;">
-          <%= product.product_id.title.slice(0, 20) %>...
-        </td>
-        <td><%= product.quantity %></td>
-        <td>₹<%= product.product_id.price * product.quantity %></td>
-        <td class="status-cell">
+        <tr class="order-row" id="order-<%= order.orderId %>-product-<%= order.product._id %>">
+          <td><%= ++serialNumber %></td>
+          <td><%= order.orderId %></td>
+          <td><%= order.userId.name %></td>
+          <td><%= order.addressId.city %>, <%= order.addressId.state %></td>
+          <td>
+            <img src="/uploads/<%= encodeURIComponent(order.product.product_imgs[0]) %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <%= order.product.title.slice(0, 20) %>...
+          </td>
+          <td><%= order.quantity %></td>
+          <td>₹<%= order.totalAmount %></td>
+          <td class="status-cell">
             <p2 class="m-0 mb-4 
-                    <% if (product.status === 'pending') { %> yellow-p <% } %>
-                    <% if (product.status === 'processing') { %> blue-p <% } %>
-                    <% if (product.status === 'shipped') { %> pink-p <% } %>
-                    <% if (product.status === 'delivered') { %> green-p <% } %>
-                    <% if (product.status === 'canceled') { %> red-p <% } %>
-                    <% if (product.status === 'return_requested') { %> yellow-p <% } %>
-                    <% if (product.status === 'returned') { %> blue-p <% } %>">
-              <%= product.status %>
+                <% if (order.status === 'pending') { %> yellow-p <% } %>
+                <% if (order.status === 'processing') { %> blue-p <% } %>
+                <% if (order.status === 'shipped') { %> pink-p <% } %>
+                <% if (order.status === 'delivered') { %> green-p <% } %>
+                <% if (order.status === 'canceled') { %> red-p <% } %>
+                <% if (order.status === 'return_req') { %> yellow-p <% } %>
+                <% if (order.status === 'returned') { %> blue-p <% } %>">
+              <%= order.status %>
             </p2>
           </td>
-        <td>
-                <select name="order-action" class="order-action" data-product-id="<%= product.product_id._id %>" data-order-id="<%= order._id %>">
-                  <option value="pending" <%= product.status === 'pending' ? 'selected' : '' %>>pending</option>
-                  <option value="processing" <%= product.status === 'processing' ? 'selected' : '' %>>processing</option>
-                  <option value="shipped" <%= product.status === 'shipped' ? 'selected' : '' %>>shipped</option>
-                  <option value="delivered" <%= product.status === 'delivered' ? 'selected' : '' %>>delivered</option>
-                  <option value="canceled" <%= product.status === 'canceled' ? 'selected' : '' %>>canceled</option>
-                  <option value="returned" <%= product.status === 'returned' ? 'selected' : '' %>>returned</option>
-                </select>
-              
-        </td>
-      </tr>
-      <% }) %>
+          <td>
+            <select name="order-action" class="order-action" data-product-id="<%= order.product._id %>" data-order-id="<%= order.orderId %>">
+              <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>pending</option>
+              <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>processing</option>
+              <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>shipped</option>
+              <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>delivered</option>
+              <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %>>canceled</option>
+              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %>>returned</option>
+            </select>
+          </td>
+        </tr>
       <% }) %>
     </tbody>
   </table>
@@ -112,20 +113,22 @@
 </div>
 
 <div class="pagination">
-  <% if (currentPage > 1) { %>
-  <a href="/admin/orderlists?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
-  <% } %>
+    <% if (currentPage > 1) { %>
+        <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
+    <% } %>
 
-  <% for (let i = 1; i <= totalPages; i++) { %>
-  <a href="/admin/orderlists?page=<%= i %>&<%= queryParams %>" class="<%= currentPage === i ? 'active' : '' %>">
-    <%= i %>
-  </a>
-  <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+    <% } %>
 
-  <% if (currentPage < totalPages) { %>
-  <a href="/admin/orderlists?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
-  <% } %>
+    <% if (currentPage < totalPages) { %>
+        <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
+    <% } %>
 </div>
+
+
+
+
 </body>
 <%- include('partials/footer') %>
 <script>

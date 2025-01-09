@@ -7,34 +7,56 @@ import Product from "../../models/product.model.js";
 export const renderOrderPage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 2;
+        const limit = 5; 
         const skip = (page - 1) * limit;
-        const totalOrders = await Order.countDocuments();
-        const totalPages = Math.ceil(totalOrders / limit);
 
+        const status = req.query.status || 'all'; 
 
-        const orders = await Order.find()
-            .skip(skip)
-            .limit(limit)
-            .sort({ 
-                createdAt: -1 })
+        let query = {};
+        
+        if (status !== 'all') {
+            query['products.status'] = status;
+        }
+
+        const orders = await Order.find(query)
             .populate("user_id")
             .populate("address_id")
             .populate("products.product_id");
 
+        const allProducts = orders.flatMap(order => 
+            order.products.filter(product => {
+                return status === 'all' || product.status === status;
+            }).map(product => ({
+                orderId: order._id,
+                userId: order.user_id,
+                addressId: order.address_id,
+                product: product.product_id,
+                quantity: product.quantity,
+                totalAmount: product.product_id.price * product.quantity,
+                status: product.status
+            }))
+        );
 
-        const queryParams = req.url.split('?')[1] || ''; 
+        const totalProducts = allProducts.length;
+        const totalPages = Math.ceil(totalProducts / limit);
+
+        const paginatedProducts = allProducts.slice(skip, skip + limit);
+
+        const queryParams = req.url.split('?')[1] || '';
 
         return res.render("admin/orderlists", {
-            orders,
+            orders: paginatedProducts,
             currentPage: page,
             totalPages: totalPages,
             queryParams: queryParams,
+            status: status,
         });
     } catch (error) {
         console.error("Error in order listing", error);
     }
 };
+
+
 
 
 
@@ -53,7 +75,7 @@ export const updateOrderStatus  = async (req, res) => {
           'shipped',
           'delivered',
           'canceled',
-          'return_requested',
+          'return_req',
           'returned',
         ];
         if (!validStatuses.includes(status)) {
