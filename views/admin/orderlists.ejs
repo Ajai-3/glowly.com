@@ -1,111 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/search-category" method="GET">
-                    <input type="text" name="search" placeholder="Search User" disabled>
-                    <button class="admin-search-button" disabled><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/category">Category</a></div>
-        <div class="filter-container">
-            <div class="filter-div1">
-                <div class="filter-box">
-                    <i class="fa-solid fa-filter"></i>
-                </div>
-                
-                <form action="/users" method="GET">
-                    <div class="filter-box">
-                        <label for="filter">Filter By
-                            <select name="filter" id="filter">
-                                <option value="date">14 feb 2014</option>
-                            </select>
-                        </label>
-                       </div>
-                </form>
-                <form action="/users" method="GET">
-                    <div class="filter-box">
-                        <label for="status">Status
-                            <select name="status" id="status" onchange="this.form.submit()">
-                                <option value="all" >Pending</option>
-                                <option value="block" >Processing</option>
-                                <option value="unblock">Shipped</option>
-                            </select>
-                        </label>
-                    </div>
-                </form>
-            </div>
+<%- include('partials/head') %>
+<div class="main-content">
+  <div class="header">
+    <div class="search-bar">
+      <form action="/search-category" method="GET">
+        <input type="text" name="search" placeholder="Search User" disabled>
+        <button class="admin-search-button" disabled><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+    <div class="admin-profile mx-3">
+      <a href="/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
+    </div>
+  </div>
+  <div class="brudcrumbs"><a href="/orderlists">Order lists</a></div>
+  <div class="filter-container">
+    <div class="filter-div1">
+      <div class="filter-box">
+        <i class="fa-solid fa-filter"></i>
+      </div>
 
-            <a href="/add-category">
-                <button class="add-btn">
-                    Add Category
-                </button>
-            </a>
+      <form action="/users" method="GET">
+        <div class="filter-box">
+          <label for="filter">Filter By
+            <select name="filter" id="filter">
+              <option value="date">14 feb 2014</option>
+            </select>
+          </label>
         </div>
-        
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Order ID</th>
-                    <th>User Name</th>
-                    <th>Address</th>
-                    <th>Product Name</th>
-                    <th>Quantity</th>
-                    <th>Total Amount</th>
-                    <th>Order Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% orders.forEach((order, index) => { %>
-                    <% order.products.forEach((product, productIndex) => { %>
-                        <tr>
-                            <td><%= (currentPage - 1) * 10 + index + 1 %></td>
-                            <td><%= order._id %></td>
-                            <td><%= order.user_id.name %></td>
-                            <td><%= order.address_id.address_line1 %>, <%= order.address_id.city %>, <%= order.address_id.state %>, <%= order.address_id.zip %></td>
-                            <td>
-                                <img src="/uploads/<%= encodeURIComponent(product.product_id.product_imgs[0]) %>" alt="<%= product.product_id.title %>"  width="30" height="30" style="margin-right: 10px; vertical-align: middle;">
-                                <%= product.product_id.title.slice(0, 20) %>...
-                            </td>
-                            <td><%= product.quantity %></td>
-                            <td>₹<%= product.product_id.price * product.quantity %></td>
-                            <td><%= product.status %></td>
-                            <td>
-                                <a href="/admin/orders/<%= order._id %>" class="btn btn-info btn-sm">View</a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                <% }) %>
-            </tbody>
-        </table>
-        
-    </div> 
+      </form>
+      <form action="/users" method="GET">
+        <div class="filter-box">
+          <label for="status">Status
+            <select name="status" id="status" onchange="this.form.submit()">
+              <option value="all">Pending</option>
+              <option value="block">Processing</option>
+              <option value="unblock">Shipped</option>
+            </select>
+          </label>
+        </div>
+      </form>
+    </div>
 
-    <div class="pagination">
-        <% if (currentPage > 1) { %>
-            <a href="/admin/orders?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
-        <% } %>
-    
-        <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="/admin/orders?page=<%= i %>&<%= queryParams %>" class="<%= currentPage === i ? 'active' : '' %>">
-                <%= i %>
-            </a>
-        <% } %>
-    
-        <% if (currentPage < totalPages) { %>
-            <a href="/admin/orders?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
-        <% } %>
-    </div> 
+    <a href="/add-category">
+      <button class="add-btn">
+        Add Category
+      </button>
+    </a>
+  </div>
+
+  <table class="all-table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Order ID</th>
+        <th>User Name</th>
+        <th>Address</th>
+        <th>Product Name</th>
+        <th>Quantity</th>
+        <th>Total Amount</th>
+        <th>Order Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% let serialNumber = (currentPage - 1) * 10; %>
+      <% orders.forEach((order) => { %>
+      <% order.products.forEach((product) => { %>
+      <tr>
+        <td><%= ++serialNumber %></td>
+        <td><%= order._id %></td>
+        <td><%= order.user_id.name %></td>
+        <td><%= order.address_id.address_line1 %>, <%= order.address_id.city %>, <%= order.address_id.state %>, <%= order.address_id.zip %></td>
+        <td>
+          <img src="/uploads/<%= encodeURIComponent(product.product_id.product_imgs[0]) %>" alt="<%= product.product_id.title %>" width="30" height="30" style="margin-right: 10px; vertical-align: middle;">
+          <%= product.product_id.title.slice(0, 20) %>...
+        </td>
+        <td><%= product.quantity %></td>
+        <td>₹<%= product.product_id.price * product.quantity %></td>
+        <td class="status-cell">
+            <p2 class="m-0 mb-4 
+                    <% if (product.status === 'pending') { %> yellow-p <% } %>
+                    <% if (product.status === 'processing') { %> blue-p <% } %>
+                    <% if (product.status === 'shipped') { %> pink-p <% } %>
+                    <% if (product.status === 'delivered') { %> green-p <% } %>
+                    <% if (product.status === 'canceled') { %> red-p <% } %>
+                    <% if (product.status === 'return_requested') { %> yellow-p <% } %>
+                    <% if (product.status === 'returned') { %> blue-p <% } %>">
+              <%= product.status %>
+            </p2>
+          </td>
+        <td>
+                <select name="order-action" class="order-action" data-product-id="<%= product.product_id._id %>" data-order-id="<%= order._id %>">
+                  <option value="pending" <%= product.status === 'pending' ? 'selected' : '' %>>pending</option>
+                  <option value="processing" <%= product.status === 'processing' ? 'selected' : '' %>>processing</option>
+                  <option value="shipped" <%= product.status === 'shipped' ? 'selected' : '' %>>shipped</option>
+                  <option value="delivered" <%= product.status === 'delivered' ? 'selected' : '' %>>delivered</option>
+                  <option value="canceled" <%= product.status === 'canceled' ? 'selected' : '' %>>canceled</option>
+                  <option value="returned" <%= product.status === 'returned' ? 'selected' : '' %>>returned</option>
+                </select>
+              
+        </td>
+      </tr>
+      <% }) %>
+      <% }) %>
+    </tbody>
+  </table>
+
+</div>
+
+<div class="pagination">
+  <% if (currentPage > 1) { %>
+  <a href="/admin/orderlists?page=<%= currentPage - 1 %>&<%= queryParams %>">Previous</a>
+  <% } %>
+
+  <% for (let i = 1; i <= totalPages; i++) { %>
+  <a href="/admin/orderlists?page=<%= i %>&<%= queryParams %>" class="<%= currentPage === i ? 'active' : '' %>">
+    <%= i %>
+  </a>
+  <% } %>
+
+  <% if (currentPage < totalPages) { %>
+  <a href="/admin/orderlists?page=<%= currentPage + 1 %>&<%= queryParams %>">Next</a>
+  <% } %>
+</div>
 </body>
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const notyf = new Notyf({
+    duration: 1500,
+    ripple: true,
+    position: { x: "right", y: "top" },
+    dismissible: true,
+    types: [
+      { type: "success", background: "green" },
+      { type: "error", background: "red" },
+    ],
+  });
+
+  const dropdowns = document.querySelectorAll(".order-action");
+  dropdowns.forEach(function (dropdown) {
+    dropdown.addEventListener("change", function () {
+      const selectedValue = this.value;
+      const productId = this.getAttribute("data-product-id");
+      const orderId = this.getAttribute("data-order-id");
+      const statusCell = this.closest("tr").querySelector(".status-cell");
+
+      const data = {
+        productId: productId,
+        orderId: orderId,
+        status: selectedValue,
+      };
+
+      fetch("/update-order-status", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            notyf.success(data.message);
+            statusCell.textContent = selectedValue;
+            statusCell.classList.remove("yellow-p", "blue-p", "pink-p", "green-p", "red-p");
+            statusCell.classList.add(getStatusClass(selectedValue));
+          } else {
+            notyf.error(data.message);
+          }
+        })
+        .catch((error) => console.error(error));
+    });
+  });
+});
+
+function getStatusClass(status) {
+  const statusClasses = {
+    pending: "yellow-p",
+    processing: "blue-p",
+    shipped: "pink-p",
+    delivered: "green-p",
+    canceled: "red-p",
+    return_requested: "yellow-p",
+    returned: "blue-p",
+  };
+  return statusClasses[status] || "";
+}
+
+
+</script>
 </html>

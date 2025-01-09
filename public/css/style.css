@@ -1627,14 +1627,13 @@ input[type="number"]::-webkit-input-placeholder {
 
 
 
-.red-p,
+/* .red-p,
 .green-p,
 .blue-p,
 .pink-p,
 .yellow-p {
-  padding: 3px 10px;
-  border-radius: 4px;
-}
+
+} */
 .cancel-btn, 
 .return-btn {
   padding: 3px 10px;
@@ -1646,23 +1645,23 @@ input[type="number"]::-webkit-input-placeholder {
 
 .red-p {
   color: var(--red-text-color-2);
-  background-color: var(--red-text-color-3);
+  /* background-color: var(--red-text-color-3); */
 }
 .green-p {
   color: var(--green-text-color-2);
-  background-color: var(--green-text-color-3);
+  /* background-color: var(--green-text-color-3); */
 }
 .yellow-p {
   color: var(--yellow-text-color-2);
-  background-color: var(--yellow-text-color-3);
+  /* background-color: var(--yellow-text-color-3); */
 }
 .blue-p {
   color: var(--blue-text-color-2);
-  background-color: var(--blue-text-color-3);
+  /* background-color: var(--blue-text-color-3); */
 }
 .pink-p {
   color: var(--main-text-color-2);
-  background-color: var(--main-text-color-3);
+  /* background-color: var(--main-text-color-3); */
 }
 
 .red-p:hover {

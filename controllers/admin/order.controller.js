@@ -7,7 +7,7 @@ import Product from "../../models/product.model.js";
 export const renderOrderPage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 10;
+        const limit = 2;
         const skip = (page - 1) * limit;
         const totalOrders = await Order.countDocuments();
         const totalPages = Math.ceil(totalOrders / limit);
@@ -22,7 +22,6 @@ export const renderOrderPage = async (req, res) => {
             .populate("address_id")
             .populate("products.product_id");
 
-            console.log(orders)
 
         const queryParams = req.url.split('?')[1] || ''; 
 
@@ -36,3 +35,54 @@ export const renderOrderPage = async (req, res) => {
         console.error("Error in order listing", error);
     }
 };
+
+
+
+// Update Order Status 
+export const updateOrderStatus  = async (req, res) => {
+    try {
+        const { orderId, productId, status } = req.body;
+    
+        if (!orderId || !productId || !status) {
+          return res.status(400).json({ success: false, message: 'Missing required fields.' });
+        }
+    
+        const validStatuses = [
+          'pending',
+          'processing',
+          'shipped',
+          'delivered',
+          'canceled',
+          'return_requested',
+          'returned',
+        ];
+        if (!validStatuses.includes(status)) {
+          return res.status(400).json({ success: false, message: 'Invalid status value.' });
+        }
+    
+        const updatedOrder = await Order.findOneAndUpdate(
+          {
+            _id: orderId,
+            'products.product_id': productId,
+          },
+          {
+            $set: { 'products.$.status': status },
+          },
+          { new: true }
+        );
+    
+        if (!updatedOrder) {
+          return res.status(404).json({ success: false, message: 'Order or product not found.' });
+        }
+
+        console.log(updatedOrder)
+    
+        res.status(200).json({
+          success: true,  
+          message: 'Product status updated successfully.',
+          updatedOrder,
+        });
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'An internal server error occurred.' });
+      }
+}
