@@ -55,7 +55,7 @@
                                     <div class="category-block">
                                         <!-- Render Category Name -->
                                         <div class="category-name">
-                                            <a href="/category/<%= category.name %>">
+                                            <a href="/category/<%= category.id %>">
                                                 <%= category.name %>
                                             </a>
                                         </div>
@@ -64,7 +64,7 @@
                                         <div class="subcategory-list">
                                             <% category.subcategories.forEach(subcategory => { %>
                                                 <div class="subcategory">
-                                                    <a href="/subcategory/<%= subcategory.name %>">
+                                                    <a href="/subcategory/<%= subcategory.id %>">
                                                         <%= subcategory.name %>
                                                     </a>
                                                 </div>

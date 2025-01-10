@@ -28,6 +28,7 @@ import {
   renderProductPage,
   renderPageWithCategory,
   renderPageWithSubcategory,
+  productPageFilters,
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
@@ -69,8 +70,9 @@ router.post("/reset-password", handleResetPassword)
 
 // Product, Category & Sub Category Management 
 router.get("/product/:id", renderProductPage);
-router.get("/category/:categoryName", renderPageWithCategory);
-router.get("/subcategory/:subcategoryName", renderPageWithSubcategory);
+router.get("/category/:categoryId", renderPageWithCategory);
+router.get("/subcategory/:subcategoryId", renderPageWithSubcategory);
+router.post("/product-Page-filters", productPageFilters)
 
 // Account Mangement
 router.get("/my-account", renderMyAccountPage)
