@@ -5,25 +5,25 @@
             
         <div class="header">
             <div class="search-bar">
-                <form action="/search-category" method="GET">
+                <form action="/admin/search-category" method="GET">
                     <input type="text" name="search" placeholder="Search User" disabled>
                     <button  class="admin-search-button" disabled><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
-                <a href="/settings">
+                <a href="/admin/settings">
                     <i class="fa-solid fa-circle-user"></i>
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs"><a href="/category">Category</a></div>
+        <div class="brudcrumbs"><a href="/admin/category">Category</a></div>
         <div class="filter-container">
             <div class="filter-div1">
                 <div class="filter-box">
                     <i class="fa-solid fa-filter"></i>
                 </div>
                 
-                <form action="/users" method="GET">
+                <form action="/admin/users" method="GET">
                     <div class="filter-box">
                         <label for="filter">Filter By
                             <select name="filter" id="filter">
@@ -32,7 +32,7 @@
                         </label>
                        </div>
                 </form>
-                <form action="/users" method="GET">
+                <form action="/admin/users" method="GET">
                     <div class="filter-box">
                         <label for="status">Status
                             <select name="status" id="status" onchange="this.form.submit()">
@@ -44,12 +44,7 @@
                     </div>
                 </form>
             </div>
-            <% if (msg) { %>
-                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-                    <%= msg.text %>
-                </div>
-            <% } %>
-            <a href="/add-category">
+            <a href="/admin/add-category">
                 <button class="add-btn">
                     Add Category
                 </button>
@@ -95,11 +90,11 @@
                       <td>
                         <% if (cat.offer) { %>
                             <p>Offer: <%= cat.offer %> (<%= cat.offerPercentage %>%)</p>
-                            <a href="/remove-offer/<%= cat._id %>">
+                            <a href="/admin/remove-offer/<%= cat._id %>">
                                 <button class="remove-offer-btn">Remove Offer</button>
                             </a>
                         <% } else { %>
-                            <a href="/add-offer/<%= cat._id %>">
+                            <a href="/admin/add-offer/<%= cat._id %>">
                                 <button class="add-offer-btn">Add Offer</button>
                             </a>
                         <% } %>
@@ -206,7 +201,7 @@
     };
     const toggleCategory = async (id, isList) => {
   try {
-    const response = await fetch(`/toggle-category/${id}`, {
+    const response = await fetch(`/admin/toggle-category/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -244,7 +239,7 @@
 
 const toggleSubcategory = async (id, isList) => {
   try {
-    const response = await fetch(`/toggle-subcategory/${id}`, {
+    const response = await fetch(`/admin/toggle-subcategory/${id}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',

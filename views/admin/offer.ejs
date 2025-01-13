@@ -5,25 +5,25 @@
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
-            <form action="/search-user" method="GET">
-                <input type="text" name="search" placeholder="Search User">
+            <form action="/admin/search-user" method="GET">
+                <input type="text" name="search" placeholder="Search " readonly>
                 <button  class="admin-search-button"><i class="fas fa-search"></i></button>
             </form>
         </div>
         <div class="admin-profile mx-3">
-            <a href="/settings">
+            <a href="/admin/settings">
                 <i class="fa-solid fa-circle-user"></i>
             </a>
         </div>
     </div>
 
-    <div class="breadcrumbs"><a href="/category">Cateory</a> > <a href="/add-offer">Add Offer</a></div>
+    <div class="breadcrumbs"><a href="/admin/category">Cateory</a> > <a href="/admin/add-offer">Add Offer</a></div>
 
     <div>
         <div class="add-offer-box">
             <h5 class="m-0">Add Offer for Category: <%= category.name %></h5>
             <!-- Form to add an offer -->
-            <form action="/add-offer/<%= category._id %>" method="POST">
+            <form action="/admin/add-offer/<%= category._id %>" method="POST">
                 <div class="add-products-container-center coupoun-div">
                     <div>
                         <label for="category">Category</label>

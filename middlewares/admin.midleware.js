@@ -1,9 +1,6 @@
 import jwt from "jsonwebtoken";
 
-export const pageMiddlware = (req, res, next) => {
-    res.locals.currentPath = req.path;
-    next();
-}  
+
 export const verifyAdminToken = (req, res, next) => {
     const token = req.cookies.adminToken;
 
@@ -32,5 +29,10 @@ export const verifyAdminToken = (req, res, next) => {
     }
 };
 
+
+export const pageMiddlware = (req, res, next) => {
+    res.locals.currentPath = req.path;
+    next();
+}  
 
 

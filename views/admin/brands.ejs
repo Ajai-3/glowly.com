@@ -5,19 +5,19 @@
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
-            <form action="/search-brands" method="GET">
+            <form action="/admin/search-brands" method="GET">
                 <input type="text" name="search" placeholder="Search Brand" value="<%= search %>">
                 <button class="admin-search-button"><i class="fas fa-search"></i></button>
             </form>
         </div>
         <div class="admin-profile mx-3">
-            <a href="/settings">
+            <a href="/admin/settings">
                 <i class="fa-solid fa-circle-user"></i>
             </a>
         </div>
     </div>
 
-    <div class="breadcrumbs"><a href="/brands">Brands</a></Base></div>
+    <div class="breadcrumbs"><a href="/admin/brands">Brands</a></Base></div>
 
     <div>
         <div class="filter-container">
@@ -32,7 +32,7 @@
                         </select>
                     </label>
                 </div>
-                <form action="/brands" method="GET">
+                <form action="/admin/brands" method="GET">
                     <div class="filter-box">
                         <label for="isListed">Status
                             <select name="isListed" id="isListed" onchange="this.form.submit()">
@@ -52,7 +52,7 @@
                 </div>
             <% } %>
 
-            <a href="/add-new-brand">
+            <a href="/admin/add-new-brand">
                 <button class="add-new-brand-btn my-1">Add New Brand <i class="fas fa-plus-circle"></i></button>
             </a>
         </div>
@@ -87,7 +87,7 @@
                         </td> -->
                         
                         <td>
-                            <a href="/edit-brand/<%= brand._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/admin/edit-brand/<%= brand._id %>"><button class="edit-btn">Edit</button></a> |
                             <!-- <a href="/delete-brand/<%= brand._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn" >Delete</button></a> -->
                             <button
                             class="<%= brand.isListed ? 'unlist-btn' : 'list-btn' %>"
@@ -173,7 +173,7 @@
   const brandId = button.getAttribute("data-id");
 
   try {
-    const response = await fetch(`/toggle-brand/${brandId}`, {
+    const response = await fetch(`/admin/toggle-brand/${brandId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

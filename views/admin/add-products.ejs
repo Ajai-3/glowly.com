@@ -4,18 +4,18 @@
     <div class="main-content">
         <div class="header">
             <div class="search-bar">
-                <form action="/search" method="GET">
-                    <input type="text" name="search" placeholder="Search">
+                <form action="/admin/search" method="GET">
+                    <input type="text" name="search" placeholder="Search" readonly>
                     <button class="admin-search-button"><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
-                <a href="/settings">
+                <a href="/admin/settings">
                     <i class="fa-solid fa-circle-user"></i>
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs"><a href="/products">Products</a> > <a href="">Add Product</a></div>
+        <div class="brudcrumbs"><a href="/admin/products">Products</a> > <a href="">Add Product</a></div>
 
         <div class="add-products-container">
             <div class="add-products-container1">
@@ -73,7 +73,7 @@
                         </div>    
                     </div>
                     <div class="d-flex justify-content-between">
-                        <a href="/add-products"><button type="submit" class="add-product-btn2 my-1">Add Product</button></a> 
+                        <a href="/admin/add-products"><button type="submit" class="add-product-btn2 my-1">Add Product</button></a> 
                     </div>
                 </div>
                 <div class="add-products-container2">
@@ -319,7 +319,7 @@ document.getElementById('productForm').addEventListener('submit', (e) => {
         formData.append('productImages', file);
     }
 
-    fetch('/add-products', {
+    fetch('/admin/add-products', {
         method: 'POST',
         body: formData,
     })
@@ -328,7 +328,7 @@ document.getElementById('productForm').addEventListener('submit', (e) => {
             if (data.success) {
                 toastSuccess(data.message);
                 setTimeout( () => {
-                    window.location.href = '/products';
+                    window.location.href = '/admin/products';
                 }, 2000)
             } else {
                 toastError(data.message);

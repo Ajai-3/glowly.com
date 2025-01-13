@@ -161,7 +161,10 @@ export const updateCategory = async (req, res) => {
         const existingCategory = await Category.findOne({ name, _id: { $ne: categoryId } });
 
         if (existingCategory) {
-            return res.status(400).send("Category name already exists");
+            return res.status(400).json({
+                msg: "Category name already exists",
+                type: "error"
+            });
         }
 
         const updatedCategory = await Category.findByIdAndUpdate(
@@ -171,18 +174,27 @@ export const updateCategory = async (req, res) => {
         );
 
         if (!updatedCategory) {
-            return res.status(404).send("Category not found");
+            return res.status(404).json({
+                msg: "Category not found",
+                type: "error"
+            });
         }
 
-        res.redirect('/admin/category?msg=Category updated successfully&type=success');
+        res.json({
+            msg: "Category updated successfully",
+            type: "success"
+        });
     } catch (error) {
         console.error("Error updating category:", error);
-        res.status(500).send("Error updating category");
+        res.status(500).json({
+            msg: "Error updating category",
+            type: "error"
+        });
     }
 };
 
 
-
+// List Unlist Category
 export const toggleCategory = async (req, res) => {
     try {
       const categoryId = req.params.id;
@@ -208,7 +220,7 @@ export const toggleCategory = async (req, res) => {
     }
   };
   
-
+// List Unlist Sub Category
   export const toggleSubcategory = async (req, res) => {
     try {
       const subcategoryId = req.params.id;
@@ -233,7 +245,6 @@ export const deleteCategory = async (req, res) => {
     try {
         const categoryId = req.params.id;
 
-        // Find and delete the category
         const deletedCategory = await Category.findByIdAndDelete(categoryId);
 
         if (!deletedCategory) {

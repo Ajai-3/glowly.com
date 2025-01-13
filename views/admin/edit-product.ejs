@@ -8,13 +8,13 @@
   <!-- Header Section -->
   <div class="header">
     <div class="search-bar m-0">
-      <form action="/search" method="GET">
-        <input type="text" name="search" placeholder="Search">
+      <form action="/admin/search" method="GET">
+        <input type="text" name="search" placeholder="Search" readonly>
         <button class="admin-search-button"><i class="fas fa-search"></i></button>
       </form>
     </div>
     <div class="admin-profile mx-3">
-      <a href="/settings">
+      <a href="/admin/settings">
         <i class="fa-solid fa-circle-user"></i>
       </a>
     </div>
@@ -22,7 +22,7 @@
 
   <!-- Breadcrumbs Section -->
   <div class="breadcrumbs">
-    <a href="/products">Products</a> > <a href="/edit-product/<%= product._id %>"> Edit Product</a>
+    <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit Product</a>
   </div>
   <% if (msg) { %>
   <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
@@ -33,7 +33,7 @@
   <div class="edit-products-container">
     <div class="add-products-container1">
       <!-- Form To Edit Product -->
-      <form action="/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
+      <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
         <h4>Edit Product</h4>
 
         <!-- Product Name -->

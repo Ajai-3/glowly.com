@@ -63,7 +63,7 @@ router.get("/add-category", verifyAdminToken, renderAddCategoryPage);
 router.post('/add-subcategory', verifyAdminToken, addSubcategoryToExistingCategory);
 router.post("/add-category", verifyAdminToken, addCategory);
 router.get('/category/edit/:id', verifyAdminToken, renderEditCategoryPage);
-router.post('/category/edit/:id', verifyAdminToken, updateCategory);
+router.patch('/category/edit/:id', verifyAdminToken, updateCategory);
 router.get('/category/delete/:id', verifyAdminToken, deleteCategory);
 router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
 // Users Routes

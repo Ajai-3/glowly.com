@@ -5,24 +5,24 @@
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
-            <form action="/search-user" method="GET">
-                <input type="text" name="search" placeholder="Search User">
+            <form action="/admin/search-user" method="GET">
+                <input type="text" name="search" placeholder="Search " readonly>
                 <button  class="admin-search-button"><i class="fas fa-search"></i></button>
             </form>
         </div>
         <div class="admin-profile mx-3">
-            <a href="/settings">
+            <a href="/admin/settings">
                 <i class="fa-solid fa-circle-user"></i>
             </a>
         </div>
     </div>
 
-    <div class="breadcrumbs"><a href="/coupons">Coupons</a></div>
+    <div class="breadcrumbs"><a href="/admin/coupons">Coupons</a></div>
 
     <div>
         <div class="add-coupon-box mb-1">
             <h5 class="m-0">Add Coupon</h5>
-            <form action="/add-coupon" method="Post">
+            <form action="/admin/add-coupon" method="Post">
                 <div class="add-products-container-center coupoun-div">
                     <div>
                         <label for="code">Code</label>
@@ -83,7 +83,7 @@
                         </select>
                     </label>
                 </div>
-                <form action="/coupons" method="GET">
+                <form action="/admin/coupons" method="GET">
                     <div class="filter-box">
                         <label for="type">Type
                             <select name="type" id="type" onchange="this.form.submit()">
@@ -130,8 +130,8 @@
                         <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
                         <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
                         <td>
-                            <a href="/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
-                            <a href="/delete-coupon/<%= coupon._id %>" onclick="return confirm('Are you sure?')">
+                            <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/admin/delete-coupon/<%= coupon._id %>" onclick="return confirm('Are you sure?')">
                                 <button class="delete-btn">Delete</button>
                             </a>
                         </td>

@@ -94,7 +94,7 @@ export const handleAdminLogout = (req, res) => {
         // Clear the admin token cookie
         res.clearCookie("adminToken", { httpOnly: true, secure: false });
         
-        return res.redirect("/admin-login?msg=Logged%20out%20successfully");
+        return res.redirect("/admin/admin-login?msg=Logged%20out%20successfully");
     } catch (error) {
         console.error("Unexpected error during logout:", error);
         res.redirect("/pageerror");

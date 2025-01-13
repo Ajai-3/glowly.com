@@ -5,18 +5,18 @@
                 
         <div class="header">
             <div class="search-bar">
-                <form action="/search-products" method="GET">
-                    <input type="text" name="search" placeholder="Search">
+                <form action="/admin/search-products" method="GET">
+                    <input type="text" name="search" placeholder="Search Products">
                     <button  class="admin-search-button"><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
-                <a href="/settings">
+                <a href="/admin/settings">
                     <i class="fa-solid fa-circle-user"></i>
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs"><a href="/products">Products</a></div>
+        <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
         
         <div>
             <div class="filter-container">
@@ -33,7 +33,7 @@
                     </div>
                     
                     
-                       <form action="/products" method="GET">
+                       <form action="/admin/products" method="GET">
                         <div class="filter-box">
                             <label for="status">Status
                                 <select name="status" id="status" onchange="this.form.submit()">
@@ -51,7 +51,7 @@
                     </div>
                 <% } %> -->
     
-               <a href="/add-products">
+               <a href="/admin/add-products">
                 <button class="add-product-btn">
                     Add New Products
                 </button>
@@ -111,7 +111,7 @@
                         
                         <td><%= product.available_quantity %></td>
                         <td>
-                            <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
+                            <a href="/admin/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
                             <% if (!product.isDeleted) { %>
                                 <button 
                                   class="delete-btn" 
@@ -249,7 +249,7 @@
       const isDeleted = button.getAttribute('data-deleted') === 'true';
 
       try {
-        const response = await fetch(`/toggle-product/${productId}`, {
+        const response = await fetch(`/admin/toggle-product/${productId}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
         });

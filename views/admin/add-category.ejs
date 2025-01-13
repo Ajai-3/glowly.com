@@ -4,18 +4,18 @@
     <div class="main-content">
         <div class="header">
             <div class="search-bar">
-                <form action="/search-user" method="GET">
-                    <input type="text" name="search" placeholder="Search User">
+                <form action="/admin/search-user" method="GET">
+                    <input type="text" name="search" placeholder="Search" readonly>
                     <button  class="admin-search-button"><i class="fas fa-search"></i></button>
                 </form>
             </div>
             <div class="admin-profile mx-3">
-                <a href="/settings">
+                <a href="/admin/settings">
                     <i class="fa-solid fa-circle-user"></i>
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs"><a href="/category">Category </a>> <a href="">Add category</a></div>
+        <div class="brudcrumbs"><a href="/admin/category">Category </a>> <a href="">Add category</a></div>
         
         <% if (msg) { %>
             <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">

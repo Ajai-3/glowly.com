@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 import passport from './config/passport.js';
 import dotenv from 'dotenv'; dotenv.config();
 import userRouter from './routes/user.router.js';
-import adminRouter from './routes/admin.router.js';
+import adminRouter from './routes/adminRoutes.js';
 // import { verifyAdminToken } from "../Glowly.com/middlewares/admin.midleware.js"
 import { startServer } from './config/connection.js';
 // import path from 'path';
@@ -64,9 +64,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/', userRouter);
-app.use('/', adminRouter);
+// app.use('/', adminRouter);
 app.use('/user', userRouter);
-// app.use('/user', verifyAdminToken, userRouter);
 app.use('/admin', adminRouter);
 
 // Start Server and connect Database

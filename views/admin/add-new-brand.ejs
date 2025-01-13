@@ -5,20 +5,20 @@
   <div class="main-content">
     <div class="header">
       <div class="search-bar">
-        <form action="/search-brands" method="GET">
+        <form action="/admin/search-brands" method="GET">
             <input type="text" name="search" placeholder="Search Brand"  readonly>
             <button class="admin-search-button"><i class="fas fa-search"></i></button>
         </form>
     </div>
       <div class="admin-profile mx-3">
-        <a href="/settings">
+        <a href="/admin/settings">
           <i class="fa-solid fa-circle-user"></i>
         </a>
       </div>
     </div>
 
     <div class="breadcrumbs">
-      <a href="/brands">Brands</a> > <a href="/add-new-brand">Add New Brand</a>
+      <a href="/admin/brands">Brands</a> > <a href="/admin/add-new-brand">Add New Brand</a>
     </div>
 
     <div class="brand-page-add">
@@ -144,7 +144,7 @@ console.log("Response Data:", result);
     if (response.ok) {
       toastSuccess(result.message);
       setTimeout(() => {
-        window.location.href = "/brands";
+        window.location.href = "/admin/brands";
       }, 1500)
     } else {
       toastError(result.message);
