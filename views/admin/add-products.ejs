@@ -154,17 +154,53 @@
 <%- include('partials/footer') %> 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script>
-const notyf = new Notyf({
-    duration: 2000,
-    ripple: true,  
-    position: { x: 'right', y: 'top' },
-    // dismissible: true,  
-    types: [
-        { type: 'success', background: 'green' },  
-        { type: 'error', background: 'red' },     
-    ],
-    className: 'custom-notify',
-});
+const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
 
 const categories = [
         <% categories.forEach(category => { %>
@@ -290,17 +326,17 @@ document.getElementById('productForm').addEventListener('submit', (e) => {
         .then((response) => response.json())
         .then((data) => {
             if (data.success) {
-                notyf.success(data.message);
+                toastSuccess(data.message);
                 setTimeout( () => {
                     window.location.href = '/products';
                 }, 2000)
             } else {
-                notyf.error(data.message);
+                toastError(data.message);
             }
         })
         .catch((error) => {
             console.error('Error:', error);
-            notyf.error("Error in addinging new");
+            toastWarning("Error in addinging new");
         });
 });
 

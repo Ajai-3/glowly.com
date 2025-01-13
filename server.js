@@ -7,6 +7,7 @@ import passport from './config/passport.js';
 import dotenv from 'dotenv'; dotenv.config();
 import userRouter from './routes/user.router.js';
 import adminRouter from './routes/admin.router.js';
+// import { verifyAdminToken } from "../Glowly.com/middlewares/admin.midleware.js"
 import { startServer } from './config/connection.js';
 // import path from 'path';
 // import { dirname } from 'path';
@@ -55,6 +56,9 @@ app.use(cookieParser());
 app.use(express.json()); // Parse incoming requests
 app.use(express.urlencoded({ extended: true })); // Parse form data
 
+
+
+
 // Passport session initialization
 app.use(passport.initialize());
 app.use(passport.session());
@@ -62,6 +66,7 @@ app.use(passport.session());
 app.use('/', userRouter);
 app.use('/', adminRouter);
 app.use('/user', userRouter);
+// app.use('/user', verifyAdminToken, userRouter);
 app.use('/admin', adminRouter);
 
 // Start Server and connect Database

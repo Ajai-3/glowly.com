@@ -6,7 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// Brands
+// Render Brand Page
 export const renderBrandPage = async (req, res) => {
   try {
       const limit = 5;
@@ -57,7 +57,7 @@ export const renderBrandPage = async (req, res) => {
 
 
 
-// Brands
+// Render Add Brand Page
 export const renderAddBrandPage = async (req, res) => {
     try {
         return res.render("admin/add-new-brand");
@@ -67,42 +67,41 @@ export const renderAddBrandPage = async (req, res) => {
     }
 }
 
+// Add New Brand
 export const addBrand = async (req, res) => {
-    try {
-        const { name, description } = req.body; // Get brand name and description from body
-        const image = req.file?.filename; // Get the uploaded image filename
+  try {
+    const { name, description } = req.body;
+    const image = req.file?.filename;
 
-        // Check if required fields are present
-        if (!name || !image) {
-            return res.status(400).send("Brand name and image are required.");
-        }
-
-        // Check if the brand already exists
-        const findBrand = await Brand.findOne({ brandName: name });
-
-        if (findBrand) {
-            // If the brand already exists, return a message
-            return res.status(400).send("Brand with this name already exists.");
-        }
-
-        // If the brand does not exist, create a new brand
-        const newBrand = new Brand({
-            brandName: name,
-            brandDescription: description, // Add description if required
-            brandImage: image, // Save the uploaded image filename
-        });
-
-        await newBrand.save();
-
-        // Redirect to brands page after success
-        return res.redirect("/admin/brands");
-    } catch (error) {
-        console.error("Error in adding brand:", error);
-        return res.status(500).send("An error occurred while adding the brand.");
+    if (!name) {
+      return res.status(400).json({ message: "Brand name is required." });
     }
+    if (!image) {
+      return res.status(400).json({ message: "Image is required." });
+    }
+
+    const findBrand = await Brand.findOne({ brandName: name });
+
+    if (findBrand) {
+      return res.status(400).json({ message: "Brand with this name already exists." });
+    }
+
+    const newBrand = new Brand({
+      brandName: name,
+      brandDescription: description || '',
+      brandImage: image,
+    });
+
+    await newBrand.save();
+
+    return res.status(200).json({ message: "Brand added successfully!" });
+  } catch (error) {
+    console.error("Error in adding brand:", error);
+    return res.status(500).json({ message: "An error occurred while adding the brand." });
+  }
 };
 
-
+// Render Edit Brand Page
 export const  renderEditBrandPage = async (req, res) => {
     try {
         const { brandId } = req.params
@@ -121,89 +120,96 @@ export const  renderEditBrandPage = async (req, res) => {
 
 
 
-
+// Edit Brand
 export const editBrand = async (req, res) => {
-    try {
-      const { brandId } = req.params; // Fetch the brand ID
-      const { name, description } = req.body; // Extract form data
-  
-      const updatedBrandData = {
-        brandName: name,
-        brandDescription: description,
-      };
-  
-      if (req.file) {
-        updatedBrandData.brandImage = req.file.filename;
-  
-        // Delete old image
-        const existingBrand = await Brand.findById(brandId);
-        if (existingBrand?.brandImage) {
-          const imagePath = path.join(__dirname, "../public/uploads", existingBrand.brandImage);
-          if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath);
-          }
+  try {
+    const { brandId } = req.params; 
+    const { name, description } = req.body;
+
+    const updatedBrandData = {
+      brandName: name,
+      brandDescription: description,
+    };
+
+    if (req.file) {
+      updatedBrandData.brandImage = req.file.filename;
+
+      // Delete old image
+      const existingBrand = await Brand.findById(brandId);
+      if (existingBrand?.brandImage) {
+        const imagePath = path.join(__dirname, "../public/uploads", existingBrand.brandImage);
+        if (fs.existsSync(imagePath)) {
+          fs.unlinkSync(imagePath);
         }
       }
-  
-      // Update the brand
-      const updatedBrand = await Brand.findByIdAndUpdate(brandId, updatedBrandData, { new: true });
-  
-      // Redirect back to brands list
-      res.redirect("/admin/brands?msg=Brand updated&type=success");
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Server Error");
     }
-  };
-  
 
-  export const toggleBrand = async (req, res) => {
-    try {
-      const brandId = req.params.id;
-      const brand = await Brand.findById(brandId);
+    const updatedBrand = await Brand.findByIdAndUpdate(brandId, updatedBrandData, { new: true });
 
-      if (!brand) {
-        return res.status(404).send('Brand is not found.')
-      }
-      brand.isListed = !brand.isListed;
-
-      if (!brand.isListed) {
-        brand.deleted_at = Date.now();  
-      } else {
-        brand.deleted_at = null; 
-      }
-      await brand.save();
-      return res.redirect("/admin/brands");
-
-    } catch (error) {
-       console.error("Error toggling list/restore brand: ", error);
-       return res.status(500).send("Server Error")
+    if (updatedBrand) {
+      return res.status(200).json({ message: "Brand updated successfully!" });
+    } else {
+      return res.status(404).json({ message: "Brand not found." });
     }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Server Error" });
   }
+};
+
+  
+
+// List And Unlist Brand
+export const toggleBrand = async (req, res) => {
+  try {
+    const brandId = req.params.id;
+    const brand = await Brand.findById(brandId);
+
+    if (!brand) {
+      return res.status(404).json({ success: false, message: 'Brand not found.' });
+    }
+
+    brand.isListed = !brand.isListed;
+    brand.deleted_at = brand.isListed ? null : Date.now();
+
+    await brand.save();
+
+    const message = brand.isListed
+      ? `Brand "${brand.brandName}" has been listed successfully.`
+      : `Brand "${brand.brandName}" has been unlisted successfully.`;
+
+    return res.status(200).json({
+      success: true,
+      message,
+      isListed: brand.isListed, // Send back the updated status
+    });
+  } catch (error) {
+    console.error("Error toggling list/restore brand:", error);
+    return res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
 
 
+
+// Delete Brand
   export const deleteBrand = async (req, res) => {
     try {
       const { brandId } = req.params;
   
-      // Fetch the brand to delete its image
       const brand = await Brand.findById(brandId);
       if (!brand) {
         return res.status(404).send("Brand not found");
       }
   
-      // Delete the brand image if it exists
       if (brand.brandImage) {
         const imagePath = path.join(__dirname, "../public/uploads", brand.brandImage);
         if (fs.existsSync(imagePath)) {
           fs.unlinkSync(imagePath);
         }
       }
-  
-      // Delete the brand from the database
+
       await Brand.findByIdAndDelete(brandId);
   
-      // Redirect to the brands list with a success message
       res.redirect("/admin/brands?msg=Brand deleted&type=success");
     } catch (error) {
       console.error("Error deleting brand:", error);

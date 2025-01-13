@@ -140,31 +140,67 @@
       });
     });
 document.addEventListener("DOMContentLoaded", function () {
-      const notyf = new Notyf({
-        duration: 1500,  
-        ripple: true,  
-        position: { x: 'right', y: 'bottom' },
-        dismissible: true,  
-        types: [
-            { type: 'success', background: 'green' },  
-            { type: 'error', background: 'red' },     
-        ],
-    });
+  const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
     const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('message');  // Get the message parameter
-    const success = urlParams.get('success');  // Get the success parameter
+    const message = urlParams.get('message');  
+    const success = urlParams.get('success'); 
 
     console.log("Message:", message);
     console.log("Success:", success);
 
-    // If there is a message, show the notification
     if (message) {
         if (success === 'true') {
-            console.log("Displaying success message");
-            notyf.success(message);  // Show success message
+            console.log("Displaying success message"); 
+            toastSuccess(message)
         } else {
-            console.log("Displaying error message");
-            notyf.error(message);  // Show error message
+            console.log("Displaying error message"); 
+            toastError(message)
         }
     } else {
         console.log("No message parameter found in the URL");
@@ -190,21 +226,21 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {  
-                    notyf.success(data.message);
+                    toastSuccess(data.message)
                     setTimeout(() => {
                       location.reload(); 
-                    }, 1000);
+                    }, 1500);
                     
                 } else {
-                    notyf.error(data.message || 'Error updating quantity.');  
+                  toastError(data.message)
                     setTimeout(() => {
                         location.reload();
-                    }, 1000);
+                    }, 1500);
                 }
             })
             .catch(error => {
                 console.error('Error updating quantity:', error);
-                notyf.error('Something went wrong, please try again later.'); 
+                toastWarning('Something went wrong.')
             });
         });
     });
@@ -264,14 +300,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     hidePopup();
                     setTimeout(() => {
                         location.reload();
-                    }, 1000);
-                    notyf.success(data.message);  
+                    }, 1500);
+                    toastSuccess(data.message) 
                 } else {
+                  toastError(data.message)
                     throw new Error(data.message);
                 }
             })
             .catch(error => {
-                notyf.error(error.message || 'An error occurred. Please try again.');  
+              toastWarning(error.message || 'An error occurred. Please try again.')
             });
         }
     });

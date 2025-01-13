@@ -28,6 +28,7 @@ export const verifyAdminToken = (req, res, next) => {
         console.error("Token verification error:", error.message);
         res.clearCookie("adminToken");
         return res.render("admin/admin-login", { msg: "Invalid or expired token. Please log in again." });
+        // return res.render("admin/admin-login")
     }
 };
 

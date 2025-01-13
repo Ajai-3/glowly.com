@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { boolean } from "webidl-conversions";
 
 const addressSchema = new mongoose.Schema({
   user_id: {
@@ -45,6 +46,10 @@ const addressSchema = new mongoose.Schema({
   alternative_email: {
     type: String,
     required: false
+  },
+  isActive: {
+    type: Boolean,
+    defult: true
   }
 });
 

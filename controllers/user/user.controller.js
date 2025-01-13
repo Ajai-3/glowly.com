@@ -266,7 +266,9 @@ export const handleUserLogin = async (req, res) => {
         // req.session.token = token;
 
         // Redirect to the home page
-        return res.redirect("/home");
+        // return res.redirect("/home?msg=Login20%Sucessfull");
+        // return res.redirect("/home");
+        return res.redirect(`/home?msg=${encodeURIComponent('Login successful!')}`);
 
     } catch (error) {
         console.error("Login error", error);

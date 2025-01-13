@@ -40,7 +40,7 @@ router.get("/dashboard", verifyAdminToken, renderDashboardPage);
 router.get("/products", verifyAdminToken, renderProductsPage);
 router.get('/search-products', verifyAdminToken, renderProductsPage)
 router.get("/add-products", verifyAdminToken, renderAddProductsPage);
-router.get("/toggle-product/:id", verifyAdminToken, toggleProduct); // Delete And Restore
+router.patch("/toggle-product/:id", verifyAdminToken, toggleProduct); // Delete And Restore
 router.post('/add-products', verifyAdminToken, uploads.array('productImages', 4), addProduct);
 router.get("/edit-product/:id", verifyAdminToken, renderEditProductPage);
 router.post("/edit-product/:id", verifyAdminToken, uploads.array('productImages', 4), editProduct);
@@ -48,17 +48,17 @@ router.post("/edit-product/:id", verifyAdminToken, uploads.array('productImages'
 // Brand Router
 router.get("/brands", verifyAdminToken, renderBrandPage)
 router.get("/search-brands", verifyAdminToken, renderBrandPage)
-router.get("/toggle-brand/:id", verifyAdminToken, toggleBrand)
+router.patch("/toggle-brand/:id", verifyAdminToken, toggleBrand)
 router.get("/add-new-brand", verifyAdminToken, renderAddBrandPage);
 router.post("/add-new-brand", verifyAdminToken, uploads.single("image"), addBrand);
 router.get("/edit-brand/:brandId", verifyAdminToken, renderEditBrandPage);
-router.post('/edit-brand/:brandId', verifyAdminToken, uploads.single('image'), editBrand);
+router.patch('/edit-brand/:brandId', verifyAdminToken, uploads.single('image'), editBrand);
 router.get("/delete-brand/:brandId", verifyAdminToken, deleteBrand);
 
 // Category & Subcategory Routes
 router.get("/category", verifyAdminToken, renderCategoryPage);
-router.get("/toggle-category/:id", verifyAdminToken, toggleCategory);
-router.post("/toggle-subcategory/:id", verifyAdminToken, toggleSubcategory)
+router.patch("/toggle-category/:id", verifyAdminToken, toggleCategory);
+router.patch("/toggle-subcategory/:id", verifyAdminToken, toggleSubcategory)
 router.get("/add-category", verifyAdminToken, renderAddCategoryPage);
 router.post('/add-subcategory', verifyAdminToken, addSubcategoryToExistingCategory);
 router.post("/add-category", verifyAdminToken, addCategory);
@@ -69,10 +69,8 @@ router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
 // Users Routes
 router.get("/users", verifyAdminToken, renderUsersPage);
 router.get('/search-user', verifyAdminToken, renderUsersPage)
-router.get('/block-user', verifyAdminToken, blockUser);
-// router.post('/block-user', blockUser);
-
-router.get('/unblock-user', verifyAdminToken, unBlockUser);
+router.put('/block-user', verifyAdminToken, blockUser);
+router.put('/unblock-user', verifyAdminToken, unBlockUser);
 // Coupon Routes
 router.get("/coupons", verifyAdminToken, renderCouponsPage);
 // router.get("/add-coupon", renderAddCouponPage);
@@ -81,7 +79,8 @@ router.get("/edit-coupon", verifyAdminToken, renderEditCouponPage);
 router.post("/edit-coupon", verifyAdminToken, editCoupon);
 // Order Routes
 router.get("/orderlists", verifyAdminToken, renderOrderPage);
-router.post("/update-order-status", verifyAdminToken, updateOrderStatus)
+router.patch("/update-order-status", verifyAdminToken, updateOrderStatus)
+
 //
 router.get("/sales-report", verifyAdminToken, renderSalesReportPage);
 

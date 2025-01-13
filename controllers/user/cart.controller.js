@@ -106,12 +106,12 @@ export const addToCart = async (req, res) => {
       });
     }
 
-    if (cart.products.length === 16) {
-      return res.json({
-        success: false,
-        message: "Your cart rech maximum limit.",
-      });
-    }
+    // if (cart.products.length === 16) {
+    //   return res.json({
+    //     success: false,
+    //     message: "Your cart rech maximum limit.",
+    //   });
+    // }
 
     if (!cart) {
       cart = new Cart({

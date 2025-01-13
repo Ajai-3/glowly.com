@@ -6,7 +6,7 @@
     <div class="header">
       <div class="search-bar">
         <form action="/search-user" method="GET">
-          <input type="text" name="search" placeholder="Search User" />
+          <input type="text" name="search" placeholder="Search User" readonly/>
           <button class="admin-search-button">
             <i class="fas fa-search"></i>
           </button>
@@ -24,7 +24,7 @@
     </div>
 
     <div class="brand-page-edit">
-      <form action="/admin/edit-brand/<%= brand._id %>" method="POST" enctype="multipart/form-data">
+      <form id="editBrandForm" enctype="multipart/form-data">
         <div class="form-sections">
           <div class="brand-page-edit-box">
             <h4>Edit Brand</h4>
@@ -69,7 +69,34 @@
 
   <%- include('partials/footer') %>
 
+  <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+
   <script>
+    const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
     // Image preview function
     function previewImage(event) {
       const file = event.target.files[0];
@@ -77,13 +104,36 @@
 
       reader.onload = function () {
         const imagePreview = document.getElementById('imagePreview');
-        imagePreview.src = reader.result; // Set the preview image's source to the file's result
-        imagePreview.style.display = 'block'; // Show the image preview
+        imagePreview.src = reader.result; 
+        imagePreview.style.display = 'block'; 
       }
 
       if (file) {
-        reader.readAsDataURL(file); // Read the file as a data URL
+        reader.readAsDataURL(file);
       }
     }
+
+    document.getElementById("editBrandForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+
+      const response = await fetch(`/admin/edit-brand/<%= brand._id %>`, {
+        method: "PATCH",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        toastSuccess(result.message);
+        setTimeout(() => {
+          window.location.href = "/brands";
+        }, 1500)
+      } else {
+        toastError(result.message);
+      }
+    });
   </script>
 </html>

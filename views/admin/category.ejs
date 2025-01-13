@@ -64,7 +64,7 @@
                     <th>Sub categories</th>
                     <th>Created At</th>
                     <th>Offer</th>
-                    <th>List / Unlist</th>
+                    <!-- <th>List / Unlist</th> -->
                     <th>Action</th>
                 </tr>
             </thead>
@@ -78,15 +78,16 @@
                         <ul>
                             <% cat.subcategories.forEach((sub) => { %>
                                 <li class="<%= sub.isListed ? '' : 'unlisted' %>">
-                                    <form action="/toggle-subcategory/<%= sub._id %>" method="POST">
-                                        <input type="checkbox" 
-                                               name="isListed" 
-                                               value="true" 
-                                               <%= sub.isListed ? 'checked' : '' %> 
-                                               onchange="this.form.submit()">
-                                        <%= sub.name %>
+                                    <form id="subcategoryForm-<%= sub._id %>">
+                                      <input 
+                                        type="checkbox" 
+                                        name="isListed" 
+                                        value="true" 
+                                        <%= sub.isListed ? 'checked' : '' %> 
+                                        onchange="toggleSubcategory('<%= sub._id %>', this.checked)">
+                                      <%= sub.name %>
                                     </form>
-                                </li>
+                                  </li>
                             <% }) %>
                         </ul>
                     </td>
@@ -103,21 +104,22 @@
                             </a>
                         <% } %>
                     </td>
-                      <td>
+                      <!-- <td>
                         <% if (!cat.isListed) { %>
-                            <a href="/toggle-category/<%= cat._id %>">
-                                <button class="list-btn">List</button>
-                            </a>
-                        <% } else { %>
-                            <a href="/toggle-category/<%= cat._id %>">
-                                <button class="unlist-btn">Unlist</button>
-                            </a>
-                        <% } %>
-                    </td>
+                            <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
+                          <% } else { %>
+                            <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
+                          <% } %>
+                    </td> -->
                     
                       <td> 
                         <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
-                        <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a>
+                        <!-- <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a> -->
+                        <% if (!cat.isListed) { %>
+                            <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
+                          <% } else { %>
+                            <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
+                          <% } %>
                       </td>
                     </tr>
                   <% }) %>
@@ -154,4 +156,113 @@
     </div>  
 </body>
 <%- include('partials/footer') %> 
+<script>
+    const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+    const toggleCategory = async (id, isList) => {
+  try {
+    const response = await fetch(`/toggle-category/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isListed: isList }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      toastSuccess(result.message || 'Category updated successfully');
+
+      // Dynamically update the button
+      const button = document.querySelector(`[data-id="${id}"]`);
+      if (button) {
+        if (isList) {
+          button.textContent = 'Unlist';
+          button.classList.remove('list-btn');
+          button.classList.add('unlist-btn');
+          button.setAttribute('onclick', `toggleCategory('${id}', false)`);
+        } else {
+          button.textContent = 'List';
+          button.classList.remove('unlist-btn');
+          button.classList.add('list-btn');
+          button.setAttribute('onclick', `toggleCategory('${id}', true)`);
+        }
+      }
+    } else {
+      toastError('Failed to update category');
+    }
+  } catch (error) {
+    console.error(error);
+    toastError('Error updating category');
+  }
+};
+
+const toggleSubcategory = async (id, isList) => {
+  try {
+    const response = await fetch(`/toggle-subcategory/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isListed: isList }),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      toastSuccess(result.message || 'Subcategory updated successfully');
+      // Optional: Update the UI dynamically here if needed
+    } else {
+      toastError('Failed to update subcategory');
+    }
+  } catch (error) {
+    console.error(error);
+    toastError('Error updating subcategory');
+  }
+};
+</script>
 </html>

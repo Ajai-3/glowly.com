@@ -331,11 +331,11 @@
                       <h5 class=" mt-3">Payment Methods</h5>
                       <hr class="my-1"> -->
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" >
             <label class="form-check-label" for="creditCard">Debit Card / Credit Card</label>
           </div>
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="wallet" checked>
+            <input class="form-check-input" type="radio" name="paymentMethod" id="wallet">
             <label class="form-check-label" for="wallet">Wallet</label>
           </div>
           <div class="form-check">
@@ -421,24 +421,54 @@
 </body>
 <%- include('partials/footerforhome') %>
 <script>
-  const notyf = new Notyf({
-    duration: 2000,
-    ripple: true,
-    position: {
-      x: 'center',
-      y: 'bottom'
-    },
-    types: [{
-        type: 'success',
-        background: 'green'
-      },
-      {
-        type: 'error',
-        background: 'red'
-      },
-    ],
-    className: 'custom-notify',
-  });
+ const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        size: 'small',
+        position: 'topRight',
+      });
+    };
   document.addEventListener("DOMContentLoaded", () => {
     const step1 = document.getElementById("step1");
     const step2 = document.getElementById("step2");
@@ -492,7 +522,7 @@
       const selectedPaymentMethod = getSelectedPaymentMethod();
 
       if (!selectedPaymentMethod) {
-        notyf.error("Please select a payment method.");
+        toastError("Please select a payment method.")
         return;
       }
 
@@ -518,7 +548,7 @@
 
         if (response.ok) {
           showStep(step1);
-          notyf.success("Order placed successfully!");
+          toastSuccess("Order placed successfully!")
           const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
           orderConfirmationModal.show();
 
@@ -533,10 +563,10 @@
           });
 
         } else {
-          alert(result.message || "Something went wrong. Please try again.");
+          toastError("Something went wrong. Please try again.")
         }
       } catch (error) {
-        notyf.error("There was an error placing your order. Please try again.");
+        toastWarning("There was an error placing your order. Please try again.")
       }
     });
 

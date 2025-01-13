@@ -139,7 +139,7 @@ export const renderManageAddressPage = async (req, res) => {
             match: { isListed: true },  
         });      
              
-      const addresses = await Address.find({ user_id: user.userId });
+        const addresses = await Address.find({ user_id: user.userId, isActive: true });
 
       return res.render("user/manage-address", {
         name: user ? user.name : "",
@@ -160,20 +160,19 @@ export const renderManageAddressPage = async (req, res) => {
 export const handleAddAddress = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
+        let user = null;
         if (token) {
             const decoded = jwt.decode(token);
-            user = decoded; 
-        }  
+            user = decoded;
+        }
 
-        
         const categories = await Category.find({ isListed: true })
-        .populate({
-            path: 'subcategories',
-            match: { isListed: true },  
-        });  
+            .populate({
+                path: 'subcategories',
+                match: { isListed: true },
+            });
 
-        const { 
+        const {
             city,
             district,
             state,
@@ -184,24 +183,22 @@ export const handleAddAddress = async (req, res) => {
             land_mark,
             alternative_phone_no,
             alternative_email
-         } = req.body
-        
-        // console.log(req.body)
+        } = req.body;
 
         const activeUser = await User.findById(user.userId);
-        // console.log(existUser)
         if (!activeUser) {
             return res.status(404).send("User not found");
         }
-        
-        const addressCount = await Address.countDocuments({ user_id: user.userId });
-        if (addressCount >= 3) {
+
+        const addressCount = await Address.countDocuments({ user_id: user.userId, isActive: true });
+        if (addressCount >= 4) {
             return res.render("user/manage-address", {
                 name: user ? user.name : "",
                 user: user,
                 categories,
                 activeUser,
-                addresses: await Address.find({ user_id: user.userId }),
+                addresses: await Address.find({ user_id: user.userId, isActive: true }),
+                error: "You have reached the maximum number of active addresses."
             });
         }
 
@@ -213,13 +210,13 @@ export const handleAddAddress = async (req, res) => {
             country,
             address,
             pin_code,
-            address_type
+            address_type,
+            isActive: true
         });
 
         if (existingAddress) {
             return res.redirect("/manage-address");
         }
-
 
         const newAddress = new Address({
             user_id: user.userId,
@@ -232,12 +229,13 @@ export const handleAddAddress = async (req, res) => {
             address_type,
             land_mark,
             alternative_phone_no,
-            alternative_email
+            alternative_email,
+            isActive: true
         });
 
         await newAddress.save();
 
-        const addresses = await Address.find({ user_id: user.userId });
+        const addresses = await Address.find({ user_id: user.userId, isActive: true });
 
         return res.render("user/manage-address", {
             name: user ? user.name : "",
@@ -245,12 +243,99 @@ export const handleAddAddress = async (req, res) => {
             categories,
             activeUser,
             addresses: addresses
-    
-          })  
-
+        });
 
     } catch (error) {
         console.error("Error in adding new address", error);
         return res.status(500).send("Error in adding new address");
     }
-}
+};
+
+
+
+// Remove Address
+export const removeAddress = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        let user = null;
+        if (token) {
+            const decoded = jwt.decode(token);
+            user = decoded;
+        }
+
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized access. Please log in." });
+        }
+
+        const addressId = req.params.addressId;
+
+        const updatedAddress = await Address.findByIdAndUpdate(
+            addressId,
+            { $set: { isActive: false } },
+            { new: true }
+        );
+
+        if (!updatedAddress) {
+            return res.status(404).json({ message: 'Address not found' });
+        }
+
+        res.status(200).json({ message: 'Address deactivated successfully' });
+        
+    } catch (error) {
+        console.error("Error in removing address:", error);
+        res.status(500).json({ message: 'Error deactivating address', error });
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export const getAddress = async (req, res) => {
+    try {
+
+      const address = await Address.findById(req.params.addressId);
+      console.log(address)
+      if (!address) {
+        return res.status(404).json({ message: 'Address not found' });
+      }
+      res.status(200).json(address);
+    } catch (error) {
+      console.error('Error fetching address:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+  // Update address
+export const updateAddress = async (req, res) => {
+    try {
+      const updatedAddress = await Address.findByIdAndUpdate(
+        req.params.addressId,
+        req.body,
+        { new: true }
+      );
+  
+      if (!updatedAddress) {
+        return res.status(404).json({ message: 'Address not found' });
+      }
+  
+      res.status(200).json({ message: 'Address updated successfully' });
+    } catch (error) {
+      console.error('Error updating address:', error);
+      res.status(500).json({ message: 'Server error' });
+    }
+  };

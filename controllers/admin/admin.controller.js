@@ -14,11 +14,7 @@ export const renderLoginPage = (req, res) => {
         return res.redirect("/admin/dashboard");
     }
     const msg = req.query.msg || '';
-    if (typeof msg === 'object') {
-        msg = JSON.stringify(msg);  // Convert object to string
-    } else {
-        msg = String(msg);  // Ensure msg is a string even if it's a non-string primitive
-    }
+
     res.render("admin/admin-login", { msg });
 };
 

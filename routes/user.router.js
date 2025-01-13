@@ -28,13 +28,14 @@ import {
   renderProductPage,
   renderPageWithCategory,
   renderPageWithSubcategory,
-  productPageFilters,
+  // productPageFilters,
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
-import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, renderMyAccountPage } from "../controllers/user/user.account.controller.js";
+import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, getAddress, updateAddress } from "../controllers/user/user.account.controller.js";
 import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage } from "../controllers/user/checkout.controller.js";
-import { cancelOrder, renderOrderListPage } from "../controllers/user/order.controller.js";
+import { cancelOrder, orderDetailsPage, renderOrderListPage } from "../controllers/user/order.controller.js";
+import { get } from "mongoose";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -72,7 +73,7 @@ router.post("/reset-password", handleResetPassword)
 router.get("/product/:id", renderProductPage);
 router.get("/category/:categoryId", renderPageWithCategory);
 router.get("/subcategory/:subcategoryId", renderPageWithSubcategory);
-router.post("/product-Page-filters", productPageFilters)
+// router.post("/product-Page-filters", productPageFilters)
 
 // Account Mangement
 router.get("/my-account", renderMyAccountPage)
@@ -81,8 +82,11 @@ router.post("/my-account",  upload.single('profile-pic'), handleProfileUpdate)
 
 
 // Address Management
-router.get("/manage-address", renderManageAddressPage)
-router.post("/add-address", handleAddAddress)
+router.get("/manage-address", renderManageAddressPage);
+router.post("/add-address", handleAddAddress);
+router.post("/remove-address/:addressId", removeAddress);
+router.get('/get-address/:addressId', getAddress);
+router.post('/edit-address/:addressId', updateAddress);
 
 // Cart Management
 router.get("/my-cart", renderCartPage)
@@ -98,6 +102,7 @@ router.get('/placeOrderWithBuyNow', placeOrderWithBuyNow);
 // Order Management
 router.get("/my-orders", renderOrderListPage);
 router.post("/cancel-order", cancelOrder)
+router.get("/product-details/:orderId/:productId/:addressId", orderDetailsPage)
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)
 router.post("/add-to-wishlist/:productId", addToWishlist)

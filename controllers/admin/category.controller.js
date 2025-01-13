@@ -185,49 +185,48 @@ export const updateCategory = async (req, res) => {
 
 export const toggleCategory = async (req, res) => {
     try {
-        const categoryId = req.params.id;
-        const category = await Category.findById(categoryId);
-
-        if (!category) {
-            return res.status(404).send("Category not found");
-        }
-
-        category.isListed = !category.isListed;
-
-        if (!category.isListed) {
-            category.deleted_at = Date.now();
-        } else {
-            category.deleted_at = null;
-        }
-
-        await category.save();
-        return res.redirect("/admin/category");
-
+      const categoryId = req.params.id;
+      const category = await Category.findById(categoryId);
+  
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+  
+      category.isListed = req.body.isListed;
+  
+      if (!category.isListed) {
+        category.deleted_at = Date.now();
+      } else {
+        category.deleted_at = null;
+      }
+  
+      await category.save();
+      return res.json({ message: "Category status updated successfully" });
     } catch (error) {
-        console.error("Error toggling list/unlist category: ", error);
-        return res.status(500).send("Server Error");
+      console.error("Error toggling category: ", error);
+      return res.status(500).json({ message: "Server error" });
     }
-};
+  };
+  
 
-
-export const toggleSubcategory = async (req, res) => {
+  export const toggleSubcategory = async (req, res) => {
     try {
-        const subcategoryId = req.params.id;
-        const subcategory = await Subcategory.findById(subcategoryId);
-
-        if (!subcategory) {
-            return res.status(404).send("Subcategory not found");
-        }
-
-        subcategory.isListed = !subcategory.isListed;
-        await subcategory.save();
-
-        return res.redirect("/admin/category");
+      const subcategoryId = req.params.id;
+      const subcategory = await Subcategory.findById(subcategoryId);
+  
+      if (!subcategory) {
+        return res.status(404).json({ message: "Subcategory not found" });
+      }
+  
+      subcategory.isListed = req.body.isListed;
+      await subcategory.save();
+  
+      return res.json({ message: "Subcategory status updated successfully" });
     } catch (error) {
-        console.error("Error toggling subcategory: ", error);
-        return res.status(500).send("Server Error");
+      console.error("Error toggling subcategory: ", error);
+      return res.status(500).json({ message: "Server error" });
     }
-};
+  };
 
 
 export const deleteCategory = async (req, res) => {

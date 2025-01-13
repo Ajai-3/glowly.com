@@ -113,14 +113,22 @@
                         <td>
                             <a href="/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
                             <% if (!product.isDeleted) { %>
-                                <a href="/toggle-product/<%= product._id %>" onclick="return confirm('Are you sure you want to delete this product?')">
-                                    <button class="delete-btn">Delete</button>
-                                </a>
-                            <% } else { %>
-                                <button class="restore-btn">
-                                    <a href="/toggle-product/<%= product._id %>">Restore</a>
+                                <button 
+                                  class="delete-btn" 
+                                  data-id="<%= product._id %>" 
+                                  data-deleted="false"
+                                >
+                                  Delete
                                 </button>
-                            <% } %>
+                              <% } else { %>
+                                <button 
+                                  class="restore-btn" 
+                                  data-id="<%= product._id %>" 
+                                  data-deleted="true"
+                                >
+                                  Restore
+                                </button>
+                              <% } %>
                         </td>
                     </tr>
                 <% }) %>                
@@ -149,40 +157,123 @@
 </body>
 <%- include('partials/footer') %> 
 <script>
-    const notyf = new Notyf({
-            duration: 2000,
-            ripple: true,
-            position: { x: 'right', y: 'top' },
-            types: [
-                { type: 'success', background: 'green' },
-                { type: 'error', background: 'red' },
-            ],
-            className: 'custom-notify',
-        });
+    // const notyf = new Notyf({
+    //         duration: 2000,
+    //         ripple: true,
+    //         position: { x: 'right', y: 'top' },
+    //         types: [
+    //             { type: 'success', background: 'green' },
+    //             { type: 'error', background: 'red' },
+    //         ],
+    //         className: 'custom-notify',
+    //     });
 
-        function showNotyfNotification(message, type) {
-            if (type === 'success') {
-                notyf.success(message);
-            } else if (type === 'error') {
-                notyf.error(message);
-            } else {
-                notyf.open({ type: type, message: message });
-            }
-        }
+    //     function showNotyfNotification(message, type) {
+    //         if (type === 'success') {
+    //             notyf.success(message);
+    //         } else if (type === 'error') {
+    //             notyf.error(message);
+    //         } else {
+    //             notyf.open({ type: type, message: message });
+    //         }
+    //     }
+
+        const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const urlParams = new URLSearchParams(window.location.search);
+        //     const msg = urlParams.get('msg');
+        //     const type = urlParams.get('type');
+
+        //     if (msg && type) {
+        //         showNotyfNotification(msg, type);
+
+        //         if (window.history.replaceState) {
+        //             const url = window.location.origin + window.location.pathname;
+        //             window.history.replaceState(null, null, url);
+        //         }
+        //     }
+        // });
 
         document.addEventListener('DOMContentLoaded', function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const msg = urlParams.get('msg');
-            const type = urlParams.get('type');
+  const buttons = document.querySelectorAll('.delete-btn, .restore-btn');
 
-            if (msg && type) {
-                showNotyfNotification(msg, type);
+  buttons.forEach(button => {
+    button.addEventListener('click', async () => {
+      const productId = button.getAttribute('data-id');
+      const isDeleted = button.getAttribute('data-deleted') === 'true';
 
-                if (window.history.replaceState) {
-                    const url = window.location.origin + window.location.pathname;
-                    window.history.replaceState(null, null, url);
-                }
-            }
+      try {
+        const response = await fetch(`/toggle-product/${productId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
         });
+
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            button.textContent = result.isDeleted ? 'Restore' : 'Delete';
+            button.className = result.isDeleted ? 'restore-btn' : 'delete-btn';
+            button.setAttribute('data-deleted', result.isDeleted.toString());
+
+            toastSuccess(result.message);
+          } else {
+            toastError('Failed to update product status');
+          }
+        } else {
+          toastError('Error toggling product status');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toastWarning('An error occurred');
+      }
+    });
+  });
+});
 </script>
 </html>

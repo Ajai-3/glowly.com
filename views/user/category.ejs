@@ -3,11 +3,11 @@
 <%- include('partials/headforhome', { name: name, categories: categories }) %>
 
 <div class="user-contents">
-
-  <div class="container  mt-4">
+  <div class="container mt-4">
     <div class="row">
       <div class="col-md-2 product-filter-div p-0">
         <form id="filter-form">
+          <!-- Popularity Filter -->
           <div class="filter-item">
             <hr>
             <div class="filter-header d-flex justify-content-between align-items-center" data-filter="popularity">
@@ -87,7 +87,7 @@
             </div>
           </div>
 
-          <!-- Additional Filters (Price, Rating, etc.) -->
+          <!-- Price Filter -->
           <div class="filter-item">
             <hr>
             <div class="filter-header d-flex justify-content-between align-items-center" data-filter="price">
@@ -110,7 +110,7 @@
             </div>
           </div>
 
-          <!-- Additional Filters (Rating, Alphabetical Sort, etc.) -->
+          <!-- Rating Filter -->
           <div class="filter-item">
             <hr>
             <div class="filter-header d-flex justify-content-between align-items-center" data-filter="average-rating">
@@ -151,7 +151,7 @@
             </div>
           </div>
 
-          <!-- Filter Item: Alphabetical Sort -->
+          <!-- Alphabetical Sort Filter -->
           <div class="filter-item">
             <hr>
             <div class="filter-header d-flex justify-content-between align-items-center" data-filter="alphabetical">
@@ -174,35 +174,34 @@
             </div>
           </div>
 
-          <!-- Filter Item: New Arrivals -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
-              <span>New Arrivals</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="new-arrivals-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
-                  Latest
-                  <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
-                  Oldest
-                  <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
-                </label>
-              </div>
-            </div>
-            <hr>
-          </div>
+         <!-- New Arrivals Filter -->
+<div class="filter-item">
+    <hr>
+    <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
+      <span>New Arrivals</span>
+      <i class="fa-solid fa-chevron-down"></i>
+    </div>
+    <div class="filter-options" id="new-arrivals-options" style="display: none;">
+      <div>
+        <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
+          Latest
+          <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
+        </label>
+      </div>
+      <div>
+        <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
+          Oldest
+          <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
+        </label>
+      </div>
+    </div>
+    <hr>
+  </div>
         </form>
       </div>
 
-
-      <div class="col-md-10 ps-4 pe-0">
-        <div class="product-grid">
+      <div class="col-md-10 p-0 ps-4">
+        <div class="product-grid ">
           <% products.forEach(product => { %>
           <div class="product-card">
             <a href="/product/<%= product._id %>">
@@ -236,7 +235,6 @@
             <div class="product-prices-box">
               <p class="sale-price price-inr">&#8377;<%= product.price %></p>
               <p class="original-price price-inr mx-2">&#8377;<%= product.sales_price %></p>
-              <!-- <p class="product-rating">★★★★☆</p> -->
               <% if (product.price > product.sales_price) { %>
               <span class="discount-percentage">
                 <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off
@@ -249,23 +247,22 @@
           </div>
           <% }) %>
         </div>
-
+        <div class="pagination-controls">
+          <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Previous</a>
+          <% } %>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?page=<%= i %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+          <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Next</a>
+          <% } %>
+        </div>        
       </div>
     </div>
   </div>
-
-
-
-  <!-- <div id="cart-notification" class="notification">Cart Notification</div> -->
-
 </div>
 
-
-
-<div id="wishlist-notification" class="wishlist-notification">
-  <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
-  <p id="wishlist-notification">Product has been added to Wishlist.</p>
-</div>
 
 
 
@@ -273,43 +270,157 @@
 <%- include('partials/footerforhome') %>
 
 <script>
-  window.onload = function() {
-    window.scrollTo(0, 0);
-  };
-  const notyf = new Notyf({
-    duration: 2000,
-    ripple: true,
-    position: {
-      x: 'right',
-      y: 'bottom'
-    },
-    types: [{
-        type: 'success',
-        background: 'green'
-      },
-      {
-        type: 'error',
-        background: 'red'
-      },
-    ],
-    className: 'custom-notify',
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    const priceElements = document.querySelectorAll('.price-inr');
-
-    priceElements.forEach(element => {
-      const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10);
-      element.textContent = '₹ ' + price.toLocaleString('en-IN');
+  const toastWish = (message) => {
+    iziToast.show({
+      message: message,
+      backgroundColor: '#e80071',
+      messageColor: '#FFFFFF',
+      icon: 'fas fa-check-circle',
+      iconColor: '#FFFFFF',
+      timeout: 3000,
+      position: 'bottomCenter',
     });
+  };
+
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      size: 'small',
+      position: 'topRight',
+    });
+  };
+  document.addEventListener('DOMContentLoaded', function() {
+  const filterForm = document.getElementById('filter-form');
+
+  filterForm.addEventListener('change', function(event) {
+    const formData = new FormData(filterForm);
+    const filterParams = {};
+
+    for (let [key, value] of formData.entries()) {
+      if (!filterParams[key]) {
+        filterParams[key] = [];
+      }
+      filterParams[key].push(value);
+    }
+
+    const queryString = new URLSearchParams(filterParams).toString();
+    history.replaceState(null, '', `/category/${selectedCategoryId}?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
+    fetchFilteredProducts(filterParams, 1); // Reset to page 1 on filter change
   });
-  document.addEventListener('DOMContentLoaded', () => {
+
+  function fetchFilteredProducts(filterParams, page) {
+    fetch(`/category/${selectedCategoryId}?filters=${encodeURIComponent(JSON.stringify(filterParams))}&page=${page}`)
+      .then(response => response.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const newProductGrid = tempDiv.querySelector('.product-grid');
+        document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
+
+        // Reattach event listeners after updating the product grid
+        attachWishlistListeners();
+        attachCartListeners();
+      })
+      .catch(error => console.error('Error fetching products:', error));
+  }
+
+  // Reattach the functions for cart and wishlist listeners
+  function attachCartListeners() {
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', (event) => {
+        event.preventDefault();
+        const productId = event.target.dataset.id;
+        const quantity = 1;
+
+        if ('<%= user %>') {
+          fetch(`/add-to-cart/${productId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                quantity
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                toastSuccess(data.message);
+              } else {
+                toastError(data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              toastWarning('Error adding product to cart.');
+            });
+        } else {
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
+          const existingItem = cart.find(item => item.productId === productId);
+
+          if (existingItem) {
+            existingItem.quantity += quantity;
+          } else {
+            cart.push({
+              productId,
+              quantity
+            });
+          }
+
+          localStorage.setItem('cart', JSON.stringify(cart));
+          toastSuccess('Product added to cart!');
+        }
+      });
+    });
+  }
+
+  function attachWishlistListeners() {
     const forms = document.querySelectorAll('.wishlist-form');
-    const notification = document.querySelector('.wishlist-notification');
 
     forms.forEach(form => {
       form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Preventing Peage Refresh 
+        event.preventDefault();
 
         const button = form.querySelector('button');
         const icon = button.querySelector('i');
@@ -327,199 +438,29 @@
           })
           .then(response => response.json())
           .then(data => {
-
             if (data.action === 'added') {
               icon.classList.remove('not-in-wishlist');
               icon.classList.add('in-wishlist');
               button.title = 'Remove from Wishlist';
-
-              notification.innerHTML = `
-                            <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
-                            <p>Product has been added to Wishlist.</p>
-                        `;
-              notification.classList.add('show');
-
-              setTimeout(() => {
-                notification.classList.remove('show');
-              }, 3000);
+              toastWish('Product has been added to Wishlist.');
             } else if (data.action === 'removed') {
               icon.classList.remove('in-wishlist');
               icon.classList.add('not-in-wishlist');
               button.title = 'Add to Wishlist';
-
-              notification.innerHTML = `
-                            <i class="fas fa-check-circle"></i>&nbsp;&nbsp;
-                            <p>Product has been removed from Wishlist.</p>
-                        `;
-              notification.classList.add('show');
-
-              setTimeout(() => {
-                notification.classList.remove('show');
-              }, 3000);
+              toastWish('Product has been removed from Wishlist.');
             }
           })
           .catch(error => {
+            toastWarning("Error occurred adding to wishlist.");
             console.error('Error:', error);
           });
       });
     });
-  });
-
-  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-    button.addEventListener('click', (event) => {
-      event.preventDefault();
-      const productId = event.target.dataset.id;
-      const quantity = 1;
-
-      if ('<%= user %>') {
-        fetch(`/add-to-cart/${productId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              quantity
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              notyf.success(data.message);
-            } else {
-              notyf.error(data.message);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            notyf.error('An error occurred while adding the product to the cart.');
-          });
-      } else {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const existingItem = cart.find(item => item.productId === productId);
-
-        if (existingItem) {
-          existingItem.quantity += quantity;
-        } else {
-          cart.push({
-            productId,
-            quantity
-          });
-        }
-
-        localStorage.setItem('cart', JSON.stringify(cart));
-        notyf.success('Product added to cart!');
-      }
-    });
-  });
-
-
-  function showCartNotification(message) {
-    const notification = document.getElementById('cart-notification');
-    notification.textContent = message;
-    notification.classList.add('show');
-
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 3000);
   }
 
-  let filters = {}
-
-  function handleCheckboxChange(event) {
-  const checkbox = event.target;
-  const filterType = checkbox.name;
-  const filterValue = checkbox.value;
-  const isChecked = checkbox.checked;
-
-  if (isChecked) {
-    if (!filters[filterType]) {
-      filters[filterType] = [];
-    }
-    filters[filterType].push(filterValue);
-  } else {
-    filters[filterType] = filters[filterType].filter(value => value !== filterValue);
-    if (filters[filterType].length === 0) {
-      delete filters[filterType];
-    }
-  }
-
-  console.log("Updated Filters:", filters);
-
-  const payload = {
-    filters: filters
-  };
-
-  fetch('/product-Page-filters', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Filtered products:', data);
-      updateProductGrid(data.products, data.wishlist, data.user); 
-    })
-    .catch(error => {
-      console.error("Error fetching filtered products:", error);
-    });
-}
-
-function updateProductGrid(products, wishlist, user) {
-  const productGrid = document.querySelector('.product-grid');
-  productGrid.innerHTML = ''; 
-
-  products.forEach(product => {
-    const isProductInWishlist = wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString());
-
-    const productCard = `
-      <div class="product-card">
-        <a href="/product/${product._id}">
-          <img src="/uploads/${encodeURIComponent(product.product_imgs[0])}" />
-        </a>
-
-        <div class="product-card-like">
-          <form action="/add-to-wishlist/${product._id}" method="POST" class="wishlist-form">
-            ${user ? ` 
-              ${isProductInWishlist ? `
-                <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                  <i class="fa-solid fa-heart in-wishlist"></i>
-                </button>
-              ` : `
-                <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                  <i class="fa-solid fa-heart not-in-wishlist"></i>
-                </button>
-              `}
-            ` : `
-              <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                <i class="fa-solid fa-heart"></i>
-              </button>
-            `}
-          </form>
-        </div>
-
-        <a href="/product/${product._id}">
-          <p class="product-title">${product.title}</p>
-        </a>
-
-        <div class="product-prices-box">
-          <p class="sale-price price-inr">&#8377;${product.price}</p>
-          <p class="original-price price-inr mx-2">&#8377;${product.sales_price}</p>
-          ${product.price > product.sales_price ? `<span class="discount-percentage">${Math.round(((product.price - product.sales_price) / product.price) * 100)}% Off</span>` : ''}
-        </div>
-
-        <form action="/add-to-cart/${product._id}" method="POST" class="cart-form" id="cart-form">
-          <button type="submit" class="add-to-cart-btn" data-id="${product._id}">Add to Bag</button>
-        </form>
-      </div>
-    `;
-    productGrid.innerHTML += productCard;
-  });
-}
-document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-  checkbox.addEventListener('change', handleCheckboxChange);
-});
+  // Initial attachment of event listeners
+  attachCartListeners();
+  attachWishlistListeners();
 
   // Toggling visibility for filter options
   document.querySelectorAll('.filter-header').forEach(header => {
@@ -530,6 +471,66 @@ document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
       header.querySelector('i').classList.toggle('fa-chevron-up');
     });
   });
+
+  // Function to get URL parameters
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  // Get the selected category and subcategory from the URL
+  const selectedCategoryId = getUrlParameter('selectedCategory');
+  const selectedSubcategoryId = getUrlParameter('selectedSubcategory');
+
+  if (selectedCategoryId) {
+    const categoryCheckbox = document.querySelector(`input[name="category"][value="${selectedCategoryId}"]`);
+    if (categoryCheckbox) {
+      categoryCheckbox.checked = true;
+
+      // Show the subcategories for the selected category
+      const subcategoryDiv = document.getElementById(`subcategory-options-${selectedCategoryId}`);
+      if (subcategoryDiv) {
+        subcategoryDiv.style.display = 'block';
+      }
+    }
+  }
+
+  if (selectedSubcategoryId) {
+    const subcategoryCheckbox = document.querySelector(`input[name="subcategory"][value="${selectedSubcategoryId}"]`);
+    if (subcategoryCheckbox) {
+      subcategoryCheckbox.checked = true;
+    }
+  }
+
+  // Function to toggle subcategory visibility based on selected categories
+  function toggleSubcategories() {
+    const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
+
+    // Hide all subcategories initially
+    document.querySelectorAll('.subcategory-options').forEach(div => {
+      div.style.display = 'none';
+    });
+
+    // Show subcategories for selected categories
+    selectedCategories.forEach(categoryId => {
+      const subcategoryDiv = document.getElementById(`subcategory-options-${categoryId}`);
+      if (subcategoryDiv) {
+        subcategoryDiv.style.display = 'block';
+      }
+    });
+  }
+
+  // Attach event listener to category checkboxes
+  const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+  categoryCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', toggleSubcategories);
+  });
+
+  // Initial call to set up subcategory visibility
+  toggleSubcategories();
+});
 </script>
 
 </html>

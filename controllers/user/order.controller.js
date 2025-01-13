@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Order from "../../models/order.js";
 import Cart from "../../models/cart.model.js";
+import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 
@@ -54,6 +55,8 @@ export const cancelOrder = async (req, res) => {
       return res.redirect("user/home");
     }
 
+    console.log(quantity)
+
     let user;
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -97,6 +100,8 @@ export const cancelOrder = async (req, res) => {
   
       // Update product quantity
       product.available_quantity += productInOrder.quantity;
+      console.log(productInOrder.quantity)
+      console.log(product.available_quantity)
       await product.save();
   
       // Update product status in the order
@@ -111,5 +116,64 @@ export const cancelOrder = async (req, res) => {
   } catch (error) {
     console.error("Error canceling order:", error);
     res.status(500).send("Error canceling order");
+  }
+};
+
+
+// Render Order Details Page
+export const orderDetailsPage = async (req, res) => {
+  try {
+    const { orderId, productId, addressId } = req.params;
+    // console.log("orderid", orderId)
+    // console.log("product id", productId)
+    // console.log("address id", addressId)
+    const token = req.cookies.token;
+    if (!token) {
+      return res.redirect("user/home");
+    }
+
+    let user;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      user = decoded;
+    } catch (error) {
+      console.error("Invalid token:", error);
+      // return res.json({ success: false, message: 'Invalid token' });
+    }
+    const categories = await Category.find({ isListed: true }).populate({
+      path: "subcategories",
+      match: { isListed: true },
+    });
+    const order = await Order.findById(orderId)
+      .populate('products.product_id') 
+      .populate('address_id');
+
+    if (!order) {
+      return res.redirect("user/home");
+    }
+
+    const product = order.products.find(
+      (p) => p.product_id._id.toString() === productId
+    );
+
+    if (!product) {
+      return res.redirect("user/home");
+    }
+    console.log(product)
+
+    const address = order.address_id; 
+    const productStatus = product.status || "Unknown"; 
+
+    return res.render("user/order-details", {
+      user,
+      categories,
+      orderId,
+      product,
+      address,
+      productStatus,
+    });
+  } catch (error) {
+    console.error("Error in product detail page:", error);
+    res.status(500).send("Something went wrong!");
   }
 };

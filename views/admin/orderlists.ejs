@@ -76,7 +76,7 @@
           <td><%= ++serialNumber %></td>
           <td><%= order.orderId %></td>
           <td><%= order.userId.name %></td>
-          <td><%= order.addressId.city %>, <%= order.addressId.state %></td>
+          <td><%= order.addressId ? order.addressId.city + ', ' + order.addressId.state : 'Address not available' %></td>
           <td>
             <img src="/uploads/<%= encodeURIComponent(order.product.product_imgs[0]) %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
             <%= order.product.title.slice(0, 20) %>...
@@ -132,19 +132,54 @@
 </body>
 <%- include('partials/footer') %>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const notyf = new Notyf({
-    duration: 1500,
-    ripple: true,
-    position: { x: "right", y: "top" },
-    dismissible: true,
-    types: [
-      { type: "success", background: "green" },
-      { type: "error", background: "red" },
-    ],
-  });
+       const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
 
-  const dropdowns = document.querySelectorAll(".order-action");
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+const dropdowns = document.querySelectorAll(".order-action");
   dropdowns.forEach(function (dropdown) {
     dropdown.addEventListener("change", function () {
       const selectedValue = this.value;
@@ -159,7 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       fetch("/update-order-status", {
-        method: "POST",
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
         },
@@ -168,18 +203,21 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
-            notyf.success(data.message);
+            toastSuccess(data.message);
             statusCell.textContent = selectedValue;
             statusCell.classList.remove("yellow-p", "blue-p", "pink-p", "green-p", "red-p");
             statusCell.classList.add(getStatusClass(selectedValue));
           } else {
-            notyf.error(data.message);
+            toastError(data.message);
           }
         })
-        .catch((error) => console.error(error));
+        .catch((error) => {
+          console.error(error)
+          toastWarning("An Error occurs")
+        });
     });
   });
-});
+
 
 function getStatusClass(status) {
   const statusClasses = {

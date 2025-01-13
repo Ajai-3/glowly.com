@@ -56,54 +56,64 @@ export const renderUsersPage = async (req, res) => {
 
 // Block User
 export const blockUser = async (req, res) => {
-    const userId = req.query.id;
+    const userId = req.body.id;
 
     if (!userId) {
-        return res.redirect('/admin/users?msg=User+ID+is+required&type=error');
+        return res.status(400).json({ success: false, message: "User ID is required." });
     }
 
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.redirect('/admin/users?msg=User+not+found&type=error');
+            return res.status(404).json({ success: false, message: "User not found." });
         }
 
-        user.status = 'blocked';
+        user.status = "blocked";
         await user.save();
 
-        res.clearCookie('token');
-
-        return res.redirect('/admin/users?msg=User+has+been+successfully+blocked&type=success');
+        return res.status(200).json({
+            success: true,
+            message: "User has been successfully blocked.",
+        });
     } catch (error) {
-        console.error('Error in blocking user:', error);
-        return res.redirect('/admin/users?msg=An+error+occurred+while+blocking+the+user.&type=error');
+        console.error("Error in blocking user:", error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while blocking the user.",
+        });
     }
 };
+
 
 // Unblock User
 export const unBlockUser = async (req, res) => {
-    const userId = req.query.id;
+    const userId = req.body.id;
 
     if (!userId) {
-        return res.redirect('/admin/users?msg=User+ID+is+required&type=error');
+        return res.status(400).json({ success: false, message: "User ID is required." });
     }
 
     try {
         const user = await User.findById(userId);
         if (!user) {
-            return res.redirect('/admin/users?msg=User+not+found&type=error');
+            return res.status(404).json({ success: false, message: "User not found." });
         }
 
-        user.status = 'active';
+        user.status = "active";
         await user.save();
 
-        return res.redirect('/admin/users?msg=User+has+been+successfully+unblocked&type=success');
+        return res.status(200).json({
+            success: true,
+            message: "User has been successfully unblocked.",
+        });
     } catch (error) {
-        console.error('Error in unblocking user:', error);
-        return res.redirect('/admin/users?msg=An+error+occurred+while+unblocking+the+user.&type=error');
+        console.error("Error in unblocking user:", error);
+        return res.status(500).json({
+            success: false,
+            message: "An error occurred while unblocking the user.",
+        });
     }
 };
-
 
 
 

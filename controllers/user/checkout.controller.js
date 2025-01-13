@@ -44,7 +44,7 @@ export const renderCheckoutPage = async (req, res) => {
             });
 
         const products = await Product.find({ isDeleted: false });
-        const addresses = await Address.find({ user_id: user.userId }).limit(3);
+        const addresses = await Address.find({ user_id: user.userId, isActive: true  }).limit(4);
         const userDetails = await User.findById(user.userId);
 
     

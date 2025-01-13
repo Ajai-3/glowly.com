@@ -5,13 +5,11 @@
   <div class="main-content">
     <div class="header">
       <div class="search-bar">
-        <form action="/search-user" method="GET">
-          <input type="text" name="search" placeholder="Search User" />
-          <button class="admin-search-button">
-            <i class="fas fa-search"></i>
-          </button>
+        <form action="/search-brands" method="GET">
+            <input type="text" name="search" placeholder="Search Brand"  readonly>
+            <button class="admin-search-button"><i class="fas fa-search"></i></button>
         </form>
-      </div>
+    </div>
       <div class="admin-profile mx-3">
         <a href="/settings">
           <i class="fa-solid fa-circle-user"></i>
@@ -24,14 +22,12 @@
     </div>
 
     <div class="brand-page-add">
-        
-      <form action="/admin/add-new-brand" method="POST" enctype="multipart/form-data">
+      <form id="brandForm" action="/admin/add-new-brand" method="POST" enctype="multipart/form-data" id="brandForm">
         <div class="form-sections">
-            
           <div class="brand-page-add-box">
             <h4>Add New Brand</h4>
             <label for="name">Brand Name</label>
-            <input type="text" name="name" id="name" placeholder="Brand name" required />
+            <input type="text" name="name" id="name" placeholder="Brand name"/>
             <label for="description">Brand Description</label><br>
             <textarea id="description" name="description" placeholder="Brand description"></textarea>
           </div>
@@ -48,7 +44,6 @@
                 accept="image/*"
                 onchange="previewImage(event)"
                 style="display: none;"
-                required
               />
             </div>
 
@@ -63,7 +58,58 @@
 
   <%- include('partials/footer') %>
 
+  <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+
   <script>
+    const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
     function previewImage(event) {
       const file = event.target.files[0];
       const reader = new FileReader();
@@ -78,5 +124,34 @@
         reader.readAsDataURL(file);
       }
     }
+
+    document.getElementById("brandForm").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const formData = new FormData(this);
+
+  try {
+    const response = await fetch("/admin/add-new-brand", {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.json();
+    console.log("Response Status:", response.status);
+console.log("Response Data:", result);
+
+
+    if (response.ok) {
+      toastSuccess(result.message);
+      setTimeout(() => {
+        window.location.href = "/brands";
+      }, 1500)
+    } else {
+      toastError(result.message);
+    }
+  } catch (error) {
+    toastWarning("An unexpected error occurred.");
+  }
+});
   </script>
 </html>

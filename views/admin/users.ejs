@@ -75,13 +75,9 @@
         <td><%= new Date(user.created_at).toLocaleString() %></td>
         <td>
           <% if (user.status === 'active') { %>
-          <a href="/block-user?id=<%= user._id %>">
-            <button class="block-btn">Block</button>
-          </a>
+            <button class="block-btn" onclick="toggleUserStatus('<%= user._id %>', 'block')">Block</button>
           <% } else if (user.status === 'blocked') { %>
-          <a href="/unblock-user?id=<%= user._id %>">
-            <button class="unblock-btn">Unblock</button>
-          </a>
+            <button class="unblock-btn" onclick="toggleUserStatus('<%= user._id %>', 'unblock')">Unblock</button>
           <% } %>
         </td>
       </tr>
@@ -112,52 +108,133 @@
 </body>
 <%- include('partials/footer') %>
 <script>
-  const notyf = new Notyf({
-    duration: 2000,
-    ripple: true,
-    position: {
-      x: 'right',
-      y: 'top'
-    },
-    types: [{
-        type: 'success',
-        background: 'green'
-      },
-      {
-        type: 'error',
-        background: 'red'
-      },
-    ],
-    className: 'custom-notify',
-  });
+  // const notyf = new Notyf({
+  //   duration: 2000,
+  //   ripple: true,
+  //   position: {
+  //     x: 'right',
+  //     y: 'top'
+  //   },
+  //   types: [{
+  //       type: 'success',
+  //       background: 'green'
+  //     },
+  //     {
+  //       type: 'error',
+  //       background: 'red'
+  //     },
+  //   ],
+  //   className: 'custom-notify',
+  // });
 
-  function showNotyfNotification(message, type) {
-    if (type === 'success') {
-      notyf.success(message);
-    } else if (type === 'error') {
-      notyf.error(message);
-    } else {
-      notyf.open({
-        type: type,
-        message: message
+  // function showNotyfNotification(message, type) {
+  //   if (type === 'success') {
+  //     notyf.success(message);
+  //   } else if (type === 'error') {
+  //     notyf.error(message);
+  //   } else {
+  //     notyf.open({
+  //       type: type,
+  //       message: message
+  //     });
+  //   }
+  // }
+
+  // document.addEventListener('DOMContentLoaded', function() {
+  //   const urlParams = new URLSearchParams(window.location.search);
+  //   const msg = urlParams.get('msg'); 
+  //   const type = urlParams.get('type'); 
+
+  //   if (msg && type) {
+  //     showNotyfNotification(decodeURIComponent(msg), type);
+
+  //     if (window.history.replaceState) {
+  //       const url = window.location.origin + window.location.pathname + window.location.hash;
+  //       window.history.replaceState(null, null, url);
+  //     }
+  //   }
+  // });
+  const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
       });
-    }
-  }
+    };
 
-  document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const msg = urlParams.get('msg'); 
-    const type = urlParams.get('type'); 
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
 
-    if (msg && type) {
-      showNotyfNotification(decodeURIComponent(msg), type);
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
 
-      if (window.history.replaceState) {
-        const url = window.location.origin + window.location.pathname + window.location.hash;
-        window.history.replaceState(null, null, url);
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+  const toggleUserStatus = async (userId, action) => {
+  const url = action === "block" ? "/block-user" : "/unblock-user";
+
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: userId }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toastSuccess(data.message)
+
+      const button = document.querySelector(`[onclick="toggleUserStatus('${userId}', '${action}')"]`);
+      if (action === "block") {
+        button.textContent = "Unblock";
+        button.className = "unblock-btn";
+        button.setAttribute("onclick", `toggleUserStatus('${userId}', 'unblock')`);
+      } else {
+        button.textContent = "Block";
+        button.className = "block-btn";
+        button.setAttribute("onclick", `toggleUserStatus('${userId}', 'block')`);
       }
+    } else {
+      toastError(data.message);
     }
-  });
+  } catch (error) {
+    console.error("Error toggling user status:", error);
+    toastWarning("An error occurred. Please try again.")
+  }
+};
 </script>
 
 </html>

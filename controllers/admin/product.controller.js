@@ -276,25 +276,25 @@ export const editProduct = async (req, res) => {
 
 export const toggleProduct = async (req, res) => {
     try {
-        const productId = req.params.id;
-        const product = await Product.findById(productId);
-
-    if (!product) {
-      return res.status(404).send('Product not found');
-    }
-
-    if (product.isDeleted) {
-      product.isDeleted = false;
-      product.deleted_at = null; 
-    } else {
-      product.isDeleted = true;
-      product.deleted_at = Date.now(); 
-    }
-
-    await product.save(); 
-    return res.redirect('/admin/products');
+      const productId = req.params.id;
+      const product = await Product.findById(productId);
+  
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found' });
+      }
+  
+      product.isDeleted = !product.isDeleted;
+      product.deleted_at = product.isDeleted ? Date.now() : null;
+  
+      await product.save();
+  
+      res.status(200).json({
+        success: true,
+        isDeleted: product.isDeleted,
+        message: product.isDeleted ? 'Product deleted' : 'Product restored',
+      });
     } catch (error) {
-        console.error('Error toggling delete/restore product:', error);
-        return res.status(500).send('Server error');
+      console.error('Error toggling product status:', error);
+      res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+  };
