@@ -1,279 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-                
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search-products" method="GET">
-                    <input type="text" name="search" placeholder="Search Products">
-                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
+<head>
+  <%- include('partials/head') %>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+</head>
+<body>
+<div class="main-content">
+  <div class="header">
+    <div class="search-bar">
+      <form action="/admin/products" method="GET">
+        <input type="text" name="search" placeholder="Search Products" value="<%= search %>">
+        <button class="admin-search-button"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+    <div class="admin-profile mx-3">
+      <a href="/admin/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
+    </div>
+  </div>
+  <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
+
+  <div>
+    <div class="filter-container">
+      <div class="filter-div1">
+        <div class="filter-box">
+          <i class="fa-solid fa-filter"></i>
         </div>
-        <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
-        
-        <div>
-            <div class="filter-container">
-                <div class="filter-div1">
-                    <div class="filter-box">
-                        <i class="fa-solid fa-filter"></i>
-                    </div>
-                    <div class="filter-box">
-                        <label for="filter">Filter By
-                            <select name="filter" id="filter">
-                                <option value="date">14 feb 2014</option>
-                            </select>
-                        </label>  
-                    </div>
-                    
-                    
-                       <form action="/admin/products" method="GET">
-                        <div class="filter-box">
-                            <label for="status">Status
-                                <select name="status" id="status" onchange="this.form.submit()">
-                                    <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
-                                    <option value="deleted" <%= status === 'deleted' ? 'selected' : '' %>>Deleted</option>
-                                    <option value="available" <%= status === 'available' ? 'selected' : '' %>>Available</option>
-                                </select>
-                            </label>
-                        </div>
-                    </form>
-                </div>
-                <!-- <% if (msg) { %>
-                    <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-                        <%= msg.text %>
-                    </div>
-                <% } %> -->
+        <form action="/admin/products" method="GET">
+          <div class="filter-box">
+            <label for="status">Status
+              <select name="status" id="status" onchange="this.form.submit()">
+                <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+                <option value="deleted" <%= status === 'deleted' ? 'selected' : '' %>>Deleted</option>
+                <option value="available" <%= status === 'available' ? 'selected' : '' %>>Available</option>
+              </select>
+            </label>
+          </div>
+        </form>
+      </div>
+
+      <a href="/admin/add-products">
+        <button class="add-product-btn">
+          Add New Products
+        </button>
+      </a>
+    </div>
+  </div>
+
+  <table class="all-table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Image</th>
+        <th>Product Name</th>
+        <th>Brand</th>
+        <th>Category</th>
+        <th>Sub category</th>
+        <!-- <th>Color</th> -->
+        <th>Shade</th>
+        <th>Price</th>
+        <th>Sale Price</th>
+        <th>Stock</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% variants.forEach((variant, index) => { %>
+        <tr>
+          <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+          <td>
+            <% if (variant.images && variant.images.length > 0) { %>
+              <img src="<%= variant.images[0] %>" alt="<%= variant.productTitle %> Image" width="50" height="50">
+            <% } else { %>
+              <img src="/path/to/placeholder/image.jpg" alt="Placeholder Image" width="50" height="50">
+            <% } %>
+          </td>
+          <td class="truncate"><%= variant.productTitle.substring(0, 20) %>...</td>
+          <td><%= variant.brandName %></td>
+          <td><%= variant.categoryName %></td>
+          <td><%= variant.subcategoryName %></td>
+          <!-- <td><%= variant.color %></td> -->
+          <td><%= variant.shade.substring(0, 8) %>...</td>
+          <td><%= variant.regularPrice %></td>
+          <td><%= variant.salePrice %></td>
+          <td><%= variant.stockQuantity %></td>
+          <td>
+            <a href="/admin/edit-product/<%= variant.productId %>"><button class="edit-btn">Edit</button></a> |
+            <% if (!variant.isDeleted) { %>
+              <button class="delete-btn" data-id="<%= variant.productId %>" data-deleted="false">Delete</button>
+            <% } else { %>
+              <button class="restore-btn" data-id="<%= variant.productId %>" data-deleted="true">Restore</button>
+            <% } %>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <div class="pagination">
+    <% if (currentPage > 1) { %>
+      <a href="/admin/products?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
+    <% } %>
     
-               <a href="/admin/add-products">
-                <button class="add-product-btn">
-                    Add New Products
-                </button>
-               </a>
-            </div>
-            
-        </div>
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Sub category</th>
-                    <th>Price</th>
-                    <th>Sales Price</th>
-                    <th>Offer</th>
-                    <th>Pieces</th> 
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% products.forEach((product, index) => { %>
-                    <tr>
-                        <td><%= (currentPage - 1) * 5 + index + 1 %></td>
-                        <td>
-                            <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" alt="<%= product.title %> Image" width="50" height="50">
-                        </td>
-                        <td class="truncate"><%= product.title %></td>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+    <% } %>
+    
+    <% if (currentPage < totalPages) { %>
+      <a href="/admin/products?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
+    <% } %>
+  </div>
+</div> <!-- <div class="main-content"></div> -->
 
-                        <td>
-                            <%= product.brand && product.brand.brandName ? product.brand.brandName : "No brand" %>
-                        </td> 
-                        <td>
-                            <%= product.category && product.category.name ? product.category.name : "No category" %>
-                        </td>
-                        <td>
-                            <%= product.subcategory && product.subcategory.name ? product.subcategory.name : "No subcategory" %>
-                        </td>                       
-                        
-                        <td><%= product.price %></td>
-                        <td><%= product.sales_price %></td>
-
-                        <td>
-                            <% if (product.offer) { %>
-                                <% if (product.offer.offerType === 'percentage') { %>
-                                    <%= product.offer.offerValue %>%
-                                <% } else { %>
-                                    <%= product.offer.offerValue %>
-                                <% } %>
-                            <% } else { %>
-                                No offer
-                            <% } %>
-                        </td>
-                        
-                        <td><%= product.available_quantity %></td>
-                        <td>
-                            <a href="/admin/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
-                            <% if (!product.isDeleted) { %>
-                                <button 
-                                  class="delete-btn" 
-                                  data-id="<%= product._id %>" 
-                                  data-deleted="false"
-                                >
-                                  Delete
-                                </button>
-                              <% } else { %>
-                                <button 
-                                  class="restore-btn" 
-                                  data-id="<%= product._id %>" 
-                                  data-deleted="true"
-                                >
-                                  Restore
-                                </button>
-                              <% } %>
-                        </td>
-                    </tr>
-                <% }) %>                
-            </tbody>
-        </table>
-        
-        <div class="pagination">
-            <% if (currentPage > 1) { %>
-                <a href="/admin/products?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
-            <% } %>
-            
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" 
-                   class="<%= currentPage === i ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-            
-            <% if (currentPage < totalPages) { %>
-                <a href="/admin/products?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
-            <% } %>
-        </div>        
-        
-    </div> <!-- <div class="main-content"></div> -->
-
-</body>
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <script>
-    // const notyf = new Notyf({
-    //         duration: 2000,
-    //         ripple: true,
-    //         position: { x: 'right', y: 'top' },
-    //         types: [
-    //             { type: 'success', background: 'green' },
-    //             { type: 'error', background: 'red' },
-    //         ],
-    //         className: 'custom-notify',
-    //     });
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    //     function showNotyfNotification(message, type) {
-    //         if (type === 'success') {
-    //             notyf.success(message);
-    //         } else if (type === 'error') {
-    //             notyf.error(message);
-    //         } else {
-    //             notyf.open({ type: type, message: message });
-    //         }
-    //     }
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-        const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  document.addEventListener('DOMContentLoaded', function () {
+    const buttons = document.querySelectorAll('.delete-btn, .restore-btn');
 
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     const urlParams = new URLSearchParams(window.location.search);
-        //     const msg = urlParams.get('msg');
-        //     const type = urlParams.get('type');
+    buttons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const productId = button.getAttribute('data-id');
+        const isDeleted = button.getAttribute('data-deleted') === 'true';
 
-        //     if (msg && type) {
-        //         showNotyfNotification(msg, type);
+        try {
+          const response = await fetch(`/admin/toggle-product/${productId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+          });
 
-        //         if (window.history.replaceState) {
-        //             const url = window.location.origin + window.location.pathname;
-        //             window.history.replaceState(null, null, url);
-        //         }
-        //     }
-        // });
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              // Find all buttons with the same productId and update them
+              const allButtons = document.querySelectorAll(`[data-id="${productId}"]`);
+              allButtons.forEach(btn => {
+                btn.textContent = result.isDeleted ? 'Restore' : 'Delete';
+                btn.className = result.isDeleted ? 'restore-btn' : 'delete-btn';
+                btn.setAttribute('data-deleted', result.isDeleted.toString());
+              });
 
-        document.addEventListener('DOMContentLoaded', function () {
-  const buttons = document.querySelectorAll('.delete-btn, .restore-btn');
-
-  buttons.forEach(button => {
-    button.addEventListener('click', async () => {
-      const productId = button.getAttribute('data-id');
-      const isDeleted = button.getAttribute('data-deleted') === 'true';
-
-      try {
-        const response = await fetch(`/admin/toggle-product/${productId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            button.textContent = result.isDeleted ? 'Restore' : 'Delete';
-            button.className = result.isDeleted ? 'restore-btn' : 'delete-btn';
-            button.setAttribute('data-deleted', result.isDeleted.toString());
-
-            toastSuccess(result.message);
+              toastSuccess(result.message);
+            } else {
+              toastError('Failed to update product status');
+            }
           } else {
-            toastError('Failed to update product status');
+            toastError('Error toggling product status');
           }
-        } else {
-          toastError('Error toggling product status');
+        } catch (error) {
+          console.error('Error:', error);
+          toastWarning('An error occurred');
         }
-      } catch (error) {
-        console.error('Error:', error);
-        toastWarning('An error occurred');
-      }
+      });
     });
   });
-});
 </script>
 </html>

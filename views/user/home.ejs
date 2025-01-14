@@ -41,64 +41,70 @@
 </div>
 <div class="user-contents">
 
-
-  <div class="product-grid">
-    <% products.forEach(product => { %>
-    <div class="product-card">
-      <a href="/product/<%= product._id %>">
-        <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" />
-      </a>
-      <div class="product-card-like">
-        <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
-          <% if (user) { %>
-          <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString())) { %>
-          <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-            <i class="fa-solid fa-heart in-wishlist"></i>
-          </button>
-          <% } else { %>
-          <button type="submit" title="Add to Wishlist" class="wishlist-button">
-            <i class="fa-solid fa-heart not-in-wishlist"></i>
-          </button>
-          <% } %>
-          <% } else { %>
-          <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-            <i class="fa-solid fa-heart"></i>
-          </button>
-          <% } %>
-        </form>
-
-      </div>
-      <a href="/product/<%= product._id %>">
-        <p class="product-title"><%= product.title %></p>
-      </a>
-      <div class="product-prices-box">
-        <p class="sale-price price-inr">&#8377;<%= product.price %></p>
-        <p class="original-price price-inr mx-2">&#8377;<%= product.sales_price %></p>
-        <!-- <p class="product-rating">★★★★☆</p> -->
-        <% if (product.price > product.sales_price) { %>
-        <span class="discount-percentage">
-          <%= Math.round(((product.price - product.sales_price) / product.price) * 100) %>% Off
-        </span>
-        <% } %>
-
-      </div>
-      <!-- <% if (product.available_quantity == 0) { %>
-                            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
-                                <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Out Of Stock</button>
-                            </form>
+  <% categorizedProducts.forEach(categoryGroup => { %>
+    <div class="category-group">
+      <h2><%= categoryGroup.categoryName %></h2>
+      <div id="carousel-<%= categoryGroup.categoryName %>" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          <% for (let i = 0; i < categoryGroup.variants.length; i += 5) { %>
+            <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+              <div class="d-flex">
+                <% for (let j = i; j < i + 5 && j < categoryGroup.variants.length; j++) { %>
+                  <div class="product-card mx-2">
+                    <a href="/product/<%= categoryGroup.variants[j].productId %>">
+                      <img src="<%= categoryGroup.variants[j].images[0] %>" class="d-block w-100" alt="<%= categoryGroup.variants[j].productTitle %> Image" />
+                    </a>
+                    <div class="product-card-like">
+                      <form action="/add-to-wishlist/<%= categoryGroup.variants[j].productId %>" method="POST" class="wishlist-form" id="wishlist-form">
+                        <% if (user) { %>
+                          <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === categoryGroup.variants[j].productId.toString())) { %>
+                            <button type="submit" title="Remove from Wishlist" class="wishlist-button">
+                              <i class="fa-solid fa-heart in-wishlist"></i>
+                            </button>
+                          <% } else { %>
+                            <button type="submit" title="Add to Wishlist" class="wishlist-button">
+                              <i class="fa-solid fa-heart not-in-wishlist"></i>
+                            </button>
+                          <% } %>
                         <% } else { %>
-                            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
-                                <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
-                            </form>
-                        <% } %> -->
-      <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
-        <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
-      </form>
-
-
+                          <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
+                            <i class="fa-solid fa-heart"></i>
+                          </button>
+                        <% } %>
+                      </form>
+                    </div>
+                    <a href="/product/<%= categoryGroup.variants[j].productId %>">
+                      <p class="product-title"><%= categoryGroup.variants[j].productTitle %></p>
+                    </a>
+                    <div class="product-prices-box">
+                      <p class="sale-price price-inr">&#8377;<%= categoryGroup.variants[j].regularPrice %></p>
+                      <p class="original-price price-inr mx-2">&#8377;<%= categoryGroup.variants[j].salePrice %></p>
+                      <% if (categoryGroup.variants[j].regularPrice > categoryGroup.variants[j].salePrice) { %>
+                        <span class="discount-percentage">
+                          <%= Math.round(((categoryGroup.variants[j].regularPrice - categoryGroup.variants[j].salePrice) / categoryGroup.variants[j].regularPrice) * 100) %>% Off
+                        </span>
+                      <% } %>
+                    </div>
+                    <form action="/add-to-cart/<%= categoryGroup.variants[j].productId %>" method="POST" class="cart-form" id="cart-form">
+                      <button type="submit" class="add-to-cart-btn" data-id="<%= categoryGroup.variants[j].productId %>">Add to Bag</button>
+                    </form>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          <% } %>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<%= categoryGroup.categoryName %>" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carousel-<%= categoryGroup.categoryName %>" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+      </div>
     </div>
-    <% }) %>
-  </div>
+  <% }) %>
 
 </div>
 

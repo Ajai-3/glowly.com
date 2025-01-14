@@ -1,160 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search" method="GET">
-                    <input type="text" name="search" placeholder="Search" readonly>
-                    <button class="admin-search-button"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/admin/products">Products</a> > <a href="">Add Product</a></div>
-
-        <div class="add-products-container">
-            <div class="add-products-container1">
-                <form id="productForm" enctype="multipart/form-data">
-                    <h4>Add New Product</h4>
-
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="productName">Product Name</label>
-                            <input type="text" name="productName" id="productName" placeholder="Type product name">
-                        </div>
-                        <div>
-                            <label for="brand">Select Brand</label> <br>
-                            <select name="brand" id="brand">
-                                <option value="">Select Brand</option>
-                                <% brands.forEach(brand => { %>
-                                    <option value="<%= brand._id %>"><%= brand.brandName %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                    </div>             
-                    <label for="description">Description</label><br>
-                    <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
-    
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="category">Category</label> <br>
-                            <select name="category" id="category" onchange="updateSubCategories()">
-                                <option value="">Select Category</option>
-                                <% categories.forEach(category => { %>
-                                    <option value="<%= category._id %>"><%= category.name %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="subCategory">Sub Category</label> <br>
-                            <select name="subCategory" id="subCategory">
-                                <option value="">Select Sub Category</option>
-                            </select>
-                        </div>
-                    </div>
-    
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="availableQuantity">Stock Quantity</label>
-                            <input type="number" name="availableQuantity" id="availableQuantity" placeholder="303" min="1" value="1">
-                        </div>
-                        <div>
-                            <label for="regularPrice">Regular Price</label>
-                            <input type="number" name="regularPrice" id="regularPrice" placeholder="&#8377;21,400" min="1" value="1">
-                        </div>
-                        <div>
-                            <label for="salePrice">Sale Price</label>
-                            <input type="number" name="salePrice" id="salePrice" placeholder="&#8377;18,949" min="1" value="1">
-                        </div>    
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="/admin/add-products"><button type="submit" class="add-product-btn2 my-1">Add Product</button></a> 
-                    </div>
-                </div>
-                <div class="add-products-container2">
-                    <h4>Add Product Images</h4>
-                
-                    <!-- First image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage1" class="custom-image-input">
-                            <img id="productImagePreview1" src="#" alt="Upload Product Image 1" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage1"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 1)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Second image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage2" class="custom-image-input">
-                            <img id="productImagePreview2" src="#" alt="Upload Product Image 2" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage2"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 2)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Third image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage3" class="custom-image-input">
-                            <img id="productImagePreview3" src="#" alt="Upload Product Image 3" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage3"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 3)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Fourth image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage4" class="custom-image-input">
-                            <img id="productImagePreview4" src="#" alt="Upload Product Image 4" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage4"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 4)"
-                            style="display: none;"/>
-                    </div>
-                </div> 
-            </form> 
-        </div> 
+<head>
+  <%- include('partials/head') %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+</head>
+<body>
+<div class="main-content">
+  <div class="header">
+    <div class="search-bar">
+      <form action="/admin/search" method="GET">
+        <input type="text" name="search" placeholder="Search" readonly>
+        <button class="admin-search-button"><i class="fas fa-search"></i></button>
+      </form>
     </div>
-
-    <!-- Modal for cropping -->
-    <div id="cropperModal">
-        <div class="modal-content">
-            <img id="imageToCrop" src="" alt="Image to crop">
-            <div>
-                <button id="cropButton" onclick="cropImage()">Crop</button>
-                <button onclick="closeCropperModal()">Close</button>
-            </div>
-            
-        </div>
+    <div class="admin-profile mx-3">
+      <a href="/admin/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
     </div>
+  </div>
+  <div class="breadcrumb"><a href="/admin/products">Products</a> > <a href="">Add Product</a></div>
+  <form id="productForm" enctype="multipart/form-data">
+    <div class="d-flex add-products-container">
+      <div class="add-products-container1 pe-3">
+        <h4>Add New Product</h4>
+        <div class="add-products-container-center">
+          <div>
+            <label for="productName">Product Name</label>
+            <input type="text" name="productName" id="productName" placeholder="Type product name">
+          </div>
+          <div>
+            <label for="brand">Select Brand</label> <br>
+            <select name="brand" id="brand">
+              <option value="">Select Brand</option>
+              <% brands.forEach(brand => { %>
+              <option value="<%= brand._id %>"><%= brand.brandName %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+        <label for="description">Description</label><br>
+        <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
+        <div class="add-products-container-center">
+          <div>
+            <label for="category">Category</label> <br>
+            <select name="category" id="category" onchange="updateSubCategories()">
+              <option value="">Select Category</option>
+              <% categories.forEach(category => { %>
+              <option value="<%= category._id %>"><%= category.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div>
+            <label for="subCategory">Sub Category</label> <br>
+            <select name="subCategory" id="subCategory">
+              <option value="">Select Sub Category</option>
+            </select>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="add-product-btn2 my-1">Add Product</button>
+        </div>
+      </div>
+      <div class="add-products-container1 ps-3">
+        <h4>Product Variants</h4>
+          <div class="d-flex align-items-center mt-3">
+            <input type="checkbox" id="shareImagesCheckbox" onclick="toggleSharedImages()" style="width: auto; height: auto;">
+            <label for="shareImagesCheckbox" class="form-label mb-0 ms-3">Share images among all variants</label>
+          </div>
+        
+        <div id="sharedImageSection" class="add-products-container-center mt-3" style="display: none;">
+          <label for="sharedImages">Shared Images</label>
+          <input type="file" id="sharedImages" name="sharedImages" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'shared-image-previews')">
+          <div id="shared-image-previews" class="image-preview"></div>
+        </div>
+        <div id="variants-container">
+          <div class="variant">
+            <div class="add-products-container-center">
+              <div>
+                <label for="variantColor">Color</label>
+                <input type="color" name="variantColor[]" class="variantColor">
+              </div>
+              <div>
+                <label for="variantShade">Shade</label>
+                <input type="text" name="variantShade[]" placeholder="Shade">
+              </div>
+              <div class="mt-4">
+                <button type="button" class="remove-variant-btn" onclick="removeVariant(this)">Remove Variant</button>
+              </div>
+              
+            </div>
+            <div class="add-products-container-center">
+              <div>
+                <label for="variantRegularPrice">Regular Price</label>
+                <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+              </div>
+              <div>
+                <label for="variantSalePrice">Sale Price</label>
+                <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+              </div>
+              <div>
+                <label for="variantStockQuantity">Stock Quantity</label>
+                <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+              </div>
+            </div>
+            <div class="variant-image-section mb-2">
+              <label for="variantImages">Variant Images</label>
+              <input type="file" name="variantImages_0" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'variant-image-previews-0')">
+              <div id="variant-image-previews-0" class="image-preview mt-2"></div>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="add-variant-btn" onclick="addVariant()">Add Another Variant</button>
+      </div>
+    </div>
+  </form>
+</div>
 
-<%- include('partials/footer') %> 
+<!-- Modal for cropping -->
+<div id="cropperModal" style="display:none;">
+  <div class="modal-content">
+    <img id="imageToCrop" src="" alt="Image to crop">
+    <div>
+      <button id="cropButton" onclick="cropImage()">Crop</button>
+      <button onclick="closeCropperModal()">Close</button>
+    </div>
+  </div>
+</div>
+<%- include('partials/footer') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <script>
-const toastSuccess = (message) => {
+    const toastSuccess = (message) => {
       iziToast.success({
         message: message,
         backgroundColor: '#0e932d',
@@ -163,7 +141,6 @@ const toastSuccess = (message) => {
         iconColor: '#FFFFFF',
         timeout: 1500,
         position: 'topRight',
-
       });
     };
 
@@ -178,6 +155,7 @@ const toastSuccess = (message) => {
         position: 'topRight',
       });
     };
+
     const toastInfo = (message) => {
       iziToast.info({
         message: message,
@@ -202,143 +180,265 @@ const toastSuccess = (message) => {
       });
     };
 
-const categories = [
-        <% categories.forEach(category => { %>
-            {
-                _id: "<%= category._id %>",
-                name: "<%= category.name %>",
-                subcategories: [
-                    <% category.subcategories.forEach(subcategory => { %>
-                        { _id: "<%= subcategory._id %>", name: "<%= subcategory.name %>" },
-                    <% }) %>
-                ]
-            },
-        <% }) %>
+    const categories = [
+      <% categories.forEach(category => { %> {
+        _id: "<%= category._id %>",
+        name: "<%= category.name %>",
+        subcategories: [
+          <% category.subcategories.forEach(subcategory => { %> {
+            _id: "<%= subcategory._id %>",
+            name: "<%= subcategory.name %>"
+          },
+          <% }) %>
+        ]
+      },
+      <% }) %>
     ];
 
     function updateSubCategories() {
-        const categorySelect = document.getElementById('category');
-        const subCategorySelect = document.getElementById('subCategory');
-        const selectedCategoryId = categorySelect.value;
+      const categorySelect = document.getElementById('category');
+      const subCategorySelect = document.getElementById('subCategory');
+      const selectedCategoryId = categorySelect.value;
 
-        console.log('Selected Category ID:', selectedCategoryId);
-        subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+      subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
 
-        const selectedCategory = categories.find(category => category._id === selectedCategoryId);
-        console.log('Selected Category:', selectedCategory);
+      const selectedCategory = categories.find(category => category._id === selectedCategoryId);
 
-        if (selectedCategory && selectedCategory.subcategories) {
-            selectedCategory.subcategories.forEach(subcategory => {
-                const option = document.createElement('option');
-                option.value = subcategory._id;
-                option.textContent = subcategory.name;
-                subCategorySelect.appendChild(option);
+      if (selectedCategory && selectedCategory.subcategories) {
+        selectedCategory.subcategories.forEach(subcategory => {
+          const option = document.createElement('option');
+          option.value = subcategory._id;
+          option.textContent = subcategory.name;
+          subCategorySelect.appendChild(option);
+        });
+      }
+    }
+
+    function toggleSharedImages() {
+      const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
+      const sharedImageSection = document.getElementById('sharedImageSection');
+      const variantImageSections = document.querySelectorAll('.variant-image-section');
+
+      if (shareImagesCheckbox.checked) {
+        sharedImageSection.style.display = 'block';
+        variantImageSections.forEach(section => section.style.display = 'none');
+      } else {
+        sharedImageSection.style.display = 'none';
+        variantImageSections.forEach(section => section.style.display = 'block');
+      }
+    }
+
+    function addVariant() {
+        const variantsContainer = document.getElementById('variants-container');
+        const variantCount = variantsContainer.children.length;
+        const newVariant = document.createElement('div');
+        newVariant.className = 'variant';
+        
+        newVariant.innerHTML = `
+            <div class="add-products-container-center">
+              <div>
+                <label for="variantColor">Color</label>
+                <input type="color" name="variantColor[]" class="variantColor">
+              </div>
+              <div>
+                <label for="variantShade">Shade</label>
+                <input type="text" name="variantShade[]" placeholder="Shade">
+              </div>
+              
+              <div class="mt-4">
+                <button type="button" class="remove-variant-btn" onclick="removeVariant(this)">Remove Variant</button>
+              </div>
+            </div>
+            <div class="add-products-container-center">
+              <div>
+                <label for="variantRegularPrice">Regular Price</label>
+                <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+              </div>
+              <div>
+                <label for="variantSalePrice">Sale Price</label>
+                <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+              </div>
+              <div>
+                <label for="variantStockQuantity">Stock Quantity</label>
+                <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+              </div>
+            </div>
+            <div class="variant-image-section" style="display: ${document.getElementById('shareImagesCheckbox').checked ? 'none' : 'block'};">
+              <label for="variantImages">Variant Images</label>
+              <input type="file" name="variantImages_${variantCount}" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'variant-image-previews-${variantCount}')">
+              <div id="variant-image-previews-${variantCount}" class="image-preview mt-2"></div>
+            </div>
+        `;
+        
+        variantsContainer.appendChild(newVariant);
+    }
+
+    function removeVariant(button) {
+        const variant = button.closest('.variant');
+        variant.remove();
+    }
+
+    let cropper;
+    let currentImageInput;
+    let previewContainerId;
+    const croppedImages = {};
+
+    function prepareImagesForCropping(event, previewId) {
+        const input = event.target;
+        previewContainerId = previewId;
+        if (input.files && input.files.length > 0) {
+            const file = input.files[0];
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                openCropperModal(e.target.result, input);
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function openCropperModal(imageSrc, input) {
+        currentImageInput = input;
+        const modal = document.getElementById('cropperModal');
+        const imageToCrop = document.getElementById('imageToCrop');
+        imageToCrop.src = imageSrc;
+        modal.style.display = "flex";
+
+        cropper = new Cropper(imageToCrop, {
+            aspectRatio: 1,
+            viewMode: 1,
+        });
+    }
+
+    function closeCropperModal() {
+        const modal = document.getElementById('cropperModal');
+        modal.style.display = "none";
+        if (cropper) {
+            cropper.destroy();
+        }
+    }
+
+    function cropImage() {
+        const canvas = cropper.getCroppedCanvas();
+        canvas.toBlob((blob) => {
+            const croppedImage = new File([blob], `cropped_${Date.now()}.png`, { type: "image/png" });
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedImage);
+            currentImageInput.files = dataTransfer.files;
+
+            if (!croppedImages[previewContainerId]) {
+                croppedImages[previewContainerId] = [];
+            }
+            croppedImages[previewContainerId].push(croppedImage);
+
+            displayCroppedImage(croppedImage, previewContainerId);
+            closeCropperModal();
+        });
+    }
+
+    function displayCroppedImage(file, previewContainerId) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '100px';  
+            img.style.maxHeight = '100px';  
+            img.style.marginRight = '10px';  
+            img.style.marginBottom = '10px';  
+            document.getElementById(previewContainerId).appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function previewImages(event, previewContainerId) {
+        const input = event.target;
+        const previewContainer = document.getElementById(previewContainerId);
+        previewContainer.innerHTML = '';
+
+        if (input.files) {
+            Array.from(input.files).forEach(file => {
+                displayCroppedImage(file, previewContainerId);
             });
         }
     }
 
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
 
+        const formData = new FormData();
+        formData.append('productName', document.getElementById('productName').value);
+        formData.append('brand', document.getElementById('brand').value);
+        formData.append('description', document.getElementById('description').value);
+        formData.append('category', document.getElementById('category').value);
+        formData.append('subCategory', document.getElementById('subCategory').value);
 
-let croppedFiles = {};
-let currentPreviewId = null;
-let cropper = null;
+        // Handle shared images
+        const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
+        formData.append('shareImages', shareImagesCheckbox.checked);
+        
+        if (shareImagesCheckbox.checked) {
+            const sharedImagesInput = document.getElementById('sharedImages');
+            Array.from(sharedImagesInput.files).forEach(file => {
+                formData.append('sharedImages', file);
+            });
 
-function openCropper(event, previewId) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function () {
-        const imageUrl = reader.result;
-        const imageElement = document.getElementById('imageToCrop');
-        imageElement.src = imageUrl;
-
-        // Show cropper modal
-        const modal = document.getElementById('cropperModal');
-        modal.style.display = 'flex';
-
-        currentPreviewId = previewId;
-
-        if (cropper) {
-            cropper.destroy();
+            // Use shared images for each variant
+            document.querySelectorAll('.variant').forEach((variantElement, index) => {
+                if (croppedImages['shared-image-previews']) {
+                    croppedImages['shared-image-previews'].forEach((file, idx) => {
+                        formData.append(`variantImages_${index}`, file);
+                    });
+                }
+            });
+        } else {
+            // Handle variant images
+            document.querySelectorAll('.variant').forEach((variantElement, index) => {
+                const variantImagesInput = variantElement.querySelector(`input[name="variantImages_${index}"]`);
+                if (croppedImages[`variant-image-previews-${index}`]) {
+                    croppedImages[`variant-image-previews-${index}`].forEach((file, idx) => {
+                        formData.append(`variantImages_${index}`, file);
+                    });
+                }
+            });
         }
-        cropper = new Cropper(imageElement, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 0.5,
-            scalable: false,
-            zoomable: false,
-            responsive: true,
+
+        // Handle variants
+        const variants = [];
+        document.querySelectorAll('.variant').forEach((variantElement, index) => {
+            const variant = {
+                color: variantElement.querySelector('.variantColor').value,
+                shade: variantElement.querySelector('input[name="variantShade[]"]').value,
+                stockQuantity: variantElement.querySelector('input[name="variantStockQuantity[]"]').value,
+                regularPrice: variantElement.querySelector('input[name="variantRegularPrice[]"]').value,
+                salePrice: variantElement.querySelector('input[name="variantSalePrice[]"]').value
+            };
+            variants.push(variant);
         });
-    };
 
-    reader.readAsDataURL(file);
-}
+        formData.append('variants', JSON.stringify(variants));
 
-function cropImage() {
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob(function (blob) {
-        const croppedFile = new File([blob], `cropped_image_${currentPreviewId}.jpg`, { type: 'image/jpeg' });
+        console.log(formData)
 
-        croppedFiles[currentPreviewId] = croppedFile;
+        try {
+            const response = await fetch('/admin/add-products', {
+                method: 'POST',
+                body: formData
+            });
 
-        const previewElement = document.getElementById(`productImagePreview${currentPreviewId}`);
-        const reader = new FileReader();
-        reader.onload = function () {
-            previewElement.src = reader.result;
-        };
-        reader.readAsDataURL(croppedFile);
-
-        closeCropperModal();
-    }, 'image/jpeg');
-}
-
-function closeCropperModal() {
-    const modal = document.getElementById('cropperModal');
-    modal.style.display = 'none';
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
-}
-
-// Prevent form submission to manually handle image upload
-document.getElementById('productForm').addEventListener('submit', (e) => {
-    e.preventDefault(); 
-
-    const formData = new FormData();
-
-    const formElements = e.target.elements;
-    for (let element of formElements) {
-        if (element.name && element.type !== 'file') {
-            formData.append(element.name, element.value);
-        }
-    }
-
-    // Append cropped images to FormData
-    for (let [key, file] of Object.entries(croppedFiles)) {
-        formData.append('productImages', file);
-    }
-
-    fetch('/admin/add-products', {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
+            const data = await response.json();
+            
             if (data.success) {
                 toastSuccess(data.message);
-                setTimeout( () => {
+                setTimeout(() => {
                     window.location.href = '/admin/products';
-                }, 2000)
+                }, 2000);
             } else {
                 toastError(data.message);
             }
-        })
-        .catch((error) => {
+        } catch (error) {
             console.error('Error:', error);
-            toastWarning("Error in addinging new");
-        });
-});
-
-
+            toastError('An error occurred while adding the product');
+        }
+    });
 </script>
+</body>
+</html>

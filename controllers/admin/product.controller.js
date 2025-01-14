@@ -11,6 +11,81 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const uploadDir = path.resolve(process.cwd(), 'public/uploads'); 
 
 // Rendre Products Page
+// export const renderProductsPage = async (req, res) => {
+//     try {
+//         const perPage = 5;
+//         const page = parseInt(req.query.page) || 1;
+//         const search = req.query.search || '';
+//         const status = req.query.status || 'all';
+
+//         // Base Match Conditions
+//         const matchConditions = {};
+
+//         if (search) {
+//             matchConditions.$or = [
+//                 { 'category.name': { $regex: search, $options: 'i' } },
+//                 { 'subcategory.name': { $regex: search, $options: 'i' } },
+//                 { 'brand.brandName': { $regex: search, $options: 'i' } },
+//                 { title: { $regex: search, $options: 'i' } }
+//             ];
+//         }
+
+//         if (status === 'deleted') {
+//             matchConditions.isDeleted = true;
+//         } else if (status === 'available') {
+//             matchConditions.isDeleted = false;
+//         }
+
+//         // Aggregation Pipeline
+//         const pipeline = [
+//             { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
+//             { $unwind: '$category' },
+//             { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
+//             { $unwind: '$subcategory' },
+//             { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
+//             { $lookup: { from: 'offers', localField: 'offer_id', foreignField: '_id', as: 'offer' } },
+//             { $unwind: { path: '$offer', preserveNullAndEmptyArrays: true } },
+//             { $unwind: '$brand' },
+//             { $match: matchConditions },
+//             { $sort: { created_at: -1 } },
+//             { $skip: (page - 1) * perPage },
+//             { $limit: perPage }
+//         ];
+
+//         const products = await Product.aggregate(pipeline);
+
+//         // Count Total Products
+//         const totalCount = await Product.aggregate([
+//             { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
+//             { $unwind: '$category' },
+//             { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
+//             { $unwind: '$subcategory' },
+//             { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
+//             { $unwind: '$brand' },
+//             { $match: matchConditions },
+//             { $count: 'totalCount' }
+//         ]);
+
+//         const totalProducts = totalCount.length > 0 ? totalCount[0].totalCount : 0;
+//         const totalPages = Math.ceil(totalProducts / perPage);
+
+//         // Render The Products Page
+//         return res.render('admin/products', {
+//             products,
+//             currentPage: page,
+//             totalPages,
+//             perPage,
+//             search,
+//             status,
+//             queryParams: req.query,
+//             msg: req.query.msg ? { text: req.query.msg, type: req.query.type } : null
+//         });
+//     } catch (error) {
+//         console.error('Error fetching products:', error);
+//         return res.status(500).send('Internal Server Error');
+//     }
+// };
+
 export const renderProductsPage = async (req, res) => {
     try {
         const perPage = 5;
@@ -23,10 +98,8 @@ export const renderProductsPage = async (req, res) => {
 
         if (search) {
             matchConditions.$or = [
-                { 'category.name': { $regex: search, $options: 'i' } },
-                { 'subcategory.name': { $regex: search, $options: 'i' } },
-                { 'brand.brandName': { $regex: search, $options: 'i' } },
-                { title: { $regex: search, $options: 'i' } }
+                { title: { $regex: search, $options: 'i' } },
+                { description: { $regex: search, $options: 'i' } }
             ];
         }
 
@@ -38,40 +111,43 @@ export const renderProductsPage = async (req, res) => {
 
         // Aggregation Pipeline
         const pipeline = [
-            { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
-            { $unwind: '$category' },
-            { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
-            { $unwind: '$subcategory' },
-            { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
-            { $lookup: { from: 'offers', localField: 'offer_id', foreignField: '_id', as: 'offer' } },
-            { $unwind: { path: '$offer', preserveNullAndEmptyArrays: true } },
-            { $unwind: '$brand' },
             { $match: matchConditions },
-            { $sort: { created_at: -1 } },
-            { $skip: (page - 1) * perPage },
-            { $limit: perPage }
+            { $lookup: { from: 'categories', localField: 'categoryId', foreignField: '_id', as: 'category' } },
+            { $unwind: '$category' },
+            { $lookup: { from: 'subcategories', localField: 'subcategoryId', foreignField: '_id', as: 'subcategory' } },
+            { $unwind: '$subcategory' },
+            { $lookup: { from: 'brands', localField: 'brandId', foreignField: '_id', as: 'brand' } },
+            { $unwind: '$brand' },
+            { $sort: { createdAt: -1 } },
         ];
 
         const products = await Product.aggregate(pipeline);
 
-        // Count Total Products
-        const totalCount = await Product.aggregate([
-            { $lookup: { from: 'categories', localField: 'category_id', foreignField: '_id', as: 'category' } },
-            { $unwind: '$category' },
-            { $lookup: { from: 'subcategories', localField: 'subcategory_id', foreignField: '_id', as: 'subcategory' } },
-            { $unwind: '$subcategory' },
-            { $lookup: { from: 'brands', localField: 'brand_id', foreignField: '_id', as: 'brand' } },
-            { $unwind: '$brand' },
-            { $match: matchConditions },
-            { $count: 'totalCount' }
-        ]);
+        // Flatten the products array to get a list of all variants
+        const allVariants = products.reduce((acc, product) => {
+            product.variants.forEach(variant => {
+                acc.push({
+                    ...variant,
+                    productTitle: product.title,
+                    brandName: product.brand.brandName,
+                    categoryName: product.category.name,
+                    subcategoryName: product.subcategory.name,
+                    productId: product._id,
+                    isDeleted: product.isDeleted
+                });
+            });
+            return acc;
+        }, []);
 
-        const totalProducts = totalCount.length > 0 ? totalCount[0].totalCount : 0;
-        const totalPages = Math.ceil(totalProducts / perPage);
+        // Paginate the variants
+        const paginatedVariants = allVariants.slice((page - 1) * perPage, page * perPage);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(allVariants.length / perPage);
 
         // Render The Products Page
         return res.render('admin/products', {
-            products,
+            variants: paginatedVariants,
             currentPage: page,
             totalPages,
             perPage,
@@ -85,8 +161,6 @@ export const renderProductsPage = async (req, res) => {
         return res.status(500).send('Internal Server Error');
     }
 };
-
-
 
 
 // Rendre Add Products Page
@@ -108,8 +182,7 @@ export const renderAddProductsPage = async (req, res) => {
     }
 };
 
-
-// Add Ne Product
+// Add New Product
 export const addProduct = async (req, res) => {
     try {
         const {
@@ -118,73 +191,72 @@ export const addProduct = async (req, res) => {
             description,
             category,
             subCategory,
-            availableQuantity,
-            regularPrice,
-            salePrice,
+            variants,
+            shareImages
         } = req.body;
+        console.log(req.body)
 
-        if (
-            !productName ||
-            !brand ||
-            !description ||
-            !category ||
-            !subCategory ||
-            !availableQuantity ||
-            !regularPrice ||
-            !salePrice
-        ) {
+        // Basic validation
+        if (!productName || !brand || !description || !category || !subCategory || !variants) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
-        if (!req.files || req.files.length === 0) {
-            return res.status(400).json({ success: false, message: 'No product images uploaded' });
+        // Parse variants data
+        const parsedVariants = JSON.parse(variants);
+        
+        // Validate variants data
+        if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
+            return res.status(400).json({ success: false, message: 'At least one variant is required' });
         }
 
-        // Ensure Upload Directory Exists
-        if (!fs.existsSync(uploadDir)) {
-            await fs.promises.mkdir(uploadDir, { recursive: true });
-        }
+        // Process images
+        const sharedImages = req.files.sharedImages ? req.files.sharedImages.map(file => file.path) : [];
 
-        // Resize And Store Product Images
-        const productImages = await Promise.all(
-            req.files.map(async (file) => {
-                try {
-                    const resizedOutputPath = path.join(uploadDir, 'resized_' + file.filename);
-        
-                    await sharp(file.path)
-                        .resize(300, 300)
-                        .jpeg({ quality: 100 })
-                        .toFile(resizedOutputPath);
-        
-                    return 'resized_' + file.filename;
-                } catch (err) {
-                    console.error('Error resizing image:', err);
-                    throw new Error('Error processing image');
-                }
-            })
-        );
+        // Map variants with their images
+        const processedVariants = parsedVariants.map((variant, index) => {
+            const variantImages = shareImages === 'true' 
+                ? sharedImages 
+                : (req.files[`variantImages_${index}`] 
+                    ? req.files[`variantImages_${index}`].map(file => file.path) 
+                    : []);
 
+            if (variantImages.length === 0) {
+                throw new Error(`Images are required for variant ${index + 1}`);
+            }
 
+            return {
+                color: variant.color,
+                shade: variant.shade,
+                stockQuantity: parseInt(variant.stockQuantity),
+                regularPrice: parseFloat(variant.regularPrice),
+                salePrice: parseFloat(variant.salePrice),
+                images: variantImages
+            };
+        });
+
+        // Create and save new product
         const newProduct = new Product({
             title: productName,
-            brand_id: new mongoose.Types.ObjectId(brand),
-            category_id: new mongoose.Types.ObjectId(category),
-            subcategory_id: new mongoose.Types.ObjectId(subCategory),
+            brandId: new mongoose.Types.ObjectId(brand),
+            categoryId: new mongoose.Types.ObjectId(category),
+            subcategoryId: new mongoose.Types.ObjectId(subCategory),
             description,
-            price: regularPrice,
-            sales_price: salePrice,
-            available_quantity: availableQuantity,
-            product_imgs: productImages,
-            created_at: Date.now(),
-            updated_at: Date.now(),
+            variants: processedVariants,
         });
 
         await newProduct.save();
 
-        return res.status(200).json({ success: true, message: "Product added successfull" });
+        return res.status(200).json({ 
+            success: true, 
+            message: "Product added successfully",
+            product: newProduct
+        });
     } catch (error) {
         console.error('Error in adding product:', error);
-        res.status(500).json({ success: false, message: 'Internal Server Error', error: error.message });
+        return res.status(500).json({ 
+            success: false, 
+            message: error.message || 'Internal Server Error'
+        });
     }
 };
 
@@ -271,9 +343,7 @@ export const editProduct = async (req, res) => {
     }
 }
 
-
-
-
+// Toggle Product Status
 export const toggleProduct = async (req, res) => {
     try {
       const productId = req.params.id;

@@ -11,6 +11,7 @@ export const renderHomePage = async (req, res) => {
     try { 
         let user = null;
         let wishlist = [];
+        const search = req.query.search || '';  // Extract the search query parameter
 
         const token = req.cookies.token;
 
@@ -24,34 +25,71 @@ export const renderHomePage = async (req, res) => {
             }
         }
 
-        // console.log(user)
-        const products = await Product.find({ isDeleted: false });
+        const products = await Product.find({ isDeleted: false }).populate([
+            { path: 'brandId', select: 'name' },
+            { path: 'categoryId', select: 'name' },
+            { path: 'subcategoryId', select: 'name' }
+        ]);
         const brands = await Brand.find({ isListed: true });
-        const categories = await Category.find({ isListed: true })
-            .populate({
-                path: 'subcategories',
-                match: { isListed: true },  
-            });
-            // console.log(categories)
+        const categories = await Category.find({ isListed: true }).populate({
+            path: 'subcategories',
+            match: { isListed: true },
+        });
 
-        function shuffleArray(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1)); 
-                [arr[i], arr[j]] = [arr[j], arr[i]]; 
+        // Group products by categories
+        const categorizedProducts = categories.reduce((acc, category) => {
+            const categoryProducts = products.filter(product => {
+                if (!product.categoryId) {
+                    console.log(`Product ${product.title} does not have a categoryId`);
+                    return false;
+                }
+                return product.categoryId._id.equals(category._id);
+            });
+            if (categoryProducts.length > 0) {
+                const allVariants = categoryProducts.reduce((acc, product) => {
+                    if (product.variants && Array.isArray(product.variants)) {
+                        product.variants.forEach(variant => {
+                            acc.push({
+                                ...variant._doc,
+                                productTitle: product.title,
+                                productId: product._id,
+                                brandName: product.brandId?.name,
+                                categoryName: product.categoryId.name,
+                                subcategoryName: product.subcategoryId?.name,
+                            });
+                        });
+                    }
+                    return acc;
+                }, []);
+
+                // Shuffle the variants array
+                function shuffleArray(arr) {
+                    for (let i = arr.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                    }
+                }
+                shuffleArray(allVariants);
+
+                // Limit to 20 variants per category
+                acc.push({
+                    categoryName: category.name,
+                    variants: allVariants.slice(0, 20),
+                });
             }
-        }
-        shuffleArray(products);
+            return acc;
+        }, []);
 
         return res.render('user/home', {
             user: user,
             brands,
-            products,
+            categorizedProducts,
             wishlist, 
-            categories
+            categories,
+            search  // Pass the search variable to the view
         });
     } catch (error) {
         console.log("Home page is not loading: ", error);
         res.status(500).send("Server Error");
     }
 };
-

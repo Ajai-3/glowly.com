@@ -3,6 +3,7 @@ const router = express.Router();
 import multer from "multer";
 import storage from "../helpers/multer.js"
 const uploads = multer ({ storage:storage })
+import { uploadImages } from "../helpers/cloudinary.js"
 import {
   renderLoginPage,
   renderDashboardPage,
@@ -16,11 +17,10 @@ import {
 import { verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage } from "../controllers/admin/category.controller.js";
-import { renderProductsPage, renderAddProductsPage, addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
+import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
-
 
 
 // Pages Are Protected With adminAuthMiddleware
@@ -41,7 +41,9 @@ router.get("/products", verifyAdminToken, renderProductsPage);
 router.get('/search-products', verifyAdminToken, renderProductsPage)
 router.get("/add-products", verifyAdminToken, renderAddProductsPage);
 router.patch("/toggle-product/:id", verifyAdminToken, toggleProduct); // Delete And Restore
-router.post('/add-products', verifyAdminToken, uploads.array('productImages', 4), addProduct);
+// router.post('/add-products', verifyAdminToken, uploads.array('productImages', 4), addProduct);
+
+router.post('/add-products', uploadImages, addProduct);
 router.get("/edit-product/:id", verifyAdminToken, renderEditProductPage);
 router.post("/edit-product/:id", verifyAdminToken, uploads.array('productImages', 4), editProduct);
 
