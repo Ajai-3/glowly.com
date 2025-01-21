@@ -27,60 +27,59 @@
         
         <!-- Dashboard Link -->
         <a href="/admin/dashboard" class="<%= currentPath === '/admin/dashboard' ? 'active' : '' %>">
-            <i class="fa-solid fa-tachometer-alt"></i>&nbsp;&nbsp; Dashboard
+          <i class="fa-solid fa-tachometer-alt"></i>&nbsp;&nbsp;&nbsp; Dashboard
         </a>
         
         <!-- Users Link -->
         <a href="/admin/users" class="<%= currentPath === '/admin/users' ? 'active' : '' %>">
-            <i class="fa-solid fa-users"></i>&nbsp; Users
+          <i class="fa-solid fa-users"></i>&nbsp;&nbsp;&nbsp;Users
         </a>
-    
+      
         <!-- Products Link -->
         <a href="/admin/products" class="<%= currentPath.startsWith('/admin/products') || currentPath === '/admin/add-products' || currentPath.match(/^\/admin\/edit-product\/[a-f0-9]{24}$/) ? 'active' : '' %>">
-            <i class="fa-solid fa-boxes"></i>&nbsp;&nbsp; Products
+          <i class="fa-solid fa-boxes"></i>&nbsp;&nbsp;&nbsp;Products
         </a>
         
         <!-- Brands Link -->
         <a href="/admin/brands" class="<%= currentPath === '/admin/brands' || currentPath === '/admin/add-new-brand' || currentPath.match(/^\/admin\/edit-brand\/[a-f0-9]{24}$/) ? 'active' : '' %>">
-            <i class="fa-solid fa-building"></i>&nbsp;&nbsp; Brands
+          <i class="fa-solid fa-building"></i>&nbsp;&nbsp;&nbsp; Brands
         </a>
-    
+      
         <!-- Category Link -->
         <a href="/admin/category" class="<%= currentPath.startsWith('/admin/category') || currentPath === '/admin/add-category' || currentPath.match(/^\/admin\/add-offer\/[a-f0-9]{24}$/) ? 'active' : '' %>">
-            <i class="fa-solid fa-list"></i>&nbsp; Category
+          <i class="fa-solid fa-list"></i>&nbsp;&nbsp;&nbsp;Category
         </a>
-    
+      
         <!-- Coupons Link -->
         <a href="/admin/coupons" class="<%= currentPath === '/admin/coupons' ? 'active' : '' %>">
-            <i class="fa-solid fa-tags"></i>&nbsp; Coupons
+          <i class="fa-solid fa-tags"></i>&nbsp;&nbsp;&nbsp;Coupons
         </a> 
-    
+      
         <!-- Order Lists Link -->
         <a href="/admin/orderlists" class="<%= currentPath === '/admin/orderlists' ? 'active' : '' %>">
-            <i class="fa-solid fa-clipboard-list"></i>&nbsp;&nbsp; Order Lists
+          <i class="fa-solid fa-clipboard-list"></i>&nbsp;&nbsp;&nbsp;&nbsp;Order Lists
         </a>
-    
+      
         <!-- Sales Report Link -->
         <a href="/admin/sales-report" class="<%= currentPath === '/admin/sales-report' ? 'active' : '' %>">
-            <i class="fa-solid fa-chart-bar"></i>&nbsp; Sales Report
+          <i class="fa-solid fa-chart-bar"></i>&nbsp;&nbsp;&nbsp;Sales Report
         </a>
-    
+      
         <!-- Banner Management Link -->
         <a href="/admin/banner-management" class="<%= currentPath === '/admin/banner-management' ? 'active' : '' %>">
-            <i class="fa-solid fa-image"></i>&nbsp; Banner Management
+          <i class="fa-solid fa-image"></i>&nbsp;&nbsp;&nbsp;Banner Management
         </a>
-    
+      
         <!-- Settings Link -->
         <a href="/admin/settings" class="<%= currentPath === '/admin/settings' ? 'active' : '' %>">
-            <i class="fa-solid fa-gear"></i>&nbsp; Settings
+          <i class="fa-solid fa-gear"></i>&nbsp;&nbsp;&nbsp;Settings
         </a>
-    
+      
         <!-- Logout Link -->
         <a href="/admin/admin-logout" class="<%= currentPath === '/admin/admin-logout' ? 'active' : '' %>">
-            <i class="fa-solid fa-power-off"></i>&nbsp; Logout
+          <i class="fa-solid fa-power-off"></i>&nbsp;&nbsp;&nbsp;Logout
         </a>
-
-    </div>
+      </div>
     
     
 

@@ -167,7 +167,10 @@ export const renderProductsPage = async (req, res) => {
 export const renderAddProductsPage = async (req, res) => {
     try {
         const brands = await Brand.find();
-        const categories = await Category.find().populate('subcategories');
+        const categories = await Category.find({ isListed: true }).populate({
+            path: 'subcategories',
+            match: { isListed: true }, 
+        });
 
         const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
 

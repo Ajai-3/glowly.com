@@ -26,16 +26,16 @@ import {
 } from "../controllers/user/user.controller.js";
 import {
   renderProductPage,
-  renderPageWithCategory,
-  renderPageWithSubcategory,
+  renderShopPage
   // productPageFilters,
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, getAddress, updateAddress } from "../controllers/user/user.account.controller.js";
 import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage } from "../controllers/user/checkout.controller.js";
-import { cancelOrder, orderDetailsPage, renderOrderListPage } from "../controllers/user/order.controller.js";
+import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from "../controllers/user/order.controller.js";
 import { get } from "mongoose";
+import { myWallet } from "../controllers/user/wallet.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -70,9 +70,9 @@ router.post("/otp-verification", verifyToken, handleOTPVerification);
 router.post("/reset-password", handleResetPassword)
 
 // Product, Category & Sub Category Management 
-router.get("/product/:id", renderProductPage);
-router.get("/category/:categoryId", renderPageWithCategory);
-router.get("/subcategory/:subcategoryId", renderPageWithSubcategory);
+router.get("/product/:productId/:variantId", renderProductPage);
+router.get("/shop", renderShopPage);
+// router.get("/subcategory/:subcategoryId", renderPageWithSubcategory);
 // router.post("/product-Page-filters", productPageFilters)
 
 // Account Mangement
@@ -90,10 +90,10 @@ router.post('/edit-address/:addressId', updateAddress);
 
 // Cart Management
 router.get("/my-cart", renderCartPage)
-router.post("/add-to-cart/:id", addToCart);
-router.post("/buy-now/:id", buyNow);
-router.post("/remove-cart-product/:productId", removeCartProduct);
-router.post("/update-cart-product/:productId", updateCartPageProduct)
+router.post("/add-to-cart", addToCart);
+router.post("/buy-now", buyNow);
+router.post("/remove-cart-product", removeCartProduct);
+router.post("/update-cart-product", updateCartPageProduct)
 // Checkout Mangement
 router.get("/checkout", renderCheckoutPage);
 router.post("/place-order", placeOrder);
@@ -101,13 +101,15 @@ router.get('/placeOrderWithBuyNow', placeOrderWithBuyNow);
 
 // Order Management
 router.get("/my-orders", renderOrderListPage);
-router.post("/cancel-order", cancelOrder)
-router.get("/product-details/:orderId/:productId/:addressId", orderDetailsPage)
+router.patch("/cancel-order", cancelOrder)
+router.patch("/return-order", returnOrder)
+router.get('/product-details/:orderId/:productId/:variantId/:addressId', orderDetailsPage)
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)
-router.post("/add-to-wishlist/:productId", addToWishlist)
+router.post('/add-to-wishlist/:id', addToWishlist);
 
-
+// Wallet Managent
+router.get("/my-wallet", myWallet)
 
 
 

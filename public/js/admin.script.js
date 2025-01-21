@@ -1,15 +1,40 @@
-// Add & Edit Brand Page Image Preview 
-function previewImage(event) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
+document.addEventListener('DOMContentLoaded', function () {
+  const currentPath = window.location.pathname; 
+  const links = document.querySelectorAll('.sidebar a');
 
-    reader.onload = function() {
-      const imagePreview = document.getElementById('imagePreview');
-      imagePreview.src = reader.result;  // Set the preview image's source to the file's result
-      imagePreview.style.display = 'block';  // Show the image preview
+  links.forEach(link => link.classList.remove('active'));
+
+  links.forEach(link => {
+    const path = link.getAttribute('href')
+
+    const regexPatterns = {
+      '/admin/products': [
+        /^\/admin\/products$/,
+        /^\/admin\/add-products$/,
+        /^\/admin\/edit-product\/[a-f0-9]{24}$/
+      ],
+      '/admin/brands': [
+        /^\/admin\/brands$/,
+        /^\/admin\/add-new-brand$/,
+        /^\/admin\/edit-brand\/[a-f0-9]{24}$/
+      ],
+      '/admin/category': [
+        /^\/admin\/category$/,
+        /^\/admin\/add-category$/,
+        /^\/admin\/add-offer\/[a-f0-9]{24}$/
+      ]
+    };
+
+    if (currentPath === path) {
+      link.classList.add('active');
+      return;
     }
 
-    if (file) {
-      reader.readAsDataURL(file); // Read the file as a data URL
+    for (const [basePath, patterns] of Object.entries(regexPatterns)) {
+      if (patterns.some(regex => regex.test(currentPath)) && path === basePath) {
+        link.classList.add('active');
+        return;
+      }
     }
-  }
+  });
+});

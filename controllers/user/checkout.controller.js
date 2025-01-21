@@ -36,6 +36,7 @@ export const renderCheckoutPage = async (req, res) => {
                 products: [] 
             }); 
         }
+        const cartCount = cart?.products?.length || 0;
 
         const categories = await Category.find({ isListed: true })
             .populate({
@@ -50,25 +51,32 @@ export const renderCheckoutPage = async (req, res) => {
     
         const cartProducts = await Promise.all(
             cart.products
-              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+              .sort((a, b) => new Date(b.added_at) - new Date(a.added_at))
               .map(async (cartProduct) => {
                 const productDetails = await Product.findById(cartProduct.product_id);
-                
-                if (productDetails && productDetails.available_quantity > 0 && cartProduct.quantity <= productDetails.available_quantity) {
-                  return {
-                    ...cartProduct.toObject(),
-                    product_details: productDetails
-                  };
+          
+                if (productDetails) {
+                  const variantDetails = productDetails.variants.find(
+                    (variant) => variant._id.toString() === cartProduct.variant_id.toString()
+                  );
+          
+                  if (variantDetails && variantDetails.stockQuantity > 0 && cartProduct.quantity <= variantDetails.stockQuantity) {
+                    return {
+                      ...cartProduct.toObject(),
+                      product_details: productDetails,
+                      variant: variantDetails
+                    };
+                  }
                 }
                 return null;
               })
           );
-
-        const validCartProducts = cartProducts.filter(product => product !== null);
+          
+          const validCartProducts = cartProducts.filter(product => product !== null);
 
         if (validCartProducts.length === 0) {
-            return res.redirect("/user/my-cart?message=Product+not+found&uccess=false");  
-          }
+            return res.redirect("/user/my-cart?message=Product+not+found&success=false");  
+        }
 
         return res.render('user/checkout', {
             user: user,
@@ -76,6 +84,7 @@ export const renderCheckoutPage = async (req, res) => {
             addresses,
             userDetails,
             products,
+            cartCount,
             cartProducts: validCartProducts,
         });
     } catch (error) {
@@ -85,6 +94,8 @@ export const renderCheckoutPage = async (req, res) => {
 };
 
 
+
+// Product Page Buy Now 
 export const placeOrderWithBuyNow = async (req, res) => {
     try {
         const token = req.cookies.token;
@@ -95,7 +106,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
         let user = null;
         let cart = null;
 
-        const { product_id, quantity } = req.query;
+        const { quantity, productId, variantId } = req.query;
 
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
@@ -109,7 +120,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
             throw error;
         }
 
-        if (!product_id || !quantity) {
+        if (!productId || !variantId || !quantity) {
             return res.status(400).json({
                 success: false,
                 message: "Product ID and quantity are required.",
@@ -124,6 +135,8 @@ export const placeOrderWithBuyNow = async (req, res) => {
             }); 
         }
 
+        const cartCount = cart?.products?.length || 0;
+
         const categories = await Category.find({ isListed: true })
             .populate({
                 path: 'subcategories',
@@ -134,10 +147,29 @@ export const placeOrderWithBuyNow = async (req, res) => {
         const addresses = await Address.find({ user_id: user.userId }).limit(3);
         const userDetails = await User.findById(user.userId);
 
-        const sendProduct = products.find(product => product._id.toString() === product_id);
+        const cartProduct = cart.products.find(product => product.product_id.toString() === productId);
 
-        const cartProducts = [{ product_details: sendProduct, quantity }];
-        console.log(cartProducts);
+        if (!cartProduct) {
+            return res.redirect("/user/my-cart?message=Product+not+found&success=false");
+        }
+
+        const productDetails = await Product.findById(cartProduct.product_id);
+
+        if (!productDetails) {
+            return res.redirect("/user/my-cart?message=Product+not+found&success=false");
+        }
+
+        const variantDetails = productDetails.variants.find(variant => variant._id.toString() === variantId);
+
+        if (!variantDetails || variantDetails.stockQuantity <= 0 || cartProduct.quantity > variantDetails.stockQuantity) {
+            return res.redirect("/user/my-cart?message=Variant+not+available&success=false");
+        }
+
+        const cartProductsToSend = [{
+            product_details: productDetails,
+            variant: variantDetails,
+            quantity: cartProduct.quantity
+        }];
 
         return res.render('user/checkout', {
             user: user,
@@ -145,7 +177,8 @@ export const placeOrderWithBuyNow = async (req, res) => {
             addresses,
             userDetails,
             products,
-            cartProducts
+            cartCount,
+            cartProducts: cartProductsToSend
         });
 
     } catch (error) {
@@ -201,28 +234,39 @@ export const placeOrder = async (req, res) => {
             if (!product) {
                 return res.status(404).json({ success: false, message: `Product not found: ${cartItem.product_id}` });
             }
+        
+            const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
 
-            if (product.available_quantity < cartItem.quantity) {
-                continue; 
+            if (!variant) {
+                return res.status(404).json({ success: false, message: `Variant not found: ${cartItem.variant_id}` });
             }
 
-            product.available_quantity -= cartItem.quantity;
-            await product.save();
+            if (variant.stockQuantity < cartItem.quantity) {
+                continue; 
+            }
+        
+            variant.stockQuantity -= cartItem.quantity;
 
+            await product.save();
+        
             products.push({
                 product_id: cartItem.product_id,
+                variant_id: cartItem.variant_id,
                 quantity: cartItem.quantity,
                 total_amount: cartItem.totalAmount,
                 status: 'pending',
             });
-
-            purchasedProductIds.push(cartItem.product_id); 
+        
+            purchasedProductIds.push({
+                product_id: cartItem.product_id,
+                variant_id: cartItem.variant_id
+            });
         }
 
         const result = await Cart.updateOne(
             { user_id: user.userId },
-            { $pull: { products: { product_id: { $in: purchasedProductIds } } } }
-        );
+            { $pull: { products: { $or: purchasedProductIds } } }
+        );        
         
         if (result.modifiedCount === 0) {
             return res.json({ success: false, message: 'Products not found in cart' });

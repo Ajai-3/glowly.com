@@ -8,6 +8,7 @@
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+    
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
     <!-- Favicon -->
@@ -32,10 +33,6 @@
                     <!-- Home Menu -->
                     <li class="dropdown">
                         <a href="/home">HOME</a>
-                        <!-- <div class="dropdown-menu">
-                            <a href="#">Welcome</a>
-                        </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
                     </li>
             
                     <!-- Shop by Category -->
@@ -47,7 +44,7 @@
                                 <div class="category-block">
                                   <!-- Render Category Name -->
                                   <div class="category-name">
-                                    <a href="/category/<%= category.id %>?selectedCategory=<%= category.id %>">
+                                    <a href="/shop/<%= category.id %>">
                                       <%= category.name %>
                                     </a>
                                   </div>
@@ -56,7 +53,7 @@
                                   <div class="subcategory-list">
                                     <% category.subcategories.forEach(subcategory => { %>
                                       <div class="subcategory">
-                                        <a href="/category/<%= category.id %>?selectedCategory=<%= category.id %>&selectedSubcategory=<%= subcategory.id %>">
+                                        <a href="/shop/<%= category.id %>%= category.id %>&selectedSubcategory=<%= subcategory.id %>">
                                           <%= subcategory.name %>
                                         </a>
                                       </div>
@@ -67,35 +64,17 @@
                             </div>
                           </div>
                         <span class="arrow"><i class="fas fa-caret-down"></i></span>
-                    </li>
-                    
-                    
-                    
-                    
+                    </li>      
             
                     <!-- Brands -->
                     <li class="dropdown">
-                        <a href="#">BRANDS</a>
+                        <a href="/shop">BRANDS</a>
                     </li>
             
                     <!-- New Menu -->
                     <li class="dropdown">
-                        <a href="#">NEW</a>
-                        <!-- <div class="dropdown-menu">
-                            <a href="#">Latest Arrivals</a>
-                        </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span> -->
+                        <a href="/shop">NEW</a>
                     </li>
-            
-                    <!-- Luxury Menu -->
-                    <!-- <li class="dropdown">
-                        <a href="/luxury">LUXURY</a>
-                        <div class="dropdown-menu">
-                            <a href="#">Foundation</a>
-                            <a href="#">Lipsticks</a>
-                        </div>
-                        <span class="arrow"><i class="fas fa-triangle"></i></span>
-                    </li> -->
                 </ul>
             </div>
             
@@ -111,12 +90,19 @@
             <div class="nav-bar-last">
                 <% if (user && user.name) { %> 
                     <!-- If User Is Logged In -->
-                    <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                     
+                     <div class="nav-cart">
+                        <% if (cartCount > 0) { %>
+                            <div class="nav-cart-count"><%= cartCount %></div>
+                        <% } %>
+                        <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                     </div>
+                    
                     <a href="/my-wishlist"><i class="fa-solid fa-heart"></i></a>
                    
                    <div class="profile-section dropdown">
                        <div class="d-flex align-items-center">
-                           <span class="username ms-2"><%= user.name %></span>
+                           <!-- <span class="username ms-2"><%= user.name %></span> -->
                            <% if (user && user.profilePic) { %>
                                <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
                                
@@ -148,3 +134,4 @@
         <div class="horizontal-line"><hr></div>
 
     </nav>
+

@@ -8,11 +8,15 @@ const cartSchema = new mongoose.Schema({
                 ref: 'Product',
                 required: true,
             },
+            variant_id: {
+                type: String,
+                require: true
+            },
             quantity: { 
                 type: Number,
                  default: 1
             },
-            created_at: {
+            added_at: {
                 type: Date,
                 default: Date.now
             },

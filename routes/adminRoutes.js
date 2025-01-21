@@ -7,14 +7,13 @@ import { uploadImages } from "../helpers/cloudinary.js"
 import {
   renderLoginPage,
   renderDashboardPage,
-  // renderOrderlistsPage,
   renderSalesReportPage,
   renderSettingsPage,
   renderBannerManagementPage,
   handleAdminLogin,
   handleAdminLogout,
 } from "../controllers/admin/admin.controller.js";
-import { verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
+import { redirectIfLoggedIn, verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
@@ -27,8 +26,8 @@ import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.c
 
 
 // Admin login and logout routes
-router.get("/admin-login", renderLoginPage);
-router.post("/admin-login", handleAdminLogin);
+router.get("/admin-login", redirectIfLoggedIn, renderLoginPage);
+router.post("/admin-login", redirectIfLoggedIn, handleAdminLogin);
 router.get("/admin-logout", handleAdminLogout);
 
 // router.use(verifyAdminToken);

@@ -23,44 +23,62 @@
               <!-- Right Side Box -->
               <div class="col-md-9">
                 <div class="card shadow-sm p-4 user-menu-wishlist">
-                    <div>
-                        <p><strong>Product Status:</strong> <%= productStatus %></p>
-                        <p><strong>Delivery Address:</strong></p>
-                        <p><strong>Address Type: </strong> <%= address.address_type %> </p>
+                    <div class="product-datailpage">
+                      <div class="product-datailpage-status mb-2">
+                        <p>Product Status:&nbsp;&nbsp;  
+                          <p2 class="m-0 mb-4 
+                          <% if (productStatus === 'pending') { %> yellow-p <% } %>
+                          <% if (productStatus === 'processing') { %> blue-p <% } %>
+                          <% if (productStatus === 'shipped') { %> pink-p <% } %>
+                          <% if (productStatus === 'delivered') { %> green-p <% } %>
+                          <% if (productStatus === 'canceled') { %> red-p <% } %>
+                          <% if (productStatus === 'return_req') { %> yellow-p <% } %>
+                          <% if (productStatus === 'returned') { %> blue-p <% } %>">
+                          <%= productStatus %>
+                        </p2>
+                        </p>
+                      </div>
+                        
+                      <div class="product-datailpage-address p-2 mb-2">
+                        <p><strong>Delivery Address</strong></p>
+                        <p>Address Type:  <%= address.address_type %> </p>
                                <p><%= address.address %></p>
                                <p><%= address.land_mark %></p>
                                <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
                                 <p><%= address.country %></p>
                       </div>
+                        
+                      </div>
                       <div>
-                        <div class="cart-item card cart-box-in-checkout mb-1 px-2 shadow-sm" data-product-id="<%= product._id %>">
+                        <div class="cart-item card product-detailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
                           <div class="row g-0">
                             <div class="col-md-2 text-center">
                               <img id="main-display-image" 
-                                src="<%= product.product_id.product_imgs && product.product_id.product_imgs[0] ? '/uploads/' + encodeURIComponent(product.product_id.product_imgs[0]) : '/uploads/default-image.jpg' %>" 
+                                src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
                                 class="img-fluid rounded" 
-                                alt="<%= product.product_id.title || 'Product Image' %>">
+                                alt="<%= product.title || 'Product Image' %>">
                             </div>
                             <div class="col-md-10">
                               <div class="card-body px-2 py-0">
-                                <h6 class="card-title"><%= product.product_id.title %></h6>
-                                <a href="/product/<%= product.product_id._id %>">details</a>
+                                <h6 class="card-title"><%= product.product_id.title %> - <%= variant.shade %></h6>
+                                <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">details</a>
                                 <div class="cart-box-quantity-selector d-flex my-1">
                                   <p class="product-quantity qty m-0">QTY: <%= product.quantity %></p>
                                 </div>
                                 <div class="d-flex justify-content-between cart-price">
                                   <p class="card-text">
-                                    Unit Price: <span class="original-price price-inr">₹<%= product.product_id.price %></span>
-                                    <span class="sales-price price-inr">₹<%= product.product_id.sales_price %></span>
+                                    Unit Price: <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
+                                    <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
                                   </p>
                                   <p class="card-text">
-                                    Total: <span class="sales-price price-inr">₹<%= product.product_id.sales_price * product.quantity %></span>
+                                    Total: <span class="sales-price price-inr">₹<%= variant.salePrice * product.quantity %></span>
                                   </p>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
+
                       </div>
                       <div class="mt-4">
                         <% if (productStatus === "delivered") { %>
@@ -71,6 +89,7 @@
                       </div>
                 </div>
               </div>
+              
             </div>
           </div>
           

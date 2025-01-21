@@ -30,73 +30,77 @@
       <!-- Right Side Box -->
       <div class="col-md-9">
         <div class="card shadow-sm p-4 user-menu-wishlist">
-          
           <% if (orders.length > 0) { %>
             <h5 class="card-title">My Orders</h5>
-          <% orders.forEach(order => { %>
-            <% order.products.forEach(product => { %>
-              <!-- Product Item -->
-              <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
-                <div class="row g-0 align-items-center">
-                  <!-- Product Image -->
-                  <div class="col-md-2 text-center p-2">
-                    <% if (product.product_id.product_imgs && product.product_id.product_imgs.length > 0) { %>
-                      <img src="/uploads/<%= encodeURIComponent(product.product_id.product_imgs[0]) %>" alt="<%= product.product_id.title %>" class="img-fluid rounded product-image" style="max-width: 90px;" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
-                    <% } else { %>
-                      <p class="text-muted">No image available</p>
-                    <% } %>
-                  </div>
-          
-                  <!-- Product Details -->
-                  <div class="col-md-8 p-1">
-                    <div class="product-details">
-                      <h6 class="mb-4 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
-                      <div class="d-flex justify-content-between mt-2">
-                        <p class="m-0">Quantity: <%= product.quantity %></p>
-                        <p class="m-0">Unit Price: ₹<%= product.product_id.price %></p>
-                        <p class="m-0">Total: ₹<%= product.product_id.price * product.quantity %></p>
+            <% orders.forEach(order => { %>
+              <% order.products.forEach(product => { %>
+                <!-- Product Item -->
+                <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
+                  <div class="row g-0 align-items-center">
+                    
+                    <!-- Product Image -->
+                    <div class="col-md-2 text-center p-2">
+                      <!-- data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"> -->
+                      <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
+                      <% let imageUrl = variant?.images?.[0]; %>
+                      <% if (imageUrl) { %>
+                        <img src="<%= imageUrl %>" style="max-width: 90px;">
+                      <% } else { %>
+                        <p>No image</p>
+                      <% } %>
+                    </div>
+                    
+                    <!-- Product Details -->
+                    <div class="col-md-8 p-1">
+                      <div class="product-details">
+                        <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
+                        <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
+                        <div class="d-flex justify-content-between mt-2">
+                          <p class="m-0">Quantity: <%= product.quantity %></p>
+                          <p class="m-0 price-inr">Unit Price: ₹<%= variant.salePrice %></p>
+                          <p class="m-0 price-inr">Total: ₹<%= variant.salePrice * product.quantity %></p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-          
-                  <!-- Order Status -->
-                  <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
-                    <!-- Status Display -->
-                    <p2 
-                      class="m-0 mb-4 
-                      <% if (product.status === 'pending') { %> yellow-p <% } %>
-                      <% if (product.status === 'processing') { %> blue-p <% } %>
-                      <% if (product.status === 'shipped') { %> pink-p <% } %>
-                      <% if (product.status === 'delivered') { %> green-p <% } %>
-                      <% if (product.status === 'canceled') { %> red-p <% } %>
-                      <% if (product.status === 'return_req') { %> yellow-p <% } %>
-                      <% if (product.status === 'returned') { %> blue-p <% } %>">
-                      <%= product.status %>
-                    </p2>
-                  
-                    <!-- Buttons -->
-                    <% if (product.status === 'delivered') { %>
-                      <!-- Return Button -->
-                      <button type="button" class="return-btn" data-product-id="<%= product.product_id._id %>" data-order-id="<%= order._id %>" data-quantity="<%= product.quantity %>">Return</button>
-                    <% } else if (product.status === 'processing' || product.status === 'pending') { %>
-                      <!-- Cancel Button -->
-                      <button type="button" class="cancel-btn" data-product-id="<%= product.product_id._id %>" data-order-id="<%= order._id %>" data-quantity="<%= product.quantity %>">Cancel</button>
-                    <% } %>
+                    
+                    <!-- Order Status -->
+                    <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
+                      <!-- Status Display -->
+                      <p2 class="m-0 mb-4 
+                        <% if (product.status === 'pending') { %> yellow-p <% } %>
+                        <% if (product.status === 'processing') { %> blue-p <% } %>
+                        <% if (product.status === 'shipped') { %> pink-p <% } %>
+                        <% if (product.status === 'delivered') { %> green-p <% } %>
+                        <% if (product.status === 'canceled') { %> red-p <% } %>
+                        <% if (product.status === 'return_req') { %> yellow-p <% } %>
+                        <% if (product.status === 'returned') { %> blue-p <% } %>">
+                        <%= product.status %>
+                      </p2>
+            
+                      <!-- Buttons -->
+                      <% if (product.status === 'delivered') { %>
+                        <!-- Return Button -->
+                        <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Return</button>
+                      <% } else if (product.status === 'processing' || product.status === 'pending') { %>
+                        <!-- Cancel Button -->
+                        <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Cancel</button>
+                      <% } %>
+                    </div>
                   </div>
                 </div>
-              </div>
+              <% }) %>
             <% }) %>
-          <% }) %>
           <% } else { %>
             <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
               <a href="/home">
-                <img src="/assets/logo/emptyOrders.png" alt="Empty Cart Image" class="empty-cart-image" />
+                <img src="/assets/logo/no-orders.png" alt="Empty Cart Image" class="empty-cart-image" />
               </a>
               <h3>You have no orders</h3>
               <p>Explore our collection and place your first order today!</p>
               <a href="/home" class="large-button-main">Start Shopping</a>
-          </div>  
-          <% } %>          
+            </div>  
+          <% } %>
+             
 
         </div>
       </div>
@@ -182,8 +186,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const showPopup = (event, type) => {
         const button = event.target;
-        productId = button.getAttribute('data-product-id');
         orderId = button.getAttribute('data-order-id');
+        productId = button.getAttribute('data-product-id');
+        variantId = button.getAttribute('data-variant-id');
         quantity = button.getAttribute('data-quantity');
         actionType = type;
         buttonElement = button;
@@ -210,11 +215,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (productId) {
             const endpoint = actionType === 'cancel' ? '/cancel-order' : '/return-order';
             fetch(endpoint, {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ productId, orderId, quantity }),
+                body: JSON.stringify({ orderId, productId, variantId, quantity }),
             })
             .then(response => response.json())
             .then(data => {
@@ -249,14 +254,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add click event listener to product images and titles to navigate to product details page
     document.querySelectorAll('.product-image, .product-title').forEach(element => {
-        element.addEventListener('click', (event) => {
-            const orderId = element.getAttribute('data-order-id');
-            const productId = element.getAttribute('data-product-id');
-            const addressId = element.getAttribute('data-address-id');
-            window.location.href = `/product-details/${orderId}/${productId}/${addressId}`;
-            event.stopPropagation(); 
-        });
+    element.addEventListener('click', (event) => {
+      const orderId = element.getAttribute('data-order-id');
+      const productId = element.getAttribute('data-product-id');
+      const variantId = element.getAttribute('data-variant-id');
+      const addressId = element.getAttribute('data-address-id');
+      window.location.href = `/product-details/${orderId}/${productId}/${variantId}/${addressId}`;
+      event.stopPropagation(); 
     });
+  });
 });
 </script>
 </html>

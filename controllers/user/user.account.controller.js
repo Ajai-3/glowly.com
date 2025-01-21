@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken"
+import Cart from "../../models/cart.model.js"
 import User from "../../models/user.model.js"
 import Address from "../../models/address.model.js";
 import Category from "../../models/category.model.js";
@@ -8,9 +9,11 @@ export const renderMyAccountPage = async (req, res) => {
     try {
         const token = req.cookies.token;
         let user = null; 
+        let cart;
         if (token) {
             const decoded = jwt.decode(token);
             user = decoded; 
+            cart = await Cart.findOne({ user_id: user.userId })
         }  
         
         if (!token) {
@@ -24,6 +27,7 @@ export const renderMyAccountPage = async (req, res) => {
        
         // const products = await Product.find({ isDeleted: false });
         // const brands = await Brand.find({ isListed: true })
+        const cartCount = cart?.products?.length || 0;
         const categories = await Category.find({ isListed: true })
         .populate({
             path: 'subcategories',
@@ -34,8 +38,8 @@ export const renderMyAccountPage = async (req, res) => {
         name: user ? user.name : "",
         user: user,
         categories,
-        activeUser
-
+        activeUser,
+        cartCount
       })  
     } catch (error) {
         console.error("Error in rendering my account", error);
@@ -121,9 +125,12 @@ export const renderManageAddressPage = async (req, res) => {
     try {
         const token = req.cookies.token;
         let user = null; 
+        let cart;
+        
         if (token) {
             const decoded = jwt.decode(token);
             user = decoded; 
+            cart = await Cart.findOne({ user_id: user.userId })
         }  
 
         if (!token) {
@@ -131,8 +138,10 @@ export const renderManageAddressPage = async (req, res) => {
         }
        
         const activeUser = await User.findById(user.userId)
+
         // const products = await Product.find({ isDeleted: false });
         // const brands = await Brand.find({ isListed: true })
+        const cartCount = cart?.products?.length || 0;
         const categories = await Category.find({ isListed: true })
         .populate({
             path: 'subcategories',
@@ -145,6 +154,7 @@ export const renderManageAddressPage = async (req, res) => {
         name: user ? user.name : "",
         user: user,
         categories,
+        cartCount,
         addresses: addresses,
         activeUser
 
@@ -161,10 +171,16 @@ export const handleAddAddress = async (req, res) => {
     try {
         const token = req.cookies.token;
         let user = null;
+        let cart = null;
         if (token) {
             const decoded = jwt.decode(token);
             user = decoded;
+            cart = await Cart.findOne({ user_id: user.userId })
         }
+
+        // const userPhoneNo = await User.findById(user.userId)
+
+        const cartCount = cart?.products?.length || 0;
 
         const categories = await Category.find({ isListed: true })
             .populate({
@@ -181,6 +197,7 @@ export const handleAddAddress = async (req, res) => {
             pin_code,
             address_type,
             land_mark,
+            phone_no,
             alternative_phone_no,
             alternative_email
         } = req.body;
@@ -242,6 +259,7 @@ export const handleAddAddress = async (req, res) => {
             user: user,
             categories,
             activeUser,
+            cartCount,
             addresses: addresses
         });
 

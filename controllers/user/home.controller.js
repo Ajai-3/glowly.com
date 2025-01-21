@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from "dotenv";dotenv.config();
+import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
@@ -8,21 +9,31 @@ import Wishlist from "../../models/wishlist.model.js";
 
 // Render Home Page
 export const renderHomePage = async (req, res) => {
-    try { 
+    try {
         let user = null;
         let wishlist = [];
-        const search = req.query.search || '';  // Extract the search query parameter
+        let cartVariants = [];
+        let cart;
 
         const token = req.cookies.token;
 
         if (token) {
             try {
                 const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-                user = decoded; 
+                user = decoded;
                 wishlist = await Wishlist.findOne({ user_id: user.userId }).populate('products.product_id');
+                cart = await Cart.findOne({ user_id: user.userId });
             } catch (error) {
                 console.log("Invalid or expired token:", error);
             }
+        }
+
+        const cartCount = cart?.products?.length || 0;
+
+        if (cart && cart.products.length > 0) {
+            cartVariants = cart.products
+                .filter(product => product.variant_id) // Ensure variant_id is defined
+                .map(product => product.variant_id.toString());
         }
 
         const products = await Product.find({ isDeleted: false }).populate([
@@ -71,7 +82,6 @@ export const renderHomePage = async (req, res) => {
                 }
                 shuffleArray(allVariants);
 
-                // Limit to 20 variants per category
                 acc.push({
                     categoryName: category.name,
                     variants: allVariants.slice(0, 20),
@@ -84,9 +94,10 @@ export const renderHomePage = async (req, res) => {
             user: user,
             brands,
             categorizedProducts,
-            wishlist, 
+            wishlist,
+            cartCount,
+            cartVariants,
             categories,
-            search  // Pass the search variable to the view
         });
     } catch (error) {
         console.log("Home page is not loading: ", error);

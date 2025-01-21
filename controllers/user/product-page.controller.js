@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
 import Offer from "../../models/offer.model.js";
 import Product from "../../models/product.model.js";
@@ -10,75 +11,94 @@ export const renderProductPage = async (req, res) => {
   try {
     const token = req.cookies.token;
     let user = null;
+    let cart = null;
     let wishlist = [];
-    const { filters, page = 1 } = req.query;
+    let cartVariants = [];
 
-    let selectedFilters = {};
-    if (filters) {
-      selectedFilters = JSON.parse(filters);
-    }
+    const productId = req.params.productId;
+    const variantId = req.params.variantId;
 
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         user = decoded;
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate(
-          "products.product_id"
-        );
+        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+        cart = await Cart.findOne({ user_id: user.userId });
       } catch (error) {
         console.log("Invalid or expired token:", error);
       }
     }
 
-    const productId = req.params.id;
-
-    const product = await Product.findOne({ _id: productId, isDeleted: false })
-      .populate("brand_id")
-      .populate("category_id")
-      .populate("subcategory_id")
-      .populate("offer_id");
-    if (!product) {
-      return res.status(404).send("Product not found");
+    const brands = await Brand.find({ isListed: true });
+    const cartCount = cart?.products?.length || 0;
+    if (cart && cart.products.length > 0) {
+      cartVariants = cart.products
+        .filter(product => product.variant_id)
+        .map(product => product.variant_id.toString());
     }
 
-    const brands = await Brand.find({ isListed: true });
     const categories = await Category.find({ isListed: true }).populate({
       path: "subcategories",
       match: { isListed: true },
     });
 
-    let relatedProducts = await Product.find({
-      _id: { $ne: productId },
-      subcategory_id: product.subcategory_id,
-    }).limit(5);
+    let product = await Product.findById({ _id: productId, isDeleted: false }).populate("categoryId subcategoryId brandId");
 
-    if (relatedProducts.length < 5) {
-      const additionalProducts = await Product.find({
-        _id: {
-          $nin: [productId, ...relatedProducts.map((p) => p._id)],
-        },
-        category_id: product.category_id,
-      }).limit(5 - relatedProducts.length);
+    if (!product) throw new Error("Product not found");
+    let variant = product.variants.find((item) => item._id.toString() === variantId);
 
-      relatedProducts = [...relatedProducts, ...additionalProducts];
+    if (!variant) {
+      product = await Product.findOne({ "variants._id": variantId }).populate(
+        "categoryId subcategoryId brandId"
+      );
+      if (!product) throw new Error("Variant not found in any product");
+      variant = product.variants.find((item) => item._id.toString() === variantId);
     }
+
+    let relatedVariants = product.variants.filter(item => item._id.toString() !== variantId)
+        .map(v => ({ ...v.toObject(), productId: product._id, productTitle: product.title }));
+
+    if (relatedVariants.length < 10) {
+      const additionalProducts = await Product.find({
+        subcategoryId: product.subcategoryId,
+        _id: { $ne: product._id },
+        isDeleted: false,
+      }).limit(10 - relatedVariants.length);
+    
+      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
+    }
+    
+    if (relatedVariants.length < 10) {
+      const additionalProducts = await Product.find({
+        categoryId: product.categoryId,
+        _id: { $ne: product._id },
+        isDeleted: false,
+      }).limit(10 - relatedVariants.length);
+    
+      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
+    }
+    
+    relatedVariants = relatedVariants.slice(0, 10);
 
     return res.render("user/product-page", {
       name: user ? user.name : "",
       user,
       categories,
       product,
+      variant, 
       brands,
       wishlist,
-      relatedProducts,
-      selectedFilters,
-      currentPage: parseInt(page),
+      cartCount,
+      cartVariants,
+      relatedVariants,
+      activeVariantId: variantId,
     });
   } catch (error) {
     console.error("Error rendering product page:", error);
     return res.status(500).send("Server Error");
   }
 };
+
 // Render The Page With Category
 // export const renderPageWithCategory = async (req, res) => {
 //   try {
@@ -137,63 +157,195 @@ export const renderProductPage = async (req, res) => {
 //   }
 // };
 
-export const renderPageWithCategory = async (req, res) => {
+
+
+
+
+// export const renderShopPage = async (req, res) => {
+//   try {
+//     let user = null;
+//     let wishlist = [];
+//     const { filters, page = 1, limit = 10 } = req.query;
+
+//     let selectedFilters = {};
+//     if (filters) {
+//       selectedFilters = JSON.parse(filters);
+//     }
+
+//     const token = req.cookies.token;
+
+//     if (token) {
+//       try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//         user = decoded;
+//         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+//       } catch (error) {
+//         console.log("Invalid or expired token:", error);
+//       }
+//     }
+
+//     const { categoryId } = req.params;
+//     const category = await Category.findById(categoryId);
+//     if (!category) {
+//       return res.status(404).send("Category not found");
+//     }
+
+//     let filterConditions = { category_id: category._id, isDeleted: false };
+//     let sortOptions = {};
+
+//     if (filters) {
+//       const filterObj = JSON.parse(decodeURIComponent(filters));
+
+//       if (filterObj.popularity && filterObj.popularity.length > 0) {
+//         if (filterObj.popularity.includes("trending")) {
+//           filterConditions = { ...filterConditions, trending: true };
+//         }
+//         if (filterObj.popularity.includes("most-reviewed")) {
+//           filterConditions = { ...filterConditions, mostReviewed: true };
+//         }
+//         if (filterObj.popularity.includes("top-rated")) {
+//           filterConditions = { ...filterConditions, topRated: true };
+//         }
+//       }
+
+//       if (filterObj.category && filterObj.category.length > 0) {
+//         filterConditions = { ...filterConditions, category_id: { $in: filterObj.category } };
+//       }
+
+//       if (filterObj.subcategory && filterObj.subcategory.length > 0) {
+//         filterConditions = { ...filterConditions, subcategory_id: { $in: filterObj.subcategory } };
+//       }
+
+//       if (filterObj.brand && filterObj.brand.length > 0) {
+//         filterConditions = { ...filterConditions, brand_id: { $in: filterObj.brand } };
+//       }
+
+//       if (filterObj.price) {
+//         if (filterObj.price.includes("low-to-high")) {
+//           sortOptions.price = 1;
+//         } else if (filterObj.price.includes("high-to-low")) {
+//           sortOptions.price = -1;
+//         }
+//       }
+
+//       if (filterObj.rating && filterObj.rating.length > 0) {
+//         filterConditions.rating = { $gte: Math.max(...filterObj.rating.map(r => parseInt(r))) };
+//       }
+
+//       if (filterObj.alphabetical) {
+//         if (filterObj.alphabetical.includes("a-z")) {
+//           sortOptions.title = 1;
+//         } else if (filterObj.alphabetical.includes("z-a")) {
+//           sortOptions.title = -1;
+//         }
+//       }
+
+//       if (filterObj['new-arrivals']) {
+//         if (filterObj['new-arrivals'].includes('latest')) {
+//           sortOptions.created_at = -1;
+//         } else if (filterObj['new-arrivals'].includes('oldest')) {
+//           sortOptions.created_at = 1;
+//         }
+//       }
+//     }
+
+//     const skip = (page - 1) * limit;
+//     const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit));
+//     const totalProducts = await Product.countDocuments(filterConditions);
+//     const totalPages = Math.ceil(totalProducts / limit);
+
+//     if (req.xhr) {
+//       return res.render("partials/product-list", { products, wishlist, selectedFilters });
+//     } else {
+//       const categories = await Category.find({ isListed: true }).populate({
+//         path: "subcategories",
+//         match: { isListed: true },
+//       });
+
+//       const subcategories = await Subcategory.find({ isListed: true });
+//       const brands = await Brand.find({ isListed: true });
+
+//       return res.render("user/category", {
+//         name: user ? user.name : "",
+//         user: user,
+//         products,
+//         categories,
+//         subcategories,
+//         brands,
+//         wishlist,
+//         categoryId,
+//         selectedFilters,
+//         currentPage: parseInt(page),
+//         totalPages,
+//       });
+//     }
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Server error");
+//   }
+// };
+
+export const renderShopPage = async (req, res) => {
   try {
+    const token = req.cookies.token;
+    let cart = [];
     let user = null;
     let wishlist = [];
-    const { filters, page = 1, limit = 10 } = req.query;
+    const { filters, page = 1, limit = 10, selectedCategory, selectedSubcategory } = req.query;
 
     let selectedFilters = {};
     if (filters) {
       selectedFilters = JSON.parse(filters);
     }
 
-    const token = req.cookies.token;
-
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         user = decoded;
+        cart = await Cart.findOne({ user_id: user.userId });
         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
       } catch (error) {
         console.log("Invalid or expired token:", error);
       }
     }
 
-    const { categoryId } = req.params;
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      return res.status(404).send("Category not found");
+    const cartCount = cart?.products?.length || 0;
+    let filterConditions = { isDeleted: false };
+    let sortOptions = {};
+
+    if (selectedCategory) {
+      filterConditions.category_id = selectedCategory;
     }
 
-    let filterConditions = { category_id: category._id, isDeleted: false };
-    let sortOptions = {};
+    if (selectedSubcategory) {
+      filterConditions.subcategory_id = selectedSubcategory;
+    }
 
     if (filters) {
       const filterObj = JSON.parse(decodeURIComponent(filters));
 
       if (filterObj.popularity && filterObj.popularity.length > 0) {
         if (filterObj.popularity.includes("trending")) {
-          filterConditions = { ...filterConditions, trending: true };
+          filterConditions.trending = true;
         }
         if (filterObj.popularity.includes("most-reviewed")) {
-          filterConditions = { ...filterConditions, mostReviewed: true };
+          filterConditions.mostReviewed = true;
         }
         if (filterObj.popularity.includes("top-rated")) {
-          filterConditions = { ...filterConditions, topRated: true };
+          filterConditions.topRated = true;
         }
       }
 
       if (filterObj.category && filterObj.category.length > 0) {
-        filterConditions = { ...filterConditions, category_id: { $in: filterObj.category } };
+        filterConditions.category_id = { $in: filterObj.category };
       }
 
       if (filterObj.subcategory && filterObj.subcategory.length > 0) {
-        filterConditions = { ...filterConditions, subcategory_id: { $in: filterObj.subcategory } };
+        filterConditions.subcategory_id = { $in: filterObj.subcategory };
       }
 
       if (filterObj.brand && filterObj.brand.length > 0) {
-        filterConditions = { ...filterConditions, brand_id: { $in: filterObj.brand } };
+        filterConditions.brand_id = { $in: filterObj.brand };
       }
 
       if (filterObj.price) {
@@ -226,98 +378,94 @@ export const renderPageWithCategory = async (req, res) => {
     }
 
     const skip = (page - 1) * limit;
-    const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit));
+    const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit)).populate('variants');
     const totalProducts = await Product.countDocuments(filterConditions);
     const totalPages = Math.ceil(totalProducts / limit);
 
-    if (req.xhr) {
-      return res.render("partials/product-list", { products, wishlist, selectedFilters });
-    } else {
-      const categories = await Category.find({ isListed: true }).populate({
-        path: "subcategories",
-        match: { isListed: true },
-      });
+    const categories = await Category.find({ isListed: true }).populate({
+      path: "subcategories",
+      match: { isListed: true },
+    });
 
-      const subcategories = await Subcategory.find({ isListed: true });
-      const brands = await Brand.find({ isListed: true });
+    const subcategories = await Subcategory.find({ isListed: true });
+    const brands = await Brand.find({ isListed: true });
 
-      return res.render("user/category", {
-        name: user ? user.name : "",
-        user: user,
-        products,
-        categories,
-        subcategories,
-        brands,
-        wishlist,
-        categoryId,
-        selectedFilters,
-        currentPage: parseInt(page),
-        totalPages,
-      });
-    }
+    return res.render("user/shop", {
+      name: user ? user.name : "",
+      user: user,
+      products,
+      categories,
+      subcategories,
+      brands,
+      cartCount,
+      wishlist,
+      selectedFilters,
+      selectedCategory,
+      selectedSubcategory,
+      currentPage: parseInt(page),
+      totalPages,
+    });
+
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
   }
 };
 
+// // Render The Sub Category Only
+// export const renderPageWithSubcategory = async (req, res) => {
+//   try {
+//     let user = null;
+//     let wishlist = [];
 
+//     const token = req.cookies.token;
 
+//     if (token) {
+//       try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//         user = decoded;
+//         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate(
+//           "products.product_id"
+//         );
+//       } catch (error) {
+//         console.log("Invalid or expired token:", error);
+//       }
+//     }
 
-// Render The Sub Category Only
-export const renderPageWithSubcategory = async (req, res) => {
-  try {
-    let user = null;
-    let wishlist = [];
+//     // Use subcategoryId from req.params instead of subcategoryName
+//     const { subcategoryId } = req.params;
 
-    const token = req.cookies.token;
+//     // Fetch subcategory using its ID
+//     const subcategory = await Subcategory.findById(subcategoryId);
+//     if (!subcategory) {
+//       return res.status(404).send("Subcategory not found");
+//     }
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate(
-          "products.product_id"
-        );
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
-    }
+//     // Fetch products related to the subcategory by ID
+//     const products = await Product.find({
+//       subcategory_id: subcategory._id,
+//       isDeleted: false,
+//     });
 
-    // Use subcategoryId from req.params instead of subcategoryName
-    const { subcategoryId } = req.params;
+//     // Fetch all listed categories and their listed subcategories
+//     const categories = await Category.find({ isListed: true }).populate({
+//       path: "subcategories",
+//       match: { isListed: true },
+//     });
 
-    // Fetch subcategory using its ID
-    const subcategory = await Subcategory.findById(subcategoryId);
-    if (!subcategory) {
-      return res.status(404).send("Subcategory not found");
-    }
-
-    // Fetch products related to the subcategory by ID
-    const products = await Product.find({
-      subcategory_id: subcategory._id,
-      isDeleted: false,
-    });
-
-    // Fetch all listed categories and their listed subcategories
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
-
-    return res.render("user/subcategory", {
-      name: user ? user.name : "",
-      user: user,
-      products,
-      subcategory,
-      wishlist,
-      categories,
-    });
-  } catch (error) {
-    console.error("Error rendering subcategory page", error);
-    return res.status(500).send("Error in rendering subcategory");
-  }
-};
+//     return res.render("user/subcategory", {
+//       name: user ? user.name : "",
+//       user: user,
+//       products,
+//       subcategory,
+//       wishlist,
+//       categories,
+//     });
+//   } catch (error) {
+//     console.error("Error rendering subcategory page", error);
+//     return res.status(500).send("Error in rendering subcategory");
+//   }
+// };
 
 // Product Page Filters
 // export const productPageFilters = async (req, res) => {

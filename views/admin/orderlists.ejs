@@ -78,7 +78,11 @@
           <td><%= order.userId.name %></td>
           <td><%= order.addressId ? order.addressId.city + ', ' + order.addressId.state : 'Address not available' %></td>
           <td>
-            <img src="/uploads/<%= encodeURIComponent(order.product.product_imgs[0]) %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <% if (order.variant && order.variant.images && order.variant.images.length > 0) { %>
+              <img src="<%= order.variant.images[0] %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <% } else { %>
+              <img src="/path/to/default-image.jpg" alt="No Image Available" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <% } %>
             <%= order.product.title.slice(0, 20) %>...
           </td>
           <td><%= order.quantity %></td>
@@ -96,7 +100,7 @@
             </p2>
           </td>
           <td>
-            <select name="order-action" class="order-action" data-product-id="<%= order.product._id %>" data-order-id="<%= order.orderId %>">
+            <select name="order-action" class="order-action" data-order-id="<%= order.orderId %>" data-product-id="<%= order.product._id %>" data-variant-id="<%= order.variantId %>" >
               <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>pending</option>
               <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>processing</option>
               <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>shipped</option>
@@ -108,22 +112,21 @@
         </tr>
       <% }) %>
     </tbody>
-  </table>
+</table>
 
 </div>
-
 <div class="pagination">
-    <% if (currentPage > 1) { %>
-        <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
-    <% } %>
+  <% if (currentPage > 1) { %>
+      <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
+  <% } %>
 
-    <% for (let i = 1; i <= totalPages; i++) { %>
-        <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
-    <% } %>
+  <% for (let i = 1; i <= totalPages; i++) { %>
+      <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+  <% } %>
 
-    <% if (currentPage < totalPages) { %>
-        <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
-    <% } %>
+  <% if (currentPage < totalPages) { %>
+      <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
+  <% } %>
 </div>
 
 
@@ -184,12 +187,14 @@ const dropdowns = document.querySelectorAll(".order-action");
     dropdown.addEventListener("change", function () {
       const selectedValue = this.value;
       const productId = this.getAttribute("data-product-id");
+      const variantId = this.getAttribute("data-variant-id");
       const orderId = this.getAttribute("data-order-id");
       const statusCell = this.closest("tr").querySelector(".status-cell");
 
       const data = {
-        productId: productId,
         orderId: orderId,
+        productId: productId,
+        variantId: variantId,
         status: selectedValue,
       };
 

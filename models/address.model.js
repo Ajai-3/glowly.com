@@ -39,6 +39,10 @@ const addressSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  // phone_no: {
+  //   type: Number,
+  //   required: true
+  // },
   alternative_phone_no: {
     type: Number,
     required: false

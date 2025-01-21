@@ -5,108 +5,114 @@
     <div class="user-contents">
       <div class="container my-4">
         <% if (cartProducts.length > 0) { %>
-        <div class="row">
-          <!-- Left Column: Cart Items -->
-          <div class="col-md-8">
-            <% cartProducts.forEach(({ product_details, quantity }) => { %>
-              <!-- Cart Item -->
-              <div class="card mb-1 px-2 shadow-sm cart-box" id="cart-box" data-product-id="<%= product_details._id %>">
-                <div class="row g-0">
-                  <div class="col-md-2 text-center mt-2">
-                    <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" 
-                    class="img-fluid rounded" alt="<%= product_details.title %>">
-                  </div>
-                  <div class="col-md-10">
-                    <div class="card-body px-3 py-2">
-                      <h6 class="card-title"><%= product_details.title %></h6>
-                      <div class="cart-box-quantity-selector d-flex my-1">
-                        <!-- <p class="qty m-0">QTY : <input type="number" class="quantity-input" value="<%= quantity %>" min="1" /></p> -->
-                        <p class="qty m-0">QTY:
-                          <select class="quantity-select">
-                            <% for (let i = 1; i <= 6; i++) { %>
-                              <option value="<%= i %>" <%= i === quantity ? 'selected' : '' %>><%= i %></option>
-                            <% } %>
-                          </select>
-                        </p>
-                        <p class="cart-stock">
-                          <% 
-                            if (product_details.available_quantity === 0) {
-                              out = 'Unavailable';
-                            } else if (quantity > product_details.available_quantity) {
-                              out = 'Not enough stock. Only ' + product_details.available_quantity + ' Left';
-                            } else {
-                              out = 'Hurry! Only ' + product_details.available_quantity + ' Left';
-                            }
-                          %>
-                          <%= out %>
-                        </p>                     
-                      </div>
-                      <a href="/product/<%= product_details._id %>">details</a>
-                      <div class="d-flex justify-content-between cart-price">
-                        <p class="card-text">Unit Price: <span class="original-price price-inr">₹<%= product_details.price %></span> 
-                        <span class="sales-price price-inr">₹<%= product_details.sales_price %></span> 
-                        <span class="discount-percentage">| 
-                          <% if (product_details.price > product_details.sales_price) { %>
-                            <span class="discount-percentage">
-                                <%= Math.round(((product_details.price - product_details.sales_price) / product_details.price) * 100) %>% Off 
+          <div class="row">
+            <!-- Left Column: Cart Items -->
+            <div class="col-md-8">
+              <% cartProducts.forEach(({ product, variant, quantity }) => { %>
+                <!-- Cart Item -->
+                <div class="card mb-1 px-2 shadow-sm cart-box" id="cart-box" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
+                  <div class="row g-0">
+                    <div class="col-md-2 text-center mt-2">
+                      <img id="main-display-image" src="<%= variant.images[0] %>" 
+                      class="img-fluid rounded" alt="<%= product.title %>">
+                    </div>
+                    <div class="col-md-10">
+                      <div class="card-body px-3 py-2">
+                        <h6 class="card-title"><%= product.title %> - <%= variant.shade %></h6>
+                        <div class="cart-box-quantity-selector d-flex my-1">
+                          <p class="qty m-0">QTY:
+                            <select class="quantity-select">
+                              <% for (let i = 1; i <= 6; i++) { %>
+                                <option value="<%= i %>" <%= i === quantity ? 'selected' : '' %>><%= i %></option>
+                              <% } %>
+                            </select>
+                          </p>
+                          <p class="cart-stock">
+                            <% 
+                              let stockMessage;
+                              if (variant.stockQuantity === 0) {
+                                stockMessage = 'Unavailable';
+                              } else if (quantity > variant.stockQuantity) {
+                                stockMessage = 'Not enough stock. Only ' + variant.stockQuantity + ' Left';
+                              } else if (variant.stockQuantity <= 10) {
+                                stockMessage = 'Hurry! Only ' + variant.stockQuantity + ' Left';
+                              } else {
+                                stockMessage = 'Stocks ' + variant.stockQuantity + ' Left';
+                              }
+                            %>
+                            <%= stockMessage %>
+                          </p>                     
+                        </div>
+                        <a href="/product/<%= product._id %>/<%= variant._id %>">details</a>
+                        <div class="d-flex justify-content-between cart-price">
+                          <p class="card-text">Unit Price: 
+                            <span class="original-price price-inr">₹<%= variant.regularPrice %></span> 
+                            <span class="sales-price price-inr">₹<%= variant.salePrice %></span> 
+                            <span class="discount-percentage">| 
+                              <% if (variant.regularPrice > variant.salePrice) { %>
+                                <span class="discount-percentage">
+                                  <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off 
+                                </span>
+                              <% } %>
                             </span>
-                          <% } %>
-                          </span></p>
-                        <p class="card-text">Total: <span class="sales-price price-inr">Total: ₹<%= product_details.sales_price * quantity %></span></p>
-                      </div>
-                      <div class="remove-cart-item">
-                        <button class="remove-product" data-product-id="<%= product_details._id %>">
-                          <i class="fa-solid fa-trash-arrow-up"></i>
-                        </button>
+                          </p>
+                          <p class="card-text">Total: 
+                            <span class="sales-price price-inr">Total: ₹<%= variant.salePrice * quantity %></span>
+                          </p>
+                        </div>
+                        <div class="remove-cart-item">
+                          <button class="remove-product" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
+                            <i class="fa-solid fa-trash-arrow-up"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            <% }); %>
-          </div>
-    
-          <!-- Right Column: Price Summary -->
-          <div class="col-md-4">
-            <div class="card shadow-sm price-summary">
-              <div class="card-body">
-                <h5 class="card-title">PRICE SUMMARY (<%= cartProducts.length %> ITEMS)</h5>
-                <hr>
-                <p class="d-flex justify-content-between">
-                  <span>Total MRP</span>
-                  <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
-                </p>
-                <p class="d-flex justify-content-between">
-                  <span>Discount</span>
-                  <span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
-                </p>
-                <p class="d-flex justify-content-between">
-                  <span>Subtotal</span>
-                  <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></span>
-                </p>
-                <hr>
-                <p class="d-flex justify-content-between">
-                  <strong>Total</strong>
-                  <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
-                </p>
-                <a href="/checkout">
-                  <button class="buy-now-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
-                </a>
+              <% }); %>
+            </div>
+      
+            <!-- Right Column: Price Summary -->
+            <div class="col-md-4">
+              <div class="card shadow-sm price-summary">
+                <div class="card-body">
+                  <h5 class="card-title">PRICE SUMMARY (<%= cartProducts.length %> ITEMS)</h5>
+                  <hr>
+                  <p class="d-flex justify-content-between">
+                    <span>Total MRP</span>
+                    <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
+                  </p>
+                  <p class="d-flex justify-content-between">
+                    <span>Discount</span>
+                    <span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span>
+                  </p>
+                  <p class="d-flex justify-content-between">
+                    <span>Subtotal</span>
+                    <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span>
+                  </p>
+                  <hr>
+                  <p class="d-flex justify-content-between">
+                    <strong>Total</strong>
+                    <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+                  </p>
+                  <a href="/user/checkout">
+                    <button class="buy-now-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         <% } else { %>
           <!-- Empty Cart Section -->
           <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
             <a href="/home">
-              <img src="/assets/logo/cart-empty-img.png" alt="Empty Cart Image" class="empty-cart-image" />
+              <img src="/assets/logo/cartEmpty.png" alt="Empty Cart Image" class="empty-cart-image" />
             </a>
             <h3>Your Shopping Bag is empty</h3>
-            <p>This feels too light! Go on, add all your favourites</p>
+            <p>This feels too light! Go on, add all your favorites</p>
             <a href="/home" class="large-button-main">Start Shopping</a>
-        </div>       
-       <% } %>
+          </div>       
+        <% } %>
       </div>
     </div>
     
@@ -187,23 +193,14 @@ document.addEventListener("DOMContentLoaded", function () {
         position: 'topRight',
       });
     };
-    const urlParams = new URLSearchParams(window.location.search);
-    const message = urlParams.get('message');  
-    const success = urlParams.get('success'); 
 
-    console.log("Message:", message);
-    console.log("Success:", success);
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get("message");
+    const success = urlParams.get("success");
 
     if (message) {
-        if (success === 'true') {
-            console.log("Displaying success message"); 
-            toastSuccess(message)
-        } else {
-            console.log("Displaying error message"); 
-            toastError(message)
-        }
-    } else {
-        console.log("No message parameter found in the URL");
+        success === "false" ? toastError(decodeURIComponent(message)) : toastSuccess(decodeURIComponent(message));
+        window.history.replaceState(null, "", window.location.pathname); 
     }
 
     
@@ -211,17 +208,15 @@ document.addEventListener("DOMContentLoaded", function () {
         select.addEventListener('change', function () {
             const productElement = this.closest('.cart-box');
             const productId = productElement.getAttribute('data-product-id');
+            const variantId = productElement.getAttribute('data-variant-id');
             const newQuantity = Number(this.value);
 
-            fetch(`/update-cart-product/${productId}`, {
+            fetch("/update-cart-product", {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    productId: productId,  
-                    quantity: newQuantity,  
-                }),
+                body: JSON.stringify({ newQuantity, productId, variantId }),
             })
             .then(response => response.json())
             .then(data => {
@@ -268,59 +263,65 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     const popup = document.getElementById('customPopup');
-    const confirmButton = document.getElementById('confirmButton');
-    const cancelButton = document.getElementById('cancelButton');
+  const confirmButton = document.getElementById('confirmButton');
+  const cancelButton = document.getElementById('cancelButton');
 
-    let currentProductId = null;
+  let currentProductId = null;
+  let currentVariantId = null;
 
-    function showPopup(productId) {
-        currentProductId = productId; 
-        popup.classList.remove('hidden');
-        popup.style.animation = 'fadeInScale 0.3s forwards';
-    }
+  function showPopup(prodId, varId) {
+    currentProductId = prodId; 
+    currentVariantId = varId;
+    popup.classList.remove('hidden');
+    popup.style.animation = 'fadeInScale 0.3s forwards';
+  }
 
-    function hidePopup() {
-        popup.style.animation = 'fadeOutScale 0.3s forwards';
-        setTimeout(() => {
-            popup.classList.add('hidden');
-        }, 300);
-    }
+  function hidePopup() {
+    popup.style.animation = 'fadeOutScale 0.3s forwards';
+    setTimeout(() => {
+      popup.classList.add('hidden');
+    }, 300);
+  }
 
-    confirmButton.addEventListener('click', () => {
-        if (currentProductId) {
-            fetch(`/remove-cart-product/${currentProductId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    hidePopup();
-                    setTimeout(() => {
-                        location.reload();
-                    }, 1500);
-                    toastSuccess(data.message) 
-                } else {
-                  toastError(data.message)
-                    throw new Error(data.message);
-                }
-            })
-            .catch(error => {
-              toastWarning(error.message || 'An error occurred. Please try again.')
-            });
+  confirmButton.addEventListener('click', () => {
+    if (currentProductId && currentVariantId) {
+      console.log("variantId", currentVariantId)
+      console.log("productId", currentProductId)
+      fetch("/remove-cart-product", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId: currentProductId, variantId: currentVariantId }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          hidePopup();
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+          toastSuccess(data.message) 
+        } else {
+          toastError(data.message)
+          throw new Error(data.message);
         }
-    });
+      })
+      .catch(error => {
+        toastWarning(error.message || 'An error occurred. Please try again.')
+      });
+    }
+  });
 
-    cancelButton.addEventListener('click', hidePopup);
+  cancelButton.addEventListener('click', hidePopup);
 
-    document.querySelectorAll('.remove-product').forEach(button => {
-        button.addEventListener('click', function () {
-            const productId = this.getAttribute('data-product-id');
-            showPopup(productId); 
-        });
+  document.querySelectorAll('.remove-product').forEach(button => {
+    button.addEventListener('click', function () {
+      const prodId = this.getAttribute('data-product-id');
+      const varId = this.getAttribute('data-variant-id');
+      showPopup(prodId, varId); 
     });
+  });
 });
 
 

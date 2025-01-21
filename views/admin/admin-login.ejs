@@ -51,4 +51,17 @@
 
 </body>
 <%- include('partials/footer') %> 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const togglePassword = document.querySelector(".togglePassword");
+    const passwordInput = document.querySelector(".input.password");
+
+    togglePassword.addEventListener("click", () => {
+        const currentType = passwordInput.getAttribute("type");
+        passwordInput.setAttribute("type", currentType === "password" ? "text" : "password");
+        togglePassword.querySelector("i").classList.toggle("fa-eye");
+        togglePassword.querySelector("i").classList.toggle("fa-eye-slash");
+    });
+});
+</script>
 </html>

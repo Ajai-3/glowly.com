@@ -13,7 +13,19 @@ export const renderCartPage = async (req, res) => {
     const token = req.cookies.token;
     let user = null;
     let cart = null;
-    const message = req.query.message || null;
+    let cartProducts = [];
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        user = decoded;
+        cart = await Cart.findOne({ user_id: user.userId }).populate(
+          "products.product_id products.variant_id"
+        );
+      } catch (error) {
+        console.log("Invalid or expired token:", error);
+      }
+    }
 
     const products = await Product.find({ isDeleted: false });
     const brands = await Brand.find({ isListed: true });
@@ -22,57 +34,63 @@ export const renderCartPage = async (req, res) => {
       match: { isListed: true },
     });
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId });
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
-    }
+    const cartCount = cart?.products?.length || 0;
 
-    if (!cart || !cart.products || cart.products.length === 0) {
-      return res.render("user/cart", {
-        name: user ? user.name : "",
-        user: user,
-        categories,
-        cartProducts: [],
-        message,
-      });
-    }
+    if (cart && cart.products.length > 0) {
+      const sortedCartProducts = cart.products.sort(
+        (a, b) => new Date(b.added_at) - new Date(a.added_at)
+      );
 
-    const cartProducts = await Promise.all(
-      cart.products
-        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-        .map(async (cartProduct) => {
-          const productDetails = await Product.findById(cartProduct.product_id);
+      cartProducts = await Promise.all(
+        sortedCartProducts.map(async (item) => {
+          const productDetails = await Product.findById(item.product_id);
+          if (!productDetails) {
+            console.log(`Product not found: ${item.product_id}`);
+            return null;
+          }
+
+          const variantDetails = productDetails.variants.find(
+            (variant) =>
+              variant._id &&
+              variant._id.toString() === item.variant_id?.toString()
+          );
+
+          if (!variantDetails) {
+            console.log(`Variant not found: ${item.variant_id}`);
+            return null;
+          }
+
           return {
-            ...cartProduct.toObject(),
-            product_details: productDetails,
+            product: productDetails,
+            variant: variantDetails,
+            quantity: item.quantity,
+            added_at: item.added_at,
           };
         })
-    );
+      );
+
+      // Filter out any null entries that were returned in case of missing products or variants
+      cartProducts = cartProducts.filter((item) => item !== null);
+    }
 
     return res.render("user/cart", {
       name: user ? user.name : "",
-      user: user,
-      brands,
-      products,
-      categories,
+      user,
       cartProducts,
-      message,
+      products,
+      brands,
+      categories,
+      cartCount,
     });
   } catch (error) {
-    console.error("Error renderinf cart Page", error);
-    return res.status(500).send("Cart Page error");
+    console.error("Error rendering cart page:", error);
+    res.status(500).send("Internal Server Error");
   }
 };
 
 // Add Product To Cart
 export const addToCart = async (req, res) => {
-  const { id } = req.params;
-  let { quantity } = req.body;
+  let { quantity, productId, variantId } = req.body;
   quantity = quantity || 1;
 
   try {
@@ -88,72 +106,92 @@ export const addToCart = async (req, res) => {
 
     let cart = await Cart.findOne({ user_id: userId });
 
-    const product = await Product.findById(id);
+    const product = await Product.findById(productId);
     if (!product) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found" });
     }
 
+    if (!variantId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Variant ID is required" });
+    }
+
+    const variant = product.variants.find(
+      (item) => item._id.toString() === variantId.toString()
+    );
+    if (!variant) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Variant not found" });
+    }
+
     if (quantity > 6) {
       return res.json({ success: false, message: "Cannot add more than 6." });
     }
 
-    if (product.available_quantity < quantity) {
+    if (variant.stockQuantity < quantity) {
       return res.json({
         success: false,
         message: "Not enough stock available",
       });
     }
 
-    // if (cart.products.length === 16) {
-    //   return res.json({
-    //     success: false,
-    //     message: "Your cart rech maximum limit.",
-    //   });
-    // }
+    if (cart && cart.products.length === 16) {
+      return res.json({
+        success: false,
+        message: "Your cart reached maximum limit.",
+      });
+    }
 
     if (!cart) {
       cart = new Cart({
         user_id: userId,
-        products: [{ product_id: id, quantity, created_at: new Date() }],
+        products: [
+          {
+            product_id: productId,
+            variant_id: variantId,
+            quantity,
+            added_at: new Date(),
+          },
+        ],
       });
       await cart.save();
-      // const updatedStock = product.available_quantity - quantity;
-      // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+
       return res.json({ success: true, message: "Product added to cart" });
     } else {
-      const existingProduct = cart.products.find((item) =>
-        item.product_id.equals(id)
+      const existingItem = cart.products.find(
+        (item) => item.variant_id.toString() === variantId.toString()
       );
 
-      if (existingProduct) {
-        existingProduct.quantity = Number(quantity);
+      if (existingItem) {
+        existingItem.quantity = Number(quantity);
 
-        if (existingProduct.quantity > 6) {
+        if (existingItem.quantity > 6) {
           return res.json({
             success: false,
             message: "Cannot add more than 6.",
           });
         }
-        existingProduct.created_at = new Date();
+        existingItem.added_at = new Date();
 
         await cart.save();
-        // const updatedStock = product.available_quantity - quantity;
-        // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+
         return res.json({
           success: true,
           message: "Cart updated successfully",
         });
       } else {
         cart.products.push({
-          product_id: id,
+          product_id: productId,
+          variant_id: variantId,
           quantity,
-          created_at: new Date(),
+          added_at: new Date(),
         });
         await cart.save();
-        // const updatedStock = product.available_quantity - quantity;
-        // await Product.findByIdAndUpdate(id, { available_quantity: updatedStock });
+
         return res.json({ success: true, message: "Product added to cart" });
       }
     }
@@ -168,31 +206,21 @@ export const addToCart = async (req, res) => {
 // Remove Product From Cart
 export const removeCartProduct = async (req, res) => {
   try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res.render("/home");
-    }
-
     let user;
-    try {
+    const { variantId, productId } = req.body;
+
+    const token = req.cookies.token;
+
+    if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
       user = decoded;
-    } catch (error) {
-      console.error("Invalid token:", error);
-      // return res.json({ success: false, message: 'Invalid token' });
+    } else {
+      return res.redirect("/home");
     }
 
-    const userId = user.userId;
-
-    const cart = await Cart.findOne({ user_id: userId });
+    const cart = await Cart.findOne({ user_id: user.userId });
     if (!cart) {
       return res.json({ success: false, message: "Cart not found" });
-    }
-
-    const { productId } = req.params;
-
-    if (!productId) {
-      return res.json({ success: false, message: "Product ID is required" });
     }
 
     const product = await Product.findById(productId);
@@ -201,8 +229,8 @@ export const removeCartProduct = async (req, res) => {
     }
 
     const result = await Cart.updateOne(
-      { user_id: userId },
-      { $pull: { products: { product_id: productId } } }
+      { user_id: user.userId },
+      { $pull: { products: { product_id: productId, variant_id: variantId } } }
     );
 
     if (result.modifiedCount === 0) {
@@ -223,32 +251,47 @@ export const removeCartProduct = async (req, res) => {
 // Update Product Quantity In Cart Page
 export const updateCartPageProduct = async (req, res) => {
   try {
+    const { newQuantity, productId, variantId } = req.body;
+
+    // console.log("quantity", newQuantity);
+    // console.log("productId", productId);
+    // console.log("variantId", variantId);
+
     const token = req.cookies.token;
     let user = null;
     let cart = null;
 
     if (!token) {
-      return res.render("/home");
-    }
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId });
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
+      return res.status(401).json({ success: false, message: "Unauthorized" });
     }
 
-    const { productId } = req.params;
-    const { quantity } = req.body;
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      user = decoded;
+      cart = await Cart.findOne({ user_id: user.userId });
+    } catch (error) {
+      console.log("Invalid or expired token:", error);
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
 
-    const productInCart = cart.products.find((item) =>
-      item.product_id.equals(productId)
+    if (!cart || !cart.products) {
+      console.error("Cart or products are not defined");
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+
+    const productInCart = cart.products.find(
+      (item) =>
+        item.product_id.toString() === productId.toString() &&
+        item.variant_id.toString() === variantId.toString()
     );
     if (!productInCart) {
-      return res.json({ success: false, message: "Product not found in cart" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found in cart" });
     }
+
     const product = await Product.findById(productId);
     if (!product) {
       return res
@@ -256,70 +299,40 @@ export const updateCartPageProduct = async (req, res) => {
         .json({ success: false, message: "Product not found" });
     }
 
-    if (product.available_quantity < quantity) {
-      return res.json({
-        success: false,
-        message: "Not enough stock available",
-      });
+    const variant = product.variants.id(variantId);
+    if (!variant) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Variant not found" });
     }
 
-    productInCart.quantity = quantity;
+    if (variant.stockQuantity < newQuantity) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Not enough stock available" });
+    }
+
+    productInCart.quantity = newQuantity;
 
     await cart.save();
     return res.json({ success: true, message: "Cart updated successfully" });
   } catch (error) {
-    console.error("Error in updating cart product");
+    console.error("Error in updating cart product:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error" });
   }
 };
-
-// export const updatedCart = async (req, res) => {
-//     try {
-//         const token = req.cookies.token;
-//         let user = null;
-//         let cart = null;
-
-//         if (!token) return res.redirect('/home');
-
-//         if (token) {
-//             try {
-//                 const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//                 user = decoded;
-//                 cart = await Cart.findOne({ user_id: user.userId })
-//             } catch (error) {
-//                 console.log("Invalid or expired token:", error);
-//             }
-//         }
-
-//         const products = await Product.find({ isDeleted: false });
-//         const cartProducts = await Promise.all(
-//             cart.products
-//                 .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-//                 .map(async (cartProduct) => {
-//                     const productDetails = await Product.findById(cartProduct.product_id);
-//                     return {
-//                         ...cartProduct.toObject(),
-//                         product_details: productDetails
-//                     };
-//                 })
-//         );
-//         const categories = await Category.find({ isListed: true })
-//         .populate({
-//             path: 'subcategories',
-//             match: { isListed: true },
-//         });
-
-//         res.render('user/cart', { user, categories, cartProducts, products });
-//     } catch (error) {
-//         console.error('Error fetching updated cart:', error);
-//         res.status(500).send('Error fetching cart');
-//     }
-// };
 
 // Buy Now Button in product page
 export const buyNow = async (req, res) => {
   try {
     const token = req.cookies.token;
-    const { product_id, quantity } = req.body;
+    const { quantity, productId, variantId } = req.body;
+
+    // console.log("quantity", quantity)
+    // console.log("prouctId", productId)
+    // console.log("variantId",variantId)
 
     if (!token) {
       return res.status(404).json({
@@ -332,25 +345,32 @@ export const buyNow = async (req, res) => {
     const userId = decoded.userId;
 
     let cart = await Cart.findOne({ user_id: userId });
-    const product = await Product.findById(product_id);
+
+    const product = await Product.findById(productId);
     if (!product) {
       return res
         .status(404)
         .json({ success: false, message: "Product not found" });
     }
-    if (quantity > 6) {
-      return res.status(404).json({
-        success: false,
-        message: `Canot buy more than 6 quanity.`,
-      });
+
+    const variant = await product.variants.id(variantId);
+    if (!variant) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Variant not found" });
     }
 
-    if (product.available_quantity < quantity) {
+    if (quantity > 6) {
+      return res.json({ success: false, message: "Cannot add more than 6." });
+    }
+
+    if (variant.stockQuantity < quantity) {
       return res.json({
         success: false,
         message: "Not enough stock available",
       });
     }
+
 
     if (cart.products.length === 16) {
       return res.json({
@@ -362,38 +382,48 @@ export const buyNow = async (req, res) => {
     if (!cart) {
       cart = new Cart({
         user_id: userId,
-        products: [{ product_id: product_id, quantity, created_at: new Date() }],
+        products: [
+          {
+            product_id: productId,
+            variant_id: variantId,
+            quantity,
+            added_at: new Date(),
+          },
+        ],
       });
       await cart.save();
       return res.json({ success: true, message: "Product added to cart" });
     } else {
-      const existingProduct = cart.products.find((item) =>
-        item.product_id.equals(product_id)
+      const existingItem = cart.products.find(
+        (item) => item.variant_id.toString() === variantId.toString()
       );
 
-      if (existingProduct) {
-        existingProduct.quantity = Number(quantity);
+      if (existingItem) {
+        existingItem.quantity = Number(quantity);
 
-        if (existingProduct.quantity > 6) {
+        if (existingItem.quantity > 6) {
           return res.json({
             success: false,
             message: "Cannot add more than 6.",
           });
         }
-        existingProduct.created_at = new Date();
+        existingItem.added_at = new Date();
 
         await cart.save();
+
         return res.json({
           success: true,
           message: "Cart updated successfully",
         });
       } else {
         cart.products.push({
-          product_id: product_id,
+          product_id: productId,
+          variant_id: variantId,
           quantity,
-          created_at: new Date(),
+          added_at: new Date(),
         });
         await cart.save();
+
         return res.json({ success: true, message: "Product added to cart" });
       }
     }

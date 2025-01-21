@@ -1,91 +1,144 @@
 import jwt from "jsonwebtoken"
+import mongoose from "mongoose"
 import dotenv from "dotenv";dotenv.config()
+import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js"
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
 import Wishlist from "../../models/wishlist.model.js";
 
 
-
-
 export const renderWishlistPage = async (req, res) => {
     try {
         const token = req.cookies.token;
-        let user = null; 
+        let user = null;
+        let cart;
+        let wishlist;
+        let wishlistProducts = [];
+        const ITEMS_PER_PAGE = 3;
+        const page = parseInt(req.query.page) || 1; 
+
         if (token) {
             const decoded = jwt.decode(token);
-            user = decoded; 
-        }  
+            user = decoded;
+            cart = await Cart.findOne({ user_id: user.userId });
+            wishlist = await Wishlist.findOne({ user_id: user.userId });
+        }
 
         if (!token) {
-            return res.redirect('/home')
+            return res.redirect('/home');
         }
-        
-        const products = await Product.find({ isDeleted: false });
-        const brands = await Brand.find({ isListed: true })
-        const categories = await Category.find({ isListed: true })
-        .populate({
+
+        const cartCount = cart?.products?.length || 0;
+
+        if (wishlist && wishlist.products.length > 0) {
+            const totalItems = wishlist.products.length;
+
+            // Sort wishlist products by `added_at` in descending order
+            wishlist.products.sort((a, b) => new Date(b.added_at) - new Date(a.added_at));
+
+            // Paginate after sorting
+            const startIndex = (page - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+
+            wishlistProducts = await Promise.all(
+                wishlist.products.slice(startIndex, endIndex).map(async (item) => {
+                    const productDetails = await Product.findById(item.product_id);
+                    const variantDetails = productDetails?.variants.find(
+                        (variant) => variant._id.toString() === item.variant_id.toString()
+                    );
+
+                    if (productDetails && variantDetails) {
+                        return {
+                            product: productDetails,
+                            variant: variantDetails,
+                            added_at: item.added_at
+                        };
+                    }
+                    return null;
+                })
+            );
+            wishlistProducts = wishlistProducts.filter((item) => item !== null);
+        }
+
+        const totalPages = Math.ceil((wishlist ? wishlist.products.length : 0) / ITEMS_PER_PAGE);
+
+        const categories = await Category.find({ isListed: true }).populate({
             path: 'subcategories',
-            match: { isListed: true },  
-        });      
-                     
-        return res.render("user/wishlist", {
-           name: user ? user.name : "",
-           user: user,
-        //    brands,
-        //    products,
-           categories
-        })
+            match: { isListed: true },
+        });
+
+        return res.render("user/my-wishlist", {
+            name: user ? user.name : "",
+            user: user,
+            categories,
+            wishlistProducts,
+            currentPage: page,
+            totalPages,
+            cartCount,
+            wishlist // Pass the wishlist data to the view
+        });
     } catch (error) {
-        console.error("Error renderinf cart Page", error);
-        return res.status(500).send("Cart Page error")
+        console.error("Error rendering wishlist page", error);
+        return res.status(500).send("Wishlist Page error");
     }
-}
+};
+
+
+
 
 // Add A To Wishlist
 export const addToWishlist = async (req, res) => {
     try {
+        const { product_id, variant_id } = req.body;
         const token = req.cookies.token;
 
         if (!token) {
-            return res.status(403).json({ message: 'No token provided' });
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        if (!mongoose.Types.ObjectId.isValid(product_id) || !mongoose.Types.ObjectId.isValid(variant_id)) {
+            return res.status(400).json({ error: 'Invalid product_id or variant_id' });
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        } catch (err) {
+            return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+        }
+
         const userId = decoded.userId;
-        const productId = req.params.productId;
-
-        // console.log("Decoded User ID:", userId);
-        // console.log("Product ID:", productId);
-
 
         let wishlist = await Wishlist.findOne({ user_id: userId });
-
-        // console.log("Wishlist", wishlist)
 
         if (!wishlist) {
             wishlist = new Wishlist({ user_id: userId, products: [] });
             await wishlist.save();
         }
 
-        const isProductInWishlist = wishlist.products.some(item => item.product_id.toString() === productId);
+        const isProductInWishlist = wishlist.products.some(
+            item =>
+                item.product_id.toString() === product_id &&
+                item.variant_id.toString() === variant_id
+        );
 
         if (isProductInWishlist) {
             await Wishlist.updateOne(
                 { _id: wishlist._id },
-                { $pull: { products: { product_id: productId } } }
+                { $pull: { products: { product_id: product_id, variant_id: variant_id } } }
             );
             return res.json({ action: 'removed' });
         } else {
             await Wishlist.updateOne(
                 { _id: wishlist._id },
-                { $push: { products: { product_id: productId } } }
+                { $push: { products: { product_id: product_id, variant_id: variant_id } } }
             );
             return res.json({ action: 'added' });
         }
 
     } catch (error) {
-        console.error("Error adding/removing product in wishlist", error);
-        return res.status(500).send("Error in add/remove to wishlist");
+        console.error("Error adding/removing product in wishlist:", error);
+        return res.status(500).json({ error: "Error in add/remove to wishlist" });
     }
 };

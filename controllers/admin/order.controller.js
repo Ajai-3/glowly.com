@@ -27,15 +27,21 @@ export const renderOrderPage = async (req, res) => {
       const allProducts = orders.flatMap(order => 
           order.products.filter(product => {
               return status === 'all' || product.status === status;
-          }).map(product => ({
-              orderId: order._id,
-              userId: order.user_id,
-              addressId: order.address_id,
-              product: product.product_id,
-              quantity: product.quantity,
-              totalAmount: product.product_id.price * product.quantity,
-              status: product.status
-          }))
+          }).map(product => {
+              const variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString());
+              const price = variant ? variant.salePrice : 0; // Use salePrice or regularPrice from variant
+              return {
+                  orderId: order._id,
+                  userId: order.user_id,
+                  addressId: order.address_id,
+                  product: product.product_id,
+                  variant: variant,
+                  quantity: product.quantity,
+                  totalAmount: price * product.quantity,
+                  status: product.status,
+                  variantId: product.variant_id // Pass variant ID
+              };
+          })
       );
 
       const totalProducts = allProducts.length;
@@ -60,14 +66,12 @@ export const renderOrderPage = async (req, res) => {
 
 
 
-
-
 // Update Order Status 
 export const updateOrderStatus = async (req, res) => {
   try {
-    const { orderId, productId, status } = req.body;
+    const { orderId, productId, variantId, status } = req.body;
 
-    if (!orderId || !productId || !status) {
+    if (!orderId || !productId || !variantId || !status) {
       return res.status(400).json({ success: false, message: 'Missing required fields.' });
     }
 
@@ -89,7 +93,10 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order or product not found.' });
     }
 
-    const productInOrder = order.products.find(item => item.product_id.toString() === productId);
+    const productInOrder = order.products.find(item => 
+      item.product_id.toString() === productId && 
+      item.variant_id.toString() === variantId
+    );
     if (!productInOrder) {
       return res.status(404).json({ success: false, message: 'Product not found in the order.' });
     }
@@ -99,11 +106,30 @@ export const updateOrderStatus = async (req, res) => {
       if (!product) {
         return res.status(404).json({ success: false, message: 'Product not found.' });
       }
+      const variant = product.variants.find(v => v._id.toString() === variantId);
 
-      product.available_quantity += productInOrder.quantity;
+      if (!variant) {
+        return res.status(404).json({ success: false, message: 'Variant not found in the product.' });
+      }
+
+      variant.stockQuantity += productInOrder.quantity;
       await product.save();
     }
 
+    if (status === 'return_req' && productInOrder.status !== 'return_req') {
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ success: false, message: 'Product not found.' });
+      }
+      const variant = product.variants.find(v => v._id.toString() === variantId);
+
+      if (!variant) {
+        return res.status(404).json({ success: false, message: 'Variant not found in the product.' });
+      }
+
+      variant.stockQuantity += productInOrder.quantity;
+      await product.save();
+    }
     productInOrder.status = status;
     await order.save();
 

@@ -37,7 +37,7 @@
               <p>Enter your delivery address or search for the specific area</p>
             </div>
             <div>
-              <button class="large-button-blue"><i class="fa-solid fa-plus"></i> Add address</button>
+              <a href="/user/manage-address "><button class="large-button-blue"><i class="fa-solid fa-plus"></i> Add address</button></a>
             </div>
           </div>
           <hr>
@@ -86,29 +86,38 @@
           <div class="card-body">
             <h5 class="card-title">ORDER SUMMARY</h5>
             <hr>
-            <p class="d-flex justify-content-between">
+            <p class="d-flex justify-content-between mt-2">
               <span>Price (<%= cartProducts.length %> ITEMS)</span>
-              <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
+              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
             </p>
             <p class="d-flex justify-content-between">
               <span>Discount</span>
-              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
+              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span>
             </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span>
-              <% if (cartProducts.delivery_charge) { %>
-              <span class="price-inr">sfsdf</span>
-              <% }else { %>
-              <span>
-                <span class="original-price price-inr mx-2">₹ 60</span>
-                <span class="discount-percentage">Free</span>
-              </span>
+              <% if (cartProducts.some(product => product.delivery_charge)) { %>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
+              <% } else { %>
+                <span>
+                  <span class="original-price price-inr mx-2">₹ 60</span>
+                  <span class="discount-percentage">Free</span>
+                </span>
               <% } %>
             </p>
+            <p class="d-flex justify-content-between">
+              <span>GST (18%)</span>
+              <span>
+                ₹<%= cartProducts
+                  .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+                  .toFixed(2)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+              </span>
+            </p>
             <hr>
-            <p class="d-flex justify-content-between mb-1">
+            <p class="d-flex justify-content-between mt-2 mb-1">
               <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
+              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
             </p>
           </div>
         </div>
@@ -173,42 +182,44 @@
           </div>
           <hr>
           <% if (cartProducts.length > 0) { %>
-          <% cartProducts.forEach(({ product_details, quantity }) => { %>
-          <!-- Cart Item -->
-          <div class="cart-item card cart-box-in-checkout mb-1 px-2 shadow-sm " data-product-id="<%= product_details._id %>">
-            <div class="row g-0">
-              <div class="col-md-2 text-center">
-                <img id="main-display-image" src="/uploads/<%= encodeURIComponent(product_details.product_imgs[0]) %>" class="img-fluid rounded" alt="<%= product_details.title %>">
-              </div>
-              <div class="col-md-10">
-                <div class="card-body px-2 py-0">
-                  <h6 class="card-title"><%= product_details.title %></h6>
-                  <div class="cart-box-quantity-selector d-flex my-1">
-                    <p class="product-quantity qty m-0">QTY: <%= quantity %>
-                    </p>
+            <% cartProducts.forEach(({ product_details, variant, quantity }) => { %>
+              <!-- Cart Item -->
+              <div class="cart-item card cart-box-in-checkout mb-1 px-2 shadow-sm" data-product-id="<%= product_details._id %>" data-variant-id="<%= variant._id %>">
+                <div class="row g-0">
+                  <div class="col-md-2 text-center">
+                    <img id="main-display-image" src="<%= variant.images[0] %>" class="img-fluid rounded" alt="<%= product_details.title %>">
                   </div>
-                  <!-- <a href="/product/<%= product_details._id %>">details</a> -->
-                  <div class="d-flex justify-content-between cart-price">
-                    <p class="card-text">Unit Price: <span class="original-price price-inr">₹<%= product_details.price %></span>
-                      <span class="sales-price price-inr">₹<%= product_details.sales_price %></span>
-                      <span class="discount-percentage">|
-                        <% if (product_details.price > product_details.sales_price) { %>
-                        <span class="discount-percentage">
-                          <%= Math.round(((product_details.price - product_details.sales_price) / product_details.price) * 100) %>% Off
-                        </span>
-                        <% } %>
-                      </span>
-                    </p>
-                    <p class="card-text">Total: <span class="sales-price price-inr">Total: ₹<%= product_details.sales_price * quantity %></span></p>
+                  <div class="col-md-10">
+                    <div class="card-body px-2 py-0">
+                      <h6 class="card-title"><%= product_details.title %></h6>
+                      <div class="cart-box-quantity-selector d-flex my-1">
+                        <p class="product-quantity qty m-0">QTY: <%= quantity %>&nbsp;&nbsp;&nbsp; shade:&nbsp; <%= variant.shade %></p>
+                      </div>
+                      <div class="d-flex justify-content-between cart-price">
+                        <p class="card-text">
+                          Unit Price: 
+                          <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
+                          <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
+                          <span class="discount-percentage">|
+                            <% if (variant.regularPrice > variant.salePrice) { %>
+                              <span class="discount-percentage">
+                                <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
+                              </span>
+                            <% } %>
+                          </span>
+                        </p>
+                        <p class="card-text">
+                          Total: 
+                          <span class="sales-price price-inr">Total: ₹<%= variant.salePrice * quantity %></span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-
                 </div>
               </div>
-            </div>
-          </div>
-          <% }); %>
+            <% }); %>
           <% } else { %>
-          <p>No Products.</p>
+            <p>No Products.</p>
           <% } %>
           <!-- <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>             -->
         </div>
@@ -223,39 +234,57 @@
       </div>
 
       <!-- Order Summary -->
-      <div class="col-md-6 m-0">
-        <div class="card shadow-sm price-summary">
-          <div class="card-body">
-            <h5 class="card-title">ORDER SUMMARY</h5>
-            <hr>
-            <p class="d-flex justify-content-between">
-              <span>Price (<%= cartProducts.length %> ITEMS)</span>
-              <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>Discount</span>
-              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>Delivery Charges</span>
-              <% if (cartProducts.delivery_charge) { %>
-              <span class="price-inr">sfsdf</span>
-              <% }else { %>
-              <span>
-                <span class="original-price price-inr mx-2">₹ 60</span>
-                <span class="discount-percentage">Free</span>
-              </span>
-              <% } %>
-            </p>
-            <hr>
-            <p class="d-flex justify-content-between mb-1">
-              <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
-            </p>
-          </div>
-        </div>
-        <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>
-      </div>
+
+<div class="col-md-6 m-0">
+  <div class="card shadow-sm price-summary">
+    <div class="card-body">
+      <h5 class="card-title">ORDER SUMMARY</h5>
+      <hr>
+      <p class="d-flex justify-content-between mt-2">
+        <span>Price (<%= cartProducts.length %> ITEMS)</span>
+        <span class="price-inr">
+          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %>
+        </span>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>Discount</span>
+        <span class="discount-percentage price-inr">
+          -₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %>
+        </span>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>Delivery Charges</span>
+        <% if (cartProducts.some(product => product.delivery_charge)) { %>
+          <span class="price-inr">
+            ₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %>
+          </span>
+        <% } else { %>
+          <span>
+            <span class="original-price price-inr mx-2">₹ 60</span>
+            <span class="discount-percentage">Free</span>
+          </span>
+        <% } %>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>GST (18%)</span>
+        <span>
+          ₹<%= cartProducts
+            .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+        </span>
+      </p>
+      <hr>
+      <p class="d-flex justify-content-between mt-2 mb-1">
+        <strong>Total</strong>
+        <strong class="price-inr">
+          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>
+        </strong>
+      </p>
+    </div>
+  </div>
+  <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>
+</div>
     </div>
   </div>
 
@@ -292,11 +321,8 @@
             <div class="d-flex align-items-center">
               <div class="checked-page-numbers me-3">1</div>
               <div>
-                <h5 class="m-0">Address</h5>
-                <% if (addresses.length > 0) { %>
-                <p><%= addresses[0].pin_code %> <%= addresses[0].city %>, <%= addresses[0].district %>, <%= addresses[0].state %>, <%= addresses[0].country %></p>
-                <p>Phone: <%= user.phone %>, Alternative: <%= addresses[0].alternative_phone_no %></p>
-                <% } %>
+                <h5 class="m-0">Delivery Address</h5>
+                <div id="step3-content"></div>
               </div>
 
             </div>
@@ -346,7 +372,7 @@
             <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
             <label class="form-check-label" for="cash">Cash on Delivery</label>
           </div>
-          <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span class=" price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></span></button>
+          <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span class=" price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span></button>
         </div>
       </div>
 
@@ -356,37 +382,47 @@
           <div class="card-body">
             <h5 class="card-title">ORDER SUMMARY</h5>
             <hr>
-            <p class="d-flex justify-content-between">
+            <p class="d-flex justify-content-between mt-2">
               <span>Price (<%= cartProducts.length %> ITEMS)</span>
-              <span class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.price * quantity), 0) %></span>
+              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
             </p>
             <p class="d-flex justify-content-between">
               <span>Discount</span>
-              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + ((product_details.price - product_details.sales_price) * quantity), 0) %></span>
+              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span>
             </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span>
-              <% if (cartProducts.delivery_charge) { %>
-              <span class="price-inr">sfsdf</span>
-              <% }else { %>
-              <span>
-                <span class="original-price price-inr mx-2">₹ 60</span>
-                <span class="discount-percentage">Free</span>
-              </span>
+              <% if (cartProducts.some(product => product.delivery_charge)) { %>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
+              <% } else { %>
+                <span>
+                  <span class="original-price price-inr mx-2">₹ 60</span>
+                  <span class="discount-percentage">Free</span>
+                </span>
               <% } %>
             </p>
+            <p class="d-flex justify-content-between">
+              <span>GST (18%)</span>
+              <span>
+                ₹<%= cartProducts
+                  .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+                  .toFixed(2)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+              </span>
+
+            </p>
             <hr>
-            <p class="d-flex justify-content-between mb-1">
+            <p class="d-flex justify-content-between mt-2 mb-1">
               <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { product_details, quantity }) => total + (product_details.sales_price * quantity), 0) %></strong>
+              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
             </p>
           </div>
         </div>
-        <!-- Coupn -->
+        <!-- Coupon -->
         <div class="check-coupon m-2">
-          <form action="/check-coupn">
-            <label for="coupn">Do you have any Coupon</label><br>
-            <input type="text" name="coupn" id="coupn" placeholder="Enter code">
+          <form action="/check-coupon">
+            <label for="coupon">Do you have any Coupon</label><br>
+            <input type="text" name="coupon" id="coupon" placeholder="Enter code">
             <button type="submit" class="large-button-green p-1 px-3">Verify</button>
           </form>
         </div>
@@ -469,168 +505,170 @@
         position: 'topRight',
       });
     };
-  document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", () => {
     const step1 = document.getElementById("step1");
     const step2 = document.getElementById("step2");
     const step3 = document.getElementById("step3");
 
     let selectedAddressId = null;
+    let selectedAddress = null;
     let grandTotal = 0;
 
     showStep(step1);
 
     step1.addEventListener("click", (event) => {
-      if (event.target && event.target.classList.contains("address-select")) {
-        selectedAddressId = event.target.getAttribute("data-id");
-        const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
+        if (event.target && event.target.classList.contains("address-select")) {
+            selectedAddressId = event.target.getAttribute("data-id");
+            const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
 
-        const selectedAddress = {
-          id: selectedAddressId,
-          details: selectedAddressDetails,
-        };
-        renderStep2(selectedAddress);
-        showStep(step2);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      }
+            selectedAddress = {
+                id: selectedAddressId,
+                details: selectedAddressDetails,
+            };
+            renderStep2(selectedAddress);
+            showStep(step2);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
     });
 
     function renderStep2(address) {
-      const step2Content = document.getElementById("step2-content");
-      step2Content.innerHTML = `<p>${address.details}</p>`;
+        const step2Content = document.getElementById("step2-content");
+        step2Content.innerHTML = `<p>${address.details}</p>`;
     }
 
     document.getElementById("proceed-to-pay").addEventListener("click", () => {
-      showStep(step3);
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+        renderStep3(selectedAddress);
+        showStep(step3);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     });
 
+    function renderStep3(address) {
+        const step3Content = document.getElementById("step3-content");
+        step3Content.innerHTML = `<p>${address.details}</p>`;
+    }
 
     function getSelectedPaymentMethod() {
-      const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
-      return paymentMethodElement ? paymentMethodElement.id : null;
+        const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
+        return paymentMethodElement ? paymentMethodElement.id : null;
     }
 
     const payButton = document.querySelector(".pay-btn-checkoutpage");
     payButton.addEventListener("click", async () => {
-      const cartProducts = getCartProducts();
-      const selectedPaymentMethod = getSelectedPaymentMethod();
+        const cartProducts = getCartProducts();
+        const selectedPaymentMethod = getSelectedPaymentMethod();
 
-      if (!selectedPaymentMethod) {
-        toastError("Please select a payment method.")
-        return;
-      }
-
-      const orderData = {
-        address_id: selectedAddressId,
-        cart: cartProducts,
-        grandTotal: grandTotal,
-        coupoun: false,
-        payment_method: selectedPaymentMethod,
-      };
-      console.log(orderData)
-
-      try {
-        const response = await fetch("/place-order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(orderData),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          showStep(step1);
-          toastSuccess("Order placed successfully!")
-          const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
-          orderConfirmationModal.show();
-
-          document.getElementById("continueShopping").addEventListener("click", () => {
-            orderConfirmationModal.hide();
-            window.location.href = "/home";
-          });
-
-          document.getElementById("goToOrders").addEventListener("click", () => {
-            orderConfirmationModal.hide();
-            window.location.href = "/my-orders";
-          });
-
-        } else {
-          toastError("Something went wrong. Please try again.")
+        if (!selectedPaymentMethod) {
+            toastError("Please select a payment method.");
+            return;
         }
-      } catch (error) {
-        toastWarning("There was an error placing your order. Please try again.")
-      }
+
+        const orderData = {
+            address_id: selectedAddressId,
+            cart: cartProducts,
+            grandTotal: grandTotal,
+            coupoun: false,
+            payment_method: selectedPaymentMethod,
+        };
+        // console.log(orderData);
+
+        try {
+            const response = await fetch("/place-order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showStep(step1);
+                toastSuccess("Order placed successfully!");
+                const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
+                orderConfirmationModal.show();
+
+                document.getElementById("continueShopping").addEventListener("click", () => {
+                    orderConfirmationModal.hide();
+                    window.location.href = "/home";
+                });
+
+                document.getElementById("goToOrders").addEventListener("click", () => {
+                    orderConfirmationModal.hide();
+                    window.location.href = "/my-orders";
+                });
+
+            } else {
+                toastError("Something went wrong. Please try again.");
+            }
+        } catch (error) {
+            toastWarning("There was an error placing your order. Please try again.");
+        }
     });
 
     function getCartProducts() {
-      const productElements = document.querySelectorAll(".cart-box-in-checkout");
-      const cartProducts = Array.from(productElements).map((productElement) => {
-        const productId = productElement.getAttribute("data-product-id");
+        const productElements = document.querySelectorAll(".cart-box-in-checkout");
+        const cartProducts = Array.from(productElements).map((productElement) => {
+            const productId = productElement.getAttribute("data-product-id");
+            const variantId = productElement.getAttribute("data-variant-id");
 
-        // Fetch the quantity element explicitly
-        const quantityElement = productElement.querySelector(".product-quantity");
-        const quantityText = quantityElement?.textContent.trim().match(/QTY:\s*(\d+)/i);
-        const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
+            const quantityElement = productElement.querySelector(".product-quantity");
+            const quantityText = quantityElement?.textContent.trim().match(/QTY:\s*(\d+)/i);
+            const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
 
-        // Get the sales price and remove commas
-        const salesPriceElement = productElement.querySelector(".sales-price");
-        const salesPriceText = salesPriceElement?.textContent.trim();
+            const salesPriceElement = productElement.querySelector(".sales-price");
+            const salesPriceText = salesPriceElement?.textContent.trim();
 
-        // Remove any currency symbols and commas, then parse it as a number
-        const salesPrice = salesPriceText ? parseFloat(salesPriceText.replace(/[^\d.-]/g, '')) : 0;
+            const salesPrice = salesPriceText ? parseFloat(salesPriceText.replace(/[^\d.-]/g, '')) : 0;
 
-        // Calculate the total amount
-        const totalAmount = quantity * salesPrice;
+            const totalAmount = quantity * salesPrice;
 
-        return {
-          product_id: productId,
-          quantity,
-          salesPrice,
-          totalAmount
-        };
-      });
-      grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
-      console.log("Grand Total: ₹" + grandTotal);
+            return {
+                product_id: productId,
+                variant_id: variantId,
+                quantity,
+                salesPrice,
+                totalAmount
+            };
+        });
+        grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+        console.log("Grand Total: ₹" + grandTotal);
 
-      return cartProducts;
+        return cartProducts;
     }
 
-
-
     function showStep(stepToShow) {
-      step1.style.display = "none";
-      step2.style.display = "none";
-      step3.style.display = "none";
+        step1.style.display = "none";
+        step2.style.display = "none";
+        step3.style.display = "none";
 
-      stepToShow.style.display = "block";
+        stepToShow.style.display = "block";
     }
 
     document.addEventListener("click", (event) => {
-      if (event.target.classList.contains("go-to-step1")) {
-        showStep(step1);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      }
+        if (event.target.classList.contains("go-to-step1")) {
+            showStep(step1);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
 
-      if (event.target.classList.contains("go-to-step2")) {
-        showStep(step2);
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      }
+        if (event.target.classList.contains("go-to-step2")) {
+            showStep(step2);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
     });
-  });
+});
 </script>
 
 </html>
