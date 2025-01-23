@@ -14,7 +14,7 @@
           <hr>
           <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
           <hr>
-          <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a>
+          <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
           <hr>
           <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
           <hr>
@@ -30,24 +30,60 @@
       <!-- Right Side Box -->
       <div class="col-md-9">
         <div class="card shadow-sm p-4 user-menu-wishlist">
-            sdfsdf
+          <h5 class="card-title m-0">My Wallet</h5>
+          <div class="row g-0 mt-4 d-flex justify-content-between">
+            <!-- Wallet Balance Section -->
+          <div class="col-12 col-md-5 d-flex align-items-center justify-content-between px-3 py-1 wallet mb-3 mb-md-0">
+            <div class="me-4">
+              <img
+                src="/assets/logo/wallet.png"
+                alt="Wallet"
+                class="empty-cart-image img-fluid"
+                style="height: 100px; max-width: 100%;"
+              />
+            </div>
+            <div class="ms-4 text-center text-md-start">
+              <h4>Balance</h4>
+              <h5 id="wallet-balance" class="price-inr wallet-balance">
+                ₹<%= wallet ? wallet.balance : 0 %>
+              </h5>
+            </div>
+          </div>
+
+          <!-- Add Money Section -->
+          <div class="col-12 col-md-6 d-flex flex-column justify-content-between px-3 py-2 wallet">
+            <p class="mb-2">Add money to Wallet</p>
+            <input
+              type="number"
+              id="add-money-input"
+              class="mb-2"
+              placeholder="Enter amount"
+              min="1"
+              required
+            />
+            <div id="error" class="error-message"></div>
+            <div class="d-flex wallet-select-money">
+              <p>+ ₹ 500</p> 
+              <p>+ ₹ 1,000</p> 
+              <p>+ ₹ 1,500</p>
+            </div>
+            <div class="wallet-info my-2">
+              <i class="fa-solid fa-circle-info"></i>
+              You can add up to ₹25,000
+            </div>
+            <button id="wallet-add-money" class="common-main-btn px-3 ms-0">Add Money</button>
+          </div>
+
+
+            
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
-
-<div id="customPopup" class="popup hidden">
-  <div class="popup-content">
-    <h5 id="popupTitle" class="popup-title">Are you sure?</h5>
-    <p id="popupText" class="popup-text">Once canceled, it can't be undone!</p>
-    <div class="popup-buttons">
-      <button id="confirmButton" class="popup-button confirm">Yes, cancel it!</button>
-      <button id="cancelButton" class="popup-button cancel">No, keep it</button>
-    </div>
-  </div>
-</div>
 
 <%- include('partials/footerforhome') %>
 
@@ -100,6 +136,164 @@
         position: 'topRight',
       });
     };
+    const inputField = document.getElementById("add-money-input");
+  const errorMessage = document.getElementById("error");
+  const walletButtons = document.querySelectorAll(".wallet-select-money p");
+  const maxAmount = 25000;
+
+  function validateInput() {
+    const currentValue = parseInt(inputField.value) || 0;
+    if (currentValue < 0) {
+      errorMessage.textContent = "Negative values are not allowed.";
+      errorMessage.style.display = "block";
+      inputField.style.borderColor = "red";
+    } else if (currentValue > maxAmount) {
+      errorMessage.textContent = `You can add up to ₹${maxAmount} only.`;
+      errorMessage.style.display = "block";
+      inputField.style.borderColor = "red";
+    } else {
+      errorMessage.textContent = "";
+      errorMessage.style.display = "none";
+      inputField.style.borderColor = "";
+    }
+  }
+
+  inputField.addEventListener("input", validateInput);
+
+  walletButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const buttonValue = parseInt(button.textContent.replace(/[^\d]/g, ""));
+      const currentValue = parseInt(inputField.value) || 0;
+      const newValue = currentValue + buttonValue;
+      if (newValue > maxAmount) {
+        inputField.value = maxAmount;
+        errorMessage.textContent = `You can add up to ₹${maxAmount} only.`;
+        errorMessage.style.display = "block";
+        inputField.style.borderColor = "red";
+      } else {
+        inputField.value = newValue;
+        errorMessage.textContent = "";
+        errorMessage.style.display = "none";
+        inputField.style.borderColor = "";
+      }
+    });
+  });
+
+
+  function animateWalletBalance(start, end) {
+  const walletBalanceElement = document.getElementById("wallet-balance");
+  const duration = 1000;
+  const steps = Math.min(Math.abs(end - start), 50);
+  const increment = (end - start) / steps;
+  const interval = duration / steps;
+
+  let current = start;
+
+  const animation = setInterval(() => {
+    current += increment;
+
+    if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+      current = end;
+      clearInterval(animation);
+    }
+
+    walletBalanceElement.textContent = `₹${formatNumber(Math.round(current))}`;
+  }, interval);
+}
+
+function formatNumber(number) {
+  const parts = number.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?=(\d{2})*(?!\d)))/g, ",");
+  return parts.join(".");
+}
+
+function updateWalletBalance(balance) {
+  const walletBalanceElement = document.getElementById("wallet-balance");
+  const currentBalance = parseInt(walletBalanceElement.textContent.replace(/[^\d]/g, "")) || 0;
+  animateWalletBalance(currentBalance, balance);
+}
+
+document.getElementById("wallet-add-money").onclick = async function (e) {
+  e.preventDefault();
+
+  const amount = parseInt(inputField.value);
+  if (isNaN(amount) || amount <= 0 || amount > maxAmount) {
+    errorMessage.textContent = `Enter a valid amount up to ₹${formatNumber(maxAmount)}.`;
+    errorMessage.style.display = "block";
+    inputField.style.borderColor = "red";
+    return;
+  }
+
+  const response = await fetch("/add-money-to-wallet", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount }),
+  });
+
+  const data = await response.json();
+  if (data.error) {
+    toastError(data.error);
+    return;
+  }
+
+  if (data.order) {
+    const { order, key } = data;
+    const options = {
+      key,
+      amount: order.amount,
+      currency: "INR",
+      name: "Glowly.com",
+      description: "Add money to wallet",
+      order_id: order.id,
+      handler: async function (response) {
+        const verifyResponse = await fetch("/add-money-to-wallet", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            amount: amount,
+          }),
+        });
+
+        const verifyData = await verifyResponse.json();
+        if (verifyData.error) {
+          toastError(verifyData.error);
+        } else {
+          toastSuccess("Wallet updated successfully");
+          updateWalletBalance(verifyData.balance);
+          inputField.value = "";
+          errorMessage.style.display = "none";
+          inputField.style.borderColor = "";
+        }
+      },
+      prefill: {
+        name: "Test User",
+        email: "test.user@example.com",
+        contact: "9999999999",
+      },
+      notes: {
+        address: "Test Address",
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
+
+    const rzp1 = new Razorpay(options);
+    rzp1.on("payment.failed", function (response) {
+      toastError(`Payment Failed: ${response.error.description}`);
+    });
+
+    rzp1.open();
+  }
+};
+
 
 
 </script>

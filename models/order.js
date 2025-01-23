@@ -38,6 +38,28 @@ const OrderSchema = new mongoose.Schema(
           default: 'pending',
           required: true,
         },
+        order_placed_at: {
+          type: Date,
+          default: Date.now,
+        },
+        processing_at: {
+          type: Date
+        },
+        shipped_at: {
+          type: Date,
+        },
+        return_reqested_at: {
+          type: Date,
+        },
+        canceled_at: {
+          type: Date
+        },
+        returned_at: {
+          type: Date,
+        },
+        delivered_at: {
+          type: Date,
+        },
       },
     ],
     total_order_amount: {
@@ -46,7 +68,12 @@ const OrderSchema = new mongoose.Schema(
     },
     payment_method: {
       type: String,
-      enum: ['cash', 'card', 'online', 'wallet'],
+      enum: ['cash', 'razorpay', 'wallet'],
+      required: true,
+    },
+    payment_status: {
+      type: String,
+      enum: ['pending', 'completed'],
       required: true,
     },
     coupon_applied: {
@@ -54,6 +81,7 @@ const OrderSchema = new mongoose.Schema(
       default: false,
     },
   },
+
   {
     timestamps: true,
   }

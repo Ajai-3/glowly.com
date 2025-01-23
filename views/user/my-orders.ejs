@@ -14,7 +14,7 @@
           <hr>
           <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
           <hr>
-          <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a>
+          <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
           <hr>
           <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
           <hr>
@@ -57,8 +57,8 @@
                         <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
                         <div class="d-flex justify-content-between mt-2">
                           <p class="m-0">Quantity: <%= product.quantity %></p>
-                          <p class="m-0 price-inr">Unit Price: ₹<%= variant.salePrice %></p>
-                          <p class="m-0 price-inr">Total: ₹<%= variant.salePrice * product.quantity %></p>
+                          <p class="m-0">Unit Price: <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
+                          <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
                         </div>
                       </div>
                     </div>

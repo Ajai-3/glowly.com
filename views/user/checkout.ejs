@@ -352,27 +352,28 @@
               <h5 class="m-0">Payment Method</h5>
             </div>
           </div>
-          <hr>
+          <hr class="mb-2">
           <!-- <div class="payment-div ms-2">
                       <h5 class=" mt-3">Payment Methods</h5>
                       <hr class="my-1"> -->
           <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" >
-            <label class="form-check-label" for="creditCard">Debit Card / Credit Card</label>
+            <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" >
+            <label class="form-check-label" for="razorpay">Razorpay</label>
           </div>
           <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMethod" id="wallet">
             <label class="form-check-label" for="wallet">Wallet</label>
           </div>
-          <div class="form-check">
+          <!-- <div class="form-check">
             <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
             <label class="form-check-label" for="paypal">PayPal</label>
-          </div>
+          </div> -->
           <div class="form-check mb-3">
             <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
             <label class="form-check-label" for="cash">Cash on Delivery</label>
+            <div id="error" class="error-message"></div>
           </div>
-          <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span class=" price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span></button>
+          <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span id="total-price" class=" price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span></button>
         </div>
       </div>
 
@@ -572,45 +573,125 @@
             address_id: selectedAddressId,
             cart: cartProducts,
             grandTotal: grandTotal,
-            coupoun: false,
+            coupon: false,
             payment_method: selectedPaymentMethod,
         };
-        // console.log(orderData);
 
         try {
-            const response = await fetch("/place-order", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(orderData),
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                showStep(step1);
-                toastSuccess("Order placed successfully!");
-                const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
-                orderConfirmationModal.show();
-
-                document.getElementById("continueShopping").addEventListener("click", () => {
-                    orderConfirmationModal.hide();
-                    window.location.href = "/home";
+            if (selectedPaymentMethod === "wallet") {
+                // **Wallet Payment Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
                 });
 
-                document.getElementById("goToOrders").addEventListener("click", () => {
-                    orderConfirmationModal.hide();
-                    window.location.href = "/my-orders";
+                const result = await response.json();
+
+                if (response.ok) {
+                    handleOrderSuccess();
+                } else {
+                    toastError(result.message || "Something went wrong with wallet payment.");
+                }
+            } else if (selectedPaymentMethod === "razorpay") {
+                // **Razorpay Payment Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
                 });
 
-            } else {
-                toastError("Something went wrong. Please try again.");
+                const { key, order } = await response.json();
+
+                if (response.ok) {
+                    const razorpayOptions = {
+                        key: key, 
+                        amount: order.amount,
+                        currency: order.currency,
+                        name: "Glowly.com",
+                        description: "Test Transaction",
+                        order_id: order.id, 
+                        handler: async function (response) {
+                            const verificationResponse = await fetch("/verify-razorpay-payment", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                }),
+                            });
+
+                            const result = await verificationResponse.json();
+
+                            if (verificationResponse.ok) {
+                                handleOrderSuccess();
+                            } else {
+                                toastError(result.message || "Razorpay payment verification failed.");
+                            }
+                        },
+                        prefill: {
+                            name: "Your Name",
+                            email: "your@email.com",
+                            contact: "1234567890",
+                        },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                    };
+
+                    const razorpay = new Razorpay(razorpayOptions);
+                    razorpay.open();
+                } else {
+                    toastError("Failed to create Razorpay order. Please try again.");
+                }
+            } else if (selectedPaymentMethod === "cash") {
+                // **Cash on Delivery Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {    
+                  handleOrderSuccess()
+                } else {
+                    toastError(result.message || "Something went wrong. Please try again.");
+                }
             }
         } catch (error) {
-            toastWarning("There was an error placing your order. Please try again.");
+            console.error(error);
+            toastWarning("There was an error processing your payment. Please try again.");
         }
     });
+
+
+    function handleOrderSuccess() {
+      showStep(step1);
+      toastSuccess("Order placed successfully!");
+      const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
+      orderConfirmationModal.show();
+
+      document.getElementById("continueShopping").addEventListener("click", () => {
+          orderConfirmationModal.hide();
+          window.location.href = "/home";
+      });
+
+      document.getElementById("goToOrders").addEventListener("click", () => {
+          orderConfirmationModal.hide();
+          window.location.href = "/my-orders";
+      });              
+    }
 
     function getCartProducts() {
         const productElements = document.querySelectorAll(".cart-box-in-checkout");
@@ -668,6 +749,25 @@
             });
         }
     });
+
+    function checkPrice() {
+        var totalPrice = <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>;
+
+        document.getElementById('total-price').innerText = `₹${totalPrice}`;
+        const error = document.getElementById('error');
+
+        if (totalPrice > 1000) {
+            document.getElementById('cash').disabled = true;
+              error.style.display = "block";
+            error.textContent = "Cash on Delivery is not available for orders above ₹1000.";
+        } else {
+            document.getElementById('cash').disabled = false;
+            error.style.display = "none";
+            error.textContent = "";
+        }
+    }
+
+    setInterval(checkPrice, 1000);
 });
 </script>
 

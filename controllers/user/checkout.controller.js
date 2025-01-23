@@ -1,10 +1,14 @@
 import jwt from "jsonwebtoken";
 import Order from "../../models/order.js";
+import dotenv from "dotenv";dotenv.config();
 import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js"; 
+import razorpay from "../../config/razorpay.js";
+import Wallet from "../../models/wallet.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
+import Transaction from "../../models/transaction.model.js";
 
 export const renderCheckoutPage = async (req, res) => {
     try {
@@ -191,9 +195,11 @@ export const placeOrderWithBuyNow = async (req, res) => {
 
 
 // Place Order
+
 export const placeOrder = async (req, res) => {
     try {
-        const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
+        // const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
+        const { address_id, cart, grandTotal, payment_method, coupon, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
         const token = req.cookies.token;
 
         if (!token) {
@@ -201,12 +207,9 @@ export const placeOrder = async (req, res) => {
         }
 
         let user;
-        let userCart;
-
         try {
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
             user = decoded;
-            userCart = await Cart.findOne({ user_id: user.userId });
         } catch (error) {
             console.error("Invalid token:", error);
             return res.status(401).json({ success: false, message: "Invalid token." });
@@ -227,28 +230,17 @@ export const placeOrder = async (req, res) => {
         }
 
         const products = [];
-        const purchasedProductIds = [];
-
         for (let cartItem of cart) {
             const product = await Product.findById(cartItem.product_id);
             if (!product) {
                 return res.status(404).json({ success: false, message: `Product not found: ${cartItem.product_id}` });
             }
-        
+
             const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
-
-            if (!variant) {
-                return res.status(404).json({ success: false, message: `Variant not found: ${cartItem.variant_id}` });
+            if (!variant || variant.stockQuantity < cartItem.quantity) {
+                return res.status(400).json({ success: false, message: `Insufficient stock for variant: ${cartItem.variant_id}` });
             }
 
-            if (variant.stockQuantity < cartItem.quantity) {
-                continue; 
-            }
-        
-            variant.stockQuantity -= cartItem.quantity;
-
-            await product.save();
-        
             products.push({
                 product_id: cartItem.product_id,
                 variant_id: cartItem.variant_id,
@@ -256,20 +248,6 @@ export const placeOrder = async (req, res) => {
                 total_amount: cartItem.totalAmount,
                 status: 'pending',
             });
-        
-            purchasedProductIds.push({
-                product_id: cartItem.product_id,
-                variant_id: cartItem.variant_id
-            });
-        }
-
-        const result = await Cart.updateOne(
-            { user_id: user.userId },
-            { $pull: { products: { $or: purchasedProductIds } } }
-        );        
-        
-        if (result.modifiedCount === 0) {
-            return res.json({ success: false, message: 'Products not found in cart' });
         }
 
         const order = new Order({
@@ -281,14 +259,246 @@ export const placeOrder = async (req, res) => {
             coupon_applied: coupon || false,
         });
 
-        await order.save();
+        if (payment_method === 'wallet') {
+            const wallet = await Wallet.findOne({ user_id: user.userId });
+            if (!wallet || wallet.balance < grandTotal) {
+                return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
+            }
 
-        res.status(201).json({ success: true, message: "Order placed successfully!", order });
+            wallet.balance -= grandTotal;
+            await wallet.save();
+
+            const transaction = new Transaction({
+                wallet_id: wallet._id,
+                user_id: user.userId,
+                amount: grandTotal,
+                type: 'debited',
+            });
+            await transaction.save();
+
+            order.payment_status = "completed";
+            await order.save();
+
+            await processOrder(cart, user.userId);
+
+            return res.status(201).json({ success: true, message: "Order placed successfully using wallet!", order });
+        } else if (payment_method === 'razorpay') {
+            const options = {
+                amount: grandTotal * 100,
+                currency: "INR",
+                receipt: `receipt_${Date.now()}`,
+            };
+            const orderData = await razorpay.orders.create(options);
+
+            order.payment_status = 'completed';
+            await order.save();
+
+            await processOrder(cart, user.userId);
+
+            return res.status(201).json({
+                success: true,
+                message: "Razorpay order created successfully!",
+                key: process.env.RAZORPAY_KEY_ID, 
+                order: orderData,
+            });
+        } else if (payment_method === 'cash') {
+            
+            order.payment_status = 'pending';
+            await order.save();
+
+            await processOrder(cart, user.userId);
+
+            return res.status(201).json({ success: true, message: "Order placed successfully with cash on delivery!", order });
+        } else {
+            return res.status(400).json({ success: false, message: "Invalid payment method." });
+        }
     } catch (error) {
         console.error("Error in place order:", error);
         return res.status(500).json({ success: false, message: "Internal server error." });
     }
 };
 
+const processOrder = async (cart, userId) => {
+    const purchasedProductIds = [];
+
+    for (let cartItem of cart) {
+        const product = await Product.findById(cartItem.product_id);
+        if (!product) {
+            continue;
+        }
+
+        const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
+        if (!variant || variant.stockQuantity < cartItem.quantity) {
+            continue;
+        }
+
+        variant.stockQuantity -= cartItem.quantity;
+        await product.save();
+
+        purchasedProductIds.push({
+            product_id: cartItem.product_id,
+            variant_id: cartItem.variant_id,
+        });
+    }
+
+    await Cart.updateOne(
+        { user_id: userId },
+        { $pull: { products: { $or: purchasedProductIds } } }
+    );
+};
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // Place Order
+// export const placeOrder = async (req, res) => {
+//     try {
+//         const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
+//         const token = req.cookies.token;
+
+//         if (!token) {
+//             return res.status(401).json({ success: false, message: "User not authenticated." });
+//         }
+
+//         let user;
+//         let userCart;
+
+//         try {
+//             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//             user = decoded;
+//             userCart = await Cart.findOne({ user_id: user.userId });
+//         } catch (error) {
+//             console.error("Invalid token:", error);
+//             return res.status(401).json({ success: false, message: "Invalid token." });
+//         }
+
+//         if (!address_id || !cart || !payment_method || typeof grandTotal !== 'number') {
+//             return res.status(400).json({ success: false, message: "Missing required fields." });
+//         }
+
+//         const userData = await User.findById(user.userId);
+//         if (!userData) {
+//             return res.status(404).json({ success: false, message: "User not found." });
+//         }
+
+//         const address = await Address.findById(address_id);
+//         if (!address) {
+//             return res.status(404).json({ success: false, message: "Address not found." });
+//         }
+
+//         const products = [];
+//         const purchasedProductIds = [];
+
+//         for (let cartItem of cart) {
+//             const product = await Product.findById(cartItem.product_id);
+//             if (!product) {
+//                 return res.status(404).json({ success: false, message: `Product not found: ${cartItem.product_id}` });
+//             }
+        
+//             const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
+
+//             if (!variant) {
+//                 return res.status(404).json({ success: false, message: `Variant not found: ${cartItem.variant_id}` });
+//             }
+
+//             if (variant.stockQuantity < cartItem.quantity) {
+//                 continue; 
+//             }
+        
+//             variant.stockQuantity -= cartItem.quantity;
+
+//             await product.save();
+        
+//             products.push({
+//                 product_id: cartItem.product_id,
+//                 variant_id: cartItem.variant_id,
+//                 quantity: cartItem.quantity,
+//                 total_amount: cartItem.totalAmount,
+//                 status: 'pending',
+//             });
+        
+//             purchasedProductIds.push({
+//                 product_id: cartItem.product_id,
+//                 variant_id: cartItem.variant_id
+//             });
+//         }
+
+//         const result = await Cart.updateOne(
+//             { user_id: user.userId },
+//             { $pull: { products: { $or: purchasedProductIds } } }
+//         );        
+        
+//         if (result.modifiedCount === 0) {
+//             return res.json({ success: false, message: 'Products not found in cart' });
+//         }
+
+//         const order = new Order({
+//             user_id: user.userId,
+//             address_id: address._id,
+//             products,
+//             total_order_amount: grandTotal,
+//             payment_method,
+//             coupon_applied: coupon || false,
+//         });
+
+//         await order.save();
+
+//         res.status(201).json({ success: true, message: "Order placed successfully!", order });
+//     } catch (error) {
+//         console.error("Error in place order:", error);
+//         return res.status(500).json({ success: false, message: "Internal server error." });
+//     }
+// };

@@ -35,7 +35,8 @@ import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeA
 import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage } from "../controllers/user/checkout.controller.js";
 import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from "../controllers/user/order.controller.js";
 import { get } from "mongoose";
-import { myWallet } from "../controllers/user/wallet.controller.js";
+import { addMoneyToWallet, myWallet } from "../controllers/user/wallet.controller.js";
+import { myCoupons } from "../controllers/user/coupon.contoller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -110,6 +111,10 @@ router.post('/add-to-wishlist/:id', addToWishlist);
 
 // Wallet Managent
 router.get("/my-wallet", myWallet)
+router.post("/add-money-to-wallet", addMoneyToWallet)
+
+// Coupon Management
+router.get("/my-coupons", myCoupons)
 
 
 

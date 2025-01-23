@@ -60,18 +60,22 @@
                             </div>
                             <div class="col-md-10">
                               <div class="card-body px-2 py-0">
-                                <h6 class="card-title"><%= product.product_id.title %> - <%= variant.shade %></h6>
-                                <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">details</a>
-                                <div class="cart-box-quantity-selector d-flex my-1">
-                                  <p class="product-quantity qty m-0">QTY: <%= product.quantity %></p>
+                                <h6 class="card-title"><%= product.product_id.title %></h6>
+                                <div class="product-shade my-1">
+                                  <p class="m-0">Shade: <span><%= variant.shade %></span></p>
                                 </div>
-                                <div class="d-flex justify-content-between cart-price">
+                                <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">details</a>
+                                <!-- <div class="cart-box-quantity-selector d-flex my-1">
+                                  <p class="product-quantity qty m-0">Quantity: <%= product.quantity %></p>
+                                </div> -->
+                                <div class="d-flex justify-content-between cart-price mt-2">
+                                  <p class="product-quantity qty m-0">Quantity: <%= product.quantity %></p>
                                   <p class="card-text">
                                     Unit Price: <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
-                                    <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
+                                    <span class="sales-price price-inr">₹<%= (product.total_amount / product.quantity) %></span>
                                   </p>
                                   <p class="card-text">
-                                    Total: <span class="sales-price price-inr">₹<%= variant.salePrice * product.quantity %></span>
+                                    Total: <span class="sales-price price-inr">₹<%= product.total_amount %></span>
                                   </p>
                                 </div>
                               </div>

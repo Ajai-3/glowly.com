@@ -32,7 +32,7 @@ export const renderHomePage = async (req, res) => {
 
         if (cart && cart.products.length > 0) {
             cartVariants = cart.products
-                .filter(product => product.variant_id) // Ensure variant_id is defined
+                .filter(product => product.variant_id)
                 .map(product => product.variant_id.toString());
         }
 

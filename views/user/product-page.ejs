@@ -206,7 +206,7 @@
         <% if (variantInCart) { %>
           <!-- Go to Cart Button -->
           <a href="/user/my-cart">
-            <button type="button" class="go-to-cart-btn">Go To Cart</button>
+            <button type="button" class="go-to-cart-btn">Go To Bag</button>
           </a>
         <% } else { %>
           <!-- Second Add to Bag Button -->
@@ -437,7 +437,7 @@ function handleCart({ quantity, productId, variantId, form, isMainButton }) {
           if (!isMainButton) {
             const newButton = document.createElement("a");
             newButton.href = "/user/my-cart";
-            newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Cart</button>`;
+            newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
             form.parentNode.replaceChild(newButton, form);
           }
           toastSuccess(data.message);

@@ -111,7 +111,7 @@ export const cancelOrder = async (req, res) => {
 
         // Update product status in the order
         productInOrder.status = "canceled";
-
+        productInOrder.canceled_at = new Date();
         // Save the updated order
         await order.save();
       }
@@ -178,6 +178,7 @@ export const returnOrder = async (req, res) => {
   
       // Update product status in the order
       productInOrder.status = "return_req";
+      productInOrder.return_reqested_at = new Date();
   
       // Save the updated order
       await order.save();

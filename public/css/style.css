@@ -2124,11 +2124,51 @@ border: 1px solid transparent;
 }
 
 
+/* Wallet */
+.wallet {
+  border-radius: 6px;
+  background-color: var(--bg-color-5);
+}
+.wallet-balance {
+   color: var(--bg-green-color);
+}
+.common-main-btn {
+  border-radius: 4px;
+  padding: 6px;
+  font-size: var(--font-size-second);
+  color: var(--text-color);
+   background-color: var(--main-color);
+}
+.wallet input {
+  border: none;
+  outline: none;
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: var(--text-color-3);
+  border: 1px solid var(--second-text-color);
+}
+.wallet-add-money:focus {
+  border: 1px solid var(--text-color-4);
+}
 
-
-
-
-
+.wallet-add-money::placeholder {
+  color: var(--text-color-4); 
+}
+.wallet-select-money p {
+  padding: 4px;
+  margin-right: 8px;
+  margin-bottom: 2px;
+  font-size: var(--font-size-third);
+  border-radius: 4px;
+  border: 1px solid var(--second-text-color);
+  cursor: pointer;
+}
+.wallet-select-money p:hover {
+  border: 1px solid var(--text-color-4);
+}
+.wallet-info {
+  font-size: var(--font-size-third);
+}
 
 
 

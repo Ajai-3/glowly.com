@@ -1,7 +1,9 @@
 import Order from "../../models/order.js";
 import User from "../../models/user.model.js";
+import Wallet from "../../models/wallet.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
+import Transaction from "../../models/transaction.model.js";
 
 
 export const renderOrderPage = async (req, res) => {
@@ -29,7 +31,7 @@ export const renderOrderPage = async (req, res) => {
               return status === 'all' || product.status === status;
           }).map(product => {
               const variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString());
-              const price = variant ? variant.salePrice : 0; // Use salePrice or regularPrice from variant
+              const price = variant ? variant.salePrice : 0; 
               return {
                   orderId: order._id,
                   userId: order.user_id,
@@ -37,9 +39,9 @@ export const renderOrderPage = async (req, res) => {
                   product: product.product_id,
                   variant: variant,
                   quantity: product.quantity,
-                  totalAmount: price * product.quantity,
+                  totalAmount: product.total_amount,
                   status: product.status,
-                  variantId: product.variant_id // Pass variant ID
+                  variantId: product.variant_id 
               };
           })
       );
@@ -88,10 +90,13 @@ export const updateOrderStatus = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Invalid status value.' });
     }
 
-    const order = await Order.findOne({ _id: orderId, 'products.product_id': productId });
+    const order = await Order.findOne({ _id: orderId, 'products.product_id': productId }).populate('user_id');;
     if (!order) {
       return res.status(404).json({ success: false, message: 'Order or product not found.' });
     }
+
+    const userId = order.user_id._id;
+
 
     const productInOrder = order.products.find(item => 
       item.product_id.toString() === productId && 
@@ -116,7 +121,7 @@ export const updateOrderStatus = async (req, res) => {
       await product.save();
     }
 
-    if (status === 'return_req' && productInOrder.status !== 'return_req') {
+    if (status === 'returned' && productInOrder.status !== 'returned') {
       const product = await Product.findById(productId);
       if (!product) {
         return res.status(404).json({ success: false, message: 'Product not found.' });
@@ -130,7 +135,36 @@ export const updateOrderStatus = async (req, res) => {
       variant.stockQuantity += productInOrder.quantity;
       await product.save();
     }
+
+    const product = order.products.find(
+      (p) => p.product_id.toString() === productId.toString()
+    );
+    const refundAmount = product.total_amount;
+
     productInOrder.status = status;
+    if (status === 'processing') {
+      productInOrder.processing_at = new Date();  
+    } else if (status === 'shipped') {
+      productInOrder.shipped_at = new Date();
+    } else if (status === 'delivered') {
+      productInOrder.delivered_at = new Date();
+    } else if (status === 'canceled') {
+      productInOrder.canceled_at = new Date();
+    } else if (status === 'returned') {
+      const wallet = await Wallet.findOne({ user_id: userId });
+      wallet.balance += refundAmount;
+      await wallet.save();
+      const transaction = new Transaction({
+        wallet_id: wallet._id,
+        user_id: userId,
+        transaction_type: "wallet",
+        amount: refundAmount,
+        type: 'refund',
+      });
+      await transaction.save();
+      productInOrder.returned_at = new Date();
+    } 
+
     await order.save();
 
     res.status(200).json({

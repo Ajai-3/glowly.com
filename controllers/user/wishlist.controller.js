@@ -14,6 +14,7 @@ export const renderWishlistPage = async (req, res) => {
         let user = null;
         let cart;
         let wishlist;
+        let cartVariants = [];
         let wishlistProducts = [];
         const ITEMS_PER_PAGE = 3;
         const page = parseInt(req.query.page) || 1; 
@@ -31,6 +32,11 @@ export const renderWishlistPage = async (req, res) => {
 
         const cartCount = cart?.products?.length || 0;
 
+        if (cart && cart.products.length > 0) {
+            cartVariants = cart.products
+                .filter(product => product.variant_id)
+                .map(product => product.variant_id.toString());
+        }
         if (wishlist && wishlist.products.length > 0) {
             const totalItems = wishlist.products.length;
 
@@ -72,6 +78,7 @@ export const renderWishlistPage = async (req, res) => {
             name: user ? user.name : "",
             user: user,
             categories,
+            cartVariants,
             wishlistProducts,
             currentPage: page,
             totalPages,

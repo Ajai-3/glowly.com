@@ -1,223 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/headforhome', { name: name, categories: categories }) %>
+  <%- include('partials/headforhome', { name: name, categories: categories }) %>
 
-<div class="user-contents">
+  <div class="user-contents">
     <div class="container my-2">
-        <div class="brudcrumbs-user-menu">
-            <a href="/home">Home</a> > <a href="/my-wishlist">My Wishlist</a>
+      <div class="brudcrumbs-user-menu">
+        <a href="/home">Home</a> > <a href="/my-wishlist">My Wishlist</a>
+      </div>
+      <div class="row">
+        <!-- Left Side Box -->
+        <div class="col-md-3">
+          <div class="card shadow-sm user-menu">
+            <hr />
+            <a href="/user/my-account"
+              ><i class="fas fa-user"></i> &nbsp; My Account</a
+            >
+            <hr />
+            <a href="/user/manage-address"
+              ><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a
+            >
+            <hr />
+            <a href="/user/my-coupons"
+              ><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a
+            >
+            <hr />
+            <a href="/user/my-wishlist" class="active"
+              ><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a
+            >
+            <hr />
+            <a href="/user/my-wallet"
+              ><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a
+            >
+            <hr />
+            <a href="/user/my-orders"
+              ><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a
+            >
+            <hr />
+            <a href="/logout"
+              ><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a
+            >
+            <hr />
+          </div>
         </div>
-        <div class="row">
-            <!-- Left Side Box -->
-            <div class="col-md-3">
-                <div class="card shadow-sm user-menu">
-                    <hr>
-                    <a href="/user/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                    <a href="/user/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
-                    <a href="/user/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
-                    <a href="/user/my-wishlist" class="active"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
-                    <a href="/user/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                    <a href="/user/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                    <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
-                </div>
-            </div>
-            
-            <!-- Right Side Box -->
-            <div class="col-md-9">
-                <div class="card shadow-sm p-4 user-menu-wishlist">
-                    <% if (wishlistProducts.length > 0) { %>
-                    <h5 class="card-title m-0">Your Wishlist</h5>
-                    <div class="product-grid m-0 mt-3 mx-3">
-                        <% wishlistProducts.forEach(item => { %>
-                        <div class="product-card mx-2" data-variant-id="<%= item.variant._id %>">
-                            <a href="/product/<%= item.product._id %>/<%= item.variant._id %>">
-                                <img src="<%= item.variant.images[0] %>" alt="<%= item.variant.shade %>" />
-                            </a>
-                            <div class="product-card-like">
-                                <form action="/add-to-wishlist/<%= item.product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
-                                    <% if (user) { %>
-                                    <% if (wishlist && wishlist.products.some(wishlistItem => wishlistItem.product_id.toString() === item.product._id.toString() && wishlistItem.variant_id.toString() === item.variant._id.toString())) { %>
-                                    <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                                        <i class="fa-solid fa-heart in-wishlist"></i>
-                                    </button>
-                                    <% } else { %>
-                                    <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                                        <i class="fa-solid fa-heart not-in-wishlist"></i>
-                                    </button>
-                                    <% } %>
-                                    <% } else { %>
-                                    <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                                        <i class="fa-solid fa-heart"></i>
-                                    </button>
-                                    <% } %>
-                                </form>
-                            </div>
-                            <a href="/product/<%= item.product._id %>/<%= item.variant._id %>">
-                                <p class="product-title"><%= item.product.title %> - <%= item.variant.shade %></p>
-                            </a>
-                            <div class="product-prices-box">
-                                <p class="sale-price price-inr">&#8377;<%= item.variant.salePrice %></p>
-                                <p class="original-price price-inr mx-2">&#8377;<%= item.variant.regularPrice %></p>
-                                <% if (item.variant.regularPrice > item.variant.salePrice) { %>
-                                <span class="discount-percentage">
-                                    <%= Math.round(((item.variant.regularPrice - item.variant.salePrice) / item.variant.regularPrice) * 100) %>% Off
-                                </span>
-                                <% } %>
-                            </div>
-                            <form action="/add-to-cart/<%= item.product._id %>" method="POST" class="cart-form" id="cart-form">
-                                <button type="submit" class="add-to-cart-btn" data-id="<%= item.product._id %>">Add to Bag</button>
-                            </form>
-                        </div>
-                        <% }) %>
-                    </div>
-                
-                    <!-- Pagination Controls -->
-                    <div class="wishlist-pagination-container d-flex justify-content-center mt-3">
-                        <% for (let i = 1; i <= totalPages; i++) { %>
-                        <a href="?page=<%= i %>" class="page-link">
-                            <div class="page-item <%= i === currentPage ? 'active' : '' %>">
-                                <%= i %>
-                            </div>
-                        </a>
-                        <% } %>
-                    </div>
-                    
+
+        <!-- Right Side Box -->
+        <div class="col-md-9">
+          <div class="card shadow-sm p-4 user-menu-wishlist">
+            <% if (wishlistProducts.length > 0) { %>
+            <h5 class="card-title m-0">My Wishlist</h5>
+            <div class="product-grid m-0 mt-3 mx-3">
+              <% wishlistProducts.forEach(item => { %>
+              <div
+                class="product-card mx-2"
+                data-variant-id="<%= item.variant._id %>"
+              >
+                <a
+                  href="/product/<%= item.product._id %>/<%= item.variant._id %>"
+                >
+                  <img
+                    src="<%= item.variant.images[0] %>"
+                    alt="<%= item.variant.shade %>"
+                  />
+                </a>
+                <div class="product-card-like">
+                  <form
+                    action="/add-to-wishlist/<%= item.product._id %>"
+                    method="POST"
+                    class="wishlist-form"
+                    id="wishlist-form"
+                  >
+                    <% if (user) { %> <% if (wishlist &&
+                    wishlist.products.some(wishlistItem =>
+                    wishlistItem.product_id.toString() ===
+                    item.product._id.toString() &&
+                    wishlistItem.variant_id.toString() ===
+                    item.variant._id.toString())) { %>
+                    <button
+                      type="submit"
+                      title="Remove from Wishlist"
+                      class="wishlist-button"
+                    >
+                      <i class="fa-solid fa-heart in-wishlist"></i>
+                    </button>
                     <% } else { %>
-                    <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
-                        <a href="/home">
-                            <img src="/assets/logo/wishlistEmpty.png" alt="Empty Wishlist Image" class="empty-cart-image" />
-                        </a>
-                        <h3>Your wishlist is empty</h3>
-                        <p>Browse our collection and add your favorites to your wishlist!</p>
-                        <a href="/home" class="large-button-main">Start Shopping</a>
-                    </div>
+                    <button
+                      type="submit"
+                      title="Add to Wishlist"
+                      class="wishlist-button"
+                    >
+                      <i class="fa-solid fa-heart not-in-wishlist"></i>
+                    </button>
+                    <% } %> <% } else { %>
+                    <button
+                      type="button"
+                      title="Login to Add to Wishlist"
+                      class="wishlist-button"
+                      onclick="window.location.href='/login'"
+                    >
+                      <i class="fa-solid fa-heart"></i>
+                    </button>
                     <% } %>
+                  </form>
                 </div>
+                <a
+                  href="/product/<%= item.product._id %>/<%= item.variant._id %>"
+                >
+                  <p class="product-title">
+                    <%= item.product.title %> - <%= item.variant.shade %>
+                  </p>
+                </a>
+                <div class="product-prices-box">
+                  <p class="sale-price price-inr">
+                    &#8377;<%= item.variant.salePrice %>
+                  </p>
+                  <p class="original-price price-inr mx-2">
+                    &#8377;<%= item.variant.regularPrice %>
+                  </p>
+                  <% if (item.variant.regularPrice > item.variant.salePrice) {
+                  %>
+                  <span class="discount-percentage">
+                    <%= Math.round(((item.variant.regularPrice -
+                    item.variant.salePrice) / item.variant.regularPrice) * 100)
+                    %>% Off
+                  </span>
+                  <% } %>
+                </div>
+                <% const variantInCart =
+                cartVariants.includes(item.variant._id.toString()); %> <% if
+                (variantInCart) { %>
+                <a href="/user/my-cart">
+                  <button type="button" class="go-to-cart-btn">
+                    Go To Bag
+                  </button>
+                </a>
+                <% } else { %>
+                <form
+                  action="/add-to-cart"
+                  method="POST"
+                  class="cart-form"
+                  data-product-id="<%= item.product._id %>"
+                  data-variant-id="<%= item.variant._id %>"
+                >
+                  <button type="submit" class="add-to-cart-btn">
+                    Add to Bag
+                  </button>
+                </form>
+                <% } %>
+              </div>
+              <% }) %>
             </div>
+
+            <!-- Pagination Controls -->
+            <div
+              class="wishlist-pagination-container d-flex justify-content-center mt-3"
+            >
+              <% for (let i = 1; i <= totalPages; i++) { %>
+              <a href="?page=<%= i %>" class="page-link">
+                <div class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <%= i %>
+                </div>
+              </a>
+              <% } %>
+            </div>
+
+            <% } else { %>
+            <div
+              class="empty-cart-section d-flex flex-column justify-content-center align-items-center"
+            >
+              <a href="/home">
+                <img
+                  src="/assets/logo/wishlistEmpty.png"
+                  alt="No Coupons Image"
+                  class="empty-cart-image"
+                />
+              </a>
+              <h3>Your wishlist is empty</h3>
+              <p>
+                Browse our collection and add your favorites to your wishlist!
+              </p>
+              <a href="/home" class="large-button-main">Start Shopping</a>
+            </div>
+            <% } %>
+          </div>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<%- include('partials/footerforhome') %>
+  <%- include('partials/footerforhome') %>
 
-<script>
+  <script>
     window.onload = function () {
-        window.scrollTo(0, 0);
+      window.scrollTo(0, 0);
     };
     const toastSuccess = (message) => {
-        iziToast.success({
-            message: message,
-            backgroundColor: '#0e932d',
-            messageColor: '#FFFFFF',
-            icon: 'fa fa-check',
-            iconColor: '#FFFFFF',
-            timeout: 1500,
-            position: 'topRight',
-        });
+      iziToast.success({
+        message: message,
+        backgroundColor: "#0e932d",
+        messageColor: "#FFFFFF",
+        icon: "fa fa-check",
+        iconColor: "#FFFFFF",
+        timeout: 1500,
+        position: "topRight",
+      });
     };
 
     const toastError = (message) => {
-        iziToast.error({
-            message: message,
-            backgroundColor: '#e51e1e',
-            messageColor: '#FFFFFF',
-            icon: 'fa fa-times',
-            iconColor: '#FFFFFF',
-            timeout: 1500,
-            position: 'topRight',
-        });
+      iziToast.error({
+        message: message,
+        backgroundColor: "#e51e1e",
+        messageColor: "#FFFFFF",
+        icon: "fa fa-times",
+        iconColor: "#FFFFFF",
+        timeout: 1500,
+        position: "topRight",
+      });
     };
 
     const toastInfo = (message) => {
-        iziToast.info({
-            message: message,
-            backgroundColor: '#2160de',
-            messageColor: '#FFFFFF',
-            icon: 'fa fa-info-circle',
-            iconColor: '#FFFFFF',
-            timeout: 1500,
-            position: 'topRight',
-        });
+      iziToast.info({
+        message: message,
+        backgroundColor: "#2160de",
+        messageColor: "#FFFFFF",
+        icon: "fa fa-info-circle",
+        iconColor: "#FFFFFF",
+        timeout: 1500,
+        position: "topRight",
+      });
     };
 
     const toastWarning = (message) => {
-        iziToast.warning({
-            message: message,
-            backgroundColor: '#e5811e',
-            messageColor: '#212529',
-            icon: 'fa fa-exclamation-triangle',
-            iconColor: '#212529',
-            timeout: 1500,
-            position: 'topRight',
-        });
+      iziToast.warning({
+        message: message,
+        backgroundColor: "#e5811e",
+        messageColor: "#212529",
+        icon: "fa fa-exclamation-triangle",
+        iconColor: "#212529",
+        timeout: 1500,
+        position: "topRight",
+      });
     };
 
     const toastWish = (message) => {
-        iziToast.show({
-            message: message,
-            backgroundColor: '#e80071', 
-            messageColor: '#FFFFFF',
-            icon: 'fas fa-check-circle',
-            iconColor: '#FFFFFF',
-            timeout: 2000, 
-            position: 'bottomCenter',
-        });
+      iziToast.show({
+        message: message,
+        backgroundColor: "#e80071",
+        messageColor: "#FFFFFF",
+        icon: "fas fa-check-circle",
+        iconColor: "#FFFFFF",
+        timeout: 2000,
+        position: "bottomCenter",
+      });
     };
-    
-    document.addEventListener('DOMContentLoaded', () => {
-        const forms = document.querySelectorAll('.wishlist-form');
 
-        forms.forEach(form => {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
+    document.addEventListener("DOMContentLoaded", () => {
+      const forms = document.querySelectorAll(".wishlist-form");
 
-                const button = form.querySelector('button');
-                const icon = button.querySelector('i');
-                const productId = form.action.split('/').pop();
-                const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
-                const url = form.action;
+      forms.forEach((form) => {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
 
-                fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ product_id: productId, variant_id: variantId }),
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`Server Error: ${response.status} ${response.statusText}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.action === 'added') {
-                        icon.classList.remove('not-in-wishlist');
-                        icon.classList.add('in-wishlist');
-                        button.title = 'Remove from Wishlist';
+          const button = form.querySelector("button");
+          const icon = button.querySelector("i");
+          const productId = form.action.split("/").pop();
+          const variantId = form
+            .closest(".product-card")
+            .getAttribute("data-variant-id")
+            .trim();
+          const url = form.action;
 
-                        toastWish('Product has been added to Wishlist.');
-                    } else if (data.action === 'removed') {
-                        icon.classList.remove('in-wishlist');
-                        icon.classList.add('not-in-wishlist');
-                        button.title = 'Add to Wishlist';
+          fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              product_id: productId,
+              variant_id: variantId,
+            }),
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(
+                  `Server Error: ${response.status} ${response.statusText}`
+                );
+              }
+              return response.json();
+            })
+            .then((data) => {
+              if (data.action === "added") {
+                icon.classList.remove("not-in-wishlist");
+                icon.classList.add("in-wishlist");
+                button.title = "Remove from Wishlist";
 
-                        toastWish('Product has been removed from Wishlist.');
+                toastWish("Product has been added to Wishlist.");
+              } else if (data.action === "removed") {
+                icon.classList.remove("in-wishlist");
+                icon.classList.add("not-in-wishlist");
+                button.title = "Add to Wishlist";
 
-                        setTimeout(() => {
-                          window.location.href = '/user/my-wishlist';
-                        }, 2100)
+                toastWish("Product has been removed from Wishlist.");
 
-                    } else if (data.error) {
-                        console.error('Server Error:', data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    toastWarning('An error occurred');
-                });
+                setTimeout(() => {
+                  window.location.href = "/user/my-wishlist";
+                }, 2100);
+              } else if (data.error) {
+                console.error("Server Error:", data.error);
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              toastWarning("An error occurred");
             });
         });
+      });
     });
-</script>
+    // Handle add to cart form submission
+    document.addEventListener("DOMContentLoaded", () => {
+      const cartForms = document.querySelectorAll(".cart-form");
+
+      cartForms.forEach((form) => {
+        form.addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          const productId = form.getAttribute("data-product-id");
+          const variantId = form.getAttribute("data-variant-id");
+
+          const quantity = 1;
+
+          if ("<%= user %>") {
+            fetch("/add-to-cart", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ quantity, productId, variantId }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  const newButton = document.createElement("a");
+                  newButton.href = "/user/my-cart";
+                  newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+
+                  form.parentNode.replaceChild(newButton, form);
+
+                  toastSuccess(data.message);
+                } else {
+                  toastError(data.message);
+                }
+              })
+              .catch((error) => {
+                console.error("Error:", error);
+                toastWarning("Error adding product to cart.");
+              });
+          } else {
+            window.location = "/login";
+            // const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            // const existingItem = cart.find(item => item.productId === productId);
+
+            // if (existingItem) {
+            //   existingItem.quantity = quantity;
+            // } else {
+            //   cart.push({
+            //     productId,
+            //     quantity
+            //   });
+            // }
+
+            // localStorage.setItem('cart', JSON.stringify(cart));
+            // toastSuccess('Product added to cart!')
+          }
+        });
+      });
+    });
+  </script>
 </html>
