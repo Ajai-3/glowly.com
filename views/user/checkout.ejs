@@ -752,10 +752,12 @@ couponButton.addEventListener("click", applyCoupon);
                     const razorpay = new Razorpay(razorpayOptions);
                     razorpay.open();
 
-                    // handleOrderSuccess()
+                    handleOrderSuccess()
                 } else {
                     toastError("Failed to create Razorpay order. Please try again.");
                 }
+
+                    
             } else if (selectedPaymentMethod === "cash") {
                 // **Cash on Delivery Logic**
                 const response = await fetch("/place-order", {
@@ -783,7 +785,7 @@ couponButton.addEventListener("click", applyCoupon);
 
     function handleOrderSuccess() {
       showStep(step1);
-      toastSuccess("Order placed successfully!");
+      // toastSuccess("Order placed successfully!");
       const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
       orderConfirmationModal.show();
 
@@ -824,7 +826,6 @@ couponButton.addEventListener("click", applyCoupon);
             };
         });
         grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
-
         // console.log("Grand Total: ₹" + grandTotal);
 
         return cartProducts;

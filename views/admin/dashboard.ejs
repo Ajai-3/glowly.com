@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
+<%- include('partials/head') %>
+<body>
     <div class="main-content">
-                
         <div class="header">
             <div class="search-bar">
                 <form action="/search" method="GET">
@@ -10,94 +10,260 @@
                 </form>
             </div>
             <div class="admin-profile mx-3">
-                <a href="/settings">
+                <a href="/admin/settings">
                     <i class="fa-solid fa-circle-user"></i>
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs">brudcrumbs</div>
+        <div class="brudcrumbs">breadcrumbs</div>
 
-        <div class="dashboard-summary">
-            <div class="dashboard-summary1">
-                <h3>Total Users</h3>
-                <p>40,689</p>
-                <p1><i class="fa-solid fa-chart-simple"></i> 8.5% <p2>Up from last month</p2></p1>
+        <div class="dashboard-summary-container">
+            <div class="row">
+                <!-- Top Row: Dashboard Summary Boxes -->
+                <div class="col-9 pe-3 dashboard-summary">
+                    <div class="dashboard-summary1">
+                        <h3>Total Users</h3>
+                        <p><%= userCount %></p>
+                        <p1>
+                            <i class="fa-solid fa-chart-simple"></i> 8.5%
+                            <p2>Up from last month</p2>
+                        </p1>
+                    </div>
+                    <div class="dashboard-summary2">
+                        <h3>Total Orders</h3>
+                        <p><%= orderCount %></p>
+                        <p1>
+                            <i class="fa-solid fa-chart-simple"></i> 1.5%
+                            <p2>Up from last month</p2>
+                        </p1>
+                    </div>
+                    <div class="dashboard-summary3">
+                        <h3>Total Sales</h3>
+                        <p><%= totalAmount %></p>
+                        <p2>
+                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
+                        </p2>
+                    </div>
+                    <div class="dashboard-summary3">
+                        <h3>Total Sales</h3>
+                        <p><%= totalAmount %></p>
+                        <p2>
+                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
+                        </p2>
+                    </div>
+                </div>
+
+                <div class="col-3">
+                    <div class="vertical-box">
+                        xcvxcvxcv
+                    </div>
+                </div>
             </div>
-            <div class="dashboard-summary2">
-                <h3>Total Orders</h3>
-                <p>10,293</p>
-                <p1><i class="fa-solid fa-chart-simple"></i> 1.5% <p2>Up from last month</p2></p1>
-            </div>
-            <div class="dashboard-summary3">
-                <h3>Total Sales</h3>
-                <p>$89,000</p>
-                <p2><i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month</p2>
-            </div>
-            <div class="dashboard-summary4">
-                <h3>Total Sales</h3>
-                <p>$89,000</p>
-                <p1><i class="fa-solid fa-chart-simple"></i> 8.5% <p2>Up from last month</p2></p1>
+        
+            <div class="row">
+                <!-- Main Content Row -->
+                <div class="col-9 pe-3">
+                    <!-- Chart Section -->
+                    <div class="chart-wrapper">
+                        <div class="chart-container">
+                            <button id="toggleChart" class="toggle-button">
+                                <i class="fas fa-chart-bar"></i>
+                            </button>
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Vertical Box Section -->
+                <div class="col-3">
+                    <div class="vertical-box">
+                        xcvxcvxcv
+                    </div>
+                </div>
             </div>
         </div>
+        
 
-        <div class="sales-chart">
-            <h3>Sales Details</h3>
-            <div>
-                <!-- Insert chart here using a library like Chart.js or Google Charts -->
-                <p>Chart Placeholder</p>
-            </div>
-        </div>
+        <!-- Table Section -->
+        <div class="table-container" style="margin-top: 20px;">
+            <h2>Sales Data</h2>
+            <table class="all-table">
+                <thead>
+                    <tr>
+                        <th>Sl No.</th>
+                        <th>User Name</th>
+                        <th>Product Name</th>
+                        <th>Category Name</th>
+                        <th>Quantity</th>
+                        <th>Total Amount</th>
+                        <th>Status</th>
+                        <th>Order Placed At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% let serialNumber = 1; %> <!-- Initialize Serial Number -->
+                    <% salesData.forEach((order) => { %>
+                        <% order.products.forEach((product) => { %>
+                            <tr>
+                                <td><%= serialNumber++ %></td> <!-- Increment Serial Number -->
+                                <td><%= userMap[order.user_id.toString()] ? userMap[order.user_id.toString()].name : 'User Not Found' %></td> <!-- User Name -->
+                                <td><%= productMap[product.product_id.toString()] ? productMap[product.product_id.toString()].title : 'Product Not Found' %></td> <!-- Product Name -->
+                                <td>
+                                    <%= product.category_id && categoryMap[product.category_id.toString()] ? categoryMap[product.category_id.toString()] : 'Category Not Found' %> <!-- Category Name -->
+                                </td>
+                                <td><%= product.quantity %></td> <!-- Quantity -->
+                                <td>₹ <%= product.total_amount.toLocaleString() %></td> <!-- Total Amount -->
+                                <td><%= product.status %></td> <!-- Status -->
+                                <td><%= new Date(order.order_placed_at).toLocaleString() %></td> <!-- Order Placed At -->
+                            </tr>
+                        <% }) %>
+                    <% }) %>
+                </tbody>
+                
+                
+            </table>       
+</div>
 
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Address</th>
-                    <th>Type</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>00001</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
-                <tr>
-                    <td>00002</td>
-                    <td>Rosie Pearson</td>
-                    <td>579 Immartual Ferry Suite 926</td>
-                    <td>Luxury</td>
-                    <td>Processing</td>
-                </tr>
-                <tr>
-                    <td>00003</td>
-                    <td>Ana De Armas</td>
-                    <td>8587 Fridas Ports</td>
-                    <td>Women</td>
-                    <td>Shipped</td>
-                </tr>
-                <tr>
-                    <td>00004</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
-                <tr>
-                    <td>00005</td>
-                    <td>Christina Brooks</td>
-                    <td>08B Ketch Green Apt. 448</td>
-                    <td>Main</td>
-                    <td>Completed</td>
-                </tr>
-            </tbody>
-        </table>
     </div> <!-- <div class="main-content"></div> -->
 
+
+
+
+
+
+
+
+
+    <%- include('partials/footer') %>
+    
+<script>
+   document.addEventListener('DOMContentLoaded', function () {
+        const salesData = <%- JSON.stringify(salesData) %>;
+        console.log("Sales Data:", salesData);
+
+        if (salesData.length === 0) {
+            console.warn("No sales data available to render the chart.");
+            return;
+        }
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const labels = salesData.map(order => new Date(order.createdAt).toLocaleDateString());
+        const totalSales = salesData.map(order => order.total_order_amount);
+
+        // Additional datasets
+        const deliveredData = salesData.filter(order => 
+            order.products.some(product => product.status === "delivered")
+        ).map(order => order.products.reduce((sum, product) => 
+            product.status === "delivered" ? sum + product.total_amount : sum, 0)
+        );
+
+        const returnedData = salesData.filter(order => 
+            order.products.some(product => product.status === "returned")
+        ).map(order => order.products.reduce((sum, product) => 
+            product.status === "returned" ? sum + product.total_amount : sum, 0)
+        );
+
+        const chartContainer = document.querySelector('.chart-container');
+
+        // Initial chart type
+        let currentChartType = 'bar';
+
+        // Create chart instance
+        const chart = new Chart(ctx, {
+            type: currentChartType,
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Total Sales',
+                        data: totalSales,
+                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--bar-color'),
+                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--bar-border-color'),
+                        borderWidth: 1,
+                        fill: true,
+                    },
+                    {
+                        label: 'Delivered Products',
+                        data: deliveredData,
+                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-color'),
+                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-border'),
+                        borderWidth: 1,
+                        fill: false,
+                    },
+                    {
+                        label: 'Returned Products',
+                        data: returnedData,
+                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-color'),
+                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-border'),
+                        borderWidth: 1,
+                        fill: false,
+                    }
+                ]
+            },
+            options: {
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-bg'),
+                        titleColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-title'),
+                        bodyColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-body'),
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: {
+                        grid: {
+                            color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
+                        },
+                        ticks: {
+                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
+                        },
+                        ticks: {
+                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
+                        }
+                    },
+                }
+            },
+        });
+
+        // Toggle button functionality
+        document.getElementById('toggleChart').addEventListener('click', () => {
+            // Switch between 'bar' and 'line'
+            currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+
+            // Update chart type
+            chart.config.type = currentChartType;
+
+            // Update dataset style for line chart
+            chart.data.datasets.forEach(dataset => {
+                if (currentChartType === 'line') {
+                    dataset.fill = true;
+                } else {
+                    dataset.fill = false;
+                }
+            });
+
+            // Update chart text for the toggle button
+            const toggleButton = document.getElementById('toggleChart');
+            toggleButton.innerHTML = currentChartType === 'bar' 
+            ? '<i class="fas fa-chart-bar"></i>' 
+            : '<i class="fas fa-chart-line"></i>';
+            chart.update();
+        });
+    });
+</script>
+    
 </body>
-<%- include('partials/footer') %> 
 </html>

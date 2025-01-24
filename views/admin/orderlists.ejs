@@ -117,17 +117,26 @@
 </div>
 <div class="pagination">
   <% if (currentPage > 1) { %>
-      <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a>
+      <a href="/admin/orderlists?page=1&status=<%= status %>">First</a>
+      <!-- <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a> -->
   <% } %>
 
-  <% for (let i = 1; i <= totalPages; i++) { %>
+  <% 
+      const pageRange = 2;
+      const startPage = Math.max(1, currentPage - pageRange);
+      const endPage = Math.min(totalPages, currentPage + pageRange);
+
+      for (let i = startPage; i <= endPage; i++) { 
+  %>
       <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
   <% } %>
 
   <% if (currentPage < totalPages) { %>
-      <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a>
+      <!-- <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a> -->
+      <a href="/admin/orderlists?page=<%= totalPages %>&status=<%= status %>">Last</a>
   <% } %>
 </div>
+
 
 
 

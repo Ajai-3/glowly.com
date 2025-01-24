@@ -18,10 +18,7 @@ export const renderLoginPage = (req, res) => {
     res.render("admin/admin-login", { msg });
 };
 
-// Rendre Dashboard Page
-export const renderDashboardPage = (req, res) => {
-    return res.render("admin/dashboard")
-}
+
 
 // Rendre Orderlists Page
 

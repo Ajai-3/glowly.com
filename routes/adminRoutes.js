@@ -6,7 +6,6 @@ const uploads = multer ({ storage:storage })
 import { uploadImages } from "../helpers/cloudinary.js"
 import {
   renderLoginPage,
-  renderDashboardPage,
   renderSalesReportPage,
   renderSettingsPage,
   renderBannerManagementPage,
@@ -20,6 +19,7 @@ import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProdu
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
+import { renderDashboardPage } from "../controllers/admin/dashboard.controller.js";
 
 
 // Pages Are Protected With adminAuthMiddleware
@@ -33,6 +33,7 @@ router.get("/admin-logout", handleAdminLogout);
 // router.use(verifyAdminToken);
 router.use(pageMiddlware);
 
+// Dashboard Controller
 router.get("/dashboard", verifyAdminToken, renderDashboardPage);
 
 // Product Routes

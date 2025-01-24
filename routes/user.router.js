@@ -105,6 +105,7 @@ router.get('/placeOrderWithBuyNow', placeOrderWithBuyNow);
 router.get("/my-orders", renderOrderListPage);
 router.patch("/cancel-order", cancelOrder)
 router.patch("/return-order", returnOrder)
+// router.post("/verify-razorpay-place-order", verifyRazorPayOrderPayment)
 router.get('/product-details/:orderId/:productId/:variantId/:addressId', orderDetailsPage)
 //Wish list Management
 router.get("/my-wishlist", renderWishlistPage)
