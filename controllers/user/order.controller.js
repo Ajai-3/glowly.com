@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import Order from "../../models/order.js";
+import Order from "../../models/order.model.js";
 import Cart from "../../models/cart.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";

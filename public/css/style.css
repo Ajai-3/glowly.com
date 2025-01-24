@@ -3212,3 +3212,10 @@ input.quantity-input {
     -webkit-appearance: textfield;
     appearance: textfield; 
 }
+
+.copupon-active {
+  color: var(--green-text-color-2);
+}
+.coupon-inactive {
+  color: var(--red-text-color-4);
+}

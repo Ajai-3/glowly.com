@@ -77,8 +77,8 @@ const OrderSchema = new mongoose.Schema(
       required: true,
     },
     coupon_applied: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: null,
     },
   },
 

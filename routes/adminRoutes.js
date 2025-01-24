@@ -18,7 +18,7 @@ import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/cu
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
-import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon } from "../controllers/admin/coupon.controller.js";
+import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 
 
@@ -74,6 +74,8 @@ router.put('/block-user', verifyAdminToken, blockUser);
 router.put('/unblock-user', verifyAdminToken, unBlockUser);
 // Coupon Routes
 router.get("/coupons", verifyAdminToken, renderCouponsPage);
+router.patch('/remove-coupon', verifyAdminToken, removeCoupon);
+router.patch('/restore-coupon', verifyAdminToken, restoreCoupon);
 // router.get("/add-coupon", renderAddCouponPage);
 router.post("/add-coupon", verifyAdminToken, addCoupon);
 router.get("/edit-coupon", verifyAdminToken, renderEditCouponPage);

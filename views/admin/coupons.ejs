@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
-
+<style>
+    .error {
+        border: 2px solid red;
+    }
+    .error-message {
+        color: red;
+        display: none;
+    }
+</style>
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
             <form action="/admin/search-user" method="GET">
                 <input type="text" name="search" placeholder="Search " readonly>
-                <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+                <button class="admin-search-button"><i class="fas fa-search"></i></button>
             </form>
         </div>
         <div class="admin-profile mx-3">
@@ -20,139 +28,432 @@
     <div class="breadcrumbs"><a href="/admin/coupons">Coupons</a></div>
 
     <div>
-        <div class="add-coupon-box mb-1">
-            <h5 class="m-0">Add Coupon</h5>
-            <form action="/admin/add-coupon" method="Post">
-                <div class="add-products-container-center coupoun-div">
-                    <div>
-                        <label for="code">Code</label>
-                        <input type="text" id="code" name="code" placeholder="Type the code" required>
-                    </div>
-                    <div>
-                        <label for="discountType">Discount Type</label>
-                        <select name="discountType" id="discountType" required>
-                            <option value="" disabled selected>Select Discount Type</option>
-                            <% discountTypes.forEach(type => { %>
-                                <option value="<%= type %>"><%= type %></option>
-                            <% }); %>
-                        </select> 
-                    </div>
-                    <div>
-                        <label for="value">Value</label>
-                        <input type="number" id="value" name="value" placeholder="Discount value" required>
-                    </div>
-                    <div>
-                       
-                    <label for="expiryDate">Expiry Date</label>
-                    <input type="date" id="expiryDate" name="expiryDate" required>  
-                    </div>                  
-                </div>
-                <div class="add-products-container-center coupoun-div">
-                    <div>
-                        <label for="minPrice">Min price</label>
-                        <input type="number" id="minPrice" name="minPrice" placeholder="&#8377;200" min="1" required>
-                    </div>
-                    <div>
-                        <label for="maxPrice">Max price</label>
-                    <input type="number" id="maxPrice" name="maxPrice" placeholder="&#8377;1000" min="1" required>
-                    </div>
-                    <div>
-                        <label for="limit">Limit</label>
-                    <input type="number" id="limit" name="limit" placeholder="No of coupon" min="1" value="1" required>
-                    </div>
-                    
-                    
-                    
-                </div>
-                <div class="d-flex justify-content-center align-items-center">
-                    <button class="large-button-pink my-1">Add Coupon <i class="fas fa-plus-circle"></i></button>
-                </div>
-               
-            </form>   
-       </div>
 
-        <div class="filter-container">
-            <div class="filter-div1">
-                <div class="filter-box">
-                    <i class="fa-solid fa-filter"></i>
+        <!-- The Modal -->
+        <div class="modal fade" id="couponModal" tabindex="-1" role="dialog" aria-labelledby="couponModalLabel" aria-hidden="true">
+            <div class="modal-dialog add-coupon-box" role="document">
+                <div class="modal-content add-coupon-box">
+                    <div class="modal-header">
+                        <h5 class="modal-title me-4" id="couponModalLabel">Add Coupon</h5>
+                        <button type="button" class="close ms-4" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body add-coupon-box">
+                        <div class="add-coupon-box">
+                            <form id="couponForm">
+                                <div class="add-products-container-center coupoun-div">
+                                    <div>
+                                        <label for="code">Code</label>
+                                        <input type="text" id="code" name="code" placeholder="Type the code">
+                                        <span class="error-message" id="codeError">This field is required.</span>
+                                    </div>
+                                    <div>
+                                        <label for="discountType">Discount Type</label>
+                                        <select name="discountType" id="discountType">
+                                            <option value="" disabled selected>Select Discount Type</option>
+                                            <option value="flat">Flat</option>
+                                            <option value="percentage">Percentage</option>
+                                        </select>
+                                        <span class="error-message" id="discountTypeError">This field is required.</span>
+                                    </div>
+
+                                </div>
+                                <div class="add-products-container-center coupoun-div">
+                                    <div>
+                                        <label for="value">Value</label>
+                                        <input type="number" id="value" name="value" placeholder="Discount value">
+                                        <span class="error-message" id="valueError">Please enter a valid value.</span>
+                                    </div>
+                                    <div>
+                                        <label for="limit">Limit</label>
+                                        <input type="number" id="limit" name="limit" placeholder="No of coupon" min="1" value="1">
+                                        <span class="error-message" id="limitError">Please enter a valid limit.</span>
+                                    </div>
+                                </div>
+                                <div class="add-products-container-center coupoun-div">
+                                    <div>
+                                        <label for="minPrice">Min price</label>
+                                        <input type="number" id="minPrice" name="minPrice" placeholder="&#8377;200" min="1">
+                                        <span class="error-message" id="minPriceError">Please enter a valid minimum price.</span>
+                                    </div>
+                                    <div>
+                                        <label for="maxPrice">Max price</label>
+                                        <input type="number" id="maxPrice" name="maxPrice" placeholder="&#8377;1000" min="1">
+                                        <span class="error-message" id="maxPriceError">Please enter a valid maximum price.</span>
+                                    </div>
+                                </div>
+                                <div class="add-products-container-center coupoun-div">
+                                   
+                                    
+                                    <div>
+                                        <label for="startDate">Start Date</label>
+                                        <input type="date" id="startDate" name="startDate">
+                                        <span class="error-message" id="startDateError">This field is required.</span>
+                                    </div>
+                                    <div>
+                                        <label for="expiryDate">Expiry Date</label>
+                                        <input type="date" id="expiryDate" name="expiryDate">
+                                        <span class="error-message" id="expiryDateError">This field is required.</span>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center">
+                                    <button type="submit" class="large-button-pink my-2 px-4">Add Coupon <i class="fas fa-plus-circle ms-2"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
+            </div>
+        </div>
+
+    <div class="filter-container">
+        <div class="filter-div1">
+            <div class="filter-box">
+                <i class="fa-solid fa-filter"></i>
+            </div>
+            <div class="filter-box">
+                <label for="filter">Filter By
+                    <select name="filter" id="filter">
+                        <option value="date">14 Feb 2014</option>
+                    </select>
+                </label>
+            </div>
+            <form action="/admin/coupons" method="GET">
                 <div class="filter-box">
-                    <label for="filter">Filter By
-                        <select name="filter" id="filter">
-                            <option value="date">14 Feb 2014</option>
+                    <label for="type">Type:
+                        <select name="type" id="type" onchange="this.form.submit()">
+                            <option value="all" <%= selectedType === "all" ? "selected" : "" %>>All</option>
+                            <% discountTypes.forEach((type) => { %>
+                                <option value="<%= type %>" <%= type === selectedType ? 'selected' : '' %>><%= type %></option>
+                            <% }) %>
+                        </select>
+                    </label>
+                <!-- </div> -->
+                <!-- <div class="filter-box"> -->
+                    <label for="isActive">Status:
+                        <select name="isActive" id="isActive" onchange="this.form.submit()">
+                            <option value="all" <%= selectedStatus === "all" ? "selected" : "" %>>All</option>
+                            <option value="true" <%= selectedStatus === "true" ? "selected" : "" %>>Active</option>
+                            <option value="false" <%= selectedStatus === "false" ? "selected" : "" %>>Inactive</option>
                         </select>
                     </label>
                 </div>
-                <form action="/admin/coupons" method="GET">
-                    <div class="filter-box">
-                        <label for="type">Type
-                            <select name="type" id="type" onchange="this.form.submit()">
-                                <% discountTypes.forEach((type) => { %>
-                                    <option value="<%= type %>" <%= type === selectedType ? 'selected' : '' %>><%= type %></option>
-                                <% }) %>
-                            </select>
-                        </label>
-                    </div>
-                </form>
-                                 
-            </div>
+                <input type="hidden" name="page" value="<%= currentPage %>">
+            </form>
 
-            <% if (msg) { %>
-                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-                    <%= msg.text %>
-                </div>
-            <% } %>
+            
+            
         </div>
-
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Coupon Code</th>
-                    <th>Type</th>
-                    <th>Discount Value</th>
-                    <th>Price Range</th>
-                    <th>Expiry Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% coupons.forEach((coupon, index) => { %>
-                    <tr>
-                        <td><%= (currentPage - 1) * 5 + index + 1 %></td>
-                        <td><%= coupon.code %></td>
-                        <td><%= coupon.type %></td>
-                        <td>
-                            <%= coupon.type === 'percentage' ? coupon.discountValue + '%' : coupon.discountValue %>
-                          </td>                          
-                        <td><%= coupon.minPrice %> - <%= coupon.maxPrice %></td>
-                        <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
-                        <td><%= coupon.isActive ? 'Active' : 'Inactive' %></td>
-                        <td>
-                            <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
-                            <a href="/admin/delete-coupon/<%= coupon._id %>" onclick="return confirm('Are you sure?')">
-                                <button class="delete-btn">Delete</button>
-                            </a>
-                        </td>
-                    </tr>
-                <% }) %>
-            </tbody>
-        </table>
-
-        <div class="pagination m-2">
-            <% if (currentPage > 1) { %>
-                <a href="?page=<%= currentPage - 1 %>">Previous</a>
-            <% } %>
-            <span>Page <%= currentPage %> of <%= totalPages %></span>
-            <% if (currentPage < totalPages) { %>
-                <a href="?page=<%= currentPage + 1 %>">Next</a>
-            <% } %>
-        </div>
+        <button type="button" class="large-button-pink px-4" data-toggle="modal" data-target="#couponModal">Add Coupon</button>
     </div>
 
+    <table class="all-table">
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Coupon Code</th>
+                <th>Type</th>
+                <th>Discount Value</th>
+                <th>Price Range</th>
+                <th>Start Date</th>
+                <th>Expiry Date</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="couponTableBody">
+            <% coupons.forEach((coupon, index) => { %>
+                <tr>
+                    <td><%= (currentPage - 1) * 4 + index + 1 %></td>
+                    <td><%= coupon.code %></td>
+                    <td><%= coupon.type %></td>
+                    <td><%= coupon.type === 'percentage' ? coupon.discountValue + '%' : coupon.discountValue %></td>
+                    <td><%= coupon.minPrice %> - <%= coupon.maxPrice %></td>
+                    <td><%= coupon.startDate.toISOString().split('T')[0] %></td>
+                    <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
+                    <td class="<%= coupon.isActive ? 'copupon-active' : 'coupon-inactive' %>">
+                        <%= coupon.isActive ? 'Active' : 'Inactive' %>
+                    </td>
+
+                    <td>
+                        <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
+                        <% if (coupon.isDelete === false) { %>
+                            <button class="delete-btn" onclick="showConfirmationPopup('<%= coupon._id %>', 'delete')">Delete</button>
+                          <% } else { %>
+                            <button class="restore-btn" onclick="toggleCouponStatus('<%= coupon._id %>', 'restore')">Restore</button>
+                          <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    <div class="pagination m-2">
+        <!-- Previous Page Link -->
+        <% if (currentPage > 1) { %>
+            <a href="/admin/coupons?page=<%= currentPage - 1 %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>">Previous</a>
+        <% } %>
+    
+        <!-- Page Numbers Links -->
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="/admin/coupons?page=<%= i %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>" 
+               class="<%= currentPage === i ? 'active' : '' %>">
+                <%= i %>
+            </a>
+        <% } %>
+    
+        <!-- Next Page Link -->
+        <% if (currentPage < totalPages) { %>
+            <a href="/admin/coupons?page=<%= currentPage + 1 %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>">Next</a>
+        <% } %>
+    </div>
 
 </div>
 
+
+<div id="customPopup" class="popup hidden">
+    <div class="popup-content">
+        <h5 class="popup-title">Are you sure?</h5>
+        <p class="popup-text">Do you want to delete the coupon?</p>
+        <div class="popup-buttons">
+            <button id="confirmButton" class="popup-button confirm">Yes, delete it!</button>
+            <button id="cancelButton" class="popup-button cancel">No, keep it</button>
+        </div>
+    </div>
+</div>
+
 <%- include('partials/footer') %> 
+<script>
+    const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        size: 'small',
+        position: 'topRight',
+      });
+    };
+    let currentCouponId = null;
+let currentAction = null;
+
+const showConfirmationPopup = (id, action) => {
+    currentCouponId = id;
+    currentAction = action;
+    document.getElementById("customPopup").classList.remove("hidden");
+};
+
+document.getElementById("cancelButton").onclick = () => {
+    document.getElementById("customPopup").classList.add("hidden");
+};
+
+document.getElementById("confirmButton").onclick = async () => {
+    document.getElementById("customPopup").classList.add("hidden");
+    await toggleCouponStatus(currentCouponId, currentAction);
+};
+
+const toggleCouponStatus = async (couponId, action) => {
+  const url = action === "delete" ? "/admin/remove-coupon" : "/admin/restore-coupon";
+
+  try {
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id: couponId }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      toastSuccess(data.message);
+
+      const button = document.querySelector(`[onclick="showConfirmationPopup('${couponId}', 'delete')"]`) || document.querySelector(`[onclick="toggleCouponStatus('${couponId}', 'restore')"]`);
+      if (action === "delete") {
+        button.textContent = "Restore";
+        button.className = "restore-btn";
+        button.setAttribute("onclick", `toggleCouponStatus('${couponId}', 'restore')`);
+      } else {
+        button.textContent = "Delete";
+        button.className = "delete-btn";
+        button.setAttribute("onclick", `showConfirmationPopup('${couponId}', 'delete')`);
+      }
+    } else {
+      toastError(data.message);
+    }
+  } catch (error) {
+    console.error("Error toggling coupon status:", error);
+    toastWarning("An error occurred. Please try again.");
+  }
+};
+
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+        const form = document.getElementById('couponForm');
+        const inputs = form.querySelectorAll('input, select');
+        const errorMessages = {
+            code: 'This field is required.',
+            discountType: 'This field is required.',
+            value: 'Please enter a valid value.',
+            limit: 'Please enter a valid limit.',
+            minPrice: 'Please enter a valid minimum price.',
+            maxPrice: 'Please enter a valid maximum price.',
+            expiryDate: 'This field is required.',
+            startDate: 'This field is required.',
+            dateRange: 'Start date must be before expiry date.',
+            priceRange: 'Max price must be greater than min price.',
+        };
+
+        const validateField = (input) => {
+            const errorElement = document.getElementById(`${input.id}Error`);
+            if (!input.value || input.validity.rangeUnderflow) {
+                input.classList.add('error');
+                errorElement.textContent = errorMessages[input.id];
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                input.classList.remove('error');
+                errorElement.style.display = 'none';
+                return true;
+            }
+        };
+
+        const validateDateRange = () => {
+            const startDate = document.getElementById('startDate');
+            const expiryDate = document.getElementById('expiryDate');
+            const errorElement = document.getElementById('expiryDateError');
+            if (new Date(startDate.value) >= new Date(expiryDate.value)) {
+                expiryDate.classList.add('error');
+                errorElement.textContent = errorMessages.dateRange;
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                expiryDate.classList.remove('error');
+                errorElement.style.display = 'none';
+                return true;
+            }
+        };
+
+        const validatePriceRange = () => {
+            const minPrice = document.getElementById('minPrice');
+            const maxPrice = document.getElementById('maxPrice');
+            const errorElement = document.getElementById('maxPriceError');
+            if (parseFloat(minPrice.value) >= parseFloat(maxPrice.value)) {
+                maxPrice.classList.add('error');
+                errorElement.textContent = errorMessages.priceRange;
+                errorElement.style.display = 'block';
+                return false;
+            } else {
+                maxPrice.classList.remove('error');
+                errorElement.style.display = 'none';
+                return true;
+            }
+        };
+
+        inputs.forEach(input => {
+            if (input.type === 'date') {
+                input.addEventListener('change', () => {
+                    validateField(input);
+                    if (input.id === 'startDate' || input.id === 'expiryDate') {
+                        validateDateRange();
+                    }
+                });
+            } else if (input.type === 'number') {
+                input.addEventListener('input', () => {
+                    validateField(input);
+                    if (input.id === 'minPrice' || input.id === 'maxPrice') {
+                        validatePriceRange();
+                    }
+                });
+            } else {
+                input.addEventListener('input', () => validateField(input));
+            }
+        });
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            let valid = true;
+            inputs.forEach(input => {
+                if (!validateField(input)) {
+                    valid = false;
+                }
+            });
+            if (!validateDateRange() || !validatePriceRange()) {
+                valid = false;
+            }
+            if (!valid) {
+                return;
+            }
+
+            // AJAX request
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            try {
+                const response = await fetch('/admin/add-coupon', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    $('#couponModal').modal('hide');
+                    form.reset();
+                    toastSuccess('Coupon added successfully!');
+                    setTimeout(() => {
+                        window.location.href = "/admin/coupons";
+                    }, 1500);
+                } else {
+                    const errorText = await response.text();
+                    toastError(`Error: ${errorText}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                toastWarning("Internal server error");
+            }
+        });
+    });
+</script>
 </html>

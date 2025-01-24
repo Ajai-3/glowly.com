@@ -11,8 +11,25 @@ const couponSchema = new mongoose.Schema({
         enum: ['percentage', 'flat'],
         required: true
     },
+    users: [
+        {
+            userId: {
+                type: mongoose.Schema.Types.ObjectId, 
+                ref: 'User',
+                required: true
+            },
+            usedCount: {
+                type: Number,
+                default: 0 
+            }
+        }
+    ],
     discountValue: {
         type: Number,
+        required: true
+    },
+    startDate: {
+        type: Date,
         required: true
     },
     expiryDate: {
@@ -31,13 +48,17 @@ const couponSchema = new mongoose.Schema({
         type: Number,
         default: 1
     },
-    usedCount: {
+    totalUsedCount: {
         type: Number,
         default: 0
     },
     isActive: {
         type: Boolean,
-        default: true
+        default: false
+    },
+    isDelete: {
+        type: Boolean,
+        default: false
     },
     created_at: {
         type: Date,

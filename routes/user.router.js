@@ -32,7 +32,7 @@ import {
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, getAddress, updateAddress } from "../controllers/user/user.account.controller.js";
-import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage } from "../controllers/user/checkout.controller.js";
+import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage, verifyCoupon } from "../controllers/user/checkout.controller.js";
 import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from "../controllers/user/order.controller.js";
 import { get } from "mongoose";
 import { addMoneyToWallet, myWallet } from "../controllers/user/wallet.controller.js";
@@ -98,6 +98,7 @@ router.post("/update-cart-product", updateCartPageProduct)
 // Checkout Mangement
 router.get("/checkout", renderCheckoutPage);
 router.post("/place-order", placeOrder);
+router.post("/verify-coupon", verifyCoupon);
 router.get('/placeOrderWithBuyNow', placeOrderWithBuyNow);
 
 // Order Management

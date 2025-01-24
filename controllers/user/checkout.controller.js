@@ -1,10 +1,11 @@
 import jwt from "jsonwebtoken";
-import Order from "../../models/order.js";
+import Order from "../../models/order.model.js";
 import dotenv from "dotenv";dotenv.config();
 import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js"; 
 import razorpay from "../../config/razorpay.js";
 import Wallet from "../../models/wallet.model.js";
+import Coupon from "../../models/coupon.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
@@ -148,7 +149,8 @@ export const placeOrderWithBuyNow = async (req, res) => {
             });
 
         const products = await Product.find({ isDeleted: false });
-        const addresses = await Address.find({ user_id: user.userId }).limit(3);
+        const addresses = await Address.find({ user_id: user.userId, 
+            isActive: true }).limit(3);
         const userDetails = await User.findById(user.userId);
 
         const cartProduct = cart.products.find(product => product.product_id.toString() === productId);
@@ -259,6 +261,7 @@ export const placeOrder = async (req, res) => {
             coupon_applied: coupon || false,
         });
 
+
         if (payment_method === 'wallet') {
             const wallet = await Wallet.findOne({ user_id: user.userId });
             if (!wallet || wallet.balance < grandTotal) {
@@ -279,6 +282,13 @@ export const placeOrder = async (req, res) => {
             order.payment_status = "completed";
             await order.save();
 
+            console.log("Coupon:", coupon);
+            console.log("User ID:", user.userId);
+            if (!coupon || !user.userId) {
+                console.log("Either coupon or user.userId is invalid.");
+            } else {
+                await updateCouponUsage(coupon, user.userId);
+            }
             await processOrder(cart, user.userId);
 
             return res.status(201).json({ success: true, message: "Order placed successfully using wallet!", order });
@@ -292,7 +302,7 @@ export const placeOrder = async (req, res) => {
 
             order.payment_status = 'completed';
             await order.save();
-
+            await updateCouponUsage(coupon, user.userId)
             await processOrder(cart, user.userId);
 
             return res.status(201).json({
@@ -305,7 +315,7 @@ export const placeOrder = async (req, res) => {
             
             order.payment_status = 'pending';
             await order.save();
-
+            await updateCouponUsage(coupon, user.userId)
             await processOrder(cart, user.userId);
 
             return res.status(201).json({ success: true, message: "Order placed successfully with cash on delivery!", order });
@@ -347,6 +357,88 @@ const processOrder = async (cart, userId) => {
     );
 };
 
+const updateCouponUsage = async (couponId, userId) => {
+    const coupon = await Coupon.findOne({ 
+        _id: couponId, 
+        isDelete: false 
+    });
+
+    if (!coupon) {
+        console.log("Coupon not found");
+        return;
+    }
+
+    console.log("Coupon found:", coupon);
+
+    const userCoupon = coupon.users.find(user => user.userId.toString() === userId.toString());
+    console.log("User coupon found:", userCoupon);
+
+    if (!userCoupon) {
+        coupon.users.push({ userId: userId, usedCount: 1 });
+        coupon.totalUsedCount++;
+    } else {
+        userCoupon.usedCount++;
+        coupon.totalUsedCount++;
+    }
+
+    await coupon.save();
+    console.log("Updated coupon:", coupon);
+};
+
+
+
+
+export const verifyCoupon = async (req, res) => {
+    try {
+        const { coupon, grandTotal } = req.body;
+
+        const token = req.cookies.token;
+        let user;
+
+        if (!token) {
+            return res.status(401).json({ success: false, message: "User not authenticated." });
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+            user = decoded;
+        } catch (error) {
+            console.error("Invalid token:", error);
+            return res.status(401).json({ success: false, message: "Invalid token." });
+        }
+
+        const getCoupon = await Coupon.findOne({ code: coupon, isDelete: false }) 
+
+        if (getCoupon && getCoupon.isActive === false) {
+            return res.status(404).json({ sucess: false, message: "This coupon has expired or is invalid." })
+        }
+        if (!getCoupon) {
+            return res.status(404).json({ success: false, message: "This coupon has expired or is invalid." });
+        }
+
+        if (getCoupon && getCoupon.minPrice <= grandTotal && getCoupon.maxPrice >= grandTotal) {
+
+            const userCoupon = getCoupon.users.find(user => user.userId.toString() === user.userId.toString());
+
+            if (userCoupon && userCoupon.usedCount >= getCoupon.usageLimit) {
+                return res.status(400).json({ success: false, message: "You have reached the usage limit for this coupon." });
+            }
+
+            return res.status(200).json({ 
+                success: true, 
+                message: "Coupon applied successfully.", 
+                discountValue: getCoupon.discountValue,
+                discountType: getCoupon.type,
+                coupon_id: getCoupon._id
+             });
+        } else {
+            return res.status(400).json({ success: false, message: "This coupon does not meet the requirements." });
+        }
+
+    } catch (error) {
+        console.log("Error in verify coupon.", error)
+    }
+}
 
 
 

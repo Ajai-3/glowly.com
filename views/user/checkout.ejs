@@ -92,7 +92,7 @@
             </p>
             <p class="d-flex justify-content-between">
               <span>Discount</span>
-              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span>
+              <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
             </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span>
@@ -248,9 +248,7 @@
       </p>
       <p class="d-flex justify-content-between">
         <span>Discount</span>
-        <span class="discount-percentage price-inr">
-          -₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %>
-        </span>
+        <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
       </p>
       <p class="d-flex justify-content-between">
         <span>Delivery Charges</span>
@@ -373,7 +371,9 @@
             <label class="form-check-label" for="cash">Cash on Delivery</label>
             <div id="error" class="error-message"></div>
           </div>
-          <button class="large-button-green pay-btn-checkoutpage w-100 my-3 ">PAY <span id="total-price" class=" price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span></button>
+          <button id="payBtn" class="large-button-green pay-btn-checkoutpage w-100 my-3">
+            PAY <span id="total-price" class="price-inr"><%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span>
+        </button>
         </div>
       </div>
 
@@ -389,8 +389,13 @@
             </p>
             <p class="d-flex justify-content-between">
               <span>Discount</span>
-              <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span>
+              <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+              
             </p>
+            <p class="d-flex justify-content-between m-0 hidden" id="coupon-discound-show">
+              <span id="coupon-dicount-title"></span>
+              <span id="coupon-discount" class="discount-percentage"></span>
+          </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span>
               <% if (cartProducts.some(product => product.delivery_charge)) { %>
@@ -415,17 +420,15 @@
             <hr>
             <p class="d-flex justify-content-between mt-2 mb-1">
               <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+              <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
             </p>
           </div>
         </div>
         <!-- Coupon -->
         <div class="check-coupon m-2">
-          <form action="/check-coupon">
             <label for="coupon">Do you have any Coupon</label><br>
             <input type="text" name="coupon" id="coupon" placeholder="Enter code">
-            <button type="submit" class="large-button-green p-1 px-3">Verify</button>
-          </form>
+            <button type="submit" id="verify-coupon" class="large-button-green p-1 px-3">Apply</button>
         </div>
       </div>
     </div>
@@ -513,7 +516,12 @@
 
     let selectedAddressId = null;
     let selectedAddress = null;
+    let couponId = null;
     let grandTotal = 0;
+    let discountType;
+    let discountAmount;
+
+    console.log("initialc", couponId)
 
     showStep(step1);
 
@@ -559,6 +567,101 @@
         return paymentMethodElement ? paymentMethodElement.id : null;
     }
 
+
+
+    // Coupon Applying ///////////////////////////////////////////
+    const couponButton = document.getElementById("verify-coupon");
+    const couponInput = document.getElementById("coupon");
+
+    const applyCoupon = async () => {
+        const cartProducts = getCartProducts();
+        const coupon = couponInput.value.trim();
+
+        const grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+
+        const response = await fetch("/verify-coupon", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ coupon, grandTotal }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+          couponId = result.coupon_id
+
+          if (result.discountType && result.discountType === "percentage"){
+            discountType = `(${result.discountValue} %)`;
+            discountAmount = ( result.discountValue / 100 ) * grandTotal;
+          } else if (result.discountType === "flat") {
+            discountType = `(flat)`
+            discountAmount = result.discountValue
+          }
+          let formattedDiscountAmount = '₹ ' + discountAmount.toLocaleString('en-IN');
+        
+
+            toastSuccess(result.message);
+            couponButton.textContent = "Remove";
+            couponButton.className = "large-button-red p-1 px-3";
+            couponButton.setAttribute("id", "remove-coupon");
+
+            couponButton.removeEventListener("click", applyCoupon);
+            couponButton.addEventListener("click", removeCoupon);
+
+            couponInput.readOnly = true;
+            const couponDiscountShow = document.getElementById("coupon-discound-show");
+            couponDiscountShow.classList.remove("hidden");
+            couponDiscountShow.style.display = "flex";
+
+            const grandTotalAfterDiscount = '₹ ' + (grandTotal - discountAmount).toLocaleString('en-IN')
+
+            document.getElementById("grandTotal").textContent = `${grandTotalAfterDiscount}`
+            document.getElementById("payBtn").textContent = `PAY ${grandTotalAfterDiscount}`
+            document.getElementById("coupon-dicount-title").textContent = `Coupon Savings ${discountType}`;
+            document.getElementById("coupon-dicount-title").style.marginBottom = "16px";
+            document.getElementById("coupon-discount").textContent = `- ${formattedDiscountAmount}`;
+        } else {
+            toastError(result.message || "Something went wrong with coupon verification.");
+        }
+    };
+
+// Function to handle removing the coupon
+const removeCoupon = () => {
+    couponId = null;
+
+    couponInput.readOnly = false;
+    couponInput.value = "";
+
+
+    couponButton.textContent = "Apply";
+    couponButton.className = "large-button-green p-1 px-3";
+    couponButton.setAttribute("id", "verify-coupon");
+
+    couponButton.removeEventListener("click", removeCoupon);
+    couponButton.addEventListener("click", applyCoupon);
+
+    couponInput.value = "";
+
+    const couponDiscountShow = document.getElementById("coupon-discound-show");
+    couponDiscountShow.classList.add("hidden");
+    couponDiscountShow.style.display = "none";
+
+    const grandTotalOld = '₹ ' + grandTotal.toLocaleString('en-IN')
+
+    document.getElementById("grandTotal").textContent = `${grandTotalOld}`
+    document.getElementById("payBtn").textContent = `PAY ${grandTotalOld}`
+    document.getElementById("coupon-dicount-title").textContent = "";
+    document.getElementById("coupon-dicount-title").style.marginBottom = "";
+    document.getElementById("coupon-discount").textContent = "";
+};
+
+couponButton.addEventListener("click", applyCoupon);
+
+
+
     const payButton = document.querySelector(".pay-btn-checkoutpage");
     payButton.addEventListener("click", async () => {
         const cartProducts = getCartProducts();
@@ -572,8 +675,8 @@
         const orderData = {
             address_id: selectedAddressId,
             cart: cartProducts,
-            grandTotal: grandTotal,
-            coupon: false,
+            grandTotal: couponId ? (grandTotal - discountAmount) : grandTotal,
+            coupon: couponId || null,
             payment_method: selectedPaymentMethod,
         };
 
@@ -648,6 +751,8 @@
 
                     const razorpay = new Razorpay(razorpayOptions);
                     razorpay.open();
+
+                    // handleOrderSuccess()
                 } else {
                     toastError("Failed to create Razorpay order. Please try again.");
                 }
@@ -719,7 +824,8 @@
             };
         });
         grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
-        console.log("Grand Total: ₹" + grandTotal);
+
+        // console.log("Grand Total: ₹" + grandTotal);
 
         return cartProducts;
     }
