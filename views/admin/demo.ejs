@@ -1,626 +1,752 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search" method="GET">
-                    <input type="text" name="search" placeholder="Search" readonly>
-                    <button class="admin-search-button"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/admin/products">Products</a> > <a href="">Add Product</a></div>
+<%- include('partials/headforhome', { name: name, categories: categories }) %>
 
-        <div class="add-products-container">
-            <div class="add-products-container1">
-                <form id="productForm" enctype="multipart/form-data">
-                    <h4>Add New Product</h4>
+<body>
+<div class="user-contents">
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-md-2 product-filter-div p-0">
+        <form id="filter-form">
+          <!-- Popularity Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="popularity">
+              <span>Popularity</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="popularity-options" style="display: none;">
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="trending">
+                  Trending
+                  <input type="checkbox" name="popularity" value="trending" id="trending">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="most-reviewed">
+                  Most Reviewed
+                  <input type="checkbox" name="popularity" value="most-reviewed" id="most-reviewed">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="top-rated">
+                  Top Rated
+                  <input type="checkbox" name="popularity" value="top-rated" id="top-rated">
+                </label>
+              </div>
+            </div>
+          </div>
 
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="productName">Product Name</label>
-                            <input type="text" name="productName" id="productName" placeholder="Type product name">
-                        </div>
-                        <div>
-                            <label for="brand">Select Brand</label> <br>
-                            <select name="brand" id="brand">
-                                <option value="">Select Brand</option>
-                                <% brands.forEach(brand => { %>
-                                    <option value="<%= brand._id %>"><%= brand.brandName %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                    </div>             
-                    <label for="description">Description</label><br>
-                    <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
-    
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="category">Category</label> <br>
-                            <select name="category" id="category" onchange="updateSubCategories()">
-                                <option value="">Select Category</option>
-                                <% categories.forEach(category => { %>
-                                    <option value="<%= category._id %>"><%= category.name %></option>
-                                <% }) %>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="subCategory">Sub Category</label> <br>
-                            <select name="subCategory" id="subCategory">
-                                <option value="">Select Sub Category</option>
-                            </select>
-                        </div>
-                    </div>
-    
-                    <div class="add-products-container-center">
-                        <div>
-                            <label for="availableQuantity">Stock Quantity</label>
-                            <input type="number" name="availableQuantity" id="availableQuantity" placeholder="303" min="1" value="1">
-                        </div>
-                        <div>
-                            <label for="regularPrice">Regular Price</label>
-                            <input type="number" name="regularPrice" id="regularPrice" placeholder="&#8377;21,400" min="1" value="1">
-                        </div>
-                        <div>
-                            <label for="salePrice">Sale Price</label>
-                            <input type="number" name="salePrice" id="salePrice" placeholder="&#8377;18,949" min="1" value="1">
-                        </div>    
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <a href="/admin/add-products"><button type="submit" class="add-product-btn2 my-1">Add Product</button></a> 
-                    </div>
+          <!-- Category Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="category">
+              <span>Category</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="category-options" style="display: none;">
+              <% categories.forEach(category => { %>
+              <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                <label for="category-<%= category.id %>"><%= category.name %></label>
+                <input type="checkbox" class="ml-auto category-checkbox" id="category-<%= category.id %>" name="category" value="<%= category.id %>" data-name="<%= category.name %>" />
+              </div>
+              <!-- Subcategory Filter nested within Category -->
+              <div class="filter-options subcategory-options" id="subcategory-options-<%= category.id %>" style="display: none; margin-left: 20px;">
+                <% category.subcategories.forEach(subcategory => { %>
+                <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                  <label for="subcategory-<%= subcategory.id %>"><%= subcategory.name %></label>
+                  <input type="checkbox" class="ml-auto subcategory-checkbox" id="subcategory-<%= subcategory.id %>" name="subcategory" value="<%= subcategory.id %>" data-name="<%= subcategory.name %>" />
                 </div>
-                <div class="add-products-container2">
-                    <h4>Add Product Images</h4>
-                
-                    <!-- First image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage1" class="custom-image-input">
-                            <img id="productImagePreview1" src="#" alt="Upload Product Image 1" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage1"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 1)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Second image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage2" class="custom-image-input">
-                            <img id="productImagePreview2" src="#" alt="Upload Product Image 2" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage2"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 2)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Third image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage3" class="custom-image-input">
-                            <img id="productImagePreview3" src="#" alt="Upload Product Image 3" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage3"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 3)"
-                            style="display: none;"/>
-                    </div>
-                
-                    <!-- Fourth image upload -->
-                    <div class="image-upload-slot">
-                        <label for="productImage4" class="custom-image-input">
-                            <img id="productImagePreview4" src="#" alt="Upload Product Image 4" />
-                        </label>
-                        <input
-                            type="file"
-                            id="productImage4"
-                            name="productImages"
-                            accept="image/*"
-                            onchange="openCropper(event, 4)"
-                            style="display: none;"/>
-                    </div>
-                </div> 
-            </form> 
-        </div> 
+                <% }) %>
+              </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Brand Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="brand">
+              <span>Brand</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="brand-options" style="display: none;">
+              <% brands.forEach(brand => { %>
+              <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                <label for="brand-<%= brand.id %>"><%= brand.brandName %></label>
+                <input type="checkbox" class="ml-auto brand-checkbox" id="brand-<%= brand.id %>" name="brand" value="<%= brand.id %>" data-name="<%= brand.brandName %>" />
+              </div>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Price Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="price">
+              <span>Price</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="price-options" style="display: none;">
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="low-to-high">
+                  Low to High
+                  <input type="checkbox" name="price" value="low-to-high" id="low-to-high">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="high-to-low">
+                  High to Low
+                  <input type="checkbox" name="price" value="high-to-low" id="high-to-low">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rating Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="average-rating">
+              <span>Average Rating</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="average-rating-options" style="display: none;">
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-5">
+                  5 Stars
+                  <input type="checkbox" name="rating" value="5" id="rating-5">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-4">
+                  4 Stars
+                  <input type="checkbox" name="rating" value="4" id="rating-4">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-3">
+                  3 Stars
+                  <input type="checkbox" name="rating" value="3" id="rating-3">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-2">
+                  2 Stars
+                  <input type="checkbox" name="rating" value="2" id="rating-2">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-1">
+                  1 Star
+                  <input type="checkbox" name="rating" value="1" id="rating-1">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alphabetical Sort Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="alphabetical">
+              <span>Sort Alphabetically</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="alphabetical-options" style="display: none;">
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-a-z">
+                  A-Z
+                  <input type="checkbox" name="alphabetical" value="a-z" id="alphabetical-a-z">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-z-a">
+                  Z-A
+                  <input type="checkbox" name="alphabetical" value="z-a" id="alphabetical-z-a">
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- New Arrivals Filter -->
+          <div class="filter-item">
+            <hr>
+            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
+              <span>New Arrivals</span>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+            <div class="filter-options" id="new-arrivals-options" style="display: none;">
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
+                  Latest
+                  <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
+                </label>
+              </div>
+              <div>
+                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
+                  Oldest
+                  <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
+                </label>
+              </div>
+            </div>
+            <hr>
+          </div>
+        </form>
+      </div>
+
+      <div class="col-md-10 p-0 ps-4">
+        <div class="product-grid">
+          <% products.forEach(product => { %>
+          <% product.variants.forEach(variant => { %>
+          <div class="product-card" data-variant-id="<%= variant._id %>">
+            <a href="/product/<%= product._id %>/<%= variant._id %>">
+              <img src="<%= variant.images[0] %>" alt="<%= variant.shade %>" />
+            </a>
+            <div class="product-card-like">
+              <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
+                  <% if (user) { %>
+                      <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === product._id.toString() && item.variant_id.toString() === variant._id.toString())) { %>
+                          <button type="submit" title="Remove from Wishlist" class="wishlist-button">
+                              <i class="fa-solid fa-heart in-wishlist"></i>
+                          </button>
+                      <% } else { %>
+                          <button type="submit" title="Add to Wishlist" class="wishlist-button">
+                              <i class="fa-solid fa-heart not-in-wishlist"></i>
+                          </button>
+                      <% } %>
+                  <% } else { %>
+                      <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
+                          <i class="fa-solid fa-heart"></i>
+                      </button>
+                  <% } %>
+              </form>
+          </div>
+            <a href="/product/<%= product._id %>/<%= variant._id %>">
+              <p class="product-title"><%= product.title %> - <%= variant.shade %></p>
+            </a>
+            <div class="product-prices-box">
+              <p class="sale-price price-inr">&#8377;<%= variant.salePrice %></p>
+              <p class="original-price price-inr mx-2">&#8377;<%= variant.regularPrice %></p>
+              <% if (variant.regularPrice > variant.salePrice) { %>
+              <span class="discount-percentage">
+                <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
+              </span>
+              <% } %>
+            </div>
+            <% const variantInCart = cartVariants.includes(variant._id.toString()); %>
+            <% if (variantInCart) { %>
+              <a href="/user/my-cart">
+                <button type="button" class="go-to-cart-btn">Go To Bag</button>
+              </a>
+            <% } else { %>
+              <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
+                <button type="submit" class="add-to-cart-btn">Add to Bag</button>
+              </form>
+            <% } %>
+          </div>
+          <% }) %>
+          <% }) %>
+        </div>
+        <div class="pagination-controls">
+          <% if (currentPage > 1) { %>
+            <a href="?page=<%= currentPage - 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Previous</a>
+          <% } %>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?page=<%= i %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+          <% if (currentPage < totalPages) { %>
+            <a href="?page=<%= currentPage + 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Next</a>
+          <% } %>
+        </div>
+      </div>
     </div>
-
-    <!-- Modal for cropping -->
-    <div id="cropperModal">
-        <div class="modal-content">
-            <img id="imageToCrop" src="" alt="Image to crop">
-            <div>
-                <button id="cropButton" onclick="cropImage()">Crop</button>
-                <button onclick="closeCropperModal()">Close</button>
-            </div>
-            
-        </div>
-    </div>
-
-<%- include('partials/footer') %> 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<script>
-const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-
-      });
-    };
-
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-const categories = [
-        <% categories.forEach(category => { %>
-            {
-                _id: "<%= category._id %>",
-                name: "<%= category.name %>",
-                subcategories: [
-                    <% category.subcategories.forEach(subcategory => { %>
-                        { _id: "<%= subcategory._id %>", name: "<%= subcategory.name %>" },
-                    <% }) %>
-                ]
-            },
-        <% }) %>
-    ];
-
-    function updateSubCategories() {
-        const categorySelect = document.getElementById('category');
-        const subCategorySelect = document.getElementById('subCategory');
-        const selectedCategoryId = categorySelect.value;
-
-        console.log('Selected Category ID:', selectedCategoryId);
-        subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
-
-        const selectedCategory = categories.find(category => category._id === selectedCategoryId);
-        console.log('Selected Category:', selectedCategory);
-
-        if (selectedCategory && selectedCategory.subcategories) {
-            selectedCategory.subcategories.forEach(subcategory => {
-                const option = document.createElement('option');
-                option.value = subcategory._id;
-                option.textContent = subcategory.name;
-                subCategorySelect.appendChild(option);
-            });
-        }
-    }
+  </div>
+</div>
 
 
 
-let croppedFiles = {};
-let currentPreviewId = null;
-let cropper = null;
-
-function openCropper(event, previewId) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-
-    reader.onload = function () {
-        const imageUrl = reader.result;
-        const imageElement = document.getElementById('imageToCrop');
-        imageElement.src = imageUrl;
-
-        // Show cropper modal
-        const modal = document.getElementById('cropperModal');
-        modal.style.display = 'flex';
-
-        currentPreviewId = previewId;
-
-        if (cropper) {
-            cropper.destroy();
-        }
-        cropper = new Cropper(imageElement, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 0.5,
-            scalable: false,
-            zoomable: false,
-            responsive: true,
-        });
-    };
-
-    reader.readAsDataURL(file);
-}
-
-function cropImage() {
-    const canvas = cropper.getCroppedCanvas();
-    canvas.toBlob(function (blob) {
-        const croppedFile = new File([blob], `cropped_image_${currentPreviewId}.jpg`, { type: 'image/jpeg' });
-
-        croppedFiles[currentPreviewId] = croppedFile;
-
-        const previewElement = document.getElementById(`productImagePreview${currentPreviewId}`);
-        const reader = new FileReader();
-        reader.onload = function () {
-            previewElement.src = reader.result;
-        };
-        reader.readAsDataURL(croppedFile);
-
-        closeCropperModal();
-    }, 'image/jpeg');
-}
-
-function closeCropperModal() {
-    const modal = document.getElementById('cropperModal');
-    modal.style.display = 'none';
-    if (cropper) {
-        cropper.destroy();
-        cropper = null;
-    }
-}
-
-// Prevent form submission to manually handle image upload
-document.getElementById('productForm').addEventListener('submit', (e) => {
-    e.preventDefault(); 
-
-    const formData = new FormData();
-
-    const formElements = e.target.elements;
-    for (let element of formElements) {
-        if (element.name && element.type !== 'file') {
-            formData.append(element.name, element.value);
-        }
-    }
-
-    // Append cropped images to FormData
-    for (let [key, file] of Object.entries(croppedFiles)) {
-        formData.append('productImages', file);
-    }
-
-    fetch('/admin/add-products', {
-        method: 'POST',
-        body: formData,
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                toastSuccess(data.message);
-                setTimeout( () => {
-                    window.location.href = '/admin/products';
-                }, 2000)
-            } else {
-                toastError(data.message);
-            }
-        })
-        .catch((error) => {
-            console.error('Error:', error);
-            toastWarning("Error in addinging new");
-        });
-});
-
-
-</script>
-
-
-
-
-
-
-
-<!-- product table  -->
-<!DOCTYPE html>
-<html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-                
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search-products" method="GET">
-                    <input type="text" name="search" placeholder="Search Products">
-                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
-        
-        <div>
-            <div class="filter-container">
-                <div class="filter-div1">
-                    <div class="filter-box">
-                        <i class="fa-solid fa-filter"></i>
-                    </div>
-                    <div class="filter-box">
-                        <label for="filter">Filter By
-                            <select name="filter" id="filter">
-                                <option value="date">14 feb 2014</option>
-                            </select>
-                        </label>  
-                    </div>
-                    
-                    
-                       <form action="/admin/products" method="GET">
-                        <div class="filter-box">
-                            <label for="status">Status
-                                <select name="status" id="status" onchange="this.form.submit()">
-                                    <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
-                                    <option value="deleted" <%= status === 'deleted' ? 'selected' : '' %>>Deleted</option>
-                                    <option value="available" <%= status === 'available' ? 'selected' : '' %>>Available</option>
-                                </select>
-                            </label>
-                        </div>
-                    </form>
-                </div>
-    
-               <a href="/admin/add-products">
-                <button class="add-product-btn">
-                    Add New Products
-                </button>
-               </a>
-            </div>
-            
-        </div>
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Brand</th>
-                    <th>Category</th>
-                    <th>Sub category</th>
-                    <th>Price</th>
-                    <th>Sales Price</th>
-                    <th>Offer</th>
-                    <th>Pieces</th> 
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% products.forEach((product, index) => { %>
-                    <tr>
-                        <td><%= (currentPage - 1) * 5 + index + 1 %></td>
-                        <td>
-                            <img src="/uploads/<%= encodeURIComponent(product.product_imgs[0]) %>" alt="<%= product.title %> Image" width="50" height="50">
-                        </td>
-                        <td class="truncate"><%= product.title %></td>
-
-                        <td>
-                            <%= product.brand && product.brand.brandName ? product.brand.brandName : "No brand" %>
-                        </td> 
-                        <td>
-                            <%= product.category && product.category.name ? product.category.name : "No category" %>
-                        </td>
-                        <td>
-                            <%= product.subcategory && product.subcategory.name ? product.subcategory.name : "No subcategory" %>
-                        </td>                       
-                        
-                        <td><%= product.price %></td>
-                        <td><%= product.sales_price %></td>
-
-                        <td>
-                            <% if (product.offer) { %>
-                                <% if (product.offer.offerType === 'percentage') { %>
-                                    <%= product.offer.offerValue %>%
-                                <% } else { %>
-                                    <%= product.offer.offerValue %>
-                                <% } %>
-                            <% } else { %>
-                                No offer
-                            <% } %>
-                        </td>
-                        
-                        <td><%= product.available_quantity %></td>
-                        <td>
-                            <a href="/admin/edit-product/<%= product._id %>"><button class="edit-btn">Edit</button></a> |
-                            <% if (!product.isDeleted) { %>
-                                <button 
-                                  class="delete-btn" 
-                                  data-id="<%= product._id %>" 
-                                  data-deleted="false"
-                                >
-                                  Delete
-                                </button>
-                              <% } else { %>
-                                <button 
-                                  class="restore-btn" 
-                                  data-id="<%= product._id %>" 
-                                  data-deleted="true"
-                                >
-                                  Restore
-                                </button>
-                              <% } %>
-                        </td>
-                    </tr>
-                <% }) %>                
-            </tbody>
-        </table>
-        
-        <div class="pagination">
-            <% if (currentPage > 1) { %>
-                <a href="/admin/products?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
-            <% } %>
-            
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" 
-                   class="<%= currentPage === i ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-            
-            <% if (currentPage < totalPages) { %>
-                <a href="/admin/products?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
-            <% } %>
-        </div>        
-        
-    </div> <!-- <div class="main-content"></div> -->
 
 </body>
-<%- include('partials/footer') %> 
+<%- include('partials/footerforhome') %>
+
 <script>
-    // const notyf = new Notyf({
-    //         duration: 2000,
-    //         ripple: true,
-    //         position: { x: 'right', y: 'top' },
-    //         types: [
-    //             { type: 'success', background: 'green' },
-    //             { type: 'error', background: 'red' },
-    //         ],
-    //         className: 'custom-notify',
-    //     });
+  const toastWish = (message) => {
+    iziToast.show({
+      message: message,
+      backgroundColor: '#e80071',
+      messageColor: '#FFFFFF',
+      icon: 'fas fa-check-circle',
+      iconColor: '#FFFFFF',
+      timeout: 3000,
+      position: 'bottomCenter',
+    });
+  };
 
-    //     function showNotyfNotification(message, type) {
-    //         if (type === 'success') {
-    //             notyf.success(message);
-    //         } else if (type === 'error') {
-    //             notyf.error(message);
-    //         } else {
-    //             notyf.open({ type: type, message: message });
-    //         }
-    //     }
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-        const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      size: 'small',
+      position: 'topRight',
+    });
+  };
 
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-        // document.addEventListener('DOMContentLoaded', function () {
-        //     const urlParams = new URLSearchParams(window.location.search);
-        //     const msg = urlParams.get('msg');
-        //     const type = urlParams.get('type');
+  document.addEventListener('DOMContentLoaded', () => {
+    const forms = document.querySelectorAll('.wishlist-form');
 
-        //     if (msg && type) {
-        //         showNotyfNotification(msg, type);
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
 
-        //         if (window.history.replaceState) {
-        //             const url = window.location.origin + window.location.pathname;
-        //             window.history.replaceState(null, null, url);
-        //         }
-        //     }
-        // });
+            const button = form.querySelector('button');
+            const icon = button.querySelector('i');
+            const productId = form.action.split('/').pop();
+            const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
+            const url = form.action;
 
-        document.addEventListener('DOMContentLoaded', function () {
-  const buttons = document.querySelectorAll('.delete-btn, .restore-btn');
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.action === 'added') {
+                    icon.classList.remove('not-in-wishlist');
+                    icon.classList.add('in-wishlist');
+                    button.title = 'Remove from Wishlist';
 
-  buttons.forEach(button => {
-    button.addEventListener('click', async () => {
-      const productId = button.getAttribute('data-id');
-      const isDeleted = button.getAttribute('data-deleted') === 'true';
+                    toastWish('Product has been added to Wishlist.');
+                } else if (data.action === 'removed') {
+                    icon.classList.remove('in-wishlist');
+                    icon.classList.add('not-in-wishlist');
+                    button.title = 'Add to Wishlist';
 
-      try {
-        const response = await fetch(`/admin/toggle-product/${productId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+                    toastWish('Product has been removed from Wishlist.');
+                } else if (data.error) {
+                    console.error('Server Error:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastWarning('An error occurred.')
+            });
         });
+    });
+});
 
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            button.textContent = result.isDeleted ? 'Restore' : 'Delete';
-            button.className = result.isDeleted ? 'restore-btn' : 'delete-btn';
-            button.setAttribute('data-deleted', result.isDeleted.toString());
+// Handle add to cart form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const cartForms = document.querySelectorAll('.cart-form');
 
-            toastSuccess(result.message);
-          } else {
-            toastError('Failed to update product status');
-          }
+    cartForms.forEach(form => {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const productId = form.getAttribute('data-product-id');
+        const variantId = form.getAttribute('data-variant-id');
+
+        const quantity = 1;
+
+        if ('<%= user %>') {
+          fetch('/add-to-cart', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ quantity, productId, variantId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+              const newButton = document.createElement('a');
+              newButton.href = '/user/my-cart';
+              newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+
+              form.parentNode.replaceChild(newButton, form);
+
+                toastSuccess(data.message);
+              } else {
+                toastError(data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              toastWarning('Error adding product to cart.');
+            });
         } else {
-          toastError('Error toggling product status');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        toastWarning('An error occurred');
+        window.location = '/login'
+        // const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // const existingItem = cart.find(item => item.productId === productId);
+
+        // if (existingItem) {
+        //   existingItem.quantity = quantity;
+        // } else {
+        //   cart.push({
+        //     productId,
+        //     quantity
+        //   });
+        // }
+
+        // localStorage.setItem('cart', JSON.stringify(cart));
+        // toastSuccess('Product added to cart!')
       }
+    })
+  })
+})
+  
+  document.addEventListener('DOMContentLoaded', function() {
+  const filterForm = document.getElementById('filter-form');
+
+  filterForm.addEventListener('change', function(event) {
+    const formData = new FormData(filterForm);
+    const filterParams = {};
+
+    // Collect filter parameters from the form
+    for (let [key, value] of formData.entries()) {
+      if (!filterParams[key]) {
+        filterParams[key] = [];
+      }
+      filterParams[key].push(value);
+    }
+
+    // Create query string from filter parameters
+    const queryString = new URLSearchParams(filterParams).toString();
+    history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
+    fetchFilteredProducts(filterParams, 1);
+  });
+
+  function fetchFilteredProducts(filterParams, page) {
+    fetch(`/shop?filters=${encodeURIComponent(JSON.stringify(filterParams))}&page=${page}`)
+      .then(response => response.text())
+      .then(html => {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = html;
+        const newProductGrid = tempDiv.querySelector('.product-grid');
+        document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
+
+        // Reattach event listeners after updating the product grid
+        attachWishlistListeners();
+        attachCartListeners();
+      })
+      .catch(error => console.error('Error fetching products:', error));
+  }
+
+  // Toggling visibility for filter options
+  document.querySelectorAll('.filter-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const options = header.nextElementSibling;
+      options.style.display = options.style.display === 'none' ? 'block' : 'none';
+      header.querySelector('i').classList.toggle('fa-chevron-down');
+      header.querySelector('i').classList.toggle('fa-chevron-up');
     });
   });
+
+  // Function to get URL parameters
+  function getUrlParameter(name) {
+    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+    const results = regex.exec(location.search);
+    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+  }
+
+  // Get the selected category and subcategory from the URL
+  const selectedCategoryId = getUrlParameter('selectedCategory');
+  const selectedSubcategoryId = getUrlParameter('selectedSubcategory');
+
+  if (selectedCategoryId) {
+    const categoryCheckbox = document.querySelector(`input[name="category"][value="${selectedCategoryId}"]`);
+    if (categoryCheckbox) {
+      categoryCheckbox.checked = true;
+
+      // Show the subcategories for the selected category
+      const subcategoryDiv = document.getElementById(`subcategory-options-${selectedCategoryId}`);
+      if (subcategoryDiv) {
+        subcategoryDiv.style.display = 'block';
+      }
+    }
+  }
+
+  if (selectedSubcategoryId) {
+    const subcategoryCheckbox = document.querySelector(`input[name="subcategory"][value="${selectedSubcategoryId}"]`);
+    if (subcategoryCheckbox) {
+      subcategoryCheckbox.checked = true;
+    }
+  }
+
+  // Function to toggle subcategory visibility based on selected categories
+  function toggleSubcategories() {
+    const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
+
+    // Hide all subcategories initially
+    document.querySelectorAll('.subcategory-options').forEach(div => {
+      div.style.display = 'none';
+    });
+
+    // Show subcategories for selected categories
+    selectedCategories.forEach(categoryId => {
+      const subcategoryDiv = document.getElementById(`subcategory-options-${categoryId}`);
+      if (subcategoryDiv) {
+        subcategoryDiv.style.display = 'block';
+      }
+    });
+  }
+
+  // Attach event listener to category checkboxes
+  const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+  categoryCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', toggleSubcategories);
+  });
+
+  // Initial call to set up subcategory visibility
+  toggleSubcategories();
 });
 </script>
+
 </html>
+
+
+
+
+
+
+
+
+
+
+
+// export const renderShopPage = async (req, res) => {
+    //   try {
+    //     const token = req.cookies.token;
+    //     let cart = [];
+    //     let user = null;
+    //     let wishlist = [];
+    //     let cartVariants = [];
+    //     const { filters, page = 1, limit = 10, selectedCategory, selectedSubcategory } = req.query;
+    
+    //     let selectedFilters = {};
+    //     if (filters) {
+    //       selectedFilters = JSON.parse(filters);
+    //     }
+    
+    //     if (token) {
+    //       try {
+    //         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //         user = decoded;
+    //         cart = await Cart.findOne({ user_id: user.userId });
+    //         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+    //       } catch (error) {
+    //         console.log("Invalid or expired token:", error);
+    //       }
+    //     }
+    
+    //     if (cart && cart.products.length > 0) {
+    //       cartVariants = cart.products
+    //           .filter(product => product.variant_id)
+    //           .map(product => product.variant_id.toString());
+    //     }
+    //     const cartCount = cart?.products?.length || 0;
+    //     let filterConditions = { isDeleted: false };
+    //     let sortOptions = {};
+    
+    //     if (selectedCategory) {
+    //       filterConditions.category_id = selectedCategory;
+    //     }
+    
+    //     if (selectedSubcategory) {
+    //       filterConditions.subcategory_id = selectedSubcategory;
+    //     }
+    
+    //     if (filters) {
+    //       const filterObj = JSON.parse(decodeURIComponent(filters));
+    
+    //       if (filterObj.popularity && filterObj.popularity.length > 0) {
+    //         if (filterObj.popularity.includes("trending")) {
+    //           filterConditions.trending = true;
+    //         }
+    //         if (filterObj.popularity.includes("most-reviewed")) {
+    //           filterConditions.mostReviewed = true;
+    //         }
+    //         if (filterObj.popularity.includes("top-rated")) {
+    //           filterConditions.topRated = true;
+    //         }
+    //       }
+    
+    //       if (filterObj.category && filterObj.category.length > 0) {
+    //         filterConditions.category_id = { $in: filterObj.category };
+    //       }
+    
+    //       if (filterObj.subcategory && filterObj.subcategory.length > 0) {
+    //         filterConditions.subcategory_id = { $in: filterObj.subcategory };
+    //       }
+    
+    //       if (filterObj.brand && filterObj.brand.length > 0) {
+    //         filterConditions.brand_id = { $in: filterObj.brand };
+    //       }
+    
+    //       if (filterObj.price) {
+    //         if (filterObj.price.includes("low-to-high")) {
+    //           sortOptions.price = 1;
+    //         } else if (filterObj.price.includes("high-to-low")) {
+    //           sortOptions.price = -1;
+    //         }
+    //       }
+    
+    //       if (filterObj.rating && filterObj.rating.length > 0) {
+    //         filterConditions.rating = { $gte: Math.max(...filterObj.rating.map(r => parseInt(r))) };
+    //       }
+    
+    //       if (filterObj.alphabetical) {
+    //         if (filterObj.alphabetical.includes("a-z")) {
+    //           sortOptions.title = 1;
+    //         } else if (filterObj.alphabetical.includes("z-a")) {
+    //           sortOptions.title = -1;
+    //         }
+    //       }
+    
+    //       if (filterObj['new-arrivals']) {
+    //         if (filterObj['new-arrivals'].includes('latest')) {
+    //           sortOptions.created_at = -1;
+    //         } else if (filterObj['new-arrivals'].includes('oldest')) {
+    //           sortOptions.created_at = 1;
+    //         }
+    //       }
+    //     }
+    
+    //     const skip = (page - 1) * limit;
+    //     const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit)).populate('variants');
+    //     const totalProducts = await Product.countDocuments(filterConditions);
+    //     const totalPages = Math.ceil(totalProducts / limit);
+    
+    //     const categories = await Category.find({ isListed: true }).populate({
+    //       path: "subcategories",
+    //       match: { isListed: true },
+    //     });
+    
+    //     const subcategories = await Subcategory.find({ isListed: true });
+    //     const brands = await Brand.find({ isListed: true });
+    
+    //     return res.render("user/shop", {
+    //       name: user ? user.name : "",
+    //       user: user,
+    //       products,
+    //       categories,
+    //       subcategories,
+    //       brands,
+    //       cartCount,
+    //       cartVariants,
+    //       wishlist,
+    //       selectedFilters,
+    //       selectedCategory,
+    //       selectedSubcategory,
+    //       currentPage: parseInt(page),
+    //       totalPages,
+    //     });
+    
+    //   } catch (error) {
+    //     console.error(error);
+    //     res.status(500).send("Server error");
+    //   }
+    // };
+    
+    // // Render The Sub Category Only
+    // export const renderPageWithSubcategory = async (req, res) => {
+    //   try {
+    //     let user = null;
+    //     let wishlist = [];
+    
+    //     const token = req.cookies.token;
+    
+    //     if (token) {
+    //       try {
+    //         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //         user = decoded;
+    //         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate(
+    //           "products.product_id"
+    //         );
+    //       } catch (error) {
+    //         console.log("Invalid or expired token:", error);
+    //       }
+    //     }
+    
+    //     // Use subcategoryId from req.params instead of subcategoryName
+    //     const { subcategoryId } = req.params;
+    
+    //     // Fetch subcategory using its ID
+    //     const subcategory = await Subcategory.findById(subcategoryId);
+    //     if (!subcategory) {
+    //       return res.status(404).send("Subcategory not found");
+    //     }
+    
+    //     // Fetch products related to the subcategory by ID
+    //     const products = await Product.find({
+    //       subcategory_id: subcategory._id,
+    //       isDeleted: false,
+    //     });
+    
+    //     // Fetch all listed categories and their listed subcategories
+    //     const categories = await Category.find({ isListed: true }).populate({
+    //       path: "subcategories",
+    //       match: { isListed: true },
+    //     });
+    
+    //     return res.render("user/subcategory", {
+    //       name: user ? user.name : "",
+    //       user: user,
+    //       products,
+    //       subcategory,
+    //       wishlist,
+    //       categories,
+    //     });
+    //   } catch (error) {
+    //     console.error("Error rendering subcategory page", error);
+    //     return res.status(500).send("Error in rendering subcategory");
+    //   }
+    // };
+    

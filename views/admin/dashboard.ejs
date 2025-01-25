@@ -105,12 +105,10 @@
                     <% salesData.forEach((order) => { %>
                         <% order.products.forEach((product) => { %>
                             <tr>
-                                <td><%= serialNumber++ %></td> <!-- Increment Serial Number -->
-                                <td><%= userMap[order.user_id.toString()] ? userMap[order.user_id.toString()].name : 'User Not Found' %></td> <!-- User Name -->
-                                <td><%= productMap[product.product_id.toString()] ? productMap[product.product_id.toString()].title : 'Product Not Found' %></td> <!-- Product Name -->
-                                <td>
-                                    <%= product.category_id && categoryMap[product.category_id.toString()] ? categoryMap[product.category_id.toString()] : 'Category Not Found' %> <!-- Category Name -->
-                                </td>
+                                <td><%= serialNumber++ %></td> <!-- Serial Number -->
+                                <td><%= order.user_id.name || 'User Not Found' %></td> <!-- User Name -->
+                                <td><%= product.product_id.title || 'Product Not Found' %></td> <!-- Product Name -->
+                                <td><%= product.category_id ? product.category_id.name : 'Category Not Found' %></td> <!-- Category Name -->
                                 <td><%= product.quantity %></td> <!-- Quantity -->
                                 <td>₹ <%= product.total_amount.toLocaleString() %></td> <!-- Total Amount -->
                                 <td><%= product.status %></td> <!-- Status -->
@@ -119,9 +117,8 @@
                         <% }) %>
                     <% }) %>
                 </tbody>
-                
-                
-            </table>       
+            </table>
+                  
 </div>
 
     </div> <!-- <div class="main-content"></div> -->

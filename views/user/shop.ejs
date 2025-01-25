@@ -195,65 +195,69 @@
 
       <div class="col-md-10 p-0 ps-4">
         <div class="product-grid">
-          <% products.forEach(product => { %>
-          <% product.variants.forEach(variant => { %>
-          <div class="product-card" data-variant-id="<%= variant._id %>">
-            <a href="/product/<%= product._id %>/<%= variant._id %>">
-              <img src="<%= variant.images[0] %>" alt="<%= variant.shade %>" />
-            </a>
-            <div class="product-card-like">
-              <form action="/add-to-wishlist/<%= product._id %>" method="POST" class="wishlist-form" id="wishlist-form">
-                <% if (user) { %>
-                <% if (wishlist && wishlist.products.some(wishlistItem => wishlistItem.product_id.toString() === product._id.toString() && wishlistItem.variant_id.toString() === variant._id.toString())) { %>
-                <!-- Button to remove product from wishlist -->
-                <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                  <i class="fa-solid fa-heart in-wishlist"></i>
-                </button>
-                <% } else { %>
-                <!-- Button to add product to wishlist -->
-                <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                  <i class="fa-solid fa-heart not-in-wishlist"></i>
-                </button>
+          <% for (let i = 0; i < variants.length; i++) { %>
+            <div class="product-card" data-variant-id="<%= variants[i]._id %>">
+              <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
+                <img src="<%= variants[i].images[0] %>" alt="<%= variants[i].shade %>" />
+              </a>
+              <div class="product-card-like">
+                <form action="/add-to-wishlist/<%= products[i]._id %>" method="POST" class="wishlist-form" id="wishlist-form">
+                  <% if (user) { %>
+                    <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === products[i]._id.toString() && item.variant_id.toString() === variants[i]._id.toString())) { %>
+                      <button type="submit" title="Remove from Wishlist" class="wishlist-button">
+                        <i class="fa-solid fa-heart in-wishlist"></i>
+                      </button>
+                    <% } else { %>
+                      <button type="submit" title="Add to Wishlist" class="wishlist-button">
+                        <i class="fa-solid fa-heart not-in-wishlist"></i>
+                      </button>
+                    <% } %>
+                  <% } else { %>
+                    <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
+                      <i class="fa-solid fa-heart"></i>
+                    </button>
+                  <% } %>
+                </form>
+              </div>
+              <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
+                <p class="product-title"><%= products[i].title %> - <%= variants[i].shade %></p>
+              </a>
+              <div class="product-prices-box">
+                <p class="sale-price price-inr">&#8377;<%= variants[i].salePrice %></p>
+                <p class="original-price price-inr mx-2">&#8377;<%= variants[i].regularPrice %></p>
+                <% if (variants[i].regularPrice > variants[i].salePrice) { %>
+                  <span class="discount-percentage">
+                    <%= Math.round(((variants[i].regularPrice - variants[i].salePrice) / variants[i].regularPrice) * 100) %>% Off
+                  </span>
                 <% } %>
-                <% } else { %>
-                <!-- Button for users not logged in -->
-                <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                  <i class="fa-solid fa-heart"></i>
-                </button>
-                <% } %>
-              </form>
-            </div>
-            <a href="/product/<%= product._id %>/<%= variant._id %>">
-              <p class="product-title"><%= product.title %> - <%= variant.shade %></p>
-            </a>
-            <div class="product-prices-box">
-              <p class="sale-price price-inr">&#8377;<%= variant.salePrice %></p>
-              <p class="original-price price-inr mx-2">&#8377;<%= variant.regularPrice %></p>
-              <% if (variant.regularPrice > variant.salePrice) { %>
-              <span class="discount-percentage">
-                <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
-              </span>
+              </div>
+              <% const variantInCart = cartVariants.includes(variants[i]._id.toString()); %>
+              <% if (variantInCart) { %>
+                <a href="/user/my-cart">
+                  <button type="button" class="go-to-cart-btn">Go To Bag</button>
+                </a>
+              <% } else { %>
+                <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= products[i]._id %>" data-variant-id="<%= variants[i]._id %>">
+                  <button type="submit" class="add-to-cart-btn">Add to Bag</button>
+                </form>
               <% } %>
             </div>
-            <form action="/add-to-cart/<%= product._id %>" method="POST" class="cart-form" id="cart-form">
-              <button type="submit" class="add-to-cart-btn" data-id="<%= product._id %>">Add to Bag</button>
-            </form>
-          </div>
-          <% }) %>
-          <% }) %>
+          <% } %>
         </div>
         <div class="pagination-controls">
           <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Previous</a>
+            <a href="?page=<%= currentPage - 1 %>">Previous</a>
           <% } %>
           <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="?page=<%= i %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+            <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
           <% } %>
           <% if (currentPage < totalPages) { %>
-            <a href="?page=<%= currentPage + 1 %>&filters=<%= encodeURIComponent(JSON.stringify(selectedFilters)) %>">Next</a>
+            <a href="?page=<%= currentPage + 1 %>">Next</a>
           <% } %>
         </div>
       </div>
+
+
     </div>
   </div>
 </div>
@@ -326,6 +330,116 @@
     });
   };
 
+  document.addEventListener('DOMContentLoaded', () => {
+    const forms = document.querySelectorAll('.wishlist-form');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const button = form.querySelector('button');
+            const icon = button.querySelector('i');
+            const productId = form.action.split('/').pop();
+            const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
+            const url = form.action;
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.action === 'added') {
+                    icon.classList.remove('not-in-wishlist');
+                    icon.classList.add('in-wishlist');
+                    button.title = 'Remove from Wishlist';
+
+                    toastWish('Product has been added to Wishlist.');
+                } else if (data.action === 'removed') {
+                    icon.classList.remove('in-wishlist');
+                    icon.classList.add('not-in-wishlist');
+                    button.title = 'Add to Wishlist';
+
+                    toastWish('Product has been removed from Wishlist.');
+                } else if (data.error) {
+                    console.error('Server Error:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastWarning('An error occurred.')
+            });
+        });
+    });
+});
+
+// Handle add to cart form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const cartForms = document.querySelectorAll('.cart-form');
+
+    cartForms.forEach(form => {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const productId = form.getAttribute('data-product-id');
+        const variantId = form.getAttribute('data-variant-id');
+
+        const quantity = 1;
+
+        if ('<%= user %>') {
+          fetch('/add-to-cart', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ quantity, productId, variantId }),
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+              const newButton = document.createElement('a');
+              newButton.href = '/user/my-cart';
+              newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+
+              form.parentNode.replaceChild(newButton, form);
+
+                toastSuccess(data.message);
+              } else {
+                toastError(data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              toastWarning('Error adding product to cart.');
+            });
+        } else {
+        window.location = '/login'
+        // const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // const existingItem = cart.find(item => item.productId === productId);
+
+        // if (existingItem) {
+        //   existingItem.quantity = quantity;
+        // } else {
+        //   cart.push({
+        //     productId,
+        //     quantity
+        //   });
+        // }
+
+        // localStorage.setItem('cart', JSON.stringify(cart));
+        // toastSuccess('Product added to cart!')
+      }
+    })
+  })
+})
   
   document.addEventListener('DOMContentLoaded', function() {
   const filterForm = document.getElementById('filter-form');

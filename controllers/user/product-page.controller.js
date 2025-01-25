@@ -285,102 +285,65 @@ export const renderProductPage = async (req, res) => {
 //   }
 // };
 
+
+
+
+
+
+
+
+
+
+
 export const renderShopPage = async (req, res) => {
   try {
     const token = req.cookies.token;
-    let cart = [];
+    let cart = { products: [] };
     let user = null;
-    let wishlist = [];
-    const { filters, page = 1, limit = 10, selectedCategory, selectedSubcategory } = req.query;
+    let wishlist = { products: [] };
+    let cartVariants = [];
 
-    let selectedFilters = {};
-    if (filters) {
-      selectedFilters = JSON.parse(filters);
-    }
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
 
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
         user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId });
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+        cart = await Cart.findOne({ user_id: user.userId }) || { products: [] };
+        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id") || { products: [] };
       } catch (error) {
         console.log("Invalid or expired token:", error);
       }
     }
 
-    const cartCount = cart?.products?.length || 0;
+    if (cart.products.length > 0) {
+      cartVariants = cart.products
+          .filter(product => product.variant_id)
+          .map(product => product.variant_id.toString());
+    }
+    const cartCount = cart.products.length;
     let filterConditions = { isDeleted: false };
     let sortOptions = {};
 
-    if (selectedCategory) {
-      filterConditions.category_id = selectedCategory;
-    }
+    // Fetch all products and flatten the variants
+    const allProducts = await Product.find(filterConditions).populate('variants');
+    const allVariants = [];
+    allProducts.forEach(product => {
+      product.variants.forEach(variant => {
+        allVariants.push({
+          product: product,
+          variant: variant
+        });
+      });
+    });
 
-    if (selectedSubcategory) {
-      filterConditions.subcategory_id = selectedSubcategory;
-    }
+    // Calculate total number of variants and adjust pagination
+    const totalVariants = allVariants.length;
+    const totalPages = Math.ceil(totalVariants / limit);
 
-    if (filters) {
-      const filterObj = JSON.parse(decodeURIComponent(filters));
-
-      if (filterObj.popularity && filterObj.popularity.length > 0) {
-        if (filterObj.popularity.includes("trending")) {
-          filterConditions.trending = true;
-        }
-        if (filterObj.popularity.includes("most-reviewed")) {
-          filterConditions.mostReviewed = true;
-        }
-        if (filterObj.popularity.includes("top-rated")) {
-          filterConditions.topRated = true;
-        }
-      }
-
-      if (filterObj.category && filterObj.category.length > 0) {
-        filterConditions.category_id = { $in: filterObj.category };
-      }
-
-      if (filterObj.subcategory && filterObj.subcategory.length > 0) {
-        filterConditions.subcategory_id = { $in: filterObj.subcategory };
-      }
-
-      if (filterObj.brand && filterObj.brand.length > 0) {
-        filterConditions.brand_id = { $in: filterObj.brand };
-      }
-
-      if (filterObj.price) {
-        if (filterObj.price.includes("low-to-high")) {
-          sortOptions.price = 1;
-        } else if (filterObj.price.includes("high-to-low")) {
-          sortOptions.price = -1;
-        }
-      }
-
-      if (filterObj.rating && filterObj.rating.length > 0) {
-        filterConditions.rating = { $gte: Math.max(...filterObj.rating.map(r => parseInt(r))) };
-      }
-
-      if (filterObj.alphabetical) {
-        if (filterObj.alphabetical.includes("a-z")) {
-          sortOptions.title = 1;
-        } else if (filterObj.alphabetical.includes("z-a")) {
-          sortOptions.title = -1;
-        }
-      }
-
-      if (filterObj['new-arrivals']) {
-        if (filterObj['new-arrivals'].includes('latest')) {
-          sortOptions.created_at = -1;
-        } else if (filterObj['new-arrivals'].includes('oldest')) {
-          sortOptions.created_at = 1;
-        }
-      }
-    }
-
-    const skip = (page - 1) * limit;
-    const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit)).populate('variants');
-    const totalProducts = await Product.countDocuments(filterConditions);
-    const totalPages = Math.ceil(totalProducts / limit);
+    // Paginate variants
+    const paginatedVariants = allVariants.slice((page - 1) * limit, page * limit);
 
     const categories = await Category.find({ isListed: true }).populate({
       path: "subcategories",
@@ -393,17 +356,16 @@ export const renderShopPage = async (req, res) => {
     return res.render("user/shop", {
       name: user ? user.name : "",
       user: user,
-      products,
+      products: paginatedVariants.map(item => item.product),  
+      variants: paginatedVariants.map(item => item.variant),  
       categories,
       subcategories,
       brands,
       cartCount,
+      cartVariants,
       wishlist,
-      selectedFilters,
-      selectedCategory,
-      selectedSubcategory,
-      currentPage: parseInt(page),
-      totalPages,
+      currentPage: page,
+      totalPages
     });
 
   } catch (error) {
@@ -411,6 +373,143 @@ export const renderShopPage = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
+
+
+
+
+// export const renderShopPage = async (req, res) => {
+//   try {
+//     const token = req.cookies.token;
+//     let cart = [];
+//     let user = null;
+//     let wishlist = [];
+//     let cartVariants = [];
+//     const { filters, page = 1, limit = 10, selectedCategory, selectedSubcategory } = req.query;
+
+//     let selectedFilters = {};
+//     if (filters) {
+//       selectedFilters = JSON.parse(filters);
+//     }
+
+//     if (token) {
+//       try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//         user = decoded;
+//         cart = await Cart.findOne({ user_id: user.userId });
+//         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+//       } catch (error) {
+//         console.log("Invalid or expired token:", error);
+//       }
+//     }
+
+//     if (cart && cart.products.length > 0) {
+//       cartVariants = cart.products
+//           .filter(product => product.variant_id)
+//           .map(product => product.variant_id.toString());
+//     }
+//     const cartCount = cart?.products?.length || 0;
+//     let filterConditions = { isDeleted: false };
+//     let sortOptions = {};
+
+//     if (selectedCategory) {
+//       filterConditions.category_id = selectedCategory;
+//     }
+
+//     if (selectedSubcategory) {
+//       filterConditions.subcategory_id = selectedSubcategory;
+//     }
+
+//     if (filters) {
+//       const filterObj = JSON.parse(decodeURIComponent(filters));
+
+//       if (filterObj.popularity && filterObj.popularity.length > 0) {
+//         if (filterObj.popularity.includes("trending")) {
+//           filterConditions.trending = true;
+//         }
+//         if (filterObj.popularity.includes("most-reviewed")) {
+//           filterConditions.mostReviewed = true;
+//         }
+//         if (filterObj.popularity.includes("top-rated")) {
+//           filterConditions.topRated = true;
+//         }
+//       }
+
+//       if (filterObj.category && filterObj.category.length > 0) {
+//         filterConditions.category_id = { $in: filterObj.category };
+//       }
+
+//       if (filterObj.subcategory && filterObj.subcategory.length > 0) {
+//         filterConditions.subcategory_id = { $in: filterObj.subcategory };
+//       }
+
+//       if (filterObj.brand && filterObj.brand.length > 0) {
+//         filterConditions.brand_id = { $in: filterObj.brand };
+//       }
+
+//       if (filterObj.price) {
+//         if (filterObj.price.includes("low-to-high")) {
+//           sortOptions.price = 1;
+//         } else if (filterObj.price.includes("high-to-low")) {
+//           sortOptions.price = -1;
+//         }
+//       }
+
+//       if (filterObj.rating && filterObj.rating.length > 0) {
+//         filterConditions.rating = { $gte: Math.max(...filterObj.rating.map(r => parseInt(r))) };
+//       }
+
+//       if (filterObj.alphabetical) {
+//         if (filterObj.alphabetical.includes("a-z")) {
+//           sortOptions.title = 1;
+//         } else if (filterObj.alphabetical.includes("z-a")) {
+//           sortOptions.title = -1;
+//         }
+//       }
+
+//       if (filterObj['new-arrivals']) {
+//         if (filterObj['new-arrivals'].includes('latest')) {
+//           sortOptions.created_at = -1;
+//         } else if (filterObj['new-arrivals'].includes('oldest')) {
+//           sortOptions.created_at = 1;
+//         }
+//       }
+//     }
+
+//     const skip = (page - 1) * limit;
+//     const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit)).populate('variants');
+//     const totalProducts = await Product.countDocuments(filterConditions);
+//     const totalPages = Math.ceil(totalProducts / limit);
+
+//     const categories = await Category.find({ isListed: true }).populate({
+//       path: "subcategories",
+//       match: { isListed: true },
+//     });
+
+//     const subcategories = await Subcategory.find({ isListed: true });
+//     const brands = await Brand.find({ isListed: true });
+
+//     return res.render("user/shop", {
+//       name: user ? user.name : "",
+//       user: user,
+//       products,
+//       categories,
+//       subcategories,
+//       brands,
+//       cartCount,
+//       cartVariants,
+//       wishlist,
+//       selectedFilters,
+//       selectedCategory,
+//       selectedSubcategory,
+//       currentPage: parseInt(page),
+//       totalPages,
+//     });
+
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Server error");
+//   }
+// };
 
 // // Render The Sub Category Only
 // export const renderPageWithSubcategory = async (req, res) => {
@@ -467,76 +566,3 @@ export const renderShopPage = async (req, res) => {
 //   }
 // };
 
-// Product Page Filters
-// export const productPageFilters = async (req, res) => {
-//     try {
-//       let user = null;
-//       let wishlist = [];
-  
-//       const token = req.cookies.token;
-  
-//       if (token) {
-//         try {
-//           const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//           user = decoded;
-//           wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
-//         } catch (error) {
-//           console.log("Invalid or expired token:", error);
-//         }
-//       }
-  
-//       const { filters } = req.body;
-//       let filterQuery = {};
-  
-//       // Handle various filter types
-//       if (filters.popularity) {
-//         if (filters.popularity === "trending") filterQuery = { ...filterQuery, trending: true };
-//         if (filters.popularity === "most-reviewed") filterQuery = { ...filterQuery, reviewsCount: { $gte: 10 } };
-//         if (filters.popularity === "top-rated") filterQuery = { ...filterQuery, rating: { $gte: 4 } };
-//       }
-  
-//       if (filters.category) filterQuery.category_id = { $in: filters.category };
-//       if (filters.subcategory) filterQuery.subcategory_id = { $in: filters.subcategory };
-//       if (filters.brand) filterQuery.brand_id = { $in: filters.brand };
-//       if (filters.rating) filterQuery.rating = { $gte: filters.rating };
-  
-//       // Price Sorting
-//       let priceSort = 1; // Default: low-to-high
-//       if (filters.price && filters.price.length > 0) {
-//         const priceFilter = filters.price[0];
-//         console.log("Extracted price filter:", priceFilter);
-  
-//         if (priceFilter === "low-to-high") {
-//           priceSort = 1;
-//         } else if (priceFilter === "high-to-low") {
-//           priceSort = -1;
-//         }
-//       }
-  
-//       // Date Sorting (Newest/Oldest)
-//       let dateSort = {};
-//       if (filters.date === "newest") {
-//         dateSort = { created_at: -1 }; // Newest first
-//       } else if (filters.date === "oldest") {
-//         dateSort = { created_at: 1 }; // Oldest first
-//       }
-  
-//       // Combine price and date sorting in one query
-//       let sortQuery = {};
-//       if (Object.keys(dateSort).length > 0) {
-//         sortQuery = { ...dateSort, price: priceSort }; // Combine date sorting with price sorting
-//       } else {
-//         sortQuery = { price: priceSort }; // Only price sorting
-//       }
-  
-//       // Fetch the products based on filter and sort
-//       const products = await Product.find(filterQuery).sort(sortQuery);
-  
-//       return res.json({ products, user, wishlist });
-  
-//     } catch (error) {
-//       console.error("Error:", error);
-//       return res.status(500).send("Internal Server Error");
-//     }
-//   };
-  

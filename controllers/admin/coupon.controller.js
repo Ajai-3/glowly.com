@@ -88,7 +88,7 @@ cron.schedule('* * * * *', async () => {
             for (const coupon of couponsToActivate) {
                 coupon.isActive = true; 
                 await coupon.save();
-                console.log(`Coupon ${coupon.code} has been activated.`);
+                // console.log(`Coupon ${coupon.code} has been activated.`);
             }
         }
 
@@ -102,7 +102,7 @@ cron.schedule('* * * * *', async () => {
             for (const coupon of expiredCoupons) {
                 coupon.isActive = false;  
                 await coupon.save();
-                console.log(`Coupon ${coupon.code} has expired and been deactivated.`);
+                // console.log(`Coupon ${coupon.code} has expired and been deactivated.`);
             }
         }
     } catch (error) {
