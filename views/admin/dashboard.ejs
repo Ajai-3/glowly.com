@@ -63,7 +63,7 @@
         
             <div class="row">
                 <!-- Main Content Row -->
-                <div class="col-9 ">
+                <div class="col-9">
                     <!-- Chart Section -->
                     <div class="chart-wrapper">
                         <div class="chart-container">
@@ -245,13 +245,10 @@ document.addEventListener('DOMContentLoaded', function () {
         data.forEach(item => {
             let key;
             if (filter === 'today') {
-                // Group by hour for today's data
                 key = item.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             } else if (filter === 'this_year' || filter === 'all_time') {
-                // Group by month for yearly and all-time data
                 key = item.date.toLocaleDateString([], { year: 'numeric', month: 'short' });
             } else {
-                // Default grouping by date
                 key = item.date.toLocaleDateString();
             }
 
@@ -259,32 +256,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 groupedData[key] = {
                     total: 0,
                     delivered: 0,
-                    returned: 0
+                    returned: 0,
+                    orderCount: 0,
+                    deliveredCount: 0,
+                    returnedCount: 0
                 };
             }
             groupedData[key].total += item.amount;
-            if (item.status === 'delivered') groupedData[key].delivered += item.amount;
-            if (item.status === 'returned') groupedData[key].returned += item.amount;
+            groupedData[key].orderCount += 1;
+            
+            if (item.status === 'delivered') {
+                groupedData[key].delivered += item.amount;
+                groupedData[key].deliveredCount += 1;
+            }
+            if (item.status === 'returned') {
+                groupedData[key].returned += item.amount;
+                groupedData[key].returnedCount += 1;
+            }
         });
 
         // Sort keys based on date
         const dates = Object.keys(groupedData);
         if (filter === 'today') {
-            // Sort by time for today's data
             dates.sort((a, b) => {
                 const timeA = new Date(`1970/01/01 ${a}`);
                 const timeB = new Date(`1970/01/01 ${b}`);
                 return timeA - timeB;
             });
         } else if (filter === 'this_year' || filter === 'all_time') {
-            // Sort by month for yearly and all-time data
             dates.sort((a, b) => {
                 const dateA = new Date(a);
                 const dateB = new Date(b);
                 return dateA - dateB;
             });
         } else {
-            // Default sort by date
             dates.sort((a, b) => new Date(a) - new Date(b));
         }
 
@@ -294,21 +299,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 data: dates.map(date => groupedData[date].total),
                 backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--bar-color'),
                 borderColor: getComputedStyle(chartContainer).getPropertyValue('--bar-border-color'),
-                borderWidth: 1
+                borderWidth: 1,
+                orderCounts: dates.map(date => groupedData[date].orderCount)
             },
             {
                 label: 'Delivered',
                 data: dates.map(date => groupedData[date].delivered),
                 backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-color'),
                 borderColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-border'),
-                borderWidth: 1
+                borderWidth: 1,
+                orderCounts: dates.map(date => groupedData[date].deliveredCount)
             },
             {
                 label: 'Returned',
                 data: dates.map(date => groupedData[date].returned),
                 backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-color'),
                 borderColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-border'),
-                borderWidth: 1
+                borderWidth: 1,
+                orderCounts: dates.map(date => groupedData[date].returnedCount)
             }
         ];
 
@@ -330,32 +338,35 @@ document.addEventListener('DOMContentLoaded', function () {
                         beginAtZero: true,
                         ticks: {
                             callback: value => '₹ ' + value.toLocaleString(),
-                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for y-axis
+                            color: 'rgba(255, 255, 255, 0.8)'  
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'  // Subtle grid lines
+                            color: 'rgba(255, 255, 255, 0.1)'  
                         }
                     },
                     x: {
                         ticks: {
-                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for x-axis
+                            color: 'rgba(255, 255, 255, 0.8)'  
                         },
                         grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'  // Subtle grid lines
+                            color: 'rgba(255, 255, 255, 0.1)'  
                         }
                     }
                 },
                 plugins: {
                     legend: {
                         labels: {
-                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for legend
+                            color: 'rgba(255, 255, 255, 0.8)'  
                         }
                     },
                     tooltip: {
                         callbacks: {
                             label: context => {
-                                return context.dataset.label + ': ₹ ' + 
-                                    context.parsed.y.toLocaleString();
+                                const count = context.dataset.orderCounts[context.dataIndex];
+                                return [
+                                    `${context.dataset.label}: ₹ ${context.parsed.y.toLocaleString()}`,
+                                    `Orders: ${count}`
+                                ];
                             }
                         }
                     }
@@ -375,8 +386,8 @@ document.addEventListener('DOMContentLoaded', function () {
         pageData.forEach((item, index) => {
             const row = document.createElement('tr');
             const dateTimeFormat = filterSelect.value === 'today' 
-                ? item.date.toLocaleTimeString() // Show time for today's data
-                : item.date.toLocaleString();    // Show date and time for other views
+                ? item.date.toLocaleTimeString() 
+                : item.date.toLocaleString();    
 
             row.innerHTML = `
                 <td>${start + index + 1}</td>

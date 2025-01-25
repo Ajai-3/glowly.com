@@ -2600,7 +2600,7 @@ p2 {
   cursor: pointer;
 }
 
-.filter-container {
+.chart-container .filter-container {
   font-size: var(--font-size-third);
   background-color: transparent;
   position: absolute;
@@ -2609,7 +2609,7 @@ p2 {
   z-index: 10;
 }
 
-.filter-container .toggle-btn {
+.chart-container .filter-container .toggle-btn {
   background-color: var(--bg-color-3);
   color:var(--text-color-4);
   border: none;
@@ -2618,8 +2618,8 @@ p2 {
   cursor: pointer;
   margin-bottom: 20px;
   position: absolute;
-  top: 5px;
-  right: 0px;
+  top: -8px;
+  right: -45px;
   z-index: 10;
 }
 .filter-container .toggle-button:hover {
