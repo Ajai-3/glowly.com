@@ -1,293 +1,275 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/headforhome', { name: name, categories: categories }) %>
-
-<body>
-
-<div class="user-contents">
+  <%- include('partials/headforhome', { name: name, categories: categories }) %>
+  <body>
+    <div class="user-contents">
 
 
-  
-  <div class="search-bar">
-    <input type="text" id="search-input" placeholder="Search by title or shade name">
-  </div>
-  <div id="breadcrumbs"></div>
 
 
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-2 product-filter-div p-0">
-        <form id="filter-form">
-          <!-- Popularity Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="popularity">
-              <span>Popularity</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="popularity-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="trending">
-                  Trending
-                  <input type="checkbox" name="popularity" value="trending" id="trending">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="most-reviewed">
-                  Most Reviewed
-                  <input type="checkbox" name="popularity" value="most-reviewed" id="most-reviewed">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="top-rated">
-                  Top Rated
-                  <input type="checkbox" name="popularity" value="top-rated" id="top-rated">
-                </label>
-              </div>
-            </div>
-          </div>
 
-          <!-- Category Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="category">
-              <span>Category</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="category-options" style="display: none;">
-              <% categories.forEach(category => { %>
-              <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                <label for="category-<%= category.id %>"><%= category.name %></label>
-                <input type="checkbox" class="ml-auto category-checkbox" id="category-<%= category.id %>" name="category" value="<%= category.id %>" data-name="<%= category.name %>" />
-              </div>
-              <!-- Subcategory Filter nested within Category -->
-              <div class="filter-options subcategory-options" id="subcategory-options-<%= category.id %>" style="display: none; margin-left: 20px;">
-                <% category.subcategories.forEach(subcategory => { %>
-                <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                  <label for="subcategory-<%= subcategory.id %>"><%= subcategory.name %></label>
-                  <input type="checkbox" class="ml-auto subcategory-checkbox" id="subcategory-<%= subcategory.id %>" name="subcategory" value="<%= subcategory.id %>" data-name="<%= subcategory.name %>" />
-                </div>
-                <% }) %>
-              </div>
-              <% }) %>
-            </div>
-          </div>
 
-          <!-- Brand Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="brand">
-              <span>Brand</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="brand-options" style="display: none;">
-              <% brands.forEach(brand => { %>
-              <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                <label for="brand-<%= brand.id %>"><%= brand.brandName %></label>
-                <input type="checkbox" class="ml-auto brand-checkbox" id="brand-<%= brand.id %>" name="brand" value="<%= brand.id %>" data-name="<%= brand.brandName %>" />
-              </div>
-              <% }) %>
-            </div>
-          </div>
-
-          <!-- Price Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="price">
-              <span>Price</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="price-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="low-to-high">
-                  Low to High
-                  <input type="checkbox" name="price" value="low-to-high" id="low-to-high">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="high-to-low">
-                  High to Low
-                  <input type="checkbox" name="price" value="high-to-low" id="high-to-low">
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Rating Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="average-rating">
-              <span>Average Rating</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="average-rating-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-5">
-                  5 Stars
-                  <input type="checkbox" name="rating" value="5" id="rating-5">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-4">
-                  4 Stars
-                  <input type="checkbox" name="rating" value="4" id="rating-4">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-3">
-                  3 Stars
-                  <input type="checkbox" name="rating" value="3" id="rating-3">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-2">
-                  2 Stars
-                  <input type="checkbox" name="rating" value="2" id="rating-2">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-1">
-                  1 Star
-                  <input type="checkbox" name="rating" value="1" id="rating-1">
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Alphabetical Sort Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="alphabetical">
-              <span>Sort Alphabetically</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="alphabetical-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-a-z">
-                  A-Z
-                  <input type="checkbox" name="alphabetical" value="a-z" id="alphabetical-a-z">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-z-a">
-                  Z-A
-                  <input type="checkbox" name="alphabetical" value="z-a" id="alphabetical-z-a">
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- New Arrivals Filter -->
-          <div class="filter-item">
-            <hr>
-            <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
-              <span>New Arrivals</span>
-              <i class="fa-solid fa-chevron-down"></i>
-            </div>
-            <div class="filter-options" id="new-arrivals-options" style="display: none;">
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
-                  Latest
-                  <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
-                </label>
-              </div>
-              <div>
-                <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
-                  Oldest
-                  <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
-                </label>
-              </div>
-            </div>
-            <hr>
-          </div>
-          <a href="/shop">
-            <button type="button" id="clear-filters">Clear Filters</button>
-          </a>
-          
-        </form>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search by title or shade name">
       </div>
-
-      <div class="col-md-10 p-0 ps-4">
-        <div class="product-grid">
-          <% for (let i = 0; i < variants.length; i++) { %>
-            <div class="product-card" data-variant-id="<%= variants[i]._id %>">
-              <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
-                <img src="<%= variants[i].images[0] %>" alt="<%= variants[i].shade %>" />
+      <div id="breadcrumbs"></div>
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-2 product-filter-div p-0">
+            <form id="filter-form">
+              <!-- Popularity Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="popularity">
+                  <span>Popularity</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="popularity-options" style="display: none;">
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="trending">
+                      Trending
+                      <input type="checkbox" name="popularity" value="trending" id="trending">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="most-reviewed">
+                      Most Reviewed
+                      <input type="checkbox" name="popularity" value="most-reviewed" id="most-reviewed">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="top-rated">
+                      Top Rated
+                      <input type="checkbox" name="popularity" value="top-rated" id="top-rated">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Category Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="category">
+                  <span>Category</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="category-options" style="display: none;">
+                  <% categories.forEach(category => { %>
+                    <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                      <label for="category-<%= category.id %>"><%= category.name %></label>
+                      <input type="checkbox" class="ml-auto category-checkbox" id="category-<%= category.id %>" name="category" value="<%= category.id %>" data-name="<%= category.name %>" />
+                    </div>
+                    <!-- Subcategory Filter nested within Category -->
+                    <div class="filter-options subcategory-options" id="subcategory-options-<%= category.id %>" style="display: none; margin-left: 20px;">
+                      <% category.subcategories.forEach(subcategory => { %>
+                        <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                          <label for="subcategory-<%= subcategory.id %>"><%= subcategory.name %></label>
+                          <input type="checkbox" class="ml-auto subcategory-checkbox" id="subcategory-<%= subcategory.id %>" name="subcategory" value="<%= subcategory.id %>" data-name="<%= subcategory.name %>" />
+                        </div>
+                      <% }) %>
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <!-- Brand Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="brand">
+                  <span>Brand</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="brand-options" style="display: none;">
+                  <% brands.forEach(brand => { %>
+                    <div class="d-flex align-items-center justify-content-between px-2 py-1">
+                      <label for="brand-<%= brand.id %>"><%= brand.brandName %></label>
+                      <input type="checkbox" class="ml-auto brand-checkbox" id="brand-<%= brand.id %>" name="brand" value="<%= brand.id %>" data-name="<%= brand.brandName %>" />
+                    </div>
+                  <% }) %>
+                </div>
+              </div>
+              <!-- Price Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="price">
+                  <span>Price</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="price-options" style="display: none;">
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="low-to-high">
+                      Low to High
+                      <input type="checkbox" name="price" value="low-to-high" id="low-to-high">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="high-to-low">
+                      High to Low
+                      <input type="checkbox" name="price" value="high-to-low" id="high-to-low">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Rating Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="average-rating">
+                  <span>Average Rating</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="average-rating-options" style="display: none;">
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-5">
+                      5 Stars
+                      <input type="checkbox" name="rating" value="5" id="rating-5">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-4">
+                      4 Stars
+                      <input type="checkbox" name="rating" value="4" id="rating-4">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-3">
+                      3 Stars
+                      <input type="checkbox" name="rating" value="3" id="rating-3">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-2">
+                      2 Stars
+                      <input type="checkbox" name="rating" value="2" id="rating-2">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-1">
+                      1 Star
+                      <input type="checkbox" name="rating" value="1" id="rating-1">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- Alphabetical Sort Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="alphabetical">
+                  <span>Sort Alphabetically</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="alphabetical-options" style="display: none;">
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-a-z">
+                      A-Z
+                      <input type="checkbox" name="alphabetical" value="a-z" id="alphabetical-a-z">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-z-a">
+                      Z-A
+                      <input type="checkbox" name="alphabetical" value="z-a" id="alphabetical-z-a">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <!-- New Arrivals Filter -->
+              <div class="filter-item">
+                <hr>
+                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
+                  <span>New Arrivals</span>
+                  <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="filter-options" id="new-arrivals-options" style="display: none;">
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
+                      Latest
+                      <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
+                    </label>
+                  </div>
+                  <div>
+                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
+                      Oldest
+                      <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
+                    </label>
+                  </div>
+                </div>
+                <hr>
+              </div>
+              <a href="/shop">
+                <button type="button" id="clear-filters">Clear Filters</button>
               </a>
-              <div class="product-card-like">
-                <form action="/add-to-wishlist/<%= products[i]._id %>" method="POST" class="wishlist-form" id="wishlist-form">
-                  <% if (user) { %>
-                    <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === products[i]._id.toString() && item.variant_id.toString() === variants[i]._id.toString())) { %>
-                      <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                        <i class="fa-solid fa-heart in-wishlist"></i>
+            </form>
+          </div>
+          <div class="col-md-10 p-0 ps-4">
+            <div class="product-grid">
+              <% for (let i = 0; i < variants.length; i++) { %>
+                <div class="product-card" data-variant-id="<%= variants[i]._id %>">
+                  <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
+                    <img src="<%= variants[i].images[0] %>" alt="<%= variants[i].shade %>" />
+                  </a>
+                  <div class="product-card-like">
+                    <form action="/add-to-wishlist/<%= products[i]._id %>" method="POST" class="wishlist-form" id="wishlist-form">
+                      <% if (user) { %>
+                        <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === products[i]._id.toString() && item.variant_id.toString() === variants[i]._id.toString())) { %>
+                        <button type="submit" title="Remove from Wishlist" class="wishlist-button">
+                          <i class="fa-solid fa-heart in-wishlist"></i>
+                        </button>
+                        <% } else { %>
+                        <button type="submit" title="Add to Wishlist" class="wishlist-button">
+                          <i class="fa-solid fa-heart not-in-wishlist"></i>
+                        </button>
+                        <% } %>
+                      <% } else { %>
+                      <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
+                        <i class="fa-solid fa-heart"></i>
                       </button>
-                    <% } else { %>
-                      <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                        <i class="fa-solid fa-heart not-in-wishlist"></i>
-                      </button>
+                      <% } %>
+                    </form>
+                  </div>
+                  <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
+                    <p class="product-title"><%= products[i].title %> - <%= variants[i].shade %></p>
+                  </a>
+                  <div class="product-prices-box">
+                    <p class="sale-price price-inr">₹<%= variants[i].salePrice %></p>
+                    <p class="original-price price-inr mx-2">₹<%= variants[i].regularPrice %></p>
+                    <% if (variants[i].regularPrice > variants[i].salePrice) { %>
+                    <span class="discount-percentage">
+                      <%= Math.round(((variants[i].regularPrice - variants[i].salePrice) / variants[i].regularPrice) * 100) %>% Off
+                    </span>
                     <% } %>
+                  </div>
+                  <% const variantInCart = cartVariants.includes(variants[i]._id.toString()); %>
+                  <% if (variantInCart) { %>
+                  <a href="/user/my-cart">
+                    <button type="button" class="go-to-cart-btn">Go To Bag</button>
+                  </a>
                   <% } else { %>
-                    <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                      <i class="fa-solid fa-heart"></i>
-                    </button>
+                  <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= products[i]._id %>" data-variant-id="<%= variants[i]._id %>">
+                    <button type="submit" class="add-to-cart-btn">Add to Bag</button>
+                  </form>
                   <% } %>
-                </form>
-              </div>
-              <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
-                <p class="product-title"><%= products[i].title %> - <%= variants[i].shade %></p>
-              </a>
-              <div class="product-prices-box">
-                <p class="sale-price price-inr">&#8377;<%= variants[i].salePrice %></p>
-                <p class="original-price price-inr mx-2">&#8377;<%= variants[i].regularPrice %></p>
-                <% if (variants[i].regularPrice > variants[i].salePrice) { %>
-                  <span class="discount-percentage">
-                    <%= Math.round(((variants[i].regularPrice - variants[i].salePrice) / variants[i].regularPrice) * 100) %>% Off
-                  </span>
-                <% } %>
-              </div>
-              <% const variantInCart = cartVariants.includes(variants[i]._id.toString()); %>
-              <% if (variantInCart) { %>
-                <a href="/user/my-cart">
-                  <button type="button" class="go-to-cart-btn">Go To Bag</button>
-                </a>
-              <% } else { %>
-                <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= products[i]._id %>" data-variant-id="<%= variants[i]._id %>">
-                  <button type="submit" class="add-to-cart-btn">Add to Bag</button>
-                </form>
+                </div>
               <% } %>
             </div>
-          <% } %>
-        </div>
-
-        <div id="no-products" style="display: none;">
-          <p>No products available</p>
-        </div>
-
-        <div class="pagination-controls">
-          <% if (currentPage > 1) { %>
-            <a href="?page=<%= currentPage - 1 %>">Previous</a>
-          <% } %>
-          <% for (let i = 1; i <= totalPages; i++) { %>
-            <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
-          <% } %>
-          <% if (currentPage < totalPages) { %>
-            <a href="?page=<%= currentPage + 1 %>">Next</a>
-          <% } %>
+            <div id="no-products" style="display: none;">
+              <p>No products available</p>
+            </div>
+            <div class="pagination-controls">
+              <% if (currentPage > 1) { %>
+                <a href="#" data-page="<%= currentPage - 1 %>">Previous</a>
+              <% } %>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="#" data-page="<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+              <% if (currentPage < totalPages) { %>
+                <a href="#" data-page="<%= currentPage + 1 %>">Next</a>
+              <% } %>
+            </div>
+          </div>
         </div>
       </div>
-
-
     </div>
-  </div>
-</div>
-
-
-
-
-</body>
-<%- include('partials/footerforhome') %>
-
+    <%- include('partials/footerforhome') %>
 <script>
+
   const toastWish = (message) => {
     iziToast.show({
       message: message,
@@ -350,86 +332,72 @@
   };
 
   document.addEventListener('DOMContentLoaded', () => {
+    // Handle Wishlist form submission
     const forms = document.querySelectorAll('.wishlist-form');
-
     forms.forEach(form => {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const button = form.querySelector('button');
+        const icon = button.querySelector('i');
+        const productId = form.action.split('/').pop();
+        const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
+        const url = form.action;
 
-            const button = form.querySelector('button');
-            const icon = button.querySelector('i');
-            const productId = form.action.split('/').pop();
-            const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
-            const url = form.action;
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ product_id: productId, variant_id: variantId }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Server Error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.action === 'added') {
-                    icon.classList.remove('not-in-wishlist');
-                    icon.classList.add('in-wishlist');
-                    button.title = 'Remove from Wishlist';
-
-                    toastWish('Product has been added to Wishlist.');
-                } else if (data.action === 'removed') {
-                    icon.classList.remove('in-wishlist');
-                    icon.classList.add('not-in-wishlist');
-                    button.title = 'Add to Wishlist';
-
-                    toastWish('Product has been removed from Wishlist.');
-                } else if (data.error) {
-                    console.error('Server Error:', data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toastWarning('An error occurred.')
-            });
-        });
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ product_id: productId, variant_id: variantId }),
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.action === 'added') {
+              icon.classList.remove('not-in-wishlist');
+              icon.classList.add('in-wishlist');
+              button.title = 'Remove from Wishlist';
+              toastWish('Product has been added to Wishlist.');
+            } else if (data.action === 'removed') {
+              icon.classList.remove('in-wishlist');
+              icon.classList.add('not-in-wishlist');
+              button.title = 'Add to Wishlist';
+              toastWish('Product has been removed from Wishlist.');
+            } else if (data.error) {
+              console.error('Server Error:', data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            toastWarning('An error occurred.');
+          });
+      });
     });
-});
 
-// Handle add to cart form submission
-document.addEventListener('DOMContentLoaded', () => {
+    // Handle Add to Cart form submission
     const cartForms = document.querySelectorAll('.cart-form');
-
     cartForms.forEach(form => {
       form.addEventListener('submit', function(event) {
         event.preventDefault();
-
         const productId = form.getAttribute('data-product-id');
         const variantId = form.getAttribute('data-variant-id');
-
         const quantity = 1;
 
         if ('<%= user %>') {
           fetch('/add-to-cart', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ quantity, productId, variantId }),
-            })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity, productId, variantId }),
+          })
             .then(response => response.json())
             .then(data => {
               if (data.success) {
-              const newButton = document.createElement('a');
-              newButton.href = '/user/my-cart';
-              newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
-
-              form.parentNode.replaceChild(newButton, form);
-
+                const newButton = document.createElement('a');
+                newButton.href = '/user/my-cart';
+                newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+                form.parentNode.replaceChild(newButton, form);
                 toastSuccess(data.message);
               } else {
                 toastError(data.message);
@@ -440,30 +408,18 @@ document.addEventListener('DOMContentLoaded', () => {
               toastWarning('Error adding product to cart.');
             });
         } else {
-        window.location = '/login'
-        // const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        // const existingItem = cart.find(item => item.productId === productId);
-
-        // if (existingItem) {
-        //   existingItem.quantity = quantity;
-        // } else {
-        //   cart.push({
-        //     productId,
-        //     quantity
-        //   });
-        // }
-
-        // localStorage.setItem('cart', JSON.stringify(cart));
-        // toastSuccess('Product added to cart!')
-      }
-    })
+          window.location = '/login';
+        }
+      });
+    });
   })
-})
 
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
   const filterForm = document.getElementById('filter-form');
+  const searchInput = document.getElementById('search-input');
+  const clearFiltersButton = document.getElementById('clear-filters');
 
-  filterForm.addEventListener('change', function(event) {
+  function applyFilters() {
     const formData = new FormData(filterForm);
     const filterParams = {};
 
@@ -475,24 +431,56 @@ document.addEventListener('DOMContentLoaded', function() {
       filterParams[key].push(value);
     }
 
+    const searchQuery = searchInput ? searchInput.value.trim() : '';
+    if (searchQuery) {
+      filterParams.search = searchQuery;
+    }
+
     // Create query string from filter parameters
     const queryString = new URLSearchParams(filterParams).toString();
     history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
     fetchFilteredProducts(filterParams, 1);
-  });
+  }
+
+  filterForm.addEventListener('change', applyFilters);
+
+  if (searchInput) {
+    searchInput.addEventListener('keyup', applyFilters);
+  }
+
+  if (clearFiltersButton) {
+    clearFiltersButton.addEventListener('click', function() {
+      filterForm.reset();
+      if (searchInput) searchInput.value = '';
+      applyFilters();
+    });
+  }
 
   function fetchFilteredProducts(filterParams, page) {
-    fetch(`/shop?filters=${encodeURIComponent(JSON.stringify(filterParams))}&page=${page}`)
+    const params = {
+      filters: JSON.stringify(filterParams),
+      page: page
+    };
+    const queryString = new URLSearchParams(params).toString();
+
+    fetch(`/shop?${queryString}`)
       .then(response => response.text())
       .then(html => {
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = html;
+
         const newProductGrid = tempDiv.querySelector('.product-grid');
-        document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
+        if (newProductGrid) {
+          document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
+        }
+
+        const newPaginationControls = tempDiv.querySelector('.pagination-controls');
+        if (newPaginationControls) {
+          document.querySelector('.pagination-controls').innerHTML = newPaginationControls.innerHTML;
+        }
 
         // Reattach event listeners after updating the product grid
-        attachWishlistListeners();
-        attachCartListeners();
+        attachPaginationListeners();
       })
       .catch(error => console.error('Error fetching products:', error));
   }
@@ -565,11 +553,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initial call to set up subcategory visibility
   toggleSubcategories();
+
+  // Attach pagination event listeners
+  let debounceTimeout;
+function attachPaginationListeners() {
+  document.querySelectorAll('.pagination-controls a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Optional: Smooth scroll to the top
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      const page = parseInt(this.getAttribute('data-page'));
+      const filters = getUrlParameter('filters');
+      let filterParams = {};
+      try {
+        filterParams = filters ? JSON.parse(decodeURIComponent(filters)) : {};
+      } catch (error) {
+        console.error('Error parsing filters:', error);
+      }
+
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        fetchFilteredProducts(filterParams, page);
+      }, 300); 
+    });
+  });
+}
+
+
+  attachPaginationListeners();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
 });
-
-
-
-
 </script>
-
+  </body>
 </html>
