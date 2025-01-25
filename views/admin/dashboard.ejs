@@ -81,7 +81,7 @@
                                     <input type="date" id="end-date" class="date-input">
                                     <button id="apply-custom-filter" class="apply-btn">Apply</button>
                                 </div>
-                                <button id="toggleChart" class="toggle-btn">T <i class="fas fa-chart-bar"></i></button>
+                                <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
                             </div>
                             <canvas id="salesChart"></canvas>
                         </div>
@@ -329,11 +329,28 @@ document.addEventListener('DOMContentLoaded', function () {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            callback: value => '₹ ' + value.toLocaleString()
+                            callback: value => '₹ ' + value.toLocaleString(),
+                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for y-axis
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'  // Subtle grid lines
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for x-axis
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'  // Subtle grid lines
                         }
                     }
                 },
                 plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.8)'  // Light white color for legend
+                        }
+                    },
                     tooltip: {
                         callbacks: {
                             label: context => {

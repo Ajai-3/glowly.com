@@ -784,6 +784,9 @@ couponButton.addEventListener("click", applyCoupon);
 
 
     function handleOrderSuccess() {
+      // window.onload = function() {
+      //  location.reload();
+      // };
       showStep(step1);
       // toastSuccess("Order placed successfully!");
       const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));

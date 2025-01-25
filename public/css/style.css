@@ -2608,6 +2608,24 @@ p2 {
   right: 60px;
   z-index: 10;
 }
+
+.filter-container .toggle-btn {
+  background-color: var(--bg-color-3);
+  color:var(--text-color-4);
+  border: none;
+  padding: 5px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  position: absolute;
+  top: 5px;
+  right: 0px;
+  z-index: 10;
+}
+.filter-container .toggle-button:hover {
+  background-color: var(--bg-color-btn-hover2);
+}
+
 .filter-container input,
 .filter-container select {
   margin-left: 5px;
@@ -2635,25 +2653,7 @@ p2 {
   right: 60px;
   z-index: 10;
 }
-/* Toggle button styling */
-.toggle-button {
-  background-color: var(--bg-color-3);
-  color:var(--text-color-4);
-  border: none;
-  padding: 5px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: var(--font-size-third);
-  margin-bottom: 20px;
-  position: absolute;
-  top: 5px;
-  right: 20px;
-  z-index: 10;
-}
 
-.toggle-button:hover {
-  background-color: var(--bg-color-btn-hover2);
-}
 
 /* Responsive behavior */
 @media (max-width: 768px) {
