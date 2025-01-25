@@ -2581,7 +2581,8 @@ p2 {
 }
 .chart-wrapper {
   display: flex;
-  /* justify-content: center; */
+  padding: 0;
+  margin: 0;
   align-items: center;
   background-color: #121212; 
 }
@@ -2592,13 +2593,48 @@ p2 {
   border-radius: 8px;
   box-shadow: 0 4px 15px rgb(0, 0, 0);
   width: 100%; 
-  height: 370px;
+  padding: 35px 10px 5px 10px;
+  height: 375px;
   max-width: 750px;
-  padding: 10px;
   position: relative;
   cursor: pointer;
 }
 
+.filter-container {
+  font-size: var(--font-size-third);
+  background-color: transparent;
+  position: absolute;
+  top: 13px;
+  right: 60px;
+  z-index: 10;
+}
+.filter-container input,
+.filter-container select {
+  margin-left: 5px;
+  margin-right: 5px;
+  background-color: var(--bg-color-3);
+  border: 1px solid var(--bg-color-btn-hover3);
+  color: var(--text-color-4);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+#apply-custom-filter {
+  padding: 3px 5px;
+  margin: 0;
+  font-size: var(--font-size-third);
+}
+
+
+#custom-date-range {
+  font-size: var(--font-size-third);
+  background-color: transparent;
+  margin: 0;
+  /* position: absolute; */
+  top: 10px;
+  right: 60px;
+  z-index: 10;
+}
 /* Toggle button styling */
 .toggle-button {
   background-color: var(--bg-color-3);
@@ -2638,7 +2674,6 @@ p2 {
   --tooltip-bg: rgba(0, 0, 0, 0.7);
   --tooltip-title: #ffffff;
   --tooltip-body: #d0d0d0;
-  
   /* Additional colors for the new datasets */
   --delivered-bar-color: rgba(97, 251, 50, 0.583);
   --delivered-bar-border: rgba(40, 237, 66, 0.781);
@@ -2646,8 +2681,58 @@ p2 {
   --returned-bar-border: rgba(255, 1, 1, 0.658);
 }
 
+/* .chart-wrapper {
+  background: var(--bg-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
 
+.chart-container {
+  background: var(--bg-color-2);
+  border-radius: 8px;
+  padding: 20px;
+  height: 400px;
+  position: relative;
+}
 
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.filter-select,
+.date-input,
+.apply-btn,
+.toggle-btn {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background: var(--bg-color-2);
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.filter-select:hover,
+.date-input:hover,
+.apply-btn:hover,
+.toggle-btn:hover {
+  border-color: var(--border-color-hover);
+}
+
+#custom-date-range {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+#salesChart {
+  width: 100% !important;
+  height: 100% !important;
+} */
 
 
 

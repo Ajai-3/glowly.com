@@ -15,12 +15,12 @@
                 </a>
             </div>
         </div>
-        <div class="brudcrumbs">breadcrumbs</div>
+        <div class="breadcrumbs">breadcrumbs</div>
 
         <div class="dashboard-summary-container">
             <div class="row">
                 <!-- Top Row: Dashboard Summary Boxes -->
-                <div class="col-9 pe-3 dashboard-summary">
+                <div class="col-12 pe-3 dashboard-summary">
                     <div class="dashboard-summary1">
                         <h3>Total Users</h3>
                         <p><%= userCount %></p>
@@ -38,37 +38,51 @@
                         </p1>
                     </div>
                     <div class="dashboard-summary3">
-                        <h3>Total Sales</h3>
+                        <h3>Gross Revenue</h3>
                         <p><%= totalAmount %></p>
                         <p2>
                             <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
                         </p2>
                     </div>
                     <div class="dashboard-summary3">
-                        <h3>Total Sales</h3>
+                        <h3>Returns/Refunds</h3>
+                        <p><%= totalAmount %></p>
+                        <p2>
+                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
+                        </p2>
+                    </div>
+                    <div class="dashboard-summary3">
+                        <h3>Net Revenue</h3>
                         <p><%= totalAmount %></p>
                         <p2>
                             <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
                         </p2>
                     </div>
                 </div>
-
-                <div class="col-3">
-                    <div class="vertical-box">
-                        xcvxcvxcv
-                    </div>
-                </div>
             </div>
         
             <div class="row">
                 <!-- Main Content Row -->
-                <div class="col-9 pe-3">
+                <div class="col-9 ">
                     <!-- Chart Section -->
                     <div class="chart-wrapper">
                         <div class="chart-container">
-                            <button id="toggleChart" class="toggle-button">
-                                <i class="fas fa-chart-bar"></i>
-                            </button>
+                            <div class="filter-container">
+                                <select id="filter" class="filter-select">
+                                    <option value="all_time">All Time</option>
+                                    <option value="today">Today</option>
+                                    <option value="this_week">This Week</option>
+                                    <option value="this_month">This Month</option>
+                                    <option value="this_year">This Year</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                                <div id="custom-date-range" style="display: none;">
+                                    <input type="date" id="start-date" class="date-input">
+                                    <input type="date" id="end-date" class="date-input">
+                                    <button id="apply-custom-filter" class="apply-btn">Apply</button>
+                                </div>
+                                <button id="toggleChart" class="toggle-btn">T <i class="fas fa-chart-bar"></i></button>
+                            </div>
                             <canvas id="salesChart"></canvas>
                         </div>
                     </div>
@@ -83,6 +97,8 @@
             </div>
         </div>
         
+        <!-- Filter Section -->
+        
 
         <!-- Table Section -->
         <div class="table-container" style="margin-top: 20px;">
@@ -90,177 +106,382 @@
             <table class="all-table">
                 <thead>
                     <tr>
-                        <th>Sl No.</th>
-                        <th>User Name</th>
-                        <th>Product Name</th>
-                        <th>Category Name</th>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Product</th>
                         <th>Quantity</th>
-                        <th>Total Amount</th>
+                        <th>Amount</th>
                         <th>Status</th>
-                        <th>Order Placed At</th>
+                        <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <% let serialNumber = 1; %> <!-- Initialize Serial Number -->
-                    <% salesData.forEach((order) => { %>
-                        <% order.products.forEach((product) => { %>
-                            <tr>
-                                <td><%= serialNumber++ %></td> <!-- Serial Number -->
-                                <td><%= order.user_id.name || 'User Not Found' %></td> <!-- User Name -->
-                                <td><%= product.product_id.title || 'Product Not Found' %></td> <!-- Product Name -->
-                                <td><%= product.category_id ? product.category_id.name : 'Category Not Found' %></td> <!-- Category Name -->
-                                <td><%= product.quantity %></td> <!-- Quantity -->
-                                <td>₹ <%= product.total_amount.toLocaleString() %></td> <!-- Total Amount -->
-                                <td><%= product.status %></td> <!-- Status -->
-                                <td><%= new Date(order.order_placed_at).toLocaleString() %></td> <!-- Order Placed At -->
-                            </tr>
-                        <% }) %>
-                    <% }) %>
+                <tbody id="salesDataTableBody">
                 </tbody>
             </table>
-                  
-</div>
+            <div class="pagination mb-4">
+                <div id="pageInfo" class="page-info"></div>
+                <div id="paginationControls" class="pagination-controls"></div>
+            </div>
+        </div>
 
-    </div> <!-- <div class="main-content"></div> -->
-
-
-
-
-
-
-
-
+    </div>
 
     <%- include('partials/footer') %>
-    
-<script>
-   document.addEventListener('DOMContentLoaded', function () {
-        const salesData = <%- JSON.stringify(salesData) %>;
-        console.log("Sales Data:", salesData);
 
-        if (salesData.length === 0) {
-            console.warn("No sales data available to render the chart.");
-            return;
+<style>
+.pagination {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    font-size: var(--font-size-third);
+    gap: 10px;
+}
+
+.page-info {
+    color: var(--text-color-3);
+    margin-bottom: 10px;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.pagination-controls button {
+    padding: 1px 6px;
+    margin: 0 5px;
+    border: 1px solid var(--bg-color-btn-hover2);
+    color: var(--text-color-3);
+    cursor: pointer;
+    background: transparent;
+    transition: all 0.3s ease;
+    font-size: inherit;
+}
+
+.pagination-controls button:hover {
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
+    background-color: var(--text-color-2);
+}
+
+.pagination-controls button.active {
+    color: var(--text-color-4);
+    border: 1px solid var(--text-color-4);
+    background-color: var(--bg-color-btn-hover-4);
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const salesData = <%- JSON.stringify(salesData) %>;
+    console.log("Frontend Sales Data:", salesData);
+
+    if (!salesData || salesData.length === 0) {
+        console.warn("No sales data available to render the chart.");
+        return;
+    }
+
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const chartContainer = document.querySelector('.chart-container');
+
+    let currentChartType = 'bar';
+    let chart = null;
+    let filteredProducts = [];
+
+    // Initialize filter elements
+    const filterSelect = document.getElementById('filter');
+    const customDateRange = document.getElementById('custom-date-range');
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    const applyCustomFilterButton = document.getElementById('apply-custom-filter');
+
+    // Pagination variables
+    let currentPage = 1;
+    const rowsPerPage = 10;
+
+    function processDataForDisplay() {
+        filteredProducts = [];
+        salesData.forEach(order => {
+            if (order.products && Array.isArray(order.products)) {
+                order.products.forEach(product => {
+                    filteredProducts.push({
+                        orderId: order._id,
+                        userName: order.user_name,
+                        productName: product.product_name,
+                        quantity: product.quantity,
+                        amount: product.total_amount,
+                        status: product.status,
+                        date: new Date(order.createdAt)
+                    });
+                });
+            }
+        });
+        return filteredProducts;
+    }
+
+    function filterByDateRange(data, startDate, endDate) {
+        if (!startDate || !endDate) return data;
+        return data.filter(item => {
+            const itemDate = item.date;
+            return itemDate >= startDate && itemDate <= endDate;
+        });
+    }
+
+    function updateChart(data) {
+        const groupedData = {};
+        const filter = filterSelect.value;
+
+        data.forEach(item => {
+            let key;
+            if (filter === 'today') {
+                // Group by hour for today's data
+                key = item.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (filter === 'this_year' || filter === 'all_time') {
+                // Group by month for yearly and all-time data
+                key = item.date.toLocaleDateString([], { year: 'numeric', month: 'short' });
+            } else {
+                // Default grouping by date
+                key = item.date.toLocaleDateString();
+            }
+
+            if (!groupedData[key]) {
+                groupedData[key] = {
+                    total: 0,
+                    delivered: 0,
+                    returned: 0
+                };
+            }
+            groupedData[key].total += item.amount;
+            if (item.status === 'delivered') groupedData[key].delivered += item.amount;
+            if (item.status === 'returned') groupedData[key].returned += item.amount;
+        });
+
+        // Sort keys based on date
+        const dates = Object.keys(groupedData);
+        if (filter === 'today') {
+            // Sort by time for today's data
+            dates.sort((a, b) => {
+                const timeA = new Date(`1970/01/01 ${a}`);
+                const timeB = new Date(`1970/01/01 ${b}`);
+                return timeA - timeB;
+            });
+        } else if (filter === 'this_year' || filter === 'all_time') {
+            // Sort by month for yearly and all-time data
+            dates.sort((a, b) => {
+                const dateA = new Date(a);
+                const dateB = new Date(b);
+                return dateA - dateB;
+            });
+        } else {
+            // Default sort by date
+            dates.sort((a, b) => new Date(a) - new Date(b));
         }
 
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        const labels = salesData.map(order => new Date(order.createdAt).toLocaleDateString());
-        const totalSales = salesData.map(order => order.total_order_amount);
+        const datasets = [
+            {
+                label: 'Total Sales',
+                data: dates.map(date => groupedData[date].total),
+                backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--bar-color'),
+                borderColor: getComputedStyle(chartContainer).getPropertyValue('--bar-border-color'),
+                borderWidth: 1
+            },
+            {
+                label: 'Delivered',
+                data: dates.map(date => groupedData[date].delivered),
+                backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-color'),
+                borderColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-border'),
+                borderWidth: 1
+            },
+            {
+                label: 'Returned',
+                data: dates.map(date => groupedData[date].returned),
+                backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-color'),
+                borderColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-border'),
+                borderWidth: 1
+            }
+        ];
 
-        // Additional datasets
-        const deliveredData = salesData.filter(order => 
-            order.products.some(product => product.status === "delivered")
-        ).map(order => order.products.reduce((sum, product) => 
-            product.status === "delivered" ? sum + product.total_amount : sum, 0)
-        );
+        if (chart) {
+            chart.destroy();
+        }
 
-        const returnedData = salesData.filter(order => 
-            order.products.some(product => product.status === "returned")
-        ).map(order => order.products.reduce((sum, product) => 
-            product.status === "returned" ? sum + product.total_amount : sum, 0)
-        );
-
-        const chartContainer = document.querySelector('.chart-container');
-
-        // Initial chart type
-        let currentChartType = 'bar';
-
-        // Create chart instance
-        const chart = new Chart(ctx, {
+        chart = new Chart(ctx, {
             type: currentChartType,
             data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Total Sales',
-                        data: totalSales,
-                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--bar-color'),
-                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--bar-border-color'),
-                        borderWidth: 1,
-                        fill: true,
-                    },
-                    {
-                        label: 'Delivered Products',
-                        data: deliveredData,
-                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-color'),
-                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-border'),
-                        borderWidth: 1,
-                        fill: false,
-                    },
-                    {
-                        label: 'Returned Products',
-                        data: returnedData,
-                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-color'),
-                        borderColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-border'),
-                        borderWidth: 1,
-                        fill: false,
-                    }
-                ]
+                labels: dates,
+                datasets: datasets
             },
             options: {
-                plugins: {
-                    legend: {
-                        display: true,
-                        labels: {
-                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-bg'),
-                        titleColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-title'),
-                        bodyColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-body'),
-                    }
-                },
                 responsive: true,
                 maintainAspectRatio: false,
                 scales: {
-                    x: {
-                        grid: {
-                            color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
-                        },
-                        ticks: {
-                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
-                        }
-                    },
                     y: {
                         beginAtZero: true,
-                        grid: {
-                            color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
-                        },
                         ticks: {
-                            color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
+                            callback: value => '₹ ' + value.toLocaleString()
                         }
-                    },
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: context => {
+                                return context.dataset.label + ': ₹ ' + 
+                                    context.parsed.y.toLocaleString();
+                            }
+                        }
+                    }
                 }
-            },
+            }
         });
+    }
 
-        // Toggle button functionality
-        document.getElementById('toggleChart').addEventListener('click', () => {
-            // Switch between 'bar' and 'line'
-            currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+    function updateTable(data) {
+        const tbody = document.getElementById('salesDataTableBody');
+        tbody.innerHTML = '';
 
-            // Update chart type
-            chart.config.type = currentChartType;
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, data.length);
+        const pageData = data.slice(start, end);
 
-            // Update dataset style for line chart
-            chart.data.datasets.forEach(dataset => {
-                if (currentChartType === 'line') {
-                    dataset.fill = true;
-                } else {
-                    dataset.fill = false;
-                }
-            });
+        pageData.forEach((item, index) => {
+            const row = document.createElement('tr');
+            const dateTimeFormat = filterSelect.value === 'today' 
+                ? item.date.toLocaleTimeString() // Show time for today's data
+                : item.date.toLocaleString();    // Show date and time for other views
 
-            // Update chart text for the toggle button
-            const toggleButton = document.getElementById('toggleChart');
-            toggleButton.innerHTML = currentChartType === 'bar' 
-            ? '<i class="fas fa-chart-bar"></i>' 
-            : '<i class="fas fa-chart-line"></i>';
-            chart.update();
+            row.innerHTML = `
+                <td>${start + index + 1}</td>
+                <td>${item.userName}</td>
+                <td>${item.productName}</td>
+                <td>${item.quantity}</td>
+                <td>₹ ${item.amount.toLocaleString()}</td>
+                <td><span class="status ${item.status}">${item.status}</span></td>
+                <td>${dateTimeFormat}</td>
+            `;
+            tbody.appendChild(row);
         });
+    }
+
+    function updatePaginationControls(totalItems) {
+        const totalPages = Math.ceil(totalItems / rowsPerPage);
+        const controls = document.getElementById('paginationControls');
+        controls.innerHTML = '';
+
+        if (totalPages > 3) {
+            addPageButton('First', 1);
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            if (totalPages <= 3 || 
+                i === 1 || 
+                i === totalPages || 
+                (i >= currentPage - 1 && i <= currentPage + 1)) {
+                addPageButton(i, i);
+            }
+        }
+
+        if (totalPages > 3) {
+            addPageButton('Last', totalPages);
+        }
+
+        document.getElementById('pageInfo').textContent = 
+            `Page ${currentPage} of ${totalPages}`;
+    }
+
+    function addPageButton(text, page) {
+        const button = document.createElement('button');
+        button.textContent = text;
+        if (page === currentPage) button.classList.add('active');
+        button.addEventListener('click', () => {
+            currentPage = page;
+            refreshDisplay();
+        });
+        document.getElementById('paginationControls').appendChild(button);
+    }
+
+    function getDateRange(filter) {
+        const today = new Date();
+        let startDate, endDate;
+
+        switch (filter) {
+            case 'today':
+                startDate = new Date(today.setHours(0, 0, 0, 0));
+                endDate = new Date();
+                break;
+            case 'this_week':
+                startDate = new Date(today.setDate(today.getDate() - today.getDay()));
+                endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6);
+                break;
+            case 'this_month':
+                startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                break;
+            case 'this_year':
+                startDate = new Date(today.getFullYear(), 0, 1);
+                endDate = new Date(today.getFullYear(), 11, 31);
+                break;
+            case 'custom':
+                if (!startDateInput.value || !endDateInput.value) return null;
+                startDate = new Date(startDateInput.value);
+                endDate = new Date(endDateInput.value);
+                endDate.setHours(23, 59, 59, 999);
+                break;
+            default:
+                return null;
+        }
+        return { startDate, endDate };
+    }
+
+    function refreshDisplay() {
+        const dateRange = getDateRange(filterSelect.value);
+        let displayData = processDataForDisplay();
+        
+        if (dateRange) {
+            displayData = filterByDateRange(displayData, dateRange.startDate, dateRange.endDate);
+        }
+
+        updateTable(displayData);
+        updateChart(displayData);
+        updatePaginationControls(displayData.length);
+    }
+
+    // Event Listeners
+    filterSelect.addEventListener('change', function() {
+        if (this.value === 'custom') {
+            customDateRange.style.display = 'flex';
+        } else {
+            customDateRange.style.display = 'none';
+            currentPage = 1;
+            refreshDisplay();
+        }
     });
+
+    applyCustomFilterButton.addEventListener('click', () => {
+        currentPage = 1;
+        refreshDisplay();
+    });
+
+    document.getElementById('toggleChart').addEventListener('click', () => {
+        currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+        refreshDisplay();
+    });
+
+    // Initialize display
+    refreshDisplay();
+});
 </script>
-    
 </body>
 </html>

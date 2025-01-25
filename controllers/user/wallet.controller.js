@@ -74,8 +74,16 @@ export const addMoneyToWallet = async (req, res) => {
     // Find the user's wallet
     const wallet = await Wallet.findOne({ user_id: user.userId });
     if (!wallet) {
-      return res.status(404).json({ error: 'Wallet not found' });
-    }
+      const newWallet = new Wallet({
+          user_id: user.userId,
+          balance: 0, 
+          createdAt: new Date(),
+          updatedAt: new Date()
+      });
+  
+      await newWallet.save();
+      console.log("New wallet created for user:", user.userId);
+  }
 
     // If payment details are not provided, create a Razorpay order
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {

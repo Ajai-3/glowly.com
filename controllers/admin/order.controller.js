@@ -152,6 +152,17 @@ export const updateOrderStatus = async (req, res) => {
       productInOrder.canceled_at = new Date();
     } else if (status === 'returned') {
       const wallet = await Wallet.findOne({ user_id: userId });
+      if (!wallet) {
+        const newWallet = new Wallet({
+            user_id: userId,
+            balance: 0, 
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
+    
+        await newWallet.save();
+        console.log("New wallet created for user:", userId);
+    }
       wallet.balance += refundAmount;
       await wallet.save();
       const transaction = new Transaction({
