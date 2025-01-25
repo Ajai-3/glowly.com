@@ -304,7 +304,9 @@ export const renderShopPage = async (req, res) => {
     let cartVariants = [];
 
     const page = parseInt(req.query.page) || 1;
-    const limit = 20;
+    const limit = 8;
+    const filters = req.query.filters ? JSON.parse(req.query.filters) : {};
+    const searchQuery = req.query.search || '';
 
     if (token) {
       try {
@@ -319,12 +321,45 @@ export const renderShopPage = async (req, res) => {
 
     if (cart.products.length > 0) {
       cartVariants = cart.products
-          .filter(product => product.variant_id)
-          .map(product => product.variant_id.toString());
+        .filter(product => product.variant_id)
+        .map(product => product.variant_id.toString());
     }
     const cartCount = cart.products.length;
     let filterConditions = { isDeleted: false };
-    let sortOptions = {};
+
+    // Apply filters
+    if (filters.popularity) {
+      // Add popularity filter condition
+    }
+    if (filters.category) {
+      filterConditions.categoryId = { $in: filters.category };
+    }
+    if (filters.subcategory) {
+      filterConditions.subcategoryId = { $in: filters.subcategory };
+    }
+    if (filters.brand) {
+      filterConditions.brandId = { $in: filters.brand };
+    }
+    if (filters.price) {
+      // Add price filter condition
+    }
+    if (filters.rating) {
+      // Add rating filter condition
+    }
+    if (filters.alphabetical) {
+      // Add alphabetical filter condition
+    }
+    if (filters["new-arrivals"]) {
+      // Add new arrivals filter condition
+    }
+
+    // Apply search query
+    if (searchQuery) {
+      filterConditions.$or = [
+        { title: { $regex: searchQuery, $options: 'i' } },
+        { 'variants.shade': { $regex: searchQuery, $options: 'i' } }
+      ];
+    }
 
     // Fetch all products and flatten the variants
     const allProducts = await Product.find(filterConditions).populate('variants');
@@ -356,8 +391,8 @@ export const renderShopPage = async (req, res) => {
     return res.render("user/shop", {
       name: user ? user.name : "",
       user: user,
-      products: paginatedVariants.map(item => item.product),  
-      variants: paginatedVariants.map(item => item.variant),  
+      products: paginatedVariants.map(item => item.product),
+      variants: paginatedVariants.map(item => item.variant),
       categories,
       subcategories,
       brands,
@@ -365,7 +400,9 @@ export const renderShopPage = async (req, res) => {
       cartVariants,
       wishlist,
       currentPage: page,
-      totalPages
+      totalPages,
+      filters: JSON.stringify(filters),
+      searchQuery
     });
 
   } catch (error) {
