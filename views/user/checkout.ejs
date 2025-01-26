@@ -518,6 +518,7 @@
     let selectedAddress = null;
     let couponId = null;
     let grandTotal = 0;
+    let productAfterCoupon = 0;
     let discountType;
     let discountAmount;
 
@@ -596,9 +597,12 @@
           if (result.discountType && result.discountType === "percentage"){
             discountType = `(${result.discountValue} %)`;
             discountAmount = ( result.discountValue / 100 ) * grandTotal;
+            
+            productAfterCoupon = (grandTotal / (cartProducts.length)) - discountAmount         
           } else if (result.discountType === "flat") {
             discountType = `(flat)`
             discountAmount = result.discountValue
+            productAfterCoupon = (grandTotal / (cartProducts.length)) - discountAmount
           }
           let formattedDiscountAmount = '₹ ' + discountAmount.toLocaleString('en-IN');
         
@@ -645,6 +649,7 @@ const removeCoupon = () => {
 
     couponInput.value = "";
 
+    productAfterCoupon = 0
     const couponDiscountShow = document.getElementById("coupon-discound-show");
     couponDiscountShow.classList.add("hidden");
     couponDiscountShow.style.display = "none";
@@ -825,7 +830,8 @@ couponButton.addEventListener("click", applyCoupon);
                 variant_id: variantId,
                 quantity,
                 salesPrice,
-                totalAmount
+                totalAmount,
+                productAfterCoupon
             };
         });
         grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);

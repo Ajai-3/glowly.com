@@ -99,191 +99,7 @@ export const renderProductPage = async (req, res) => {
   }
 };
 
-// Render The Page With Category
-// export const renderPageWithCategory = async (req, res) => {
-//   try {
-//     let user = null;
-//     let wishlist = [];
 
-//     const token = req.cookies.token;
-
-//     if (token) {
-//       try {
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//         user = decoded;
-//         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate(
-//           "products.product_id"
-//         );
-//       } catch (error) {
-//         console.log("Invalid or expired token:", error);
-//       }
-//     }
-
-//     const { categoryId } = req.params;
-
-//     const category = await Category.findById(categoryId);
-//     if (!category) {
-//       return res.status(404).send("Category not found");
-//     }
-
-//     const products = await Product.find({
-//       category_id: category._id,
-//       isDeleted: false,
-//     });
-
-//     const categories = await Category.find({ isListed: true }).populate({
-//       path: "subcategories",
-//       match: { isListed: true },
-//     });
-
-//     const subcategories = await Subcategory.find({ isListed: true });
-//     const brands = await Brand.find({ isListed: true });
-//     // console.log(subcategories)
-//     // console.log(categories)
-
-//     return res.render("user/category", {
-//       name: user ? user.name : "",
-//       user: user,
-//       products,
-//       category,
-//       wishlist,
-//       categories,
-//       subcategories,
-//       brands,
-//     });
-//   } catch (error) {
-//     console.error("Error in rendering product page with category", error);
-//     return res.status(500).send("Error in rendering product with category");
-//   }
-// };
-
-
-
-
-
-// export const renderShopPage = async (req, res) => {
-//   try {
-//     let user = null;
-//     let wishlist = [];
-//     const { filters, page = 1, limit = 10 } = req.query;
-
-//     let selectedFilters = {};
-//     if (filters) {
-//       selectedFilters = JSON.parse(filters);
-//     }
-
-//     const token = req.cookies.token;
-
-//     if (token) {
-//       try {
-//         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//         user = decoded;
-//         wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
-//       } catch (error) {
-//         console.log("Invalid or expired token:", error);
-//       }
-//     }
-
-//     const { categoryId } = req.params;
-//     const category = await Category.findById(categoryId);
-//     if (!category) {
-//       return res.status(404).send("Category not found");
-//     }
-
-//     let filterConditions = { category_id: category._id, isDeleted: false };
-//     let sortOptions = {};
-
-//     if (filters) {
-//       const filterObj = JSON.parse(decodeURIComponent(filters));
-
-//       if (filterObj.popularity && filterObj.popularity.length > 0) {
-//         if (filterObj.popularity.includes("trending")) {
-//           filterConditions = { ...filterConditions, trending: true };
-//         }
-//         if (filterObj.popularity.includes("most-reviewed")) {
-//           filterConditions = { ...filterConditions, mostReviewed: true };
-//         }
-//         if (filterObj.popularity.includes("top-rated")) {
-//           filterConditions = { ...filterConditions, topRated: true };
-//         }
-//       }
-
-//       if (filterObj.category && filterObj.category.length > 0) {
-//         filterConditions = { ...filterConditions, category_id: { $in: filterObj.category } };
-//       }
-
-//       if (filterObj.subcategory && filterObj.subcategory.length > 0) {
-//         filterConditions = { ...filterConditions, subcategory_id: { $in: filterObj.subcategory } };
-//       }
-
-//       if (filterObj.brand && filterObj.brand.length > 0) {
-//         filterConditions = { ...filterConditions, brand_id: { $in: filterObj.brand } };
-//       }
-
-//       if (filterObj.price) {
-//         if (filterObj.price.includes("low-to-high")) {
-//           sortOptions.price = 1;
-//         } else if (filterObj.price.includes("high-to-low")) {
-//           sortOptions.price = -1;
-//         }
-//       }
-
-//       if (filterObj.rating && filterObj.rating.length > 0) {
-//         filterConditions.rating = { $gte: Math.max(...filterObj.rating.map(r => parseInt(r))) };
-//       }
-
-//       if (filterObj.alphabetical) {
-//         if (filterObj.alphabetical.includes("a-z")) {
-//           sortOptions.title = 1;
-//         } else if (filterObj.alphabetical.includes("z-a")) {
-//           sortOptions.title = -1;
-//         }
-//       }
-
-//       if (filterObj['new-arrivals']) {
-//         if (filterObj['new-arrivals'].includes('latest')) {
-//           sortOptions.created_at = -1;
-//         } else if (filterObj['new-arrivals'].includes('oldest')) {
-//           sortOptions.created_at = 1;
-//         }
-//       }
-//     }
-
-//     const skip = (page - 1) * limit;
-//     const products = await Product.find(filterConditions).sort(sortOptions).skip(skip).limit(parseInt(limit));
-//     const totalProducts = await Product.countDocuments(filterConditions);
-//     const totalPages = Math.ceil(totalProducts / limit);
-
-//     if (req.xhr) {
-//       return res.render("partials/product-list", { products, wishlist, selectedFilters });
-//     } else {
-//       const categories = await Category.find({ isListed: true }).populate({
-//         path: "subcategories",
-//         match: { isListed: true },
-//       });
-
-//       const subcategories = await Subcategory.find({ isListed: true });
-//       const brands = await Brand.find({ isListed: true });
-
-//       return res.render("user/category", {
-//         name: user ? user.name : "",
-//         user: user,
-//         products,
-//         categories,
-//         subcategories,
-//         brands,
-//         wishlist,
-//         categoryId,
-//         selectedFilters,
-//         currentPage: parseInt(page),
-//         totalPages,
-//       });
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Server error");
-//   }
-// };
 export const renderShopPage = async (req, res) => {
   try {
     const token = req.cookies.token;
@@ -293,8 +109,9 @@ export const renderShopPage = async (req, res) => {
     let cartVariants = [];
 
     const page = parseInt(req.query.page) || 1;
-    const limit = 8;
+    const limit = 12;
     const filters = req.query.filters ? JSON.parse(req.query.filters) : {};
+    console.log(filters)
     const searchQuery = req.query.search || '';
 
     if (token) {
@@ -316,7 +133,7 @@ export const renderShopPage = async (req, res) => {
     const cartCount = cart.products.length;
 
     let filterConditions = { isDeleted: false };
-    let sortOptions = {}; // Initialize sortOptions
+    let sortOptions = {}; 
 
     // Apply filters
     if (filters.popularity) {
@@ -342,8 +159,11 @@ export const renderShopPage = async (req, res) => {
       filterConditions.brandId = { $in: filters.brand };
     }
     if (filters.price) {
-      const priceRange = filters.price[0].split('-');
-      filterConditions.price = { $gte: parseInt(priceRange[0]), $lte: parseInt(priceRange[1]) };
+      if (filters.price[0] === 'low-to-high') {
+        sortOptions = { 'variants.salePrice': 1 };  // Sort in ascending order of salePrice
+      } else if (filters.price[0] === 'high-to-low') {
+        sortOptions = { 'variants.salePrice': -1 };  // Sort in descending order of salePrice
+      }
     }
     if (filters.rating) {
       filterConditions.rating = { $gte: parseInt(filters.rating[0]) };
@@ -365,6 +185,16 @@ export const renderShopPage = async (req, res) => {
 
     // Fetch all products and flatten the variants
     const allProducts = await Product.find(filterConditions).populate('variants').sort(sortOptions);
+    allProducts.forEach(product => {
+      product.variants.sort((a, b) => {
+        if (sortOptions['variants.salePrice'] === 1) {
+          return a.salePrice - b.salePrice;
+        } else if (sortOptions['variants.salePrice'] === -1) {
+          return b.salePrice - a.salePrice; 
+        }
+        return 0;
+      });
+    });
     const allVariants = [];
     allProducts.forEach(product => {
       product.variants.forEach(variant => {

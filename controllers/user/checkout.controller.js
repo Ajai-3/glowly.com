@@ -243,10 +243,27 @@ export const placeOrder = async (req, res) => {
                 return res.status(400).json({ success: false, message: `Insufficient stock for variant: ${cartItem.variant_id}` });
             }
 
+            // let amountAfterCouponApplied;
+
+            // if (coupon) {
+            //     const coupon = await Coupon.findOne({ 
+            //         _id: coupon, 
+            //         isDelete: false 
+            //     });
+            //     if (coupon.type === "flat") {
+            //         amountAfterCouponApplied = cartItem.totalAmount - (coupon.discountValue / products.length)
+            //     }
+
+            //     if (coupon.type === "percentage") {
+            //         grandTotal
+            //     }
+            // }
+
             products.push({
                 product_id: cartItem.product_id,
                 variant_id: cartItem.variant_id,
                 quantity: cartItem.quantity,
+                amount_after_coupon: cartItem.productAfterCoupon,
                 total_amount: cartItem.totalAmount,
                 status: 'pending',
             });

@@ -2608,6 +2608,30 @@ p2 {
   right: 60px;
   z-index: 10;
 }
+.chart-container .filter-container .dawonload {
+  display: flex;
+  position: absolute;
+  right: 470px;
+  top: -10px;
+}
+.download-excel {
+  background-color: var(--green-text-color-3); 
+  color: var(--text-color-4); 
+  padding: 3px 8px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: var(--font-size-third);
+}
+.download-pdf {
+  background-color: var(--red-text-color-3); 
+  color: var(--text-color-4); 
+  padding: 3px 8px; 
+  border: none; 
+  border-radius: 4px; 
+  cursor: pointer; 
+  font-size: var(--font-size-third);
+}
 
 .chart-container .filter-container .toggle-btn {
   background-color: var(--bg-color-3);

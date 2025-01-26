@@ -1,7 +1,12 @@
+import mongoose from "mongoose"
 import User from "../../models/user.model.js"
 import Order from "../../models/order.model.js"
+import Brand from "../../models/brand.model.js";
+import Coupon from "../../models/coupon.model.js";
 import Product from "../../models/product.model.js"
 import Category from "../../models/category.model.js";
+import SubCategory from "../../models/subcategory.model.js";
+
 
 
 
@@ -10,56 +15,155 @@ export const renderDashboardPage = async (req, res) => {
         // Fetch orders with populated references
         const salesData = await Order.find()
             .populate('user_id', 'name')
-            .populate('products.product_id', 'title')
+            .populate('products.product_id', 'title category_id sub_category brand_id')
             .sort({ createdAt: -1 });
 
-        console.log('Raw Sales Data:', JSON.stringify(salesData, null, 2));
+        // console.log('Raw Sales Data:', JSON.stringify(salesData, null, 2));
 
         // Get summary counts
         const userCount = await User.countDocuments({ role: "user" });
-        const orderCount = await Order.countDocuments();
-        const totalAmount = await Order.aggregate([
-            {
-                $group: {
-                    _id: null,
-                    totalAmount: { $sum: "$total_order_amount" }
-                }
-            }
-        ]);
 
-        const total = totalAmount.length > 0 ? totalAmount[0].totalAmount : 0;
-        const formattedTotal = `₹ ${total.toLocaleString()}`;
 
         // Process orders for the frontend
-        const processedOrders = salesData.map(order => {
-            const orderObj = {
+        // const processedOrders = await Promise.all(salesData.map(async order => {
+        //     const orderObj = {
+        //         _id: order._id,
+        //         user_name: order.user_id ? order.user_id.name : 'User Not Found',
+        //         createdAt: order.createdAt,
+        //         total_amount: order.total_order_amount,
+        //         products: await Promise.all(order.products.map(async product => {
+        //             const productDetails = {
+        //                 product_name: product.product_id ? product.product_id.title : 'Product Not Found',
+        //                 quantity: product.quantity || 0,
+        //                 total_amount: product.total_amount || 0,
+        //                 status: product.status || 'pending',
+        //                 order_placed_at: product.order_placed_at ? new Date(product.order_placed_at).toLocaleString() : new Date().toLocaleString(),
+        //                 category_name: 'Category Not Found',
+        //                 sub_category: 'Subcategory Not Found',
+        //                 brand_name: product.product_id && product.product_id.brand_id ? product.product_id.brand_id.name : 'Brand Not Found',
+        //                 coupon_name: 'No Coupon'
+        //             };
+
+        //             // Fetch category name
+        //             if (product.product_id && product.product_id.category_id) {
+        //                 const category = await Category.findById(product.product_id.category_id);
+        //                 productDetails.category_name = category ? category.name : 'Category Not Found';
+        //             }
+
+        //             // Fetch subcategory name
+        //             if (product.product_id && product.product_id.sub_category) {
+        //                 const subCategory = await SubCategory.findById(product.product_id.sub_category);
+        //                 productDetails.sub_category = subCategory ? subCategory.name : 'Subcategory Not Found';
+        //             }
+
+        //             if (order.coupon_applied && mongoose.Types.ObjectId.isValid(order.coupon_applied)) {
+        //                 // Only query if coupon_applied is a valid ObjectId
+        //                 const coupon = await Coupon.findById(order.coupon_applied);
+        //                 productDetails.coupon_name = coupon ? coupon.code : 'No Coupon';
+        //             } else {
+        //                 // Handle cases where no coupon is applied
+        //                 productDetails.coupon_name = 'No Coupon';
+        //             }
+        //             return productDetails;
+        //         })),
+        //     };
+        //     return orderObj;
+        // }));
+
+       
+        //   console.log('All Processed Orders:', JSON.stringify(processedOrders, null, 2));
+          
+
+        const getProductDetails = async (productId) => {
+            if (!mongoose.Types.ObjectId.isValid(productId)) {
+                return {
+                    product_name: 'Product Not Found',
+                    category_name: 'Category Not Found',
+                    sub_category: 'Subcategory Not Found',
+                    brand_name: 'Brand Not Found'
+                };
+            }
+
+            try {
+                const product = await Product.findById(productId);
+                if (product) {
+
+                    const [category, subCategory, brand] = await Promise.all([
+                        product.categoryId ? Category.findById(product.categoryId) : Promise.resolve(null),
+                        product.subcategoryId ? SubCategory.findById(product.subcategoryId) : Promise.resolve(null),
+                        product.brandId ? Brand.findById(product.brandId) : Promise.resolve(null)
+                    ]);
+
+                    return {
+                        product_name: product.title,
+                        category_name: category ? category.name : 'Category Not Found',
+                        sub_category: subCategory ? subCategory.name : 'Subcategory Not Found',
+                        brand_name: brand ? brand.brandName : 'Brand Not Found'
+                    };
+                } else {
+                    return {
+                        product_name: 'Product Not Found',
+                        category_name: 'Category Not Found',
+                        sub_category: 'Subcategory Not Found',
+                        brand_name: 'Brand Not Found'
+                    };
+                }
+            } catch (error) {
+                return {
+                    product_name: 'Product Not Found',
+                    category_name: 'Category Not Found',
+                    sub_category: 'Subcategory Not Found',
+                    brand_name: 'Brand Not Found'
+                };
+            }
+        };
+
+        const getCouponName = async (couponId) => {
+            if (!mongoose.Types.ObjectId.isValid(couponId)) {
+                return 'No Coupon';
+            }
+            try {
+                const coupon = await Coupon.findById(couponId);
+                if (coupon) {
+                    return coupon.code;
+                } else {
+                    return 'No Coupon';
+                }
+            } catch (error) {
+                return 'No Coupon';
+            }
+        };
+
+        const processedOrders = await Promise.all(salesData.map(async order => {
+            const products = await Promise.all(order.products.map(async product => {
+                
+                const productDetails = await getProductDetails(product.product_id);
+
+                const couponName = await getCouponName(order.coupon_applied);
+
+                return {
+                    ...productDetails,
+                    quantity: product.quantity || 0,
+                    total_amount: product.total_amount || 0,
+                    status: product.status || 'pending',
+                    order_placed_at: product.order_placed_at ? new Date(product.order_placed_at).toLocaleString() : new Date().toLocaleString(),
+                    coupon_name: couponName
+                };
+            }));
+
+            return {
                 _id: order._id,
                 user_name: order.user_id ? order.user_id.name : 'User Not Found',
                 createdAt: order.createdAt,
                 total_amount: order.total_order_amount,
-                products: []
+                products
             };
+        }));
 
-            if (order.products && Array.isArray(order.products)) {
-                orderObj.products = order.products.map(product => ({
-                    product_name: product.product_id ? product.product_id.title : 'Product Not Found',
-                    quantity: product.quantity || 0,
-                    total_amount: product.total_amount || 0,
-                    status: product.status || 'pending',
-                    order_placed_at: product.order_placed_at ? new Date(product.order_placed_at).toLocaleString() : new Date().toLocaleString()
-                }));
-            }
-
-            return orderObj;
-        });
-
-        // console.log('Processed Orders:', JSON.stringify(processedOrders, null, 2));
 
         return res.render("admin/dashboard", {
             salesData: processedOrders,
             userCount,
-            orderCount,
-            totalAmount: formattedTotal
         });
     } catch (error) {
         console.error("Error fetching sales data:", error);
@@ -182,6 +286,10 @@ export const renderDashboardPage = async (req, res) => {
 //                         <th>Sl No.</th>
 //                         <th>User Name</th>
 //                         <th>Product Name</th>
+//                         <th>Category</th>
+//                         <th>Subcategory</th>
+//                         <th>Brand</th>
+//                         <th>Coupon</th>
 //                         <th>Quantity</th>
 //                         <th>Total Amount</th>
 //                         <th>Status</th>
@@ -320,6 +428,10 @@ export const renderDashboardPage = async (req, res) => {
 //                         <td>${serialNumber++}</td>
 //                         <td>${order.user_name}</td>
 //                         <td>${product.product_name}</td>
+//                         <td>${product.category_name}</td>
+//                         <td>${product.sub_category}</td>
+//                         <td>${product.brand_name}</td>
+//                         <td>${product.coupon_name}</td>
 //                         <td>${product.quantity}</td>
 //                         <td>₹ ${product.total_amount.toLocaleString()}</td>
 //                         <td>${product.status}</td>

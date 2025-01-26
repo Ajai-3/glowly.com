@@ -27,10 +27,14 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           required: true,
           min: 1,
-        },
+        }, 
         total_amount: {
           type: Number,
           required: true,
+        },
+        amount_after_coupon: {
+          type: Number,
+          default: 0,
         },
         status: {
           type: String,
