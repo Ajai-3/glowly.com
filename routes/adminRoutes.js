@@ -14,7 +14,7 @@ import {
 } from "../controllers/admin/admin.controller.js";
 import { redirectIfLoggedIn, verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
-import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage } from "../controllers/admin/category.controller.js";
+import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
@@ -68,6 +68,9 @@ router.get('/category/edit/:id', verifyAdminToken, renderEditCategoryPage);
 router.patch('/category/edit/:id', verifyAdminToken, updateCategory);
 router.get('/category/delete/:id', verifyAdminToken, deleteCategory);
 router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
+// router.post("/add-offer/:categoryId", verifyAdminToken, addOffer);
+router.post("/add-offer", verifyAdminToken, addOffer);
+router.post("/remove-offer/:categoryId", verifyAdminToken, removeOffer);
 // Users Routes
 router.get("/users", verifyAdminToken, renderUsersPage);
 router.get('/search-user', verifyAdminToken, renderUsersPage)

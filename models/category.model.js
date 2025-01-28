@@ -21,6 +21,11 @@ const categorySchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Subcategory',
     }],
+    offerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Offer',
+        default: null, 
+    },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 });

@@ -1,3 +1,6 @@
 {
-  "liveServer.settings.port": 5501
+  "liveServer.settings.port": 5501,
+  "debug.showInStatusBar": "always",
+  "workbench.statusBar.visible": true,
+  "errorLens.statusBarColorsEnabled": true
 }

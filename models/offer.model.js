@@ -24,7 +24,7 @@ const offerSchema = new mongoose.Schema({
   },
   isActive: {
     type: Boolean,
-    default: true, 
+    default: false, 
   },
   category_id: {
     type: mongoose.Schema.Types.ObjectId,

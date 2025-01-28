@@ -1,1226 +1,944 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
-  <%- include('partials/headforhome', { name: name, categories: categories }) %>
-  <body>
-    <div class="user-contents">
-      <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search by title or shade name">
+<%- include('partials/headforhome', { user, categories }) %>
+
+<div class="user-contents">
+  <!-- STEP 1 ----------------------------------------------------------------------------------------------------------->
+  <div class="container my-2 px-4 checkout-page-main-div" id="step1">
+    <div class="row g-5">
+      <div class="mb-3">
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">1</div>
+          </div>
+          <div class="line line-in-step1"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle circle-in-step1">2</div>
+
+          </div>
+          <div class="line line-in-step1"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle circle-in-step1">3</div>
+
+          </div>
+        </div>
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="label">Address</div>
+          <div class="label label-in-step1">Order Summary</div>
+          <div class="label label-in-step1">Payment</div>
+        </div>
       </div>
-      <div id="breadcrumbs"></div>
-      <div class="container mt-4">
-        <div class="row">
-          <div class="col-md-2 product-filter-div p-0">
-            <form id="filter-form">
-              <!-- Popularity Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="popularity">
-                  <span>Popularity</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="popularity-options" style="display: none;">
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="trending">
-                      Trending
-                      <input type="checkbox" name="popularity" value="trending" id="trending">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="most-reviewed">
-                      Most Reviewed
-                      <input type="checkbox" name="popularity" value="most-reviewed" id="most-reviewed">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="top-rated">
-                      Top Rated
-                      <input type="checkbox" name="popularity" value="top-rated" id="top-rated">
-                    </label>
-                  </div>
-                </div>
+      <div class="left-box-checkout-page col-md-7 m-0">
+        <div class="div1 mb-3">
+          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+            <div class="checked-page-numbers">1</div>
+            <div>
+              <h5>Delivery Address</h5>
+              <p>Enter your delivery address or search for the specific area</p>
+            </div>
+            <div>
+              <a href="/user/manage-address "><button class="large-button-blue"><i class="fa-solid fa-plus"></i> Add address</button></a>
+            </div>
+          </div>
+          <hr>
+          <% if (addresses.length > 0) { %>
+          <% addresses.forEach((address, index) => { %>
+          <div class="address-card-checkout-page">
+            <input type="radio" name="address" id="address<%= index + 1 %>" value="<%= address._id %>">
+            <label for="address<%= index + 1 %>">
+              <div class="address-content">
+                <p><strong>Address <%= index + 1 %></strong> (<%= address.address_type %>)</p>
+                <p><%= address.pin_code %> <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %></p>
+                <p>Phone: <%= userDetails.phone_no %>, <%= address.alternative_phone_no ?  `Alternative: ${address.alternative_phone_no}` : '' %></p>
               </div>
-              <!-- Category Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="category">
-                  <span>Category</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="category-options" style="display: none;">
-                  <% categories.forEach(category => { %>
-                    <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                      <label for="category-<%= category.id %>"><%= category.name %></label>
-                      <input type="checkbox" class="ml-auto category-checkbox" id="category-<%= category.id %>" name="category" value="<%= category.id %>" data-name="<%= category.name %>" />
-                    </div>
-                    <!-- Subcategory Filter nested within Category -->
-                    <div class="filter-options subcategory-options" id="subcategory-options-<%= category.id %>" style="display: none; margin-left: 20px;">
-                      <% category.subcategories.forEach(subcategory => { %>
-                        <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                          <label for="subcategory-<%= subcategory.id %>"><%= subcategory.name %></label>
-                          <input type="checkbox" class="ml-auto subcategory-checkbox" id="subcategory-<%= subcategory.id %>" name="subcategory" value="<%= subcategory.id %>" data-name="<%= subcategory.name %>" />
-                        </div>
-                      <% }) %>
-                    </div>
-                  <% }) %>
-                </div>
+            </label>
+            <button class="checkout-btn address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
+            <div class="checkout-edit-remove">
+              <a href="/">Edit</a> | <a href="/">Remove</a>
+            </div>
+          </div>
+          <% }) %>
+          <% } else { %>
+          <p>No addresses found. Please add a new address.</p>
+          <% } %>
+        </div>
+        <div class="div2 mb-2">
+          <div class="checked-page-step1 d-flex align-items-center">
+            <div class="checked-page-numbers">2</div>
+            <div class="ms-4 ps-3">
+              <h5 class="m-0">Order Summary</h5>
+            </div>
+          </div>
+        </div>
+        <div class="div2">
+          <div class="checked-page-step1 d-flex align-items-center">
+            <div class="checked-page-numbers">3</div>
+            <div class="ms-4 ps-3">
+              <h5 class="m-0">Payment Method</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-md-5 m-0">
+        <div class="card shadow-sm price-summary">
+          <div class="card-body">
+            <h5 class="card-title">ORDER SUMMARY</h5>
+            <hr>
+            <p class="d-flex justify-content-between mt-2">
+              <span>Price (<%= cartProducts.length %> ITEMS)</span>
+              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
+            </p>
+            <p class="d-flex justify-content-between">
+              <span>Discount</span>
+              <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+            </p>
+            <p class="d-flex justify-content-between">
+              <span>Delivery Charges</span>
+              <% if (cartProducts.some(product => product.delivery_charge)) { %>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
+              <% } else { %>
+                <span>
+                  <span class="original-price price-inr mx-2">₹ 60</span>
+                  <span class="discount-percentage">Free</span>
+                </span>
+              <% } %>
+            </p>
+            <p class="d-flex justify-content-between">
+              <span>GST (18%)</span>
+              <span>
+                ₹<%= cartProducts
+                  .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+                  .toFixed(2)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+              </span>
+            </p>
+            <hr>
+            <p class="d-flex justify-content-between mt-2 mb-1">
+              <strong>Total</strong>
+              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 ----------------------------------------------------------------------------------------------------------->
+  <div class="container my-2 px-4 checkout-page-main-div" id="step2" style="display: none;">
+    <div class="row g-5">
+      <div class="mb-3">
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">1</div>
+          </div>
+          <div class="line"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">2</div>
+
+          </div>
+          <div class="line line-in-step2"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle circle-in-step2">3</div>
+
+          </div>
+        </div>
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="label">Address</div>
+          <div class="label">Order Summary</div>
+          <div class="label label-in-step2">Payment</div>
+        </div>
+      </div>
+
+      <div class="left-box-checkout-page col-md-7 m-0">
+        <div class="div1 mb-2">
+          <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+
+            <div class="d-flex align-items-center">
+              <div class="checked-page-numbers me-3">1</div>
+              <div>
+                <h5 class="m-0">Delivery Address</h5>
+                <div id="step2-content"></div>
               </div>
-              <!-- Brand Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="brand">
-                  <span>Brand</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="brand-options" style="display: none;">
-                  <% brands.forEach(brand => { %>
-                    <div class="d-flex align-items-center justify-content-between px-2 py-1">
-                      <label for="brand-<%= brand.id %>"><%= brand.brandName %></label>
-                      <input type="checkbox" class="ml-auto brand-checkbox" id="brand-<%= brand.id %>" name="brand" value="<%= brand.id %>" data-name="<%= brand.brandName %>" />
-                    </div>
-                  <% }) %>
-                </div>
-              </div>
-              <!-- Price Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="price">
-                  <span>Price</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="price-options" style="display: none;">
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="low-to-high">
-                      Low to High
-                      <input type="checkbox" name="price" value="low-to-high" id="low-to-high">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="high-to-low">
-                      High to Low
-                      <input type="checkbox" name="price" value="high-to-low" id="high-to-low">
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <!-- Rating Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="average-rating">
-                  <span>Average Rating</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="average-rating-options" style="display: none;">
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-5">
-                      5 Stars
-                      <input type="checkbox" name="rating" value="5" id="rating-5">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-4">
-                      4 Stars
-                      <input type="checkbox" name="rating" value="4" id="rating-4">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-3">
-                      3 Stars
-                      <input type="checkbox" name="rating" value="3" id="rating-3">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-2">
-                      2 Stars
-                      <input type="checkbox" name="rating" value="2" id="rating-2">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="rating-1">
-                      1 Star
-                      <input type="checkbox" name="rating" value="1" id="rating-1">
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <!-- Alphabetical Sort Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="alphabetical">
-                  <span>Sort Alphabetically</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="alphabetical-options" style="display: none;">
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-a-z">
-                      A-Z
-                      <input type="checkbox" name="alphabetical" value="a-z" id="alphabetical-a-z">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="alphabetical-z-a">
-                      Z-A
-                      <input type="checkbox" name="alphabetical" value="z-a" id="alphabetical-z-a">
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <!-- New Arrivals Filter -->
-              <div class="filter-item">
-                <hr>
-                <div class="filter-header d-flex justify-content-between align-items-center" data-filter="new-arrivals">
-                  <span>New Arrivals</span>
-                  <i class="fa-solid fa-chevron-down"></i>
-                </div>
-                <div class="filter-options" id="new-arrivals-options" style="display: none;">
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-latest">
-                      Latest
-                      <input type="checkbox" name="new-arrivals" value="latest" id="new-arrivals-latest">
-                    </label>
-                  </div>
-                  <div>
-                    <label class="d-flex justify-content-between align-items-center px-2 py-1" for="new-arrivals-oldest">
-                      Oldest
-                      <input type="checkbox" name="new-arrivals" value="oldest" id="new-arrivals-oldest">
-                    </label>
-                  </div>
-                </div>
-                <hr>
-              </div>
-              <a href="/shop">
-                <button type="button" id="clear-filters">Clear Filters</button>
+
+            </div>
+            <div>
+              <button class="go-to-step1 large-button-blue px-3">Edit</button>
+            </div>
+          </div>
+        </div>
+        <div class="div1 mb-3 pb-2">
+          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="checked-page-numbers mb-2 me-3">2</div>
+              <h5>Order Summary</h5>
+            </div>
+            <div>
+              <a href="/my-cart">
+                <button class="large-button-blue">Go To Cart</button>
               </a>
-            </form>
+            </div>
           </div>
-          <div class="col-md-10 p-0 ps-4">
-            <div class="product-grid">
-              <% for (let i = 0; i < variants.length; i++) { %>
-                <div class="product-card" data-variant-id="<%= variants[i]._id %>">
-                  <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
-                    <img src="<%= variants[i].images[0] %>" alt="<%= variants[i].shade %>" />
-                  </a>
-                  <div class="product-card-like">
-                    <form action="/add-to-wishlist/<%= products[i]._id %>" method="POST" class="wishlist-form" id="wishlist-form">
-                      <% if (user) { %>
-                        <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === products[i]._id.toString() && item.variant_id.toString() === variants[i]._id.toString())) { %>
-                        <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                          <i class="fa-solid fa-heart in-wishlist"></i>
-                        </button>
-                        <% } else { %>
-                        <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                          <i class="fa-solid fa-heart not-in-wishlist"></i>
-                        </button>
-                        <% } %>
-                      <% } else { %>
-                      <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                        <i class="fa-solid fa-heart"></i>
-                      </button>
-                      <% } %>
-                    </form>
+          <hr class="mb-1">
+          <% if (cartProducts.length > 0) { %>
+            <% cartProducts.forEach(({ product_details, variant, quantity }) => { %>
+              <!-- Cart Item -->
+              <div class="cart-item card cart-box-in-checkout mb-1 px-2 shadow-sm" data-product-id="<%= product_details._id %>" data-variant-id="<%= variant._id %>">
+                <div class="row g-0">
+                  <div class="col-md-2 text-center">
+                    <img id="main-display-image" src="<%= variant.images[0] %>" class="img-fluid rounded" alt="<%= product_details.title %>">
                   </div>
-                  <a href="/product/<%= products[i]._id %>/<%= variants[i]._id %>">
-                    <p class="product-title"><%= products[i].title %> - <%= variants[i].shade %></p>
-                  </a>
-                  <div class="product-prices-box">
-                    <p class="sale-price price-inr">₹<%= variants[i].salePrice %></p>
-                    <p class="original-price price-inr mx-2">₹<%= variants[i].regularPrice %></p>
-                    <% if (variants[i].regularPrice > variants[i].salePrice) { %>
-                    <span class="discount-percentage">
-                      <%= Math.round(((variants[i].regularPrice - variants[i].salePrice) / variants[i].regularPrice) * 100) %>% Off
-                    </span>
-                    <% } %>
+                  <div class="col-md-10">
+                    <div class="card-body px-2 py-0">
+                      <h6 class="card-title"><%= product_details.title %></h6>
+                      <div class="cart-box-quantity-selector d-flex my-1">
+                        <p class="product-quantity qty m-0">QTY: <%= quantity %>&nbsp;&nbsp;&nbsp; shade:&nbsp; <%= variant.shade %></p>
+                      </div>
+                      <div class="d-flex justify-content-between cart-price">
+                        <p class="card-text">
+                          Unit Price: 
+                          <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
+                          <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
+                          <span class="discount-percentage">|
+                            <% if (variant.regularPrice > variant.salePrice) { %>
+                              <span class="discount-percentage">
+                                <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
+                              </span>
+                            <% } %>
+                          </span>
+                        </p>
+                        <p class="card-text">
+                          Total: 
+                          <span class="sales-price price-inr">Total: ₹<%= variant.salePrice * quantity %></span>
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <% const variantInCart = cartVariants.includes(variants[i]._id.toString()); %>
-                  <% if (variantInCart) { %>
-                  <a href="/user/my-cart">
-                    <button type="button" class="go-to-cart-btn">Go To Bag</button>
-                  </a>
-                  <% } else { %>
-                  <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= products[i]._id %>" data-variant-id="<%= variants[i]._id %>">
-                    <button type="submit" class="add-to-cart-btn">Add to Bag</button>
-                  </form>
-                  <% } %>
                 </div>
-              <% } %>
-            </div>
-            <div id="no-products" style="display: none;">
-              <p>No products available</p>
-            </div>
-            <div class="pagination-controls">
-              <% if (currentPage > 1) { %>
-                <a href="#" data-page="<%= currentPage - 1 %>">Previous</a>
-              <% } %>
-              <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="#" data-page="<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
-              <% } %>
-              <% if (currentPage < totalPages) { %>
-                <a href="#" data-page="<%= currentPage + 1 %>">Next</a>
-              <% } %>
+              </div>
+            <% }); %>
+          <% } else { %>
+            <p>No Products.</p>
+          <% } %>
+          <!-- <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>             -->
+        </div>
+        <div class="div2">
+          <div class="checked-page-step1 d-flex align-items-center">
+            <div class="checked-page-numbers">3</div>
+            <div class="ms-4 ps-3">
+              <h5 class="m-0">Payment Method</h5>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Order Summary -->
+
+<div class="col-md-5 m-0">
+  <div class="card shadow-sm price-summary">
+    <div class="card-body">
+      <h5 class="card-title">ORDER SUMMARY</h5>
+      <hr>
+      <p class="d-flex justify-content-between mt-2">
+        <span>Price (<%= cartProducts.length %> ITEMS)</span>
+        <span class="price-inr">
+          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %>
+        </span>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>Discount</span>
+        <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>Delivery Charges</span>
+        <% if (cartProducts.some(product => product.delivery_charge)) { %>
+          <span class="price-inr">
+            ₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %>
+          </span>
+        <% } else { %>
+          <span>
+            <span class="original-price price-inr mx-2">₹ 60</span>
+            <span class="discount-percentage">Free</span>
+          </span>
+        <% } %>
+      </p>
+      <p class="d-flex justify-content-between">
+        <span>GST (18%)</span>
+        <span>
+          ₹<%= cartProducts
+            .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+            .toFixed(2)
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+        </span>
+      </p>
+      <hr>
+      <p class="d-flex justify-content-between mt-2 mb-1">
+        <strong>Total</strong>
+        <strong class="price-inr">
+          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>
+        </strong>
+      </p>
     </div>
-    <%- include('partials/footerforhome') %>
+  </div>
+  <button id="proceed-to-pay" class="checkout-btn w-100 my-3">PROCEED TO PAY</button>
+</div>
+    </div>
+  </div>
+
+  <!-- STEP 3 ------------------------------------------------------------------------------------------------------------->
+  <div class="container my-2 px-4 checkout-page-main-div" id="step3" style="display: none;">
+    <div class="row g-5">
+      <div class="mb-3">
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">1</div>
+          </div>
+          <div class="line"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">2</div>
+
+          </div>
+          <div class="line"></div>
+          <div class="d-flex flex-column align-items-center">
+            <div class="circle">3</div>
+
+          </div>
+        </div>
+        <div class="circle-container d-flex justify-content-between align-items-center">
+          <div class="label">Address</div>
+          <div class="label">Order Summary</div>
+          <div class="label">Payment</div>
+        </div>
+      </div>
+
+      <div class="left-box-checkout-page col-md-7 m-0">
+        <div class="div1 mb-1">
+          <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+
+            <div class="d-flex align-items-center">
+              <div class="checked-page-numbers me-3">1</div>
+              <div>
+                <h5 class="m-0">Delivery Address</h5>
+                <div id="step3-content"></div>
+              </div>
+
+            </div>
+            <div>
+              <button class="go-to-step1 large-button-blue px-3">Edit</button>
+            </div>
+          </div>
+        </div>
+        <div class="div1 mb-1">
+          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+              <div class="checked-page-numbers mb-2 me-3">2</div>
+              <div>
+                <h5>Order Summary</h5>
+                <p><%= cartProducts.length %> Shipments</p>
+              </div>
+            </div>
+            <div>
+              <button class="go-to-step2 large-button-blue px-3">Edit</button>
+            </div>
+          </div>
+        </div>
+        <div class="div1">
+          <div class="checked-page-step1 d-flex align-items-center">
+            <div class="checked-page-numbers">3</div>
+            <div class="ms-4 ps-3">
+              <h5 class="m-0">Payment Method</h5>
+            </div>
+          </div>
+          <hr class="mb-2">
+          <!-- <div class="payment-div ms-2">
+                      <h5 class=" mt-3">Payment Methods</h5>
+                      <hr class="my-1"> -->
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" >
+            <label class="form-check-label" for="razorpay">Razorpay</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="wallet">
+            <label class="form-check-label" for="wallet">Wallet</label>
+          </div>
+          <!-- <div class="form-check">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
+            <label class="form-check-label" for="paypal">PayPal</label>
+          </div> -->
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
+            <label class="form-check-label" for="cash">Cash on Delivery</label>
+            <div id="error" class="error-message"></div>
+          </div>
+          <button id="payBtn" class="checkout-btn pay-btn-checkoutpage w-100 my-3">
+            PAY <span id="total-price" class="price-inr"><%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span>
+        </button>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-md-5 m-0">
+        <div class="card shadow-sm price-summary">
+          <div class="card-body">
+            <h5 class="card-title">ORDER SUMMARY</h5>
+            <hr>
+            <p class="d-flex justify-content-between mt-2">
+              <span>Price (<%= cartProducts.length %> ITEMS)</span>
+              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
+            </p>
+            <p class="d-flex justify-content-between">
+              <span>Discount</span>
+              <span class="discount-percentage">-<span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+              
+            </p>
+            <p class="d-flex justify-content-between m-0 hidden" id="coupon-discound-show">
+              <span id="coupon-dicount-title"></span>
+              <span id="coupon-discount" class="discount-percentage"></span>
+          </p>
+            <p class="d-flex justify-content-between">
+              <span>Delivery Charges</span>
+              <% if (cartProducts.some(product => product.delivery_charge)) { %>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
+              <% } else { %>
+                <span>
+                  <span class="original-price price-inr mx-2">₹ 60</span>
+                  <span class="discount-percentage">Free</span>
+                </span>
+              <% } %>
+            </p>
+            <p class="d-flex justify-content-between">
+              <span>GST (18%)</span>
+              <span>
+                ₹<%= cartProducts
+                  .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
+                  .toFixed(2)
+                  .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
+              </span>
+
+            </p>
+            <hr>
+            <p class="d-flex justify-content-between mt-2 mb-1">
+              <strong>Total</strong>
+              <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+            </p>
+          </div>
+        </div>
+        <!-- Coupon -->
+        <div class="check-coupon m-2">
+            <label for="coupon">Do you have any Coupon</label><br>
+            <input type="text" name="coupon" id="coupon" placeholder="Enter code">
+            <button type="submit" id="verify-coupon" class="large-button-green p-1 px-3">Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade check-out-modal-fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="text-center">
+        <div class="mb-3">
+          <i class="fas fa-check-circle" style="font-size: 50px;color: green;"></i>
+        </div>
+        <div>
+          <h5 class="modal-title" id="orderConfirmationModalLabel">Your order is Completed</h5>
+        </div>
+      </div>
+      <div class="modal-body text-center">
+        <p>Thank You for your order, Sit tight we are processing your order
+          we will update you with your order in email
+        </p>
+        <button id="goToOrders" class="pastel-btn-red px-4"><i class="fas fa-truck me-2"></i>Go to Orders</button>
+        <button id="continueShopping" class="pastel-btn-blue px-4">Continue Shopping<i class="fa-solid fa-bag-shopping ms-2"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+</body>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+<!-- Notyf JS -->
+<script src="https://cdn.jsdelivr.net/npm/notyf@3.5.0/notyf.min.js"></script>
+ <!-- React Toastify JS -->
+ <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+ <!-- jQuery -->
+ <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+ <!-- SweetAlert2 -->
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <!-- Bootstrap -->
+ <script
+   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+   crossorigin="anonymous"
+ ></script>
 <script>
-  const toastWish = (message) => {
-    iziToast.show({
-      message: message,
-      backgroundColor: '#e80071',
-      messageColor: '#FFFFFF',
-      icon: 'fas fa-check-circle',
-      iconColor: '#FFFFFF',
-      timeout: 3000,
-      position: 'bottomCenter',
-    });
-  };
+ const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
 
-  const toastSuccess = (message) => {
-    iziToast.success({
-      message: message,
-      backgroundColor: '#0e932d',
-      messageColor: '#FFFFFF',
-      icon: 'fa fa-check',
-      iconColor: '#FFFFFF',
-      timeout: 1500,
-      position: 'topRight',
-    });
-  };
-
-  const toastError = (message) => {
-    iziToast.error({
-      message: message,
-      backgroundColor: '#e51e1e',
-      messageColor: '#FFFFFF',
-      icon: 'fa fa-times',
-      iconColor: '#FFFFFF',
-      timeout: 1500,
-      position: 'topRight',
-    });
-  };
-
-  const toastInfo = (message) => {
-    iziToast.info({
-      message: message,
-      backgroundColor: '#2160de',
-      messageColor: '#FFFFFF',
-      icon: 'fa fa-info-circle',
-      iconColor: '#FFFFFF',
-      timeout: 1500,
-      position: 'topRight',
-    });
-  };
-
-  const toastWarning = (message) => {
-    iziToast.warning({
-      message: message,
-      backgroundColor: '#e5811e',
-      messageColor: '#212529',
-      icon: 'fa fa-exclamation-triangle',
-      iconColor: '#212529',
-      timeout: 1500,
-      size: 'small',
-      position: 'topRight',
-    });
-  };
-
-  document.addEventListener('DOMContentLoaded', () => {
-    // Handle Wishlist form submission
-    const forms = document.querySelectorAll('.wishlist-form');
-    forms.forEach(form => {
-      form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const button = form.querySelector('button');
-        const icon = button.querySelector('i');
-        const productId = form.action.split('/').pop();
-        const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
-        const url = form.action;
-
-        fetch(url, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ product_id: productId, variant_id: variantId }),
-        })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`Server Error: ${response.status} ${response.statusText}`);
-            }
-            return response.json();
-          })
-          .then(data => {
-            if (data.action === 'added') {
-              icon.classList.remove('not-in-wishlist');
-              icon.classList.add('in-wishlist');
-              button.title = 'Remove from Wishlist';
-              toastWish('Product has been added to Wishlist.');
-            } else if (data.action === 'removed') {
-              icon.classList.remove('in-wishlist');
-              icon.classList.add('not-in-wishlist');
-              button.title = 'Add to Wishlist';
-              toastWish('Product has been removed from Wishlist.');
-            } else if (data.error) {
-              console.error('Server Error:', data.error);
-            }
-          })
-          .catch(error => {
-            console.error('Error:', error);
-            toastWarning('An error occurred.');
-          });
       });
-    });
-
-    // Handle Add to Cart form submission
-    const cartForms = document.querySelectorAll('.cart-form');
-    cartForms.forEach(form => {
-      form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const productId = form.getAttribute('data-product-id');
-        const variantId = form.getAttribute('data-variant-id');
-        const quantity = 1;
-
-        if ('<%= user %>') {
-          fetch('/add-to-cart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ quantity, productId, variantId }),
-          })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                const newButton = document.createElement('a');
-                newButton.href = '/user/my-cart';
-                newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
-                form.parentNode.replaceChild(newButton, form);
-                toastSuccess(data.message);
-              } else {
-                toastError(data.message);
-              }
-            })
-            .catch(error => {
-              console.error('Error:', error);
-              toastWarning('Error adding product to cart.');
-            });
-        } else {
-          window.location = '/login';
-        }
-      });
-    });
-  })
-
-  document.addEventListener('DOMContentLoaded', function() {
-  const filterForm = document.getElementById('filter-form');
-  const searchInput = document.getElementById('search-input');
-  const clearFiltersButton = document.getElementById('clear-filters');
-
-  function applyFilters() {
-    const formData = new FormData(filterForm);
-    const filterParams = {};
-
-    // Collect filter parameters from the form
-    for (let [key, value] of formData.entries()) {
-      if (!filterParams[key]) {
-        filterParams[key] = [];
-      }
-      filterParams[key].push(value);
-    }
-
-    const searchQuery = searchInput ? searchInput.value.trim() : '';
-    if (searchQuery) {
-      filterParams.search = searchQuery;
-    }
-
-    // Create query string from filter parameters
-    const queryString = new URLSearchParams(filterParams).toString();
-    history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
-    fetchFilteredProducts(filterParams, 1);
-  }
-
-  filterForm.addEventListener('change', applyFilters);
-
-  if (searchInput) {
-    searchInput.addEventListener('keyup', applyFilters);
-  }
-
-  if (clearFiltersButton) {
-    clearFiltersButton.addEventListener('click', function() {
-      filterForm.reset();
-      if (searchInput) searchInput.value = '';
-      applyFilters();
-    });
-  }
-
-  function fetchFilteredProducts(filterParams, page) {
-    const params = {
-      filters: JSON.stringify(filterParams),
-      page: page
     };
-    const queryString = new URLSearchParams(params).toString();
 
-    fetch(`/shop?${queryString}`)
-      .then(response => response.text())
-      .then(html => {
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = html;
-
-        const newProductGrid = tempDiv.querySelector('.product-grid');
-        if (newProductGrid) {
-          document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
-        }
-
-        const newPaginationControls = tempDiv.querySelector('.pagination-controls');
-        if (newPaginationControls) {
-          document.querySelector('.pagination-controls').innerHTML = newPaginationControls.innerHTML;
-        }
-
-        // Reattach event listeners after updating the product grid
-        attachPaginationListeners();
-      })
-      .catch(error => console.error('Error fetching products:', error));
-  }
-
-  // Toggling visibility for filter options
-  document.querySelectorAll('.filter-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const options = header.nextElementSibling;
-      options.style.display = options.style.display === 'none' ? 'block' : 'none';
-      header.querySelector('i').classList.toggle('fa-chevron-down');
-      header.querySelector('i').classList.toggle('fa-chevron-up');
-    });
-  });
-
-  // Function to get URL parameters
-  function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    const results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-  }
-
-  // Get the selected category and subcategory from the URL
-  const selectedCategoryId = getUrlParameter('selectedCategory');
-  const selectedSubcategoryId = getUrlParameter('selectedSubcategory');
-
-  if (selectedCategoryId) {
-    const categoryCheckbox = document.querySelector(`input[name="category"][value="${selectedCategoryId}"]`);
-    if (categoryCheckbox) {
-      categoryCheckbox.checked = true;
-
-      // Show the subcategories for the selected category
-      const subcategoryDiv = document.getElementById(`subcategory-options-${selectedCategoryId}`);
-      if (subcategoryDiv) {
-        subcategoryDiv.style.display = 'block';
-      }
-    }
-  }
-
-  if (selectedSubcategoryId) {
-    const subcategoryCheckbox = document.querySelector(`input[name="subcategory"][value="${selectedSubcategoryId}"]`);
-    if (subcategoryCheckbox) {
-      subcategoryCheckbox.checked = true;
-    }
-  }
-
-  // Function to toggle subcategory visibility based on selected categories
-  function toggleSubcategories() {
-    const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
-
-    // Hide all subcategories initially
-    document.querySelectorAll('.subcategory-options').forEach(div => {
-      div.style.display = 'none';
-    });
-
-    // Show subcategories for selected categories
-    selectedCategories.forEach(categoryId => {
-      const subcategoryDiv = document.getElementById(`subcategory-options-${categoryId}`);
-      if (subcategoryDiv) {
-        subcategoryDiv.style.display = 'block';
-      }
-    });
-  }
-
-  // Attach event listener to category checkboxes
-  const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
-  categoryCheckboxes.forEach(checkbox => {
-    checkbox.addEventListener('change', toggleSubcategories);
-  });
-
-  // Initial call to set up subcategory visibility
-  toggleSubcategories();
-
-  // Attach pagination event listeners
-  function attachPaginationListeners() {
-    document.querySelectorAll('.pagination-controls a').forEach(link => {
-      link.addEventListener('click', function(e) {
-        e.preventDefault();
-        const page = parseInt(this.getAttribute('data-page'));
-        const filters = getUrlParameter('filters');
-        let filterParams = {};
-        try {
-          filterParams = filters ? JSON.parse(decodeURIComponent(filters)) : {};
-        } catch (error) {
-          console.error('Error parsing filters:', error);
-        }
-        fetchFilteredProducts(filterParams, page);
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
       });
-    });
-  }
+    };
+    const toastInfo = (message) => {
+      iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
 
-  // Initial call to attach pagination event listeners
-  attachPaginationListeners();
+    const toastWarning = (message) => {
+      iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        size: 'small',
+        position: 'topRight',
+      });
+    };
+    document.addEventListener('DOMContentLoaded', function () {
+    const priceElements = document.querySelectorAll('.price-inr'); 
+
+    priceElements.forEach(element => {
+        const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10); 
+        element.textContent = '₹ ' + price.toLocaleString('en-IN');  
+    });
 });
-</script>
-  </body>
-</html>
+    document.addEventListener("DOMContentLoaded", () => {
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+    const step3 = document.getElementById("step3");
 
+    let selectedAddressId = null;
+    let selectedAddress = null;
+    let couponId = null;
+    let grandTotal = 0;
+    let productAfterCoupon = 0;
+    let discountType;
+    let discountAmount;
 
+    console.log("initialc", couponId)
 
+    showStep(step1);
 
-export const renderShopPage = async (req, res) => {
-  try {
-    const token = req.cookies.token;
-    let cart = { products: [] };
-    let user = null;
-    let wishlist = { products: [] };
-    let cartVariants = [];
+    step1.addEventListener("click", (event) => {
+        if (event.target && event.target.classList.contains("address-select")) {
+            selectedAddressId = event.target.getAttribute("data-id");
+            const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 8;
-    const filters = req.query.filters ? JSON.parse(req.query.filters) : {};
-    const searchQuery = req.query.search || '';
+            selectedAddress = {
+                id: selectedAddressId,
+                details: selectedAddressDetails,
+            };
+            renderStep2(selectedAddress);
+            showStep(step2);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
+    });
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId }) || { products: [] };
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id") || { products: [] };
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
+    function renderStep2(address) {
+        const step2Content = document.getElementById("step2-content");
+        step2Content.innerHTML = `<p>${address.details}</p>`;
     }
 
-    if (cart.products.length > 0) {
-      cartVariants = cart.products
-        .filter(product => product.variant_id)
-        .map(product => product.variant_id.toString());
-    }
-    const cartCount = cart.products.length;
-
-    let filterConditions = { isDeleted: false };
-    let sortOptions = {}; // Initialize sortOptions
-
-    // Apply filters
-    if (filters.popularity) {
-      switch (filters.popularity[0]) {
-        case 'trending':
-          filterConditions.trending = true;
-          break;
-        case 'most-reviewed':
-          filterConditions.mostReviewed = true;
-          break;
-        case 'top-rated':
-          filterConditions.topRated = true;
-          break;
-      }
-    }
-    if (filters.category) {
-      filterConditions.categoryId = { $in: filters.category };
-    }
-    if (filters.subcategory) {
-      filterConditions.subcategoryId = { $in: filters.subcategory };
-    }
-    if (filters.brand) {
-      filterConditions.brandId = { $in: filters.brand };
-    }
-    if (filters.price) {
-      const priceRange = filters.price[0].split('-');
-      filterConditions.price = { $gte: parseInt(priceRange[0]), $lte: parseInt(priceRange[1]) };
-    }
-    if (filters.rating) {
-      filterConditions.rating = { $gte: parseInt(filters.rating[0]) };
-    }
-    if (filters.alphabetical) {
-      sortOptions = filters.alphabetical[0] === 'a-z' ? { title: 1 } : { title: -1 };
-    }
-    if (filters["new-arrivals"]) {
-      sortOptions.createdAt = filters["new-arrivals"][0] === 'latest' ? -1 : 1;
-    }
-
-    // Apply search query
-    if (searchQuery) {
-      filterConditions.$or = [
-        { title: { $regex: searchQuery, $options: 'i' } },
-        { 'variants.shade': { $regex: searchQuery, $options: 'i' } }
-      ];
-    }
-
-    // Fetch all products and flatten the variants
-    const allProducts = await Product.find(filterConditions).populate('variants').sort(sortOptions);
-    const allVariants = [];
-    allProducts.forEach(product => {
-      product.variants.forEach(variant => {
-        allVariants.push({
-          product: product,
-          variant: variant
+    document.getElementById("proceed-to-pay").addEventListener("click", () => {
+        renderStep3(selectedAddress);
+        showStep(step3);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
         });
-      });
     });
 
-    // Calculate total number of variants and adjust pagination
-    const totalVariants = allVariants.length;
-    const totalPages = Math.ceil(totalVariants / limit);
+    function renderStep3(address) {
+        const step3Content = document.getElementById("step3-content");
+        step3Content.innerHTML = `<p>${address.details}</p>`;
+    }
 
-    // Paginate variants
-    const paginatedVariants = allVariants.slice((page - 1) * limit, page * limit);
+    function getSelectedPaymentMethod() {
+        const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
+        return paymentMethodElement ? paymentMethodElement.id : null;
+    }
 
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
 
-    const subcategories = await Subcategory.find({ isListed: true });
-    const brands = await Brand.find({ isListed: true });
 
-    return res.render("user/shop", {
-      name: user ? user.name : "",
-      user: user,
-      products: paginatedVariants.map(item => item.product),
-      variants: paginatedVariants.map(item => item.variant),
-      categories,
-      subcategories,
-      brands,
-      cartCount,
-      cartVariants,
-      wishlist,
-      currentPage: page,
-      totalPages,
-      filters: JSON.stringify(filters),
-      searchQuery
-    });
+    // Coupon Applying ///////////////////////////////////////////
+    const couponButton = document.getElementById("verify-coupon");
+    const couponInput = document.getElementById("coupon");
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server error");
-  }
+    const applyCoupon = async () => {
+        const cartProducts = getCartProducts();
+        const coupon = couponInput.value.trim();
+
+        const grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+
+        const response = await fetch("/verify-coupon", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ coupon, grandTotal }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+
+          couponId = result.coupon_id
+
+          if (result.discountType && result.discountType === "percentage"){
+            discountType = `(${result.discountValue} %)`;
+            discountAmount = ( result.discountValue / 100 ) * grandTotal;
+            
+            productAfterCoupon = Math.round(discountAmount / cartProducts.length); 
+          } else if (result.discountType === "flat") {
+            discountType = `(flat)`
+            discountAmount = result.discountValue
+            productAfterCoupon = Math.round(discountAmount / cartProducts.length);
+          }
+          let formattedDiscountAmount = '₹ ' + discountAmount.toLocaleString('en-IN');
+        
+
+            toastSuccess(result.message);
+            couponButton.textContent = "Remove";
+            couponButton.className = "large-button-red p-1 px-3";
+            couponButton.setAttribute("id", "remove-coupon");
+
+            couponButton.removeEventListener("click", applyCoupon);
+            couponButton.addEventListener("click", removeCoupon);
+
+            couponInput.readOnly = true;
+            const couponDiscountShow = document.getElementById("coupon-discound-show");
+            couponDiscountShow.classList.remove("hidden");
+            couponDiscountShow.style.display = "flex";
+
+            const grandTotalAfterDiscount = '₹ ' + (grandTotal - discountAmount).toLocaleString('en-IN')
+
+            document.getElementById("grandTotal").textContent = `${grandTotalAfterDiscount}`
+            document.getElementById("payBtn").textContent = `PAY ${grandTotalAfterDiscount}`
+            document.getElementById("coupon-dicount-title").textContent = `Coupon Savings ${discountType}`;
+            document.getElementById("coupon-dicount-title").style.marginBottom = "16px";
+            document.getElementById("coupon-discount").textContent = `- ${formattedDiscountAmount}`;
+        } else {
+            toastError(result.message || "Something went wrong with coupon verification.");
+        }
+    };
+
+// Function to handle removing the coupon
+const removeCoupon = () => {
+    couponId = null;
+
+    couponInput.readOnly = false;
+    couponInput.value = "";
+
+
+    couponButton.textContent = "Apply";
+    couponButton.className = "large-button-green p-1 px-3";
+    couponButton.setAttribute("id", "verify-coupon");
+
+    couponButton.removeEventListener("click", removeCoupon);
+    couponButton.addEventListener("click", applyCoupon);
+
+    couponInput.value = "";
+
+    productAfterCoupon = 0
+    const couponDiscountShow = document.getElementById("coupon-discound-show");
+    couponDiscountShow.classList.add("hidden");
+    couponDiscountShow.style.display = "none";
+
+    const grandTotalOld = '₹ ' + grandTotal.toLocaleString('en-IN')
+
+    document.getElementById("grandTotal").textContent = `${grandTotalOld}`
+    document.getElementById("payBtn").textContent = `PAY ${grandTotalOld}`
+    document.getElementById("coupon-dicount-title").textContent = "";
+    document.getElementById("coupon-dicount-title").style.marginBottom = "";
+    document.getElementById("coupon-discount").textContent = "";
 };
-<!DOCTYPE html>
-<html lang="en">
-<%- include('partials/head') %>
-<body>
-    <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/search" method="GET">
-                    <input type="text" name="search" placeholder="Search">
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="breadcrumbs">breadcrumbs</div>
 
-        <div class="dashboard-summary-container">
-            <div class="row">
-                <!-- Top Row: Dashboard Summary Boxes -->
-                <div class="col-12 pe-3 dashboard-summary">
-                    <div class="dashboard-summary1">
-                        <h3>Total Users</h3>
-                        <p><%= userCount %></p>
-                        <p1>
-                            <i class="fa-solid fa-chart-simple"></i> 8.5%
-                            <p2>Up from last month</p2>
-                        </p1>
-                    </div>
-                    <div class="dashboard-summary2">
-                        <h3>Total Orders</h3>
-                        <p><%= orderCount %></p>
-                        <p1>
-                            <i class="fa-solid fa-chart-simple"></i> 1.5%
-                            <p2>Up from last month</p2>
-                        </p1>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Gross Revenue</h3>
-                        <p><%= totalAmount %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
-                        </p2>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Returns/Refunds</h3>
-                        <p><%= totalAmount %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
-                        </p2>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Net Revenue</h3>
-                        <p><%= totalAmount %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> 4.5% Down from last month
-                        </p2>
-                    </div>
-                </div>
-            </div>
-        
-            <div class="row">
-                <!-- Main Content Row -->
-                <div class="col-9 pe-3">
-                    <!-- Chart Section -->
-                    <div class="chart-wrapper">
-                        <div class="chart-container">
-                            <div class="filter-container">
-                                <label for="filter">Filter Sales Data:</label>
-                                <select id="filter" name="filter">
-                                    <option value="all_time" selected>All Time</option>
-                                    <option value="today">Today</option>
-                                    <option value="this_week">This Week</option>
-                                    <option value="this_month">This Month</option>
-                                    <option value="custom">Custom</option>
-                                </select>
-                                <div id="custom-date-range" style="display: none;">
-                                    <label for="start-date">Start Date:</label>
-                                    <input type="date" id="start-date" name="start-date">
-                                    <label for="end-date">End Date:</label>
-                                    <input type="date" id="end-date" name="end-date">
-                                    <button id="apply-custom-filter">Apply</button>
-                                </div>
-                            </div>
-                            <button id="toggleChart" class="toggle-button">
-                                <i class="fas fa-chart-bar"></i>
-                            </button>
-                            <canvas id="salesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-        
-                <!-- Vertical Box Section -->
-                <div class="col-3">
-                    <div class="vertical-box">
-                        xcvxcvxcv
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Filter Section -->
-        
+couponButton.addEventListener("click", applyCoupon);
 
-        <!-- Table Section -->
-        <div class="table-container" style="margin-top: 20px;">
-            <h2>Sales Data</h2>
-            <table class="all-table">
-                <thead>
-                    <tr>
-                        <th>Sl No.</th>
-                        <th>User Name</th>
-                        <th>Product Name</th>
-                        <th>Category Name</th>
-                        <th>Quantity</th>
-                        <th>Total Amount</th>
-                        <th>Status</th>
-                        <th>Order Placed At</th>
-                    </tr>
-                </thead>
-                <tbody id="salesDataTableBody">
-                </tbody>
-            </table>
-            <!-- Pagination Controls -->
-            <div class="pagination mb-4">
-                <div id="pageInfo" class="page-info"></div>
-                <div id="paginationControls" class="pagination-controls"></div>
-            </div>
-        </div>
 
-    </div>
 
-    <%- include('partials/footer') %>
+    const payButton = document.querySelector(".pay-btn-checkoutpage");
+    payButton.addEventListener("click", async () => {
+        const cartProducts = getCartProducts();
+        const selectedPaymentMethod = getSelectedPaymentMethod();
 
-<style>
-.pagination {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    font-size: var(--font-size-third);
-    gap: 10px;
-}
-
-.page-info {
-    color: var(--text-color-3);
-    margin-bottom: 10px;
-}
-
-.pagination-controls {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 5px;
-}
-
-.pagination-controls button {
-    padding: 1px 6px;
-    margin: 0 5px;
-    border: 1px solid var(--bg-color-btn-hover2);
-    color: var(--text-color-3);
-    cursor: pointer;
-    background: transparent;
-    transition: all 0.3s ease;
-    font-size: inherit;
-}
-
-.pagination-controls button:hover {
-    color: var(--text-color);
-    border: 1px solid var(--text-color);
-    background-color: var(--text-color-2);
-}
-
-.pagination-controls button.active {
-    color: var(--text-color-4);
-    border: 1px solid var(--text-color-4);
-    background-color: var(--bg-color-btn-hover-4);
-}
-
-.pagination-controls button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-</style>
-
-<script>
-   document.addEventListener('DOMContentLoaded', function () {
-        const salesData = <%- JSON.stringify(salesData) %>;
-        console.log("Sales Data:", salesData);
-
-        if (salesData.length === 0) {
-            console.warn("No sales data available to render the chart.");
+        if (!selectedPaymentMethod) {
+            toastError("Please select a payment method.");
             return;
         }
 
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        const chartContainer = document.querySelector('.chart-container');
+        const orderData = {
+            address_id: selectedAddressId,
+            cart: cartProducts,
+            grandTotal: couponId ? (grandTotal - discountAmount) : grandTotal,
+            coupon: couponId || null,
+            payment_method: selectedPaymentMethod,
+        };
 
-        let currentChartType = 'bar';
-        let chart = createChart(salesData);
-
-        document.getElementById('toggleChart').addEventListener('click', () => {
-            currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
-            chart.destroy();
-            chart = createChart(salesData, currentChartType);
-        });
-
-        const filterSelect = document.getElementById('filter');
-        const customDateRange = document.getElementById('custom-date-range');
-        const startDateInput = document.getElementById('start-date');
-        const endDateInput = document.getElementById('end-date');
-        const applyCustomFilterButton = document.getElementById('apply-custom-filter');
-
-        // Pagination variables
-        let currentPage = 1;
-        const rowsPerPage = 10;
-
-        let productList = [];
-
-        // Initialize with the default filter
-        filterSalesData('all_time');
-
-        filterSelect.addEventListener('change', function () {
-            if (this.value === 'custom') {
-                customDateRange.style.display = 'block';
-            } else {
-                customDateRange.style.display = 'none';
-                filterSalesData(this.value);
-            }
-        });
-
-        applyCustomFilterButton.addEventListener('click', function () {
-            filterSalesData('custom');
-        });
-
-        function updateSalesTable() {
-            const tbody = document.querySelector('#salesDataTableBody');
-            tbody.innerHTML = '';
-
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const paginatedData = productList.slice(start, end);
-
-            let serialNumber = start + 1;
-            paginatedData.forEach(item => {
-                const { order, product } = item;
-                const row = `
-                    <tr>
-                        <td>${serialNumber++}</td>
-                        <td>${order.user_id.name || 'User Not Found'}</td>
-                        <td>${product.product_id.title || 'Product Not Found'}</td>
-                        <td>${product.category_id ? product.category_id.name : 'Category Not Found'}</td>
-                        <td>${product.quantity}</td>
-                        <td>₹ ${product.total_amount.toLocaleString()}</td>
-                        <td>${product.status}</td>
-                        <td>${new Date(order.order_placed_at).toLocaleString()}</td>
-                    </tr>
-                `;
-                tbody.insertAdjacentHTML('beforeend', row);
-            });
-        }
-
-        function updatePaginationControls() {
-            const paginationControls = document.getElementById('paginationControls');
-            paginationControls.innerHTML = '';
-            
-            const totalPages = Math.ceil(productList.length / rowsPerPage);
-            
-            // Add First button
-            if (totalPages > 3) {
-                const firstButton = document.createElement('button');
-                firstButton.textContent = 'First';
-                firstButton.addEventListener('click', () => {
-                    currentPage = 1;
-                    updateSalesTable();
-                    updatePaginationControls();
-                });
-                if (currentPage === 1) firstButton.disabled = true;
-                paginationControls.appendChild(firstButton);
-            }
-
-            // Calculate the range of page numbers to show
-            let startPage = currentPage - 1;
-            let endPage = currentPage + 1;
-
-            // Adjust if at the start
-            if (startPage < 1) {
-                startPage = 1;
-                endPage = Math.min(3, totalPages);
-            }
-
-            // Adjust if at the end
-            if (endPage > totalPages) {
-                endPage = totalPages;
-                startPage = Math.max(1, totalPages - 2);
-            }
-
-            // Add page number buttons
-            for (let i = startPage; i <= endPage; i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i;
-                if (i === currentPage) {
-                    pageButton.classList.add('active');
-                }
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    updateSalesTable();
-                    updatePaginationControls();
-                });
-                paginationControls.appendChild(pageButton);
-            }
-
-            // Add Last button
-            if (totalPages > 3) {
-                const lastButton = document.createElement('button');
-                lastButton.textContent = 'Last';
-                lastButton.addEventListener('click', () => {
-                    currentPage = totalPages;
-                    updateSalesTable();
-                    updatePaginationControls();
-                });
-                if (currentPage === totalPages) lastButton.disabled = true;
-                paginationControls.appendChild(lastButton);
-            }
-
-            // Update page info
-            document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages}`;
-        }
-
-        function getDateRange(filter) {
-            const today = new Date();
-            let startDate, endDate;
-
-            switch (filter) {
-                case 'today':
-                    startDate = new Date(today.setHours(0, 0, 0, 0));
-                    endDate = new Date();  // Current date and time
-                    break;
-                case 'this_week':
-                    const firstDayOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
-                    startDate = new Date(firstDayOfWeek.setHours(0, 0, 0, 0));
-                    endDate = new Date(firstDayOfWeek.setDate(firstDayOfWeek.getDate() + 6)).setHours(23, 59, 59, 999);
-                    break;
-                case 'this_month':
-                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
-                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59, 999);
-                    break;
-                case 'custom':
-                    startDate = new Date(startDateInput.value);
-                    endDate = new Date(endDateInput.value);
-                    break;
-                case 'all_time':
-                default:
-                    startDate = new Date(0); // Epoch time
-                    endDate = new Date();    // Current date and time
-                    break;
-            }
-
-            return { startDate, endDate };
-        }
-
-        function filterSalesData(filter) {
-            const { startDate, endDate } = getDateRange(filter);
-            const filteredSalesData = salesData.filter(order => {
-                const orderDate = new Date(order.createdAt);
-                return orderDate >= startDate && orderDate <= endDate;
-            });
-
-            productList = [];
-            filteredSalesData.forEach(order => {
-                order.products.forEach(product => {
-                    productList.push({
-                        order,
-                        product
-                    });
-                });
-            });
-
-            console.log("Filtered Product List:", productList);
-
-            chart.destroy();
-            chart = createChart(filteredSalesData, currentChartType);
-            currentPage = 1; // Reset to first page whenever filter changes
-            updateSalesTable();
-            updatePaginationControls();
-        }
-
-        function createChart(data, type = 'bar') {
-            const labels = data.map(order => new Date(order.createdAt).toLocaleDateString());
-            const totalSales = data.map(order => order.total_order_amount);
-
-            const deliveredData = data.filter(order => 
-                order.products.some(product => product.status === "delivered")
-            ).map(order => order.products.reduce((sum, product) => 
-                product.status === "delivered" ? sum + product.total_amount : sum, 0)
-            );
-
-            const returnedData = data.filter(order => 
-                order.products.some(product => product.status === "returned")
-            ).map(order => order.products.reduce((sum, product) => 
-                product.status === "returned" ? sum + product.total_amount : sum, 0)
-            );
-
-            return new Chart(ctx, {
-                type: type,
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Total Sales',
-                            data: totalSales,
-                            backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--bar-color'),
-                            borderColor: getComputedStyle(chartContainer).getPropertyValue('--bar-border-color'),
-                            borderWidth: 1,
-                            fill: true,
-                        },
-                        {
-                            label: 'Delivered Products',
-                            data: deliveredData,
-                            backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-color'),
-                            borderColor: getComputedStyle(chartContainer).getPropertyValue('--delivered-bar-border'),
-                            borderWidth: 1,
-                            fill: false,
-                        },
-                        {
-                            label: 'Returned Products',
-                            data: returnedData,
-                            backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-color'),
-                            borderColor: getComputedStyle(chartContainer).getPropertyValue('--returned-bar-border'),
-                            borderWidth: 1,
-                            fill: false,
-                        }
-                    ]
-                },
-                options: {
-                    plugins: {
-                        legend: {
-                            display: true,
-                            labels: {
-                                color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-bg'),
-                            titleColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-title'),
-                            bodyColor: getComputedStyle(chartContainer).getPropertyValue('--tooltip-body'),
-                        }
+        try {
+            if (selectedPaymentMethod === "wallet") {
+                // **Wallet Payment Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            grid: {
-                                color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
-                            },
-                            ticks: {
-                                color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
+                    body: JSON.stringify(orderData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    handleOrderSuccess();
+                } else {
+                    toastError(result.message || "Something went wrong with wallet payment.");
+                }
+            } else if (selectedPaymentMethod === "razorpay") {
+                // **Razorpay Payment Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
+                });
+
+                const { key, order } = await response.json();
+
+                if (response.ok) {
+                    const razorpayOptions = {
+                        key: key, 
+                        amount: order.amount,
+                        currency: order.currency,
+                        name: "Glowly.com",
+                        description: "Test Transaction",
+                        order_id: order.id, 
+                        handler: async function (response) {
+                            const verificationResponse = await fetch("/verify-razorpay-payment", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify({
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature,
+                                }),
+                            });
+
+                            const result = await verificationResponse.json();
+
+                            if (verificationResponse.ok) {
+                                handleOrderSuccess();
+                            } else {
+                                toastError(result.message || "Razorpay payment verification failed.");
                             }
                         },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: getComputedStyle(chartContainer).getPropertyValue('--grid-color'),
-                            },
-                            ticks: {
-                                color: getComputedStyle(chartContainer).getPropertyValue('--label-color'),
-                            }
+                        prefill: {
+                            name: "Your Name",
+                            email: "your@email.com",
+                            contact: "1234567890",
                         },
-                    }
-                },
+                        theme: {
+                            color: "#3399cc",
+                        },
+                    };
+
+                    const razorpay = new Razorpay(razorpayOptions);
+                    razorpay.open();
+
+                    handleOrderSuccess()
+                } else {
+                    toastError("Failed to create Razorpay order. Please try again.");
+                }
+
+                    
+            } else if (selectedPaymentMethod === "cash") {
+                // **Cash on Delivery Logic**
+                const response = await fetch("/place-order", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {    
+                  handleOrderSuccess()
+                } else {
+                    toastError(result.message || "Something went wrong. Please try again.");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+            toastWarning("There was an error processing your payment. Please try again.");
+        }
+    });
+
+
+    function handleOrderSuccess() {
+      // window.onload = function() {
+      //  location.reload();
+      // };
+      showStep(step1);
+      // toastSuccess("Order placed successfully!");
+      const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"));
+      orderConfirmationModal.show();
+
+      document.getElementById("continueShopping").addEventListener("click", () => {
+          orderConfirmationModal.hide();
+          window.location.href = "/home";
+      });
+
+      document.getElementById("goToOrders").addEventListener("click", () => {
+          orderConfirmationModal.hide();
+          window.location.href = "/my-orders";
+      });              
+    }
+
+    function getCartProducts() {
+        const productElements = document.querySelectorAll(".cart-box-in-checkout");
+        const cartProducts = Array.from(productElements).map((productElement) => {
+            const productId = productElement.getAttribute("data-product-id");
+            const variantId = productElement.getAttribute("data-variant-id");
+
+            const quantityElement = productElement.querySelector(".product-quantity");
+            const quantityText = quantityElement?.textContent.trim().match(/QTY:\s*(\d+)/i);
+            const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
+
+            const salesPriceElement = productElement.querySelector(".sales-price");
+            const salesPriceText = salesPriceElement?.textContent.trim();
+
+            const salesPrice = salesPriceText ? parseFloat(salesPriceText.replace(/[^\d.-]/g, '')) : 0;
+
+            const totalAmount = quantity * salesPrice;
+
+            return {
+                product_id: productId,
+                variant_id: variantId,
+                quantity,
+                salesPrice,
+                totalAmount,
+                productAfterCoupon
+            };
+        });
+        grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+        // console.log("Grand Total: ₹" + grandTotal);
+
+        return cartProducts;
+    }
+
+    function showStep(stepToShow) {
+        step1.style.display = "none";
+        step2.style.display = "none";
+        step3.style.display = "none";
+
+        stepToShow.style.display = "block";
+    }
+
+    document.addEventListener("click", (event) => {
+        if (event.target.classList.contains("go-to-step1")) {
+            showStep(step1);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
             });
         }
 
-        // Initialize pagination
-        updatePaginationControls();
+        if (event.target.classList.contains("go-to-step2")) {
+            showStep(step2);
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
     });
-</script>
-</body>
-</html>
 
-import User from "../../models/user.model.js"
-import Order from "../../models/order.model.js"
-import Product from "../../models/product.model.js"
-import Category from "../../models/category.model.js";
+    function checkPrice() {
+        var totalPrice = <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>;
 
+        document.getElementById('total-price').innerText = `₹${totalPrice}`;
+        const error = document.getElementById('error');
 
-
-export const renderDashboardPage = async (req, res) => {
-    try {
-
-        const salesData = await Order.find().sort({ order_placed_at: -1 });
-
-        const userCount = await User.countDocuments({ role: "user" });
-        const orderCount = await Order.countDocuments();
-        const totalAmount = await Order.aggregate([
-            {
-              $group: {
-                _id: null,
-                totalAmount: { $sum: "$total_order_amount" }
-              }
-            }
-          ]);
-          const total = totalAmount.length > 0 ? totalAmount[0].totalAmount : 0;
-          const formattedTotal = `₹  ${total.toLocaleString()}`;
-
-         
-          
-          return res.render("admin/dashboard", { 
-              salesData,
-              userCount,
-              orderCount,
-              totalAmount: formattedTotal,
-          });
-    } catch (error) {
-        console.error("Error fetching sales data:", error);
-        return res.status(500).send("Internal Server Error");
+        if (totalPrice > 1000) {
+            document.getElementById('cash').disabled = true;
+              error.style.display = "block";
+            error.textContent = "Cash on Delivery is not available for orders above ₹1000.";
+        } else {
+            document.getElementById('cash').disabled = false;
+            error.style.display = "none";
+            error.textContent = "";
+        }
     }
-};
+
+    setInterval(checkPrice, 1000);
+});
+</script>
+
+</html>

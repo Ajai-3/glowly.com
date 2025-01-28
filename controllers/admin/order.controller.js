@@ -169,6 +169,7 @@ export const updateOrderStatus = async (req, res) => {
         wallet_id: wallet._id,
         user_id: userId,
         transaction_type: "wallet",
+        description: "order returned",
         amount: refundAmount,
         type: 'refund',
       });

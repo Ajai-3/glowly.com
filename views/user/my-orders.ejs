@@ -40,7 +40,6 @@
                     
                     <!-- Product Image -->
                     <div class="col-md-2 text-center p-2">
-                      <!-- data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"> -->
                       <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
                       <% let imageUrl = variant?.images?.[0]; %>
                       <% if (imageUrl) { %>
@@ -76,7 +75,7 @@
                         <% if (product.status === 'returned') { %> blue-p <% } %>">
                         <%= product.status %>
                       </p2>
-            
+              
                       <!-- Buttons -->
                       <% if (product.status === 'delivered') { %>
                         <!-- Return Button -->
@@ -90,6 +89,32 @@
                 </div>
               <% }) %>
             <% }) %>
+            <div class="order-pagination-container">
+              <% if (totalPages > 1) { %>
+                <nav aria-label="Page navigation">
+                  <ul class="pagination">
+                    <% if (currentPage > 1) { %>
+                      <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo;</a>
+                      </li>
+                    <% } %>
+            
+                    <% for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                      <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                      </li>
+                    <% } %>
+            
+                    <% if (currentPage < totalPages) { %>
+                      <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>">&raquo;</a>
+                      </li>
+                    <% } %>
+                  </ul>
+                </nav>
+              <% } %>
+            </div>
+
           <% } else { %>
             <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
               <a href="/home">

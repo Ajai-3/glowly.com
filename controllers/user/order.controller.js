@@ -12,6 +12,7 @@ import Category from "../../models/category.model.js";
 // Render Order List Page
 export const renderOrderListPage = async (req, res) => {
   try {
+    const PAGE_SIZE = 6;
     const token = req.cookies.token;
     if (!token) {
       return res.redirect("/user/home");
@@ -27,6 +28,7 @@ export const renderOrderListPage = async (req, res) => {
       console.error("Invalid token:", error);
     }
 
+    const currentPage = parseInt(req.query.page) || 1;
     const cartCount = cart?.products?.length || 0;
 
     const categories = await Category.find({ isListed: true }).populate({
@@ -34,7 +36,7 @@ export const renderOrderListPage = async (req, res) => {
       match: { isListed: true },
     });
 
-    const orders = await Order.find({ user_id: user.userId })
+    const allOrders = await Order.find({ user_id: user.userId })
       .populate({
         path: 'products.product_id',
         select: '_id title description categoryId subcategoryId brandId variants',
@@ -43,11 +45,26 @@ export const renderOrderListPage = async (req, res) => {
       .sort({ createdAt: -1 })
       .select("_id user_id address_id products total_order_amount payment_method coupon_applied createdAt updatedAt");
 
+    const totalProductsCount = allOrders.reduce((sum, order) => sum + order.products.length, 0);
+    const totalPages = Math.ceil(totalProductsCount / PAGE_SIZE);
+
+    const startIndex = (currentPage - 1) * PAGE_SIZE;
+    const endIndex = startIndex + PAGE_SIZE;
+
+    const paginatedProducts = allOrders.flatMap(order => order.products).slice(startIndex, endIndex);
+
+    const paginatedOrders = allOrders.map(order => ({
+      ...order.toObject(),
+      products: order.products.filter(product => paginatedProducts.includes(product)),
+    })).filter(order => order.products.length > 0);
+
     return res.render("user/my-orders", {
       user,
       categories,
       cartCount,
-      orders,
+      orders: paginatedOrders,
+      currentPage,
+      totalPages,
     });
   } catch (error) {
     console.error("Error in rendering order list:", error);

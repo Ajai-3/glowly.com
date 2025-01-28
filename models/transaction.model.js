@@ -22,6 +22,11 @@ const transactionSchema = new Schema({
     enum: ['credited', 'debited', 'refund', 'cashback'], 
     required: true,
   },
+  description: {
+    type: String,
+    enum: ['order placed', 'order returned', 'money added', 'refund', 'cashback'],
+    required: true,
+  },
   date: {
     type: Date,
     default: Date.now, 

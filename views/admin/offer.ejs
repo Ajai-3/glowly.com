@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %> 
-
+<style>
+    .error {
+        border: 2px solid red;
+    }
+    .error-message {
+        color: red;
+        display: none;
+    }
+</style>
 <div class="main-content">
     <div class="header">
         <div class="search-bar">
@@ -23,13 +31,14 @@
         <div class="add-offer-box">
             <h5 class="m-0">Add Offer for Category: <%= category.name %></h5>
             <!-- Form to add an offer -->
-            <form action="/admin/add-offer/<%= category._id %>" method="POST">
+            <form id="offerForm">
                 <div class="add-products-container-center coupoun-div">
                     <div>
                         <label for="category">Category</label>
                         <input type="text" id="category" name="category" value="<%= category.name %>" readonly>
+                        <input type="hidden" id="categoryId" name="categoryId" value="<%= category._id %>">
                     </div>
-                    <div>
+                    <!-- <div>
                         <label for="subCategory">Subcategories</label>
                         <select id="subCategory" name="subCategory" required>
                             <option value="">Select a subcategory</option>
@@ -37,45 +46,51 @@
                                 <option value="<%= subCategory._id %>"><%= subCategory.name %></option>
                             <% }) %>
                         </select>
-                    </div>
+                        <span class="error-message" id="subCategoryError">This field is required.</span>
+                    </div> -->
                 </div>
                 <div class="add-products-container-center coupoun-div">
                     <div>
                         <label for="offerType">Offer Type:</label>
-                        <select name="offerType" id="offerType">
+                        <select name="offerType" id="offerType" required>
                             <option value="percentage">Percentage</option>
                             <option value="flat">Flat Amount</option>
                         </select>
+                        <span class="error-message" id="offerTypeError">This field is required.</span>
                     </div>
                     <div>
                         <label for="offerValue">Offer Value:</label>
-                        <input type="number" name="offerValue" id="offerValue" required>
+                        <input type="number" name="offerValue" id="offerValue" required min="0">
+                        <span class="error-message" id="offerValueError">Please enter a valid value.</span>
                     </div>
                 </div>
-
-                <label for="description">Name:</label>
+        
+                <div>
+                    <label for="description">Name:</label>
                 <input type="text" name="description" id="description" required>
-
+                <span class="error-message" id="descriptionError">This field is required.</span>
+                </div>
+        
                 <div class="add-products-container-center coupoun-div">
                     <div>
                         <label for="startDate">Start Date:</label>
                         <input type="date" name="startDate" id="startDate" required>
+                        <span class="error-message" id="startDateError">This field is required.</span>
+                        <span class="error-message" id="dateRangeError">Start date must be before expiry date.</span>
                     </div>
-                     <div>
+                    <div>
                         <label for="endDate">End Date:</label>
                         <input type="date" name="endDate" id="endDate" required>
-                     </div>                    
+                        <span class="error-message" id="endDateError">This field is required.</span>
+                    </div>
+                    
                 </div>
-                
-
-                
+        
                 <div class="d-flex justify-content-center align-items-center">
-                    <button type="submit" class="large-button-green px-4" disabled>Add Offer</button>
+                    <button type="submit" class="large-button-green px-4" id="submitBtn" disabled>Add Offer</button>
                 </div>
-                               
-                
             </form>
-       </div>
+        </div>
 
         
     </div>
@@ -84,4 +99,161 @@
 </div>
 
 <%- include('partials/footer') %> 
+
+<script>
+    const toastSuccess = (message) => {
+    iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+    });
+};
+
+const toastError = (message) => {
+    iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+    });
+};
+
+const toastInfo = (message) => {
+    iziToast.info({
+        message: message,
+        backgroundColor: '#2160de',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-info-circle',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+    });
+};
+
+const toastWarning = (message) => {
+    iziToast.warning({
+        message: message,
+        backgroundColor: '#e5811e',
+        messageColor: '#212529',
+        icon: 'fa fa-exclamation-triangle',
+        iconColor: '#212529',
+        timeout: 1500,
+        size: 'small',
+        position: 'topRight',
+    });
+};
+
+const offerForm = document.getElementById('offerForm');
+const submitBtn = document.getElementById('submitBtn');
+const startDate = document.getElementById('startDate');
+const endDate = document.getElementById('endDate');
+const offerValue = document.getElementById('offerValue');
+const offerType = document.getElementById('offerType');
+const description = document.getElementById('description');
+const categoryId = document.getElementById('categoryId');
+
+const errorMessages = {
+    offerValue: 'Please enter a valid value.',
+    description: 'This field is required.',
+    startDate: 'This field is required.',
+    endDate: 'This field is required.',
+    dateRange: 'Start date must be before expiry date.',
+};
+
+function validateField(input) {
+    const errorElement = document.getElementById(`${input.id}Error`);
+    if (!input.value || (input.id === 'offerValue' && input.value <= 0)) {
+        input.classList.add('error');
+        errorElement.textContent = errorMessages[input.id] || 'This field is required.';
+        errorElement.style.display = 'block';
+        return false;
+    }
+    input.classList.remove('error');
+    errorElement.style.display = 'none';
+    return true;
+}
+
+function validateDateRange() {
+    const dateRangeError = document.getElementById('dateRangeError');
+    if (new Date(startDate.value) > new Date(endDate.value)) {
+        dateRangeError.style.display = 'block';
+        return false;
+    }
+    dateRangeError.style.display = 'none';
+    return true;
+}
+
+function toggleSubmitButton() {
+    const isValid = 
+        validateField(offerValue) &&
+        validateField(description) &&
+        validateField(startDate) &&
+        validateField(endDate) &&
+        validateDateRange();
+
+    submitBtn.disabled = !isValid;
+}
+
+offerValue.addEventListener('input', toggleSubmitButton);
+description.addEventListener('input', toggleSubmitButton);
+startDate.addEventListener('change', toggleSubmitButton);
+endDate.addEventListener('change', toggleSubmitButton);
+
+offerForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    if (
+        validateField(offerValue) &&
+        validateField(description) &&
+        validateField(startDate) &&
+        validateField(endDate) &&
+        validateDateRange()
+    ) {
+        const data = {
+            categoryId: categoryId.value,
+            offerType: offerType.value,
+            offerValue: offerValue.value,
+            description: description.value,
+            startDate: startDate.value,
+            endDate: endDate.value
+        };
+
+        console.log('Form Data:', data);
+
+        try {
+            const response = await fetch('/admin/add-offer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const responseJson = await response.json(); 
+
+            if (responseJson.success) {
+                toastSuccess(responseJson.message);
+
+                setTimeout(() => {
+                    window.location.href = '/admin/category';
+                }, 1500);
+            } else {
+                toastError(responseJson.message || 'Something went wrong!');
+            }
+        } catch (error) {
+            toastWarning('There was an error submitting the form.');
+            console.error('Error:', error);
+        }
+    }
+});
+
+
+</script>
 </html>

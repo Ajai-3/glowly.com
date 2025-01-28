@@ -27,8 +27,11 @@
   * ------------------------------------------------------------------- */
 :root {
   /* --bg-color: #030405; */
-  --main-color: #e80071;
-  --main-color2: #eb5ca1;
+  --main-color: #e80071; 
+   --main-color2: #eb5ca1;
+  /* --main-color: #a33cdb;
+  --main-color2: #9d68b9; */
+
   --text-color: #f3f4f7;
   --text-color-2: #848383;
   --text-color-3: #b4b4b4;
@@ -39,13 +42,30 @@
   --green-text-color: #28a745;
 
   /* Admin Panel  */
-  /* --bg-color: #000000; */
+  /* dark theam */
+  /* main baground color */
   --bg-color: #121212;
+    /* second bagorund color */
+  --bg-color-6: #212121;
+
+  /* white team */
+  /* main baground color */
+      /* second bagorund color */
+  /* --bg-color: #ffffff;
+
+    --bg-color-6: #e9e9e9;
+    --text-color: #000000;
+    --text-color-2: #626161;
+    --text-color-3: #0c0c0c;
+    --text-color-4: #000000;
+    --second-text-color: #1c1c1c; */
+
   --bg-color-2: #161927;
   --bg-color-3: #232942;
   --bg-color-4: #1a1a1a;
   --bg-color-5: #222222;
-  --bg-color-6: #212121;
+  /* second bagorund color */
+  /* --bg-color-6: #212121; */
   --bg-color-7: #242424;
   --bg-color-btn-hover: #242d56;
   --bg-color-tbl-hover: #242d5673;
@@ -60,10 +80,12 @@
   --red-text-color-2: #cd0000;
   --red-text-color-3: #ff000057;
   --red-text-color-4: #ff0000;
+  --red-text-color-5: #fa232334;
 
   --pink-text-color: #ff2fd5;
   --pink-text-color-2: #cd00bc;
   --pink-text-color-3: #ff00cc57;
+  --pink-text-color-5: #ff22d32d;
 
   --main-text-color: #ff2e93;
   --main-text-color-2: #e80071;
@@ -72,14 +94,17 @@
   --green-text-color: #3aff33;
   --green-text-color-2: #00ca11;
   --green-text-color-3: #00ff1557;
+  --green-text-color-5: #2af83b2c;
 
   --blue-text-color: #389bff;
   --blue-text-color-2: #006ad4;
   --blue-text-color-3: #0080ff58;
+  --blue-text-color-5: #208ffe2d;
 
   --yellow-text-color: #ffff38;
   --yellow-text-color-2: #d4bb00;
   --yellow-text-color-3: #fff20058;
+  --yellow-text-color-5: #faef222f;
   
   --orange-text-color: #df431b;
   --white-text-color: #83838338;
@@ -103,6 +128,13 @@ padding: 6px;
 border: 0px;
 border-radius: 4px;
 cursor: pointer;
+}
+.main-btn {
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: var(--font-size-second);
+  color: var(--text-color);
+  background-color: var(--main-color);
 }
 
 body {
@@ -130,8 +162,8 @@ hr {
   font-size: 15px !important; 
 }
 .iziToast-balloon.success {
-  background-color: #2160de; /* Green for success */
-  border-bottom-color: #28a745; /* Arrow matches background */
+  background-color: #2160de;
+  border-bottom-color: #28a745; 
 }
 .iziToast-message {
   font-size: 12px !important;
@@ -585,7 +617,7 @@ input[type="number"]::-webkit-input-placeholder {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0px 60px;
+  padding: 0px 90px;
   z-index: 500;
   position: fixed;
   top: 30px;
@@ -622,7 +654,7 @@ input[type="number"]::-webkit-input-placeholder {
   align-items: center;
   /* justify-content: space-between; */
 }
-.nav-bar-search input {
+/* .nav-bar-search input {
   width: 200px;
   outline: none;
   border-style: none;
@@ -630,14 +662,42 @@ input[type="number"]::-webkit-input-placeholder {
   background-color: transparent;
   font-size: var(--font-size-second);
   border-bottom: 1px solid var(--text-color-2);
-}
-.nav-bar-search-button {
+} */
+/* .nav-bar-search-button {
   border: none;
   color: var(--text-color-2);
   background-color: transparent;
+} */
+ 
+.nav-bar-search {
+  position: relative;
+}
+
+.nav-bar-search input {
+  position: relative;
+  width: 220px;
+  outline: none;
+  border-style: none;
+  color: var(--text-color);
+  background-color: rgba(60, 60, 60, 0.305);
+  font-size: var(--font-size-second);
+  padding: 4px 4px 4px 30px; 
+  border-radius: 4px;
+  border: 1px solid var(--second-text-color);
+}
+
+.nav-bar-search-button {
+  position: absolute;
+  top: 10px; 
+  left: 0px;
+  transform: translateY(-50%);
+  border: none;
+  color: var(--text-color-2);
+  background-color: transparent;
+  cursor: pointer; 
 }
 .nav-bar-search input:focus {
-  border-bottom: 1px solid var(--main-color);
+  border: 1px solid var(--main-color);
 }
 .nav-bar-search input:focus + .nav-bar-search-button {
    color: var(--main-color);
@@ -660,10 +720,10 @@ input[type="number"]::-webkit-input-placeholder {
 }
 .nav-cart-count {
   position: absolute;
-  right: 3px;
+  right: 0px;
   top: 4px;
   font-size: var(--font-size-fifth);
-  padding: 1px 4px;
+  padding: 2px 6px;
   border-radius: 50px;
   color: var(--text-color-4);
   background-color: var(--main-color);
@@ -862,15 +922,10 @@ input[type="number"]::-webkit-input-placeholder {
 .user-contents {
   margin: 90px 90px 20px 90px;
 }
-.carousel-home {
-  margin-top: 80px;
-}
+
 @media screen and (max-width: 768px) {
   .user-contents {
     margin: 90px 10px 20px 10px;
-  }
-  .carousel-home {
-    margin-top: 60px; 
   }
 }
 
@@ -879,32 +934,40 @@ input[type="number"]::-webkit-input-placeholder {
   .user-contents {
     margin: 90px 5px 10px 5px; 
   }
-  .carousel-home {
-    margin-top: 40px; 
-  }
 }
 
 
 /* prodyuct card carosal */
+.product-group-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
 .custom-carousel-control {
   position: absolute;
   top: 40%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: var(--text-color);
   width: 40px;
   height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10;
+  border-radius: 50%;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 100;
 }
 
-.custom-carousel-control .carousel-control-prev-icon,
-.custom-carousel-control .carousel-control-next-icon {
-  filter: brightness(0) invert(1);
-  width: 20px;
-  height: 20px;
+.prev-button {
+  left: 0;
+}
+
+.next-button {
+  right: 0;
+}
+
+.custom-carousel-control:hover {
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 /* User Product Cart ************************/
@@ -1618,7 +1681,53 @@ border: 1px solid transparent;
   width: 250px;
 }
 
+.cart-pagination-container {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+.cart-pagination-container a {
+  color: var(--text-color-4);
+}
 
+.cart-pagination-container .page-item {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--main-color);
+  border-radius: 2px;
+}
+
+.cart-pagination-container .page-item.active {
+  background-color: var(--main-color);
+  color: var(--text-color-4);
+}
+
+.cart-page-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+
+
+.order-pagination-container .page-link {
+  background-color: transparent;
+  border: 1px solid var(--main-color);
+  color: var(--text-color-3);
+  text-decoration: none;
+}
+
+.order-pagination-container .page-link:hover {
+  background-color: transparent;
+  border-color: var(--main-color);
+  color: var(--text-color-3);
+}
+
+.order-pagination-container .page-item.active .page-link {
+  background-color: var(--main-color);
+  color: var(--text-color);
+  border-color: var(--main-color);
+}
 
 
 /* Wish list */
@@ -1844,13 +1953,15 @@ border: 1px solid transparent;
 
 
 
- /* .red-p,
+ .red-p,
 .green-p,
 .blue-p,
 .pink-p,
 .yellow-p {
+  padding: 2px 8px;
+  border-radius: 4px;
+} 
 
-}  */
 .cancel-btn, 
 .return-btn {
   padding: 3px 10px;
@@ -1862,23 +1973,23 @@ border: 1px solid transparent;
 
 .red-p {
   color: var(--red-text-color-2);
-  /* background-color: var(--red-text-color-3); */
+  background-color: var(--red-text-color-5);
 }
 .green-p {
   color: var(--green-text-color-2);
-  /* background-color: var(--green-text-color-3); */
+  background-color: var(--green-text-color-5);
 }
 .yellow-p {
   color: var(--yellow-text-color-2);
-  /* background-color: var(--yellow-text-color-3); */
+  background-color: var(--yellow-text-color-5);
 }
 .blue-p {
   color: var(--blue-text-color-2);
-  /* background-color: var(--blue-text-color-3); */
+  background-color: var(--blue-text-color-5);
 }
 .pink-p {
   color: var(--main-text-color-2);
-  /* background-color: var(--main-text-color-3); */
+  background-color: var(--main-text-color-5);
 }
 
 .red-p:hover {
@@ -1897,19 +2008,33 @@ border: 1px solid transparent;
   color: var(--main-text-color);
 }
 
-/* product detail page  */
-.product-datailpage p,
-.product-datailpage p2 {
+/*  *//* ====================================================================
+ /* ===================================================================
+  * #product detail page Page Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
+.my-order-datailpage p,
+.my-order-datailpage p2 {
   margin: 0;
   font-size: var(--font-size-second);
 }
 
-.product-datailpage-address {
+.my-order-datailpage-address {
   border-radius: 4px;
   border: 1px solid var(--second-text-color);
 }
 
-.product-detailpage-product {
+
+.my-order-datailpage-product {
   background-color: transparent;
   border-radius: 6px;
   border: 1px solid var(--second-text-color);
@@ -1917,16 +2042,57 @@ border: 1px solid transparent;
   font-size: var(--font-size-normal);
 }
 
-
-
-
-
-/* Checkout */
-
-.circle-container {
-  padding: 0 250px;
-  /* margin: 0; */
+.my-order-datailpage-product img {
+  width: 90px; 
+  height: 90px; 
+  object-fit: cover; 
+  border-radius: 4px;
+  border: 1px solid var(--second-text-color); 
+  margin: 0; 
+  display: block; 
 }
+
+
+
+/* ====================================================================
+ /* ===================================================================
+  * #Checkout Page Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
+  .nav-bar-checkout-page {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 330px 0 90px;
+    z-index: 500;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-color);
+  }
+  .horizontal-line-checkout-page hr {
+    margin: 0;
+    background-color: var(--text-color-2);
+    position: fixed;
+    top: 50px;
+    left: 0;
+    right: 0;
+    z-index: 499;
+    margin-bottom: 100px;
+  }
+  
+
 .circle-container .circle {
   width: 30px;
   height: 30px;
@@ -1944,7 +2110,7 @@ border: 1px solid transparent;
 .circle-container .line {
   height: 2px;
   background-color: var(--main-color);
-  width: 220px;
+  width: 100px;
 }
 .circle-container .label {
   margin-top: 5px;
@@ -2081,6 +2247,9 @@ border: 1px solid transparent;
   border: 1px solid var(--second-text-color);
   background-color: transparent;
 }
+.cart-box-in-checkout img {
+  width: 75px;
+}
 .cart-box-in-checkout p {
   margin: 0;
   font-size: var(--font-size-third);
@@ -2091,9 +2260,24 @@ border: 1px solid transparent;
   font-weight: 300;
 }
 
-.large-button-blue:hover {
-  color: var(--blue-text-color);
+#cart-container {
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 transparent;
 }
+
+#cart-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+#cart-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+#cart-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 
 .payment-div label,
 .payment-div input {
@@ -2123,8 +2307,39 @@ border: 1px solid transparent;
   color: var(--text-color-3);
 }
 
+.checkout-page-btn {
+  padding: 8px 10px;
+  border-radius: 4px;
+  background-color: transparent;
+  border: 1px solid var(--text-color-2);
+}
+.checkout-page-btn:hover {
+  color: var(--main-color);
+  border: 1px solid var(--main-color);
+}
+.checkout-btn {
+  border-radius: 4px;
+  padding: 6px 0;
+  font-size: var(--font-size-third);
+  color: var(--text-color);
+  background-color: var(--main-color);
+}
 
-/* Wallet */
+
+/* ====================================================================
+ /* ===================================================================
+  * #Wallet Page Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
 .wallet {
   border-radius: 6px;
   background-color: var(--bg-color-5);
@@ -2175,7 +2390,20 @@ border: 1px solid transparent;
 
 
 
-/* *footer******************************************** */
+/* ====================================================================
+ /* ===================================================================
+  * #Footer Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
 .footer {
   background-color: var(--bg-color-6);
 }

@@ -23,76 +23,104 @@
               <!-- Right Side Box -->
               <div class="col-md-9">
                 <div class="card shadow-sm p-4 user-menu-wishlist">
-                    <div class="product-datailpage">
-                      <div class="product-datailpage-status mb-2">
-                        <p>Product Status:&nbsp;&nbsp;  
-                          <p2 class="m-0 mb-4 
-                          <% if (productStatus === 'pending') { %> yellow-p <% } %>
-                          <% if (productStatus === 'processing') { %> blue-p <% } %>
-                          <% if (productStatus === 'shipped') { %> pink-p <% } %>
-                          <% if (productStatus === 'delivered') { %> green-p <% } %>
-                          <% if (productStatus === 'canceled') { %> red-p <% } %>
-                          <% if (productStatus === 'return_req') { %> yellow-p <% } %>
-                          <% if (productStatus === 'returned') { %> blue-p <% } %>">
+                  <div class="my-order-datailpage">
+                    <!-- Product Status -->
+                    <div class="my-order-datailpage-status mb-2">
+                      <p>
+                        Product Status:&nbsp;&nbsp;
+                        <p2 class="m-0 mb-4 
+                        <% if (productStatus === 'pending') { %> yellow-p <% } %>
+                        <% if (productStatus === 'processing') { %> blue-p <% } %>
+                        <% if (productStatus === 'shipped') { %> pink-p <% } %>
+                        <% if (productStatus === 'delivered') { %> green-p <% } %>
+                        <% if (productStatus === 'canceled') { %> red-p <% } %>
+                        <% if (productStatus === 'return_req') { %> yellow-p <% } %>
+                        <% if (productStatus === 'returned') { %> blue-p <% } %>">
                           <%= productStatus %>
                         </p2>
-                        </p>
-                      </div>
-                        
-                      <div class="product-datailpage-address p-2 mb-2">
-                        <p><strong>Delivery Address</strong></p>
-                        <p>Address Type:  <%= address.address_type %> </p>
-                               <p><%= address.address %></p>
-                               <p><%= address.land_mark %></p>
-                               <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
-                                <p><%= address.country %></p>
-                      </div>
-                        
-                      </div>
-                      <div>
-                        <div class="cart-item card product-detailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
-                          <div class="row g-0">
-                            <div class="col-md-2 text-center">
-                              <img id="main-display-image" 
-                                src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
-                                class="img-fluid rounded" 
-                                alt="<%= product.title || 'Product Image' %>">
+                      </p>
+                    </div>
+
+                    <!-- Delivery Address -->
+                    <div class="my-order-datailpage-address p-2 mb-2">
+                      <p><strong>Delivery Address</strong></p>
+                      <p>
+                        Address Type: <%= address.address_type %>, <%= address.address %>, 
+                        <%= address.land_mark %>, <%= address.district %>, 
+                        <%= address.city %>, <%= address.state %>, 
+                        <%= address.pin_code %>, <%= address.country %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Product Details -->
+                  <div>
+                    <div class="card my-order-datailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
+                      <div class="row">
+                        <!-- Product Image -->
+                        <div class="col-md-2 text-center">
+                          <img 
+                            src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
+                            class="img-fluid rounded" 
+                            alt="<%= product.title || 'Product Image' %>" 
+                            style="max-width: 100px; object-fit: cover;">
+                        </div>
+
+                        <!-- Product Info -->
+                        <div class="col-md-10 p-0">
+                          <div class="card-body p-0">
+                            <h6 class="card-title"><%= product.product_id.title %></h6>
+                            <div class="product-shade my-1">
+                              <p class="m-0">Shade: <span><%= variant.shade %></span></p>
                             </div>
-                            <div class="col-md-10">
-                              <div class="card-body px-2 py-0">
-                                <h6 class="card-title"><%= product.product_id.title %></h6>
-                                <div class="product-shade my-1">
-                                  <p class="m-0">Shade: <span><%= variant.shade %></span></p>
-                                </div>
-                                <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">details</a>
-                                <!-- <div class="cart-box-quantity-selector d-flex my-1">
-                                  <p class="product-quantity qty m-0">Quantity: <%= product.quantity %></p>
-                                </div> -->
-                                <div class="d-flex justify-content-between cart-price mt-2">
-                                  <p class="product-quantity qty m-0">Quantity: <%= product.quantity %></p>
-                                  <p class="card-text">
-                                    Unit Price: <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
-                                    <span class="sales-price price-inr">₹<%= (product.total_amount / product.quantity) %></span>
-                                  </p>
-                                  <p class="card-text">
-                                    Total: <span class="sales-price price-inr">₹<%= product.total_amount %></span>
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
+                            <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">View Product</a>
                           </div>
                         </div>
 
+                        <!-- Pricing Details -->
+                        <div class="col-12 mt-2">
+                          <div class="row">
+                            <div class="col-6 text-start px-4">
+                              <p class="product-quantity qty m-0">Quantity:</p>
+                            </div>
+                            <div class="col-6 text-end px-4">
+                              <p class="product-quantity qty m-0"><%= product.quantity %></p>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-6 text-start px-4">
+                              <p class="card-text m-0">Unit Price:</p>
+                            </div>
+                            <div class="col-6 text-end px-4">
+                              <p class="card-text m-0 price-inr">₹ <%= product.total_amount / product.quantity %></p>
+                            </div>
+                          </div>
+
+                          <div class="row">
+                            <div class="col-6 text-start px-4">
+                              <p class="card-text m-0">Total:</p>
+                            </div>
+                            <div class="col-6 text-end px-4">
+                              <p class="card-text m-0 price-inr">₹ <%= product.amount_after_coupon %></p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <div class="mt-4">
-                        <% if (productStatus === "delivered") { %>
-                            <p>Add review</p>
-                        <% } else { %>
-                          ""
-                        <% } %>
-                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Add Review Section -->
+                  <div class="mt-4">
+                    <% if (productStatus === "delivered") { %>
+                      <p>Add review</p>
+                    <% } else { %>
+                      ""
+                    <% } %>
+                  </div>
                 </div>
               </div>
+
               
             </div>
           </div>

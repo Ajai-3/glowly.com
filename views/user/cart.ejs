@@ -45,7 +45,7 @@
                         </div>
                         <a href="/product/<%= product._id %>/<%= variant._id %>">details</a>
                         <div class="d-flex justify-content-between cart-price">
-                          <p class="card-text">Unit Price: 
+                          <p class="card-text mb-2">Unit Price: 
                             <span class="original-price price-inr">₹<%= variant.regularPrice %></span> 
                             <span class="sales-price price-inr">₹<%= variant.salePrice %></span> 
                             <span class="discount-percentage">| 
@@ -71,6 +71,7 @@
                 </div>
               <% }); %>
             </div>
+            
       
             <!-- Right Column: Price Summary -->
             <div class="col-md-4">
@@ -102,6 +103,18 @@
               </div>
             </div>
           </div>
+          <div>
+            <div class="cart-pagination-container mt-3">
+              <% if (totalPages > 1) { %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                  <a href="?page=<%= i %>" class="page-item <%= i === currentPage ? 'active' : '' %>">
+                    <div class="page-link"><%= i %></div>
+                  </a>
+                <% } %>
+              <% } %>
+            </div>
+
+          </div>
         <% } else { %>
           <!-- Empty Cart Section -->
           <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
@@ -110,7 +123,7 @@
             </a>
             <h3>Your Shopping Bag is empty</h3>
             <p>This feels too light! Go on, add all your favorites</p>
-            <a href="/home" class="large-button-main">Start Shopping</a>
+            <a href="/home"><button class="main-btn">Start Shopping</button></a>
           </div>       
         <% } %>
       </div>

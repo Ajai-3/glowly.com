@@ -51,7 +51,7 @@ export const renderCheckoutPage = async (req, res) => {
             });
 
         const products = await Product.find({ isDeleted: false });
-        const addresses = await Address.find({ user_id: user.userId, isActive: true  }).limit(4);
+        const addresses = await Address.find({ user_id: user.userId, isActive: true  }).limit(3);
         const userDetails = await User.findById(user.userId);
 
     
@@ -235,35 +235,19 @@ export const placeOrder = async (req, res) => {
         for (let cartItem of cart) {
             const product = await Product.findById(cartItem.product_id);
             if (!product) {
-                return res.status(404).json({ success: false, message: `Product not found: ${cartItem.product_id}` });
+                return res.status(404).json({ success: false, message: `Product not found` });
             }
 
             const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
             if (!variant || variant.stockQuantity < cartItem.quantity) {
-                return res.status(400).json({ success: false, message: `Insufficient stock for variant: ${cartItem.variant_id}` });
+                return res.status(400).json({ success: false, message: `Insufficient stock for variant` });
             }
-
-            // let amountAfterCouponApplied;
-
-            // if (coupon) {
-            //     const coupon = await Coupon.findOne({ 
-            //         _id: coupon, 
-            //         isDelete: false 
-            //     });
-            //     if (coupon.type === "flat") {
-            //         amountAfterCouponApplied = cartItem.totalAmount - (coupon.discountValue / products.length)
-            //     }
-
-            //     if (coupon.type === "percentage") {
-            //         grandTotal
-            //     }
-            // }
 
             products.push({
                 product_id: cartItem.product_id,
                 variant_id: cartItem.variant_id,
                 quantity: cartItem.quantity,
-                amount_after_coupon: cartItem.productAfterCoupon,
+                amount_after_coupon: Math.round(cartItem.totalAmount - cartItem.productAfterCoupon),
                 total_amount: cartItem.totalAmount,
                 status: 'pending',
             });
@@ -293,6 +277,7 @@ export const placeOrder = async (req, res) => {
                 user_id: user.userId,
                 amount: grandTotal,
                 type: 'debited',
+                description :"order placed"
             });
             await transaction.save();
 

@@ -178,7 +178,6 @@ export const handleAddAddress = async (req, res) => {
             cart = await Cart.findOne({ user_id: user.userId })
         }
 
-        // const userPhoneNo = await User.findById(user.userId)
 
         const cartCount = cart?.products?.length || 0;
 
@@ -214,6 +213,7 @@ export const handleAddAddress = async (req, res) => {
                 user: user,
                 categories,
                 activeUser,
+                cartCount,
                 addresses: await Address.find({ user_id: user.userId, isActive: true }),
                 error: "You have reached the maximum number of active addresses."
             });

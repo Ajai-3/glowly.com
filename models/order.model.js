@@ -34,7 +34,7 @@ const OrderSchema = new mongoose.Schema(
         },
         amount_after_coupon: {
           type: Number,
-          default: 0,
+          required: false
         },
         status: {
           type: String,

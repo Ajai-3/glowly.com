@@ -88,17 +88,16 @@
                     </td>
                       <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
                       <td>
-                        <% if (cat.offer) { %>
-                            <p>Offer: <%= cat.offer %> (<%= cat.offerPercentage %>%)</p>
-                            <a href="/admin/remove-offer/<%= cat._id %>">
-                                <button class="remove-offer-btn">Remove Offer</button>
-                            </a>
-                        <% } else { %>
-                            <a href="/admin/add-offer/<%= cat._id %>">
-                                <button class="add-offer-btn">Add Offer</button>
-                            </a>
+                        <% if (cat.offerId) { %>
+                          <p>Offer: <%= cat.offerId.name %> (<%= cat.offerId.offerValue %>%)</p>
+                           <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
+                        <% } else { %> 
+                          <a href="/admin/add-offer/<%= cat._id %>">
+                              <button class="add-offer-btn">Add Offer</button>
+                          </a>
                         <% } %>
-                    </td>
+                      </td>
+                      
                       <!-- <td>
                         <% if (!cat.isListed) { %>
                             <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
@@ -259,5 +258,33 @@ const toggleSubcategory = async (id, isList) => {
     toastError('Error updating subcategory');
   }
 };
+
+async function removeOffer(categoryId, offerId) {
+    // Make sure offerId is passed dynamically
+    if (!offerId) {
+        alert('Offer ID is required.');
+        return;
+    }
+
+    const response = await fetch(`/admin/remove-offer/${categoryId}`, {
+        method: 'POST',  // Ensure method is POST
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            offerId: offerId,  // Sending the offerId in the body
+        }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+        // Optionally, update the UI or alert the user
+        alert('Offer removed successfully!');
+        location.reload();  // Reload to reflect changes
+    } else {
+        alert(`Failed to remove offer: ${result.message}`);
+    }
+}
 </script>
 </html>

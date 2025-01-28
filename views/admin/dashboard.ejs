@@ -93,11 +93,11 @@
                 </div>
         
                 <!-- Vertical Box Section -->
-                <div class="col-3">
+                <!-- <div class="col-3">
                     <div class="vertical-box">
-                        xcvxcvxcv
+                        
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
         
@@ -610,18 +610,17 @@ document.addEventListener('DOMContentLoaded', function () {
         return counts;
     }, {});
 
-    // Prepare the report data for Excel (Order Details)
     const reportData = currentFilteredData.map(order => ({
         'Order ID': order.orderId,
         'User': order.userName,
         'Product': order.productName,
         'Status': order.status,
-        'Date': new Date(order.date).toLocaleString(), // Formatting the date
+        'Date': new Date(order.date).toLocaleString(), 
         'Amount': '₹ ' + order.amount.toFixed(2),
         'Amount After Discount': '₹ ' + (order.amount - (order.discount || 0)).toFixed(2)
     }));
 
-    // Prepare overall stats for Excel
+
     const overallStats = [
         ['Total Orders', totalOrders],
         ['Total Sales Amount', '₹ ' + totalAmount.toFixed(2)],
@@ -631,116 +630,151 @@ document.addEventListener('DOMContentLoaded', function () {
         ['Returned Orders', statusCounts.returned || 0]
     ];
 
-    // Create the worksheet for the order data table
     const wsOrders = XLSX.utils.json_to_sheet(reportData);
 
-    // Create the workbook
     const wb = XLSX.utils.book_new();
 
-    // Append the overall stats as a new sheet
     const statsSheet = XLSX.utils.aoa_to_sheet(overallStats);
     XLSX.utils.book_append_sheet(wb, statsSheet, 'Overall Stats');
 
-    // Append the orders data as a new sheet (this is the orders table)
     XLSX.utils.book_append_sheet(wb, wsOrders, 'Sales Report');
 
-    // Write the Excel file
     XLSX.writeFile(wb, 'sales_report.xlsx');
 });
 
 
-// PDF Download Event Listener
-document.getElementById('download-pdf').addEventListener('click', function() {
+
+
+document.getElementById('download-pdf').addEventListener('click', function () {
     console.log('Generating PDF with current filtered data.');
-    console.log('Current Filtered Data:', currentFilteredData); 
+    console.log('Current Filtered Data:', currentFilteredData);
 
     if (currentFilteredData.length === 0) {
         console.error('No orders available for the selected filter.');
         return;
     }
 
-    // Calculating overall statistics
     const totalOrders = currentFilteredData.length;
     const totalAmount = currentFilteredData.reduce((sum, order) => sum + order.amount, 0);
     const discountAmount = currentFilteredData.reduce((sum, order) => sum + (order.discount || 0), 0);
-    const netRevenue = totalAmount - discountAmount; 
+    const netRevenue = totalAmount - discountAmount;
 
-    // Calculating product status counts
     const statusCounts = {
         pending: 0,
+        processing: 0,
+        shipped: 0,
         delivered: 0,
-        returned: 0
+        canceled: 0,
+        return_req: 0,
+        returned: 0,
     };
 
     currentFilteredData.forEach(order => {
         if (order.status === 'pending') statusCounts.pending++;
+        if (order.status === 'processing') statusCounts.processing++;
+        if (order.status === 'shipped') statusCounts.shipped++;
         if (order.status === 'delivered') statusCounts.delivered++;
+        if (order.status === 'canceled') statusCounts.canceled++;
+        if (order.status === 'return_req') statusCounts.return_req++;
         if (order.status === 'returned') statusCounts.returned++;
     });
 
-    // Initialize jsPDF
-    const { jsPDF } = window.jspdf; 
+    const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
-    // Check if autoTable is loaded
-    if (!doc.autoTable) {
-        console.error("autoTable method is not available. Please check if the jsPDF AutoTable plugin is loaded correctly.");
-        return;
+    doc.setFont('helvetica', 'normal');
+
+    function formatCurrency(amount) {
+        return Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
-    // Report Title and Overall Stats
-    doc.setFontSize(16);
-    doc.text('Sales Report', 10, 10);
-    
-    doc.setFontSize(12);
-    doc.text('Overall Sales Count: ' + totalOrders, 10, 20);
-    doc.text('Total Sales Amount: ₹ ' + totalAmount.toFixed(2), 10, 30);
-    doc.text('Net Revenue: ₹ ' + netRevenue.toFixed(2), 10, 40);
-    
-    // Product Status Counts
-    doc.text('Product Status Summary:', 10, 50);
-    doc.text('Pending Orders: ' + statusCounts.pending, 10, 60);
-    doc.text('Delivered Orders: ' + statusCounts.delivered, 10, 70);
-    doc.text('Returned Orders: ' + statusCounts.returned, 10, 80);
+    doc.setFontSize(18);
+    doc.text('Sales Report', 105, 15, { align: 'center' });
 
-    // Create the table with order details using the autoTable method
-    doc.text('Order Details:', 10, 90);
+    doc.setFontSize(12);
+    doc.text('Generated on: ' + new Date().toLocaleString(), 10, 25);
+
+    doc.setFontSize(14);
+    doc.text('Overall Statistics', 10, 35);
+    doc.setFontSize(12);
+    doc.text('Total Orders: ' + totalOrders, 10, 45);
+    doc.text('Total Sales Amount:  ' + formatCurrency(totalAmount), 10, 55);
+    doc.text('Total Discounts:  ' + formatCurrency(discountAmount), 10, 65);
+    doc.text('Net Revenue:  ' + formatCurrency(netRevenue), 10, 75);
+
+    doc.setFontSize(14);
+    doc.text('Order Status Summary', 10, 85);
+    doc.setFontSize(12);
+    let currentY = 95;
+
+    if (statusCounts.pending > 0) {
+        doc.text('Pending: ' + statusCounts.pending, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.processing > 0) {
+        doc.text('Processing: ' + statusCounts.processing, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.shipped > 0) {
+        doc.text('Shipped: ' + statusCounts.shipped, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.delivered > 0) {
+        doc.text('Delivered: ' + statusCounts.delivered, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.canceled > 0) {
+        doc.text('Canceled: ' + statusCounts.canceled, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.return_req > 0) {
+        doc.text('Return Requested: ' + statusCounts.return_req, 10, currentY);
+        currentY += 10;
+    }
+    if (statusCounts.returned > 0) {
+        doc.text('Returned: ' + statusCounts.returned, 10, currentY);
+        currentY += 10;
+    }
+
+    doc.text('Order Details:', 10, currentY);
+    currentY += 10;
+
     doc.autoTable({
-        head: [['Sl No', 'User Name', 'Product Name', 'Quantity', 'Total Amount', 'Total After Discount', 'Status', 'Order Date']],
+        head: [['Sl No', 'User Name', 'Product Name', 'Quantity', 'Total Amount', 'Discounted Amount', 'Status', 'Order Date']],
         body: currentFilteredData.map((order, index) => [
             index + 1,
             order.userName,
             order.productName,
             order.quantity,
-            '₹ ' + order.amount.toFixed(2),
-            '₹ ' + (order.amount - (order.discount || 0)).toFixed(2),
+            formatCurrency(order.amount),
+            formatCurrency((order.amount - (order.discount || 0))),
             order.status,
             new Date(order.date).toLocaleString(),
         ]),
-        startY: 100,
+        startY: currentY,
         theme: 'grid',
-        margin: { top: 10 },
+        margin: { top: 10, left: 10, right: 10 },
         styles: {
-            overflow: 'linebreak',
             fontSize: 10,
             cellPadding: 3,
+            halign: 'center',
+            valign: 'middle',
         },
         columnStyles: {
             0: { halign: 'center' },
-            1: { halign: 'center' },
+            1: { halign: 'left' },
             2: { halign: 'left' },
             3: { halign: 'center' },
-            4: { halign: 'center' },
-            5: { halign: 'center' },
+            4: { halign: 'right' },
+            5: { halign: 'right' },
             6: { halign: 'center' },
             7: { halign: 'center' },
-            8: { halign: 'center' },
         },
     });
 
-    // Save the generated PDF
     doc.save('sales_report.pdf');
 });
+
 
 
 

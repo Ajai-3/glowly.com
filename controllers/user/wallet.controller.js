@@ -8,28 +8,47 @@ import Wallet from "../../models/wallet.model.js";
 import Category from "../../models/category.model.js";
 import Transaction from "../../models/transaction.model.js";
 
+
+
+
 export const myWallet = async (req, res) => {
   try {
     const token = req.cookies.token;
-    let user;
-    let cart;
-    let wallet;
+
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+
+    let user = null;
+    let cart = null;
+    let wallet = null;
+    let transactions = [];
+    let totalTransactions = 0;
 
     if (!token) {
       return res.redirect("/home");
     }
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId });
-        wallet = await Wallet.findOne({ user_id: user.userId })
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+      user = decoded;
+
+      cart = await Cart.findOne({ user_id: user.userId });
+      wallet = await Wallet.findOne({ user_id: user.userId });
+
+      if (wallet) {
+        transactions = await Transaction.find({ wallet_id: wallet._id })
+          .skip(skip)
+          .limit(Number(limit))
+          .sort({ date: -1 });
+
+        totalTransactions = await Transaction.countDocuments({ wallet_id: wallet._id });
       }
+    } catch (error) {
+      console.log("Invalid or expired token:", error);
     }
+
     const cartCount = cart?.products?.length || 0;
+
     const categories = await Category.find({ isListed: true }).populate({
       path: "subcategories",
       match: { isListed: true },
@@ -41,11 +60,18 @@ export const myWallet = async (req, res) => {
       cartCount,
       wallet,
       categories,
+      transactions,
+      totalPages: Math.ceil(totalTransactions / limit),
+      currentPage: Number(page),
+      totalTransactions,
+      limit,
     });
   } catch (error) {
-    console.log("Error in my wallet");
+    console.log("Error in myWallet:", error);
+    res.status(500).send("An error occurred while loading your wallet.");
   }
 };
+
 
 
 
@@ -116,6 +142,7 @@ export const addMoneyToWallet = async (req, res) => {
         wallet_id: wallet._id,
         user_id: user.userId,
         transaction_type: "wallet",
+        description: "money added",
         amount,
         type: 'credited',
       });
