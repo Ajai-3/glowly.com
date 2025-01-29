@@ -440,6 +440,11 @@ function handleCart({ quantity, productId, variantId, form, isMainButton }) {
             newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
             form.parentNode.replaceChild(newButton, form);
           }
+          const cartCountElement = document.querySelector('.nav-cart-count');
+          if (cartCountElement) {
+            cartCountElement.innerText = data.cartCount;
+            cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
+          }
           toastSuccess(data.message);
         } else {
           toastError(data.message);
@@ -500,6 +505,11 @@ function handleCart({ quantity, productId, variantId, form, isMainButton }) {
         .then(data => {
           if (data.success) {
             toastSuccess(data.message)
+            const cartCountElement = document.querySelector('.nav-cart-count');
+            if (cartCountElement) {
+              cartCountElement.innerText = data.cartCount;
+              cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
+            }
             setTimeout(() => {
               const checkoutUrl = `/placeOrderWithBuyNow?productId=${encodeURIComponent(productId)}&variantId=${encodeURIComponent(variantId)}&quantity=${encodeURIComponent(quantity)}`;
               window.location.href = checkoutUrl;

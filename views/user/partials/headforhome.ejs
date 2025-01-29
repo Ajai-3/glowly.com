@@ -11,6 +11,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
+    
     <!-- Favicon -->
     <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
     <title>Glowly.com: Buy Cosmetic Products</title>
@@ -19,7 +20,17 @@
 <body class="home-body">
     <nav>
         <div class="nav-offer">
-            <div class="nav-offer1">Nav offer and app</div>
+            
+            <div id="offers-container" style="display: none;">
+                <% categories.forEach(category => { %>
+                    <% if (category.offerId && category.offerId.name) { %>
+                        <div class="offer-item"><%= category.offerId.name %></div>
+                    <% } %>
+                <% }); %>
+            </div>
+            
+            <div id="current-offer" class="nav-offer1"></div>
+            
             <div class="nav-offer2">
                 <div class="nav-offer-content"><a href="/get-app"><i class="fa-solid fa-mobile-screen-button"></i>GET APP</a></div>
                 <div class="nav-offer-content"><a href="/my-orders"><i class="fas fa-truck"></i>TRACK ORDER</a></div>
@@ -92,12 +103,13 @@
                 <% if (user && user.name) { %> 
                     <!-- If User Is Logged In -->
                      
+                     
                      <div class="nav-cart">
-                        <% if (cartCount > 0) { %>
-                            <div class="nav-cart-count"><%= cartCount %></div>
-                        <% } %>
+                        <div class="nav-cart-count" style="display: <%= cartCount > 0 ? 'block' : 'none' %>;">
+                            <%= cartCount %>
+                        </div>
                         <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
-                     </div>
+                    </div>
                     
                     <a href="/my-wishlist"><i class="fa-solid fa-heart"></i></a>
                    

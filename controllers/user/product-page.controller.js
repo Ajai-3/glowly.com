@@ -7,40 +7,44 @@ import Wishlist from "../../models/wishlist.model.js";
 import Category from "../../models/category.model.js";
 import Subcategory from "../../models/subcategory.model.js";
 
-export const renderProductPage = async (req, res) => {
+export const renderProductPage = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    let user = null;
-    let cart = null;
-    let wishlist = [];
-    let cartVariants = [];
+    let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
+    // const token = req.cookies.token;
+    // let user = null;
+    // let cart = null;
+    // let wishlist = [];
+    // let cartVariants = [];
 
     const productId = req.params.productId;
     const variantId = req.params.variantId;
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
-        cart = await Cart.findOne({ user_id: user.userId });
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
-    }
+    // if (token) {
+    //   try {
+    //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //     user = decoded;
+        // wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
+    //     cart = await Cart.findOne({ user_id: user.userId });
+    //   } catch (error) {
+    //     console.log("Invalid or expired token:", error);
+    //   }
+    // }
+
+
+    // const cartCount = cart?.products?.length || 0;
+    // const categories = await Category.find({ isListed: true }).populate({
+    //   path: "subcategories",
+    //   match: { isListed: true },
+    // });
 
     const brands = await Brand.find({ isListed: true });
-    const cartCount = cart?.products?.length || 0;
     if (cart && cart.products.length > 0) {
       cartVariants = cart.products
         .filter(product => product.variant_id)
         .map(product => product.variant_id.toString());
     }
 
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
+
 
     let product = await Product.findById({ _id: productId, isDeleted: false }).populate("categoryId subcategoryId brandId");
 
@@ -95,18 +99,20 @@ export const renderProductPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering product page:", error);
-    return res.status(500).send("Server Error");
+    next({ statusCode: 500, message: error.message });
   }
 };
 
 
 export const renderShopPage = async (req, res) => {
   try {
-    const token = req.cookies.token;
-    let cart = { products: [] };
-    let user = null;
-    let wishlist = { products: [] };
-    let cartVariants = [];
+    let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
+
+    // const token = req.cookies.token;
+    // let cart = { products: [] };
+    // let user = null;
+    // let wishlist = { products: [] };
+    // let cartVariants = [];
 
     const page = parseInt(req.query.page) || 1;
     const limit = 12;
@@ -114,23 +120,28 @@ export const renderShopPage = async (req, res) => {
     console.log(filters)
     const searchQuery = req.query.search || '';
 
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId }) || { products: [] };
-        wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id") || { products: [] };
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
-    }
+    // if (token) {
+    //   try {
+    //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //     user = decoded;
+    //     cart = await Cart.findOne({ user_id: user.userId }) || { products: [] };
+    //     wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id") || { products: [] };
+    //   } catch (error) {
+    //     console.log("Invalid or expired token:", error);
+    //   }
+    // }
 
-    if (cart.products.length > 0) {
-      cartVariants = cart.products
-        .filter(product => product.variant_id)
-        .map(product => product.variant_id.toString());
-    }
-    const cartCount = cart.products.length;
+    // if (cart.products.length > 0) {
+    //   cartVariants = cart.products
+    //     .filter(product => product.variant_id)
+    //     .map(product => product.variant_id.toString());
+    // }
+    // const cartCount = cart.products.length;
+    // const categories = await Category.find({ isListed: true }).populate({
+    //   path: "subcategories",
+    //   match: { isListed: true },
+    // });
+
 
     let filterConditions = { isDeleted: false };
     let sortOptions = {}; 
@@ -160,9 +171,9 @@ export const renderShopPage = async (req, res) => {
     }
     if (filters.price) {
       if (filters.price[0] === 'low-to-high') {
-        sortOptions = { 'variants.salePrice': 1 };  // Sort in ascending order of salePrice
+        sortOptions = { 'variants.salePrice': 1 };
       } else if (filters.price[0] === 'high-to-low') {
-        sortOptions = { 'variants.salePrice': -1 };  // Sort in descending order of salePrice
+        sortOptions = { 'variants.salePrice': -1 };  
       }
     }
     if (filters.rating) {
@@ -205,18 +216,13 @@ export const renderShopPage = async (req, res) => {
       });
     });
 
-    // Calculate total number of variants and adjust pagination
     const totalVariants = allVariants.length;
     const totalPages = Math.ceil(totalVariants / limit);
 
     // Paginate variants
     const paginatedVariants = allVariants.slice((page - 1) * limit, page * limit);
 
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
-
+ 
     const subcategories = await Subcategory.find({ isListed: true });
     const brands = await Brand.find({ isListed: true });
 
@@ -239,7 +245,7 @@ export const renderShopPage = async (req, res) => {
 
   } catch (error) {
     console.error(error);
-    res.status(500).send("Server error");
+    next({ statusCode: 500, message: error.message });
   }
 };
 

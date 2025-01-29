@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from "dotenv";dotenv.config();
 import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
@@ -85,39 +84,17 @@ import Category from "../../models/category.model.js";
 //     res.status(500).send("Internal Server Error");
 //   }
 // };
-
-export const renderCartPage = async (req, res) => {
+export const renderCartPage = async (req, res, next) => {
   try {
-    const token = req.cookies.token;
-    let user = null;
-    let cart = null;
+    const { user, wishlist, cart, cartVariants, categories } = req;
     let cartProducts = [];
-    const PAGE_SIZE = 3; 
-
+    const PAGE_SIZE = 3;
     const currentPage = parseInt(req.query.page) || 1;
-
-    if (token) {
-      try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        user = decoded;
-        cart = await Cart.findOne({ user_id: user.userId }).populate(
-          "products.product_id products.variant_id"
-        );
-      } catch (error) {
-        console.log("Invalid or expired token:", error);
-      }
-    }
 
     const products = await Product.find({ isDeleted: false });
     const brands = await Brand.find({ isListed: true });
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
 
-    const cartCount = cart?.products?.length || 0;
-
-    if (cart && cart.products.length > 0) {
+    if (cart && cart.products && cart.products.length > 0) {
       const sortedCartProducts = cart.products.sort(
         (a, b) => new Date(b.added_at) - new Date(a.added_at)
       );
@@ -131,7 +108,6 @@ export const renderCartPage = async (req, res) => {
         paginatedCartProducts.map(async (item) => {
           const productDetails = await Product.findById(item.product_id);
           if (!productDetails) {
-            console.log(`Product not found: ${item.product_id}`);
             return null;
           }
 
@@ -142,7 +118,6 @@ export const renderCartPage = async (req, res) => {
           );
 
           if (!variantDetails) {
-            console.log(`Variant not found: ${item.variant_id}`);
             return null;
           }
 
@@ -154,9 +129,11 @@ export const renderCartPage = async (req, res) => {
           };
         })
       );
+
       cartProducts = cartProducts.filter((item) => item !== null);
     }
 
+    const cartCount = cart ? cart.products.length : 0;
     const totalPages = Math.ceil(cartCount / PAGE_SIZE);
 
     return res.render("user/cart", {
@@ -171,28 +148,112 @@ export const renderCartPage = async (req, res) => {
       totalPages,
     });
   } catch (error) {
-    console.error("Error rendering cart page:", error);
-    res.status(500).send("Internal Server Error");
+    console.log("Error occurred while rendering the cart page:", error);
+    next({ statusCode: 500, message: error.message });
   }
 };
 
+
+
+// export const renderCartPage = async (req, res) => {
+//   try {
+//     const { user, wishlist, cart, cartCount, cartVariants, categories } = req;
+//     // const token = req.cookies.token;
+//     // let user = null;
+//     // let cart = null;
+//     let cartProducts = [];
+//     const PAGE_SIZE = 3; 
+//     const currentPage = parseInt(req.query.page) || 1;
+
+//     // if (token) {
+//     //   try {
+//     //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+//     //     user = decoded;
+//     //     cart = await Cart.findOne({ user_id: user.userId }).populate(
+//     //       "products.product_id products.variant_id"
+//     //     );
+//     //   } catch (error) {
+//     //     console.log("Invalid or expired token:", error);
+//     //   }
+//     // }
+
+//     const products = await Product.find({ isDeleted: false });
+//     const brands = await Brand.find({ isListed: true });
+//     // const categories = await Category.find({ isListed: true }).populate({
+//     //   path: "subcategories",
+//     //   match: { isListed: true },
+//     // });
+
+//     // const cartCount = cart?.products?.length || 0;
+
+//     // if (cart && cart.products.length > 0) {
+//     //   const sortedCartProducts = cart.products.sort(
+//     //     (a, b) => new Date(b.added_at) - new Date(a.added_at)
+//     //   );
+
+//       const startIndex = (currentPage - 1) * PAGE_SIZE;
+//       const endIndex = startIndex + PAGE_SIZE;
+
+//       const paginatedCartProducts = sortedCartProducts.slice(startIndex, endIndex);
+
+//       cartProducts = await Promise.all(
+//         paginatedCartProducts.map(async (item) => {
+//           const productDetails = await Product.findById(item.product_id);
+//           if (!productDetails) {
+//             console.log(`Product not found: ${item.product_id}`);
+//             return null;
+//           }
+
+//           const variantDetails = productDetails.variants.find(
+//             (variant) =>
+//               variant._id &&
+//               variant._id.toString() === item.variant_id?.toString()
+//           );
+
+//           if (!variantDetails) {
+//             console.log(`Variant not found: ${item.variant_id}`);
+//             return null;
+//           }
+
+//           return {
+//             product: productDetails,
+//             variant: variantDetails,
+//             quantity: item.quantity,
+//             added_at: item.added_at,
+//           };
+//         })
+//       );
+//       cartProducts = cartProducts.filter((item) => item !== null);
+//     }
+
+//     const totalPages = Math.ceil(cartCount / PAGE_SIZE);
+
+//     return res.render("user/cart", {
+//       name: user ? user.name : "",
+//       user,
+//       cartProducts,
+//       products,
+//       brands,
+//       categories,
+//       cartCount,
+//       currentPage,
+//       totalPages,
+//     });
+//   } catch (error) {
+//     console.log("Cart page is not loading: ", error);
+//         next({ statusCode: 500, message: error.message });
+//   }
+// };
+
+
 // Add Product To Cart
 export const addToCart = async (req, res) => {
-  let { quantity, productId, variantId } = req.body;
-  quantity = quantity || 1;
-
   try {
-    const token = req.cookies.token;
-    if (!token) {
-      return res
-        .status(401)
-        .json({ success: false, message: "User not logged in" });
-    }
+    let { quantity, productId, variantId } = req.body;
+    quantity = quantity || 1;
+    const { user, cart } = req;
+    let cartCount;
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const userId = decoded.userId;
-
-    let cart = await Cart.findOne({ user_id: userId });
     const product = await Product.findById(productId);
     if (!product) {
       return res
@@ -235,7 +296,7 @@ export const addToCart = async (req, res) => {
 
     if (!cart) {
       cart = new Cart({
-        user_id: userId,
+        user_id: user.userId,
         products: [
           {
             product_id: productId,
@@ -272,13 +333,14 @@ export const addToCart = async (req, res) => {
         await cart.save();
       }
     }
-
-    const cartCount = cart?.products?.length || 0;
-
+  
+    const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+    // const totalQuantity = cart.products.reduce((sum, item) => sum + item.quantity, 0);
+    console.log(cartCount)
     return res.json({
       success: true,
       message: "Product added to cart",
-      cartCount: cartCount,
+      cartCount: totalQuantity,
     });
   } catch (error) {
     console.error("Error adding product to cart:", error);
@@ -287,6 +349,20 @@ export const addToCart = async (req, res) => {
       .json({ success: false, message: "Error adding product to cart" });
   }
 };
+    
+    // const token = req.cookies.token;
+    // if (!token) {
+    //   return res
+    //     .status(401)
+    //     .json({ success: false, message: "User not logged in" });
+    // }
+
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    // const userId = decoded.userId;
+
+    // let cart = await Cart.findOne({ user_id: userId });
+
+
 
 // export const addToCart = async (req, res) => {
 //   let { quantity, productId, variantId } = req.body;
@@ -405,22 +481,24 @@ export const addToCart = async (req, res) => {
 // Remove Product From Cart
 export const removeCartProduct = async (req, res) => {
   try {
-    let user;
+    const { user } = req;
     const { variantId, productId } = req.body;
 
-    const token = req.cookies.token;
 
-    if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-    } else {
-      return res.redirect("/home");
-    }
+        // let user;
+    // const token = req.cookies.token;
 
-    const cart = await Cart.findOne({ user_id: user.userId });
-    if (!cart) {
-      return res.json({ success: false, message: "Cart not found" });
-    }
+    // if (token) {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    // } else {
+    //   return res.redirect("/home");
+    // }
+
+    // const cart = await Cart.findOne({ user_id: user.userId });
+    // if (!cart) {
+    //   return res.json({ success: false, message: "Cart not found" });
+    // }
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -451,34 +529,34 @@ export const removeCartProduct = async (req, res) => {
 export const updateCartPageProduct = async (req, res) => {
   try {
     const { newQuantity, productId, variantId } = req.body;
-
+    let { user, cart, cartCount } = req;
     // console.log("quantity", newQuantity);
     // console.log("productId", productId);
     // console.log("variantId", variantId);
 
-    const token = req.cookies.token;
-    let user = null;
-    let cart = null;
+    // const token = req.cookies.token;
+    // let user = null;
+    // let cart = null;
 
-    if (!token) {
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+    // if (!token) {
+    //   return res.status(401).json({ success: false, message: "Unauthorized" });
+    // }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-      cart = await Cart.findOne({ user_id: user.userId });
-    } catch (error) {
-      console.log("Invalid or expired token:", error);
-      return res.status(401).json({ success: false, message: "Unauthorized" });
-    }
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    //   cart = await Cart.findOne({ user_id: user.userId });
+    // } catch (error) {
+    //   console.log("Invalid or expired token:", error);
+    //   return res.status(401).json({ success: false, message: "Unauthorized" });
+    // }
 
-    if (!cart || !cart.products) {
-      console.error("Cart or products are not defined");
-      return res
-        .status(404)
-        .json({ success: false, message: "Cart not found" });
-    }
+    // if (!cart || !cart.products) {
+    //   console.error("Cart or products are not defined");
+    //   return res
+    //     .status(404)
+    //     .json({ success: false, message: "Cart not found" });
+    // }
 
     const productInCart = cart.products.find(
       (item) =>
@@ -526,13 +604,8 @@ export const updateCartPageProduct = async (req, res) => {
 // Buy Now Button in product page
 export const buyNow = async (req, res) => {
   try {
-    const token = req.cookies.token;
     const { quantity, productId, variantId } = req.body;
-
-    // console.log("quantity", quantity)
-    // console.log("prouctId", productId)
-    // console.log("variantId",variantId)
-
+    let { user, cart, token } = req;
     if (!token) {
       return res.status(404).json({
         success: false,
@@ -540,10 +613,25 @@ export const buyNow = async (req, res) => {
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const userId = decoded.userId;
+    // const token = req.cookies.token;
+    // console.log("quantity", quantity)
+    // console.log("prouctId", productId)
+    // console.log("variantId",variantId)
 
-    let cart = await Cart.findOne({ user_id: userId });
+
+
+    // const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    // const userId = decoded.userId;
+
+    // let cart = await Cart.findOne({ user_id: userId });
+
+    if (!cart) {
+      console.log("No cart found for the user, creating a new one.");
+      cart = new Cart({
+          user_id: user.userId,
+          products: [] 
+      }); 
+    }
 
     const product = await Product.findById(productId);
     if (!product) {
@@ -580,7 +668,7 @@ export const buyNow = async (req, res) => {
 
     if (!cart) {
       cart = new Cart({
-        user_id: userId,
+        user_id: user.userId,
         products: [
           {
             product_id: productId,
@@ -591,7 +679,8 @@ export const buyNow = async (req, res) => {
         ],
       });
       await cart.save();
-      return res.json({ success: true, message: "Product added to cart" });
+      const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      return res.json({ success: true, message: "Product added to cart", cartCount: totalQuantity });
     } else {
       const existingItem = cart.products.find(
         (item) => item.variant_id.toString() === variantId.toString()
@@ -609,10 +698,11 @@ export const buyNow = async (req, res) => {
         existingItem.added_at = new Date();
 
         await cart.save();
-
+        const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
         return res.json({
           success: true,
           message: "Cart updated successfully",
+          cartCount: totalQuantity
         });
       } else {
         cart.products.push({
@@ -622,8 +712,8 @@ export const buyNow = async (req, res) => {
           added_at: new Date(),
         });
         await cart.save();
-
-        return res.json({ success: true, message: "Product added to cart" });
+        const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+        return res.json({ success: true, message: "Product added to cart", cartCount: totalQuantity });
       }
     }
   } catch (error) {

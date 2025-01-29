@@ -52,6 +52,11 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: 0,
       },
+      salePriceBeforeOffer: { 
+        type: Number,
+        required: false,
+        min: 0,
+      },
       salePrice: {
         type: Number,
         required: true,

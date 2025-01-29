@@ -147,11 +147,11 @@ export const handleOTPVerification = async (req, res) => {
         req.session.type = "success";
         
        const { otp } = req.body;
-       //  Compare OTP From Session And User's Input 
+ 
        if (String(otp).trim() === String(req.session.userOTP).trim()) {
           const user = req.session.userData;
           const passwordHash = await hashedPassword(user.password);
-          // Save The User Data To The Database
+
           const saveUserData = new User({
             name: user.name,
             phone_no: user.phone_no,
@@ -177,7 +177,6 @@ export const handleOTPVerification = async (req, res) => {
         });
      
        } else {
-        // OTP Is Incorrect
          res.status(400).json({ success: false, msg: "Invalid OTP Please try again." })
        }
     } catch (error) {
@@ -200,9 +199,7 @@ export const handleResendOTP = async (req, res) => {
         const email = user.email;
         const phone_no = user.phone_no;
 
-        // console.log("User data from decoded token - Email:", email, "Phone:", phone_no);
 
-        // Generate new OTP
         const { OTP, expiryTime } = generateOTP();
         // console.log("Generated OTP:", OTP);
 
@@ -232,9 +229,7 @@ export const handleUserLogin = async (req, res) => {
         const { email, password } = req.body;
         // console.log(req.body)
 
-        // Finding The User
         const user = await User.findOne({ email, role: 'user' });
-        // If The User Is Not Found
         if (!user) {
             const msg = { type: "error", msg: "User Not Found" };
             return res.render("user/login", { msg });
@@ -247,16 +242,14 @@ export const handleUserLogin = async (req, res) => {
 
         }
 
-        // Compare The Password
         const passwordMatch = await bcrypt.compare(password, user.password);
 
-        // If The Password Dosn't Match
         if (!passwordMatch) {
             const msg = { type: 'error', msg: "Invalid Credential..!" };
             return res.render("user/login", { msg });            
         }
 
-        // JWT Token
+
         const token = jwt.sign(
             { userId: user._id, name: user.name, profilePic: user.profilePic || null },
             process.env.JWT_SECRET_KEY,
@@ -276,6 +269,8 @@ export const handleUserLogin = async (req, res) => {
         res.render("user/login", { msg });
     }
 }
+
+
 // Hnadle The Login With Google Account
 export const googleCallbackHandler = async (req, res) => {
     try {

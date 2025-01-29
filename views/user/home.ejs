@@ -113,6 +113,38 @@
     window.scrollTo(0, 0);
   };
 
+  $(document).ready(function () {
+            const offers = $('#offers-container .offer-item');
+            let currentIndex = 0;
+            const offerElement = $('#current-offer');
+
+            if (offers.length > 0) {
+                offerElement.text(offers.eq(currentIndex).text());
+            }
+
+            function showNextOffer() {
+                if (offers.length === 0) return;
+
+                const nextIndex = (currentIndex + 1) % offers.length;
+                const nextOffer = offers.eq(nextIndex).text();
+
+                offerElement.animate({ opacity: 0, marginTop: '-20px' }, 100, function () {
+                    setTimeout(function () {
+                        offerElement.text(nextOffer);
+                        offerElement.css({ opacity: 0, marginTop: '20px' });
+                        offerElement.animate({ opacity: 1, marginTop: '0px' }, 100);
+                        currentIndex = nextIndex;
+                    }, 3000);
+                });
+            }
+
+            if (offers.length > 0) {
+                setInterval(showNextOffer, 12000); 
+            }
+        });
+
+
+
   document.addEventListener("DOMContentLoaded", function() {
         const hamburgerMenu = document.getElementById("hamburger-menu");
         const navBarLists = document.querySelector(".nav-bar-lists-mobile");
@@ -314,10 +346,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
               if (data.success) {
+                // const cartCountElement = document.querySelector('.nav-cart-count');
+                // if (cartCountElement) {
+                //   cartCountElement.innerText = data.cartCount;
+                // }
                 const cartCountElement = document.querySelector('.nav-cart-count');
-              if (cartCountElement) {
-                cartCountElement.innerText = data.cartCount;
-              }
+                if (cartCountElement) {
+                  cartCountElement.innerText = data.cartCount;
+                  cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
+                }
               const newButton = document.createElement('a');
               newButton.href = '/user/my-cart';
               newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;

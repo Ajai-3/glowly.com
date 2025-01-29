@@ -6,35 +6,37 @@ import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 
 
-
+// next({ statusCode: 500, message: error.message });
 
 
 // Render Order List Page
-export const renderOrderListPage = async (req, res) => {
+export const renderOrderListPage = async (req, res, next) => {
   try {
+    const { user, token, cartCount, categories } = req;
     const PAGE_SIZE = 6;
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("/user/home");
     }
-
-    let user;
-    let cart;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-      cart = await Cart.findOne({ user_id: user.userId });
-    } catch (error) {
-      console.error("Invalid token:", error);
-    }
-
     const currentPage = parseInt(req.query.page) || 1;
-    const cartCount = cart?.products?.length || 0;
 
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
+    // let user;
+    // let cart;
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    //   cart = await Cart.findOne({ user_id: user.userId });
+    // } catch (error) {
+    //   console.error("Invalid token:", error);
+    // }
+
+    
+    // const cartCount = cart?.products?.length || 0;
+
+    // const categories = await Category.find({ isListed: true }).populate({
+    //   path: "subcategories",
+    //   match: { isListed: true },
+    // });
 
     const allOrders = await Order.find({ user_id: user.userId })
       .populate({
@@ -68,29 +70,30 @@ export const renderOrderListPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering order list:", error);
-    res.status(500).send("Internal Server Error");
+    next({ statusCode: 500, message: error.message });
   }
 };
 
 
 
 // Cancel Order
-export const cancelOrder = async (req, res) => {
+export const cancelOrder = async (req, res, next) => {
   try {
+    const { user, token, cartCount, categories } = req;
     const { orderId, productId, variantId, quantity } = req.body;
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("user/home");
     }
 
-    let user;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-    } catch (error) {
-      console.error("Invalid token:", error);
-      // return res.json({ success: false, message: 'Invalid token' });
-    }
+    // let user;
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    // } catch (error) {
+    //   console.error("Invalid token:", error);
+    //   // return res.json({ success: false, message: 'Invalid token' });
+    // }
 
 
     if (!productId || !variantId || !orderId || !quantity) {
@@ -138,27 +141,28 @@ export const cancelOrder = async (req, res) => {
       .json({ success: true, message: "Order canceled successfully" });
   } catch (error) {
     console.error("Error canceling order:", error);
-    res.status(500).send("Error canceling order");
+    next({ statusCode: 500, message: error.message });
   }
 };
 
 // Return order
-export const returnOrder = async (req, res) => {
+export const returnOrder = async (req, res, next) => {
   try {
+    const { user, token, cartCount, categories } = req;
     const { orderId, productId, variantId, quantity } = req.body;
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("user/home");
     }
 
-    let user;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-    } catch (error) {
-      console.error("Invalid token:", error);
-      // return res.json({ success: false, message: 'Invalid token' });
-    }
+    // let user;
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    // } catch (error) {
+    //   console.error("Invalid token:", error);
+    //   // return res.json({ success: false, message: 'Invalid token' });
+    // }
 
 
     if (!productId || !variantId || !orderId || !quantity) {
@@ -205,7 +209,7 @@ export const returnOrder = async (req, res) => {
       .json({ success: true, message: "Order returned successfully" });
   } catch (error) {
     console.error("Error canceling order:", error);
-    res.status(500).send("Error canceling order");
+    next({ statusCode: 500, message: error.message });
   }
 };
 
@@ -217,28 +221,29 @@ export const returnOrder = async (req, res) => {
 // Render Order Details Page
 export const orderDetailsPage = async (req, res) => {
   try {
+    const { user, cart, token, cartCount, categories } = req;
     const { orderId, productId, variantId, addressId } = req.params;
-    const token = req.cookies.token;
+    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("/user/home");
     }
 
-    let user;
-    let cart;
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-      user = decoded;
-      cart = await Cart.findOne({ user_id: user.userId });
-    } catch (error) {
-      console.error("Invalid token:", error);
-      return res.redirect("/user/home");
-    }
+    // let user;
+    // let cart;
+    // try {
+    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    //   user = decoded;
+    //   cart = await Cart.findOne({ user_id: user.userId });
+    // } catch (error) {
+    //   console.error("Invalid token:", error);
+    //   return res.redirect("/user/home");
+    // }
 
-    const cartCount = cart?.products?.length || 0;
-    const categories = await Category.find({ isListed: true }).populate({
-      path: "subcategories",
-      match: { isListed: true },
-    });
+    // const cartCount = cart?.products?.length || 0;
+    // const categories = await Category.find({ isListed: true }).populate({
+    //   path: "subcategories",
+    //   match: { isListed: true },
+    // });
 
     const order = await Order.findById(orderId)
       .populate({
@@ -281,6 +286,6 @@ export const orderDetailsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in product detail page:", error);
-    res.status(500).send("Something went wrong!");
+    next({ statusCode: 500, message: error.message });
   }
 };

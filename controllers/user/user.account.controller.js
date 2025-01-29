@@ -5,16 +5,17 @@ import Address from "../../models/address.model.js";
 import Category from "../../models/category.model.js";
 
 
-export const renderMyAccountPage = async (req, res) => {
+export const renderMyAccountPage = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
-        let user = null; 
-        let cart;
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-            cart = await Cart.findOne({ user_id: user.userId })
-        }  
+        const { user, token, cartCount, categories } = req;
+        // const token = req.cookies.token;
+        // let user = null; 
+        // let cart;
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded; 
+        //     cart = await Cart.findOne({ user_id: user.userId })
+        // }  
         
         if (!token) {
             return res.redirect('/home')
@@ -27,12 +28,12 @@ export const renderMyAccountPage = async (req, res) => {
        
         // const products = await Product.find({ isDeleted: false });
         // const brands = await Brand.find({ isListed: true })
-        const cartCount = cart?.products?.length || 0;
-        const categories = await Category.find({ isListed: true })
-        .populate({
-            path: 'subcategories',
-            match: { isListed: true },  
-        });      
+        // const cartCount = cart?.products?.length || 0;
+        // const categories = await Category.find({ isListed: true })
+        // .populate({
+        //     path: 'subcategories',
+        //     match: { isListed: true },  
+        // });      
              
       return res.render("user/my-account", {
         name: user ? user.name : "",
@@ -43,19 +44,20 @@ export const renderMyAccountPage = async (req, res) => {
       })  
     } catch (error) {
         console.error("Error in rendering my account", error);
-        return res.status(500).send("Error in my account")
+        next({ statusCode: 500, message: error.message });
     }
 }
 
 // Update Profile
-export const handleProfileUpdate = async (req, res) => {
+export const handleProfileUpdate = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
-        let user = null; 
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-        }  
+        const { user } = req;
+        // const token = req.cookies.token;
+        // let user = null; 
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded; 
+        // }  
 
         const { name, dateOfBirth, phone_no } = req.body;
         const updatedData = { name, dateOfBirth, phone_no };
@@ -88,7 +90,7 @@ export const handleProfileUpdate = async (req, res) => {
         res.redirect('/my-account');
     } catch (error) {
         console.log("Error in update profile", error);
-        return res.status(500).send("Error in update profile");
+        next({ statusCode: 500, message: error.message });
     }
 };
 
@@ -121,32 +123,33 @@ export const handleProfileUpdate = async (req, res) => {
 
 
 
-export const renderManageAddressPage = async (req, res) => {
+export const renderManageAddressPage = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
-        let user = null; 
-        let cart;
+        const { user, token, cartCount, categories } = req;
+        // const token = req.cookies.token;
+        // let user = null; 
+        // let cart;
         
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded; 
-            cart = await Cart.findOne({ user_id: user.userId })
-        }  
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded; 
+        //     cart = await Cart.findOne({ user_id: user.userId })
+        // }  
 
         if (!token) {
             return res.redirect('/home')
         }
        
-        const activeUser = await User.findById(user.userId)
+        // const activeUser = await User.findById(user.userId)
 
         // const products = await Product.find({ isDeleted: false });
         // const brands = await Brand.find({ isListed: true })
-        const cartCount = cart?.products?.length || 0;
-        const categories = await Category.find({ isListed: true })
-        .populate({
-            path: 'subcategories',
-            match: { isListed: true },  
-        });      
+        // const cartCount = cart?.products?.length || 0;
+        // const categories = await Category.find({ isListed: true })
+        // .populate({
+        //     path: 'subcategories',
+        //     match: { isListed: true },  
+        // });      
              
         const addresses = await Address.find({ user_id: user.userId, isActive: true });
 
@@ -156,12 +159,12 @@ export const renderManageAddressPage = async (req, res) => {
         categories,
         cartCount,
         addresses: addresses,
-        activeUser
+        activeUser: user
 
       })  
     } catch (error) {
         console.error("Error in rendering my account", error);
-        return res.status(500).send("Error in my account")
+        next({ statusCode: 500, message: error.message });
     }
 }
 
@@ -169,23 +172,27 @@ export const renderManageAddressPage = async (req, res) => {
 // Add New Address
 export const handleAddAddress = async (req, res) => {
     try {
-        const token = req.cookies.token;
-        let user = null;
-        let cart = null;
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded;
-            cart = await Cart.findOne({ user_id: user.userId })
+        const { user, token, cartCount, categories } = req;
+        if (!token) {
+            return res.redirect('/home')
         }
+        // const token = req.cookies.token;
+        // let user = null;
+        // let cart = null;
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded;
+        //     cart = await Cart.findOne({ user_id: user.userId })
+        // }
 
 
-        const cartCount = cart?.products?.length || 0;
+        // const cartCount = cart?.products?.length || 0;
 
-        const categories = await Category.find({ isListed: true })
-            .populate({
-                path: 'subcategories',
-                match: { isListed: true },
-            });
+        // const categories = await Category.find({ isListed: true })
+        //     .populate({
+        //         path: 'subcategories',
+        //         match: { isListed: true },
+        //     });
 
         const {
             city,
@@ -274,12 +281,13 @@ export const handleAddAddress = async (req, res) => {
 // Remove Address
 export const removeAddress = async (req, res) => {
     try {
-        const token = req.cookies.token;
-        let user = null;
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded;
-        }
+        const { user } = req;
+        // const token = req.cookies.token;
+        // let user = null;
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded;
+        // }
 
         if (!user) {
             return res.status(401).json({ message: "Unauthorized access. Please log in." });

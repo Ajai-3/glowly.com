@@ -12,47 +12,49 @@ import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 import Transaction from "../../models/transaction.model.js";
 
-export const renderCheckoutPage = async (req, res) => {
+export const renderCheckoutPage = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
+        const { user, cart, cartCount, token, categories } = req;
         if (!token) {
             return res.redirect('user/login'); 
         }
+        // const token = req.cookies.token;
+        
 
-        let user = null;
-        let cart = null;
+        // let user = null;
+        // let cart = null;
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            user = decoded;
-            cart = await Cart.findOne({ user_id: user.userId });
-        } catch (error) {
-            if (error.name === 'TokenExpiredError') {
-                console.error('JWT expired at:', error.expiredAt);
-                return res.redirect('/user/home');
-            }
-            throw error;
-        }
+        // try {
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        //     user = decoded;
+        //     cart = await Cart.findOne({ user_id: user.userId });
+        // } catch (error) {
+        //     if (error.name === 'TokenExpiredError') {
+        //         console.error('JWT expired at:', error.expiredAt);
+        //         return res.redirect('/user/home');
+        //     }
+        //     throw error;
+        // }
 
         
-        if (!cart) {
-            console.log("No cart found for the user, creating a new one.");
-            cart = new Cart({
-                user_id: user.userId,
-                products: [] 
-            }); 
-        }
-        const cartCount = cart?.products?.length || 0;
+        // if (!cart) {
+        //     console.log("No cart found for the user, creating a new one.");
+        //     cart = new Cart({
+        //         user_id: user.userId,
+        //         products: [] 
+        //     }); 
+        // }
+        // const cartCount = cart?.products?.length || 0;
 
-        const categories = await Category.find({ isListed: true })
-            .populate({
-                path: 'subcategories',
-                match: { isListed: true },
-            });
+        // const categories = await Category.find({ isListed: true })
+        //     .populate({
+        //         path: 'subcategories',
+        //         match: { isListed: true },
+        //     });
 
         const products = await Product.find({ isDeleted: false });
         const addresses = await Address.find({ user_id: user.userId, isActive: true  }).limit(3);
-        const userDetails = await User.findById(user.userId);
+        // const userDetails = await User.findById(user.userId);
 
     
         const cartProducts = await Promise.all(
@@ -88,50 +90,58 @@ export const renderCheckoutPage = async (req, res) => {
             user: user,
             categories,
             addresses,
-            userDetails,
+            userDetails: user,
             products,
             cartCount,
             cartProducts: validCartProducts,
         });
     } catch (error) {
         console.error("Error rendering checkout page:", error);
-        return res.status(500).send("Internal Server Error");
+        next({ statusCode: 500, message: error.message });
     }
 };
 
 
 
 // Product Page Buy Now 
-export const placeOrderWithBuyNow = async (req, res) => {
+export const placeOrderWithBuyNow = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
+        let { user, cart, cartCount, token, categories } = req;
+        const { quantity, productId, variantId } = req.query;
+        
+
+        // const token = req.cookies.token;
         if (!token) {
             return res.redirect('user/login'); 
         }
+        // let user = null;
+        // let cart = null;
 
-        let user = null;
-        let cart = null;
+        
 
-        const { quantity, productId, variantId } = req.query;
+        // try {
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        //     user = decoded;
+        //     cart = await Cart.findOne({ user_id: user.userId });
+        // } catch (error) {
+        //     if (error.name === 'TokenExpiredError') {
+        //         console.error('JWT expired at:', error.expiredAt);
+        //         return res.redirect('/user/home');
+        //     }
+        //     throw error;
+        // }
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            user = decoded;
-            cart = await Cart.findOne({ user_id: user.userId });
-        } catch (error) {
-            if (error.name === 'TokenExpiredError') {
-                console.error('JWT expired at:', error.expiredAt);
-                return res.redirect('/user/home');
-            }
-            throw error;
-        }
+        
 
-        if (!productId || !variantId || !quantity) {
-            return res.status(400).json({
-                success: false,
-                message: "Product ID and quantity are required.",
-            });
-        }
+        // const cartCount = cart?.products?.length || 0;
+
+        // const categories = await Category.find({ isListed: true })
+        //     .populate({
+        //         path: 'subcategories',
+        //         match: { isListed: true },
+        //     });
+
+
 
         if (!cart) {
             console.log("No cart found for the user, creating a new one.");
@@ -141,13 +151,14 @@ export const placeOrderWithBuyNow = async (req, res) => {
             }); 
         }
 
-        const cartCount = cart?.products?.length || 0;
-
-        const categories = await Category.find({ isListed: true })
-            .populate({
-                path: 'subcategories',
-                match: { isListed: true },
+        if (!productId || !variantId || !quantity) {
+            return res.status(400).json({
+                success: false,
+                message: "Product ID and quantity are required.",
             });
+        }
+
+        
 
         const products = await Product.find({ isDeleted: false });
         const addresses = await Address.find({ user_id: user.userId, 
@@ -190,7 +201,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
 
     } catch (error) {
         console.error("Error rendering checkout page:", error);
-        return res.status(500).send("Internal Server Error");
+        next({ statusCode: 500, message: error.message });
     }
 }
 
@@ -200,22 +211,22 @@ export const placeOrderWithBuyNow = async (req, res) => {
 // Place Order
 export const placeOrder = async (req, res) => {
     try {
-        // const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
+        let { user,  cartCount, token, categories } = req;
         const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
-        const token = req.cookies.token;
+        // const token = req.cookies.token;
 
         if (!token) {
             return res.status(401).json({ success: false, message: "User not authenticated." });
         }
 
-        let user;
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            user = decoded;
-        } catch (error) {
-            console.error("Invalid token:", error);
-            return res.status(401).json({ success: false, message: "Invalid token." });
-        }
+        // let user;
+        // try {
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        //     user = decoded;
+        // } catch (error) {
+        //     console.error("Invalid token:", error);
+        //     return res.status(401).json({ success: false, message: "Invalid token." });
+        // }
 
         if (!address_id || !cart || !payment_method || typeof grandTotal !== 'number') {
             return res.status(400).json({ success: false, message: "Missing required fields." });
@@ -391,21 +402,22 @@ const updateCouponUsage = async (couponId, userId) => {
 export const verifyCoupon = async (req, res) => {
     try {
         const { coupon, grandTotal } = req.body;
+        let { user, cart, cartCount, token, categories } = req;
 
-        const token = req.cookies.token;
-        let user;
+        // const token = req.cookies.token;
+        // let user;
 
         if (!token) {
             return res.status(401).json({ success: false, message: "User not authenticated." });
         }
 
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            user = decoded;
-        } catch (error) {
-            console.error("Invalid token:", error);
-            return res.status(401).json({ success: false, message: "Invalid token." });
-        }
+        // try {
+        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+        //     user = decoded;
+        // } catch (error) {
+        //     console.error("Invalid token:", error);
+        //     return res.status(401).json({ success: false, message: "Invalid token." });
+        // }
 
         const getCoupon = await Coupon.findOne({ code: coupon, isDelete: false }) 
 

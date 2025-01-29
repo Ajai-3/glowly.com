@@ -5,6 +5,7 @@ import multer from "multer";
 import storage from "../helpers/multer.js"
 const upload = multer({ storage: storage });
 import { verifyToken } from "../middlewares/auth.middleware.js";
+import { loadUserData } from "../middlewares/loadUserData.midleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
 import {
   renderLoginPage,
@@ -41,8 +42,8 @@ import { myCoupons } from "../controllers/user/coupon.contoller.js";
 // router.use(authMiddleware);
 
 
-router.get("/", renderHomePage); // Home Page
-router.get("/home", renderHomePage); // Home Page User After Login
+router.get("/", loadUserData, renderHomePage); // Home Page
+router.get("/home", loadUserData, renderHomePage); // Home Page User After Login
 router.get("/login", verifyToken, renderLoginPage); // Login Page
 router.get("/signup",  verifyToken, renderSignupPage); // Signup Page
 router.get("/page-not-found", verifyToken, pageNotFound);
@@ -71,56 +72,57 @@ router.post("/otp-verification", verifyToken, handleOTPVerification);
 router.post("/reset-password", handleResetPassword)
 
 // Product, Category & Sub Category Management 
-router.get("/product/:productId/:variantId", renderProductPage);
-router.get("/shop", renderShopPage);
+router.get("/product/:productId/:variantId", loadUserData, renderProductPage);
+router.get("/shop", loadUserData, renderShopPage);
 // router.get("/subcategory/:subcategoryId", renderPageWithSubcategory);
 // router.post("/product-Page-filters", productPageFilters)
 
 // Account Mangement
-router.get("/my-account", renderMyAccountPage)
-router.post("/my-account",  upload.single('profile-pic'), handleProfileUpdate)
+router.get("/my-account", loadUserData, renderMyAccountPage)
+router.post("/my-account",  upload.single('profile-pic'), loadUserData, handleProfileUpdate)
 // router.post("/remove-profile-pic", removeProfilePicture);
 
 
 // Address Management
-router.get("/manage-address", renderManageAddressPage);
-router.post("/add-address", handleAddAddress);
-router.post("/remove-address/:addressId", removeAddress);
-router.get('/get-address/:addressId', getAddress);
-router.post('/edit-address/:addressId', updateAddress);
+router.get("/manage-address", loadUserData, renderManageAddressPage);
+router.post("/add-address", loadUserData, handleAddAddress);
+router.post("/remove-address/:addressId", loadUserData, removeAddress);
+router.get('/get-address/:addressId', loadUserData, getAddress);
+router.post('/edit-address/:addressId', loadUserData, updateAddress);
 
 // Cart Management
-router.get("/my-cart", renderCartPage)
-router.post("/add-to-cart", addToCart);
-router.post("/buy-now", buyNow);
-router.post("/remove-cart-product", removeCartProduct);
-router.post("/update-cart-product", updateCartPageProduct)
+router.get("/my-cart", loadUserData, renderCartPage)
+router.post("/add-to-cart", loadUserData, addToCart);
+router.post("/buy-now", loadUserData, buyNow);
+router.post("/remove-cart-product", loadUserData, removeCartProduct);
+router.post("/update-cart-product", loadUserData, updateCartPageProduct)
+
 // Checkout Mangement
-router.get("/checkout", renderCheckoutPage);
-router.post("/place-order", placeOrder);
-router.post("/verify-coupon", verifyCoupon);
-router.get('/placeOrderWithBuyNow', placeOrderWithBuyNow);
+router.get("/checkout", loadUserData, renderCheckoutPage);
+router.post("/place-order", loadUserData, placeOrder);
+router.post("/verify-coupon", loadUserData, verifyCoupon);
+router.get('/placeOrderWithBuyNow', loadUserData, placeOrderWithBuyNow);
 
 // Order Management
-router.get("/my-orders", renderOrderListPage);
-router.patch("/cancel-order", cancelOrder)
-router.patch("/return-order", returnOrder)
+router.get("/my-orders", loadUserData, renderOrderListPage);
+router.patch("/cancel-order", loadUserData, cancelOrder)
+router.patch("/return-order", loadUserData, returnOrder)
 // router.post("/verify-razorpay-place-order", verifyRazorPayOrderPayment)
-router.get('/product-details/:orderId/:productId/:variantId/:addressId', orderDetailsPage)
+router.get('/product-details/:orderId/:productId/:variantId/:addressId', loadUserData, orderDetailsPage)
 //Wish list Management
-router.get("/my-wishlist", renderWishlistPage)
-router.post('/add-to-wishlist/:id', addToWishlist);
+router.get("/my-wishlist", loadUserData, renderWishlistPage)
+router.post('/add-to-wishlist/:id', loadUserData, addToWishlist);
 
 // Wallet Managent
-router.get("/my-wallet", myWallet)
-router.post("/add-money-to-wallet", addMoneyToWallet)
+router.get("/my-wallet", loadUserData, myWallet)
+router.post("/add-money-to-wallet", loadUserData, addMoneyToWallet)
 
 // Coupon Management
-router.get("/my-coupons", myCoupons)
+router.get("/my-coupons", loadUserData, myCoupons)
 
 
 
-router.get("/logout", handleUserLogout);
+router.get("/logout", loadUserData, handleUserLogout);
 
 
 export default router;

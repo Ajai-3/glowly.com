@@ -8,35 +8,42 @@ import Category from "../../models/category.model.js";
 import Wishlist from "../../models/wishlist.model.js";
 
 
-export const renderWishlistPage = async (req, res) => {
+export const renderWishlistPage = async (req, res, next) => {
     try {
-        const token = req.cookies.token;
-        let user = null;
-        let cart;
-        let wishlist;
-        let cartVariants = [];
+        const { user, wishlist, token, cartCount, cartVariants, categories } = req;
+        // const token = req.cookies.token;
+        // let user = null;
+        // let cart;
+        // let wishlist;
+        // let cartVariants = [];
         let wishlistProducts = [];
         const ITEMS_PER_PAGE = 3;
         const page = parseInt(req.query.page) || 1; 
 
-        if (token) {
-            const decoded = jwt.decode(token);
-            user = decoded;
-            cart = await Cart.findOne({ user_id: user.userId });
-            wishlist = await Wishlist.findOne({ user_id: user.userId });
-        }
+        // if (token) {
+        //     const decoded = jwt.decode(token);
+        //     user = decoded;
+        //     cart = await Cart.findOne({ user_id: user.userId });
+            // wishlist = await Wishlist.findOne({ user_id: user.userId });
+        // const cartCount = cart?.products?.length || 0;
+        // }
+        // const categories = await Category.find({ isListed: true }).populate({
+        //     path: 'subcategories',
+        //     match: { isListed: true },
+        // });
 
         if (!token) {
             return res.redirect('/home');
         }
 
-        const cartCount = cart?.products?.length || 0;
+        
 
-        if (cart && cart.products.length > 0) {
-            cartVariants = cart.products
-                .filter(product => product.variant_id)
-                .map(product => product.variant_id.toString());
-        }
+        // if (cart && cart.products.length > 0) {
+        //     cartVariants = cart.products
+        //         .filter(product => product.variant_id)
+        //         .map(product => product.variant_id.toString());
+        // }
+
         if (wishlist && wishlist.products.length > 0) {
             const totalItems = wishlist.products.length;
 
@@ -69,10 +76,7 @@ export const renderWishlistPage = async (req, res) => {
 
         const totalPages = Math.ceil((wishlist ? wishlist.products.length : 0) / ITEMS_PER_PAGE);
 
-        const categories = await Category.find({ isListed: true }).populate({
-            path: 'subcategories',
-            match: { isListed: true },
-        });
+        
 
         return res.render("user/my-wishlist", {
             name: user ? user.name : "",
@@ -83,11 +87,11 @@ export const renderWishlistPage = async (req, res) => {
             currentPage: page,
             totalPages,
             cartCount,
-            wishlist // Pass the wishlist data to the view
+            wishlist 
         });
     } catch (error) {
         console.error("Error rendering wishlist page", error);
-        return res.status(500).send("Wishlist Page error");
+        next({ statusCode: 500, message: error.message });
     }
 };
 
@@ -95,17 +99,19 @@ export const renderWishlistPage = async (req, res) => {
 
 
 // Add A To Wishlist
-export const addToWishlist = async (req, res) => {
+export const addToWishlist = async (req, res, next) => {
     try {
+        const { user, wishlist, token } = req;
         const { product_id, variant_id } = req.body;
-        const token = req.cookies.token;
+        // const token = req.cookies.token;
 
         if (!token) {
-            return res.status(401).json({ error: 'Unauthorized: No token provided' });
+            return res.redirect('/home');
         }
 
         if (!mongoose.Types.ObjectId.isValid(product_id) || !mongoose.Types.ObjectId.isValid(variant_id)) {
             return res.status(400).json({ error: 'Invalid product_id or variant_id' });
+            // return next({ statusCode: 404, message: 'Categories not found' })
         }
 
         let decoded;
@@ -117,10 +123,10 @@ export const addToWishlist = async (req, res) => {
 
         const userId = decoded.userId;
 
-        let wishlist = await Wishlist.findOne({ user_id: userId });
+        // let wishlist = await Wishlist.findOne({ user_id: userId });
 
         if (!wishlist) {
-            wishlist = new Wishlist({ user_id: userId, products: [] });
+            wishlist = new Wishlist({ user_id: user.userId, products: [] });
             await wishlist.save();
         }
 
@@ -146,6 +152,6 @@ export const addToWishlist = async (req, res) => {
 
     } catch (error) {
         console.error("Error adding/removing product in wishlist:", error);
-        return res.status(500).json({ error: "Error in add/remove to wishlist" });
+        next({ statusCode: 500, message: error.message });
     }
 };

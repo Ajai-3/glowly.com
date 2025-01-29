@@ -366,6 +366,7 @@ cron.schedule('* * * * *', async () => {
 
             for (const product of products) {
                 for (const variant of product.variants) {
+                    variant.salePriceBeforeOffer = variant.salePrice;
                     let newSalePrice = variant.regularPrice;
                     const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
 
@@ -376,6 +377,8 @@ cron.schedule('* * * * *', async () => {
                         const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
                         newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0); // Ensure price is not negative
                     }
+
+
 
                     variant.salePrice = Math.round(newSalePrice);
                 }
@@ -403,18 +406,8 @@ cron.schedule('* * * * *', async () => {
 
             for (const product of products) {
                 for (const variant of product.variants) {
-                    let originalPrice = variant.salePrice;
-                    const maxDiscountValue = (70 / 100) * variant.regularPrice;
 
-                    if (offer.offerType === 'flat') {
-                        const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
-                        originalPrice = Math.min(variant.salePrice + appliedDiscount, variant.regularPrice); 
-                    } else if (offer.offerType === 'percentage') {
-                        const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
-                        originalPrice = Math.min(variant.salePrice + appliedDiscount, variant.regularPrice);
-                    }
-
-                    variant.salePrice = originalPrice;
+                    variant.salePrice = variant.salePriceBeforeOffer;
                 }
                 await product.save();
             }
@@ -457,7 +450,7 @@ export const removeOffer = async (req, res) => {
             });
         }
 
-        offer.isDeleted = true
+        // Deactivate the offer
         offer.isActive = false;
         await offer.save();
         console.log(`Offer ${offerId} deactivated.`);
@@ -467,25 +460,14 @@ export const removeOffer = async (req, res) => {
 
         for (const product of products) {
             for (const variant of product.variants) {
-                let previousSalePrice = variant.salePrice; // Current sale price after offer applied
-                let restoredSalePrice = previousSalePrice;
-    
-                const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
-    
-                if (offer.offerType === 'flat') {
-                    const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
-                    restoredSalePrice = Math.min(previousSalePrice + appliedDiscount, variant.regularPrice);
-                } else if (offer.offerType === 'percentage') {
-                    const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
-                    restoredSalePrice = Math.min(previousSalePrice + appliedDiscount, variant.regularPrice);
-                }
-    
-                variant.salePrice = Math.round(restoredSalePrice);
+                
+
+                variant.salePrice = variant.salePriceBeforeOffer;
+                console.log("Reverted variant sale price:", variant.salePrice);
             }
-    
+
             await product.save();
         }
-        console.log("Offer removed, prices restored.");
 
         return res.status(200).json({
             success: true,
