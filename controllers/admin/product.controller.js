@@ -197,25 +197,23 @@ export const addProduct = async (req, res) => {
             variants,
             shareImages
         } = req.body;
-        console.log(req.body)
+        // console.log(req.body)
 
-        // Basic validation
         if (!productName || !brand || !description || !category || !subCategory || !variants) {
             return res.status(400).json({ success: false, message: 'Missing required fields' });
         }
 
-        // Parse variants data
+
+
         const parsedVariants = JSON.parse(variants);
         
-        // Validate variants data
         if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
             return res.status(400).json({ success: false, message: 'At least one variant is required' });
         }
 
-        // Process images
+
         const sharedImages = req.files.sharedImages ? req.files.sharedImages.map(file => file.path) : [];
 
-        // Map variants with their images
         const processedVariants = parsedVariants.map((variant, index) => {
             const variantImages = shareImages === 'true' 
                 ? sharedImages 
@@ -225,6 +223,10 @@ export const addProduct = async (req, res) => {
 
             if (variantImages.length === 0) {
                 throw new Error(`Images are required for variant ${index + 1}`);
+            }
+
+            if (parseFloat(variant.salePrice) >= parseFloat(variant.regularPrice)) {
+                throw new Error(`Sale price must be less than regular price for variant ${index + 1}.`);
             }
 
             return {
@@ -237,7 +239,6 @@ export const addProduct = async (req, res) => {
             };
         });
 
-        // Create and save new product
         const newProduct = new Product({
             title: productName,
             brandId: new mongoose.Types.ObjectId(brand),

@@ -112,6 +112,15 @@
   window.onload = function() {
     window.scrollTo(0, 0);
   };
+
+  document.addEventListener("DOMContentLoaded", function() {
+        const hamburgerMenu = document.getElementById("hamburger-menu");
+        const navBarLists = document.querySelector(".nav-bar-lists-mobile");
+
+        hamburgerMenu.addEventListener("click", function() {
+            navBarLists.classList.toggle("active");
+        });
+    });
   document.addEventListener("DOMContentLoaded", function() {
     const categories = <%- JSON.stringify(categorizedProducts.map(category => category.categoryName)) %>;
 

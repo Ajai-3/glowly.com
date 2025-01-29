@@ -26,6 +26,10 @@ const offerSchema = new mongoose.Schema({
     type: Boolean,
     default: false, 
   },
+  isDeleted: {
+    type: Boolean,
+    default: false, 
+  },
   category_id: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category', 

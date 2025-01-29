@@ -9,6 +9,7 @@ import userRouter from './routes/user.router.js';
 import adminRouter from './routes/adminRoutes.js';
 // import { verifyAdminToken } from "../Glowly.com/middlewares/admin.midleware.js"
 import { startServer } from './config/connection.js';
+import { errorHandler, notFoundHandler } from './middlewares/error.midleware.js';
 // import path from 'path';
 // import { dirname } from 'path';
 // import flash from 'connect-flash';
@@ -63,10 +64,14 @@ app.use(express.urlencoded({ extended: true })); // Parse form data
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/', userRouter);
+app.use('/',  userRouter);
 // app.use('/', adminRouter);
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
+
+
+app.use(errorHandler);
+app.use('*', notFoundHandler);
 
 // Start Server and connect Database
 startServer(app, PORT, DB_URL);

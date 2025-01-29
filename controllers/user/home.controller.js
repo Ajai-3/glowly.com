@@ -8,7 +8,7 @@ import Wishlist from "../../models/wishlist.model.js";
 
 
 // Render Home Page
-export const renderHomePage = async (req, res) => {
+export const renderHomePage = async (req, res, next) => {
     try {
         let user = null;
         let wishlist = [];
@@ -47,6 +47,9 @@ export const renderHomePage = async (req, res) => {
             match: { isListed: true },
         });
 
+        if (!categories) {
+            return next({ statusCode: 404, message: 'Categories not found' });
+        }
         // Group products by categories
         const categorizedProducts = categories.reduce((acc, category) => {
             const categoryProducts = products.filter(product => {
@@ -101,6 +104,6 @@ export const renderHomePage = async (req, res) => {
         });
     } catch (error) {
         console.log("Home page is not loading: ", error);
-        res.status(500).send("Server Error");
+        next({ statusCode: 500, message: error.message });
     }
 };

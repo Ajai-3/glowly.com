@@ -38,16 +38,6 @@
                         <input type="text" id="category" name="category" value="<%= category.name %>" readonly>
                         <input type="hidden" id="categoryId" name="categoryId" value="<%= category._id %>">
                     </div>
-                    <!-- <div>
-                        <label for="subCategory">Subcategories</label>
-                        <select id="subCategory" name="subCategory" required>
-                            <option value="">Select a subcategory</option>
-                            <% subCategories.forEach(subCategory => { %>
-                                <option value="<%= subCategory._id %>"><%= subCategory.name %></option>
-                            <% }) %>
-                        </select>
-                        <span class="error-message" id="subCategoryError">This field is required.</span>
-                    </div> -->
                 </div>
                 <div class="add-products-container-center coupoun-div">
                     <div>
@@ -149,7 +139,6 @@ const toastWarning = (message) => {
         position: 'topRight',
     });
 };
-
 const offerForm = document.getElementById('offerForm');
 const submitBtn = document.getElementById('submitBtn');
 const startDate = document.getElementById('startDate');
@@ -159,12 +148,18 @@ const offerType = document.getElementById('offerType');
 const description = document.getElementById('description');
 const categoryId = document.getElementById('categoryId');
 
+const today = new Date().toISOString().split('T')[0];  
+document.getElementById("startDate").setAttribute("min", today);
+document.getElementById("endDate").setAttribute("min", today);
+
 const errorMessages = {
     offerValue: 'Please enter a valid value.',
     description: 'This field is required.',
     startDate: 'This field is required.',
     endDate: 'This field is required.',
     dateRange: 'Start date must be before expiry date.',
+    percentage: 'Percentage must be between 0 and 100.',
+    flat: 'Flat value must be less than 5000.',
 };
 
 function validateField(input) {
@@ -181,12 +176,43 @@ function validateField(input) {
 }
 
 function validateDateRange() {
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
     const dateRangeError = document.getElementById('dateRangeError');
+    
+    startDate.addEventListener('change', function () {
+        endDate.setAttribute("min", startDate.value);
+    });
+
     if (new Date(startDate.value) > new Date(endDate.value)) {
         dateRangeError.style.display = 'block';
         return false;
     }
     dateRangeError.style.display = 'none';
+    return true;
+}
+
+function validateOfferValue() {
+    const value = offerValue.value;
+    const errorElement = document.getElementById('offerValueError');
+    
+    if (offerType.value === "percentage") {
+        if (value < 0 || value > 100) {
+            errorElement.textContent = errorMessages.percentage;
+            errorElement.style.display = 'block';
+            offerValue.classList.add('error');
+            return false;
+        }
+    } else if (offerType.value === "flat") {
+        if (value >= 5000) {
+            errorElement.textContent = errorMessages.flat;
+            errorElement.style.display = 'block';
+            offerValue.classList.add('error');
+            return false;
+        }
+    }
+    offerValue.classList.remove('error');
+    errorElement.style.display = 'none';
     return true;
 }
 
@@ -196,7 +222,8 @@ function toggleSubmitButton() {
         validateField(description) &&
         validateField(startDate) &&
         validateField(endDate) &&
-        validateDateRange();
+        validateDateRange() &&
+        validateOfferValue();
 
     submitBtn.disabled = !isValid;
 }
@@ -205,6 +232,7 @@ offerValue.addEventListener('input', toggleSubmitButton);
 description.addEventListener('input', toggleSubmitButton);
 startDate.addEventListener('change', toggleSubmitButton);
 endDate.addEventListener('change', toggleSubmitButton);
+offerType.addEventListener('change', toggleSubmitButton);
 
 offerForm.addEventListener('submit', async function(event) {
     event.preventDefault();
@@ -214,7 +242,8 @@ offerForm.addEventListener('submit', async function(event) {
         validateField(description) &&
         validateField(startDate) &&
         validateField(endDate) &&
-        validateDateRange()
+        validateDateRange() &&
+        validateOfferValue()
     ) {
         const data = {
             categoryId: categoryId.value,
@@ -251,8 +280,11 @@ offerForm.addEventListener('submit', async function(event) {
             toastWarning('There was an error submitting the form.');
             console.error('Error:', error);
         }
+    } else {
+        toastError('Please fix the errors in the form before submitting.');
     }
 });
+
 
 
 </script>

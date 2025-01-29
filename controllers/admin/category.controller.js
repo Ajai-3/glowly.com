@@ -8,12 +8,8 @@ import Subcategory from '../../models/subcategory.model.js';
 
 // Render Add Category Page
 export const renderAddCategoryPage = async (req, res) => {
-    console.log("renderAddCategoryPage function called");
     try {
-        console.log("Before the Category query");
-        const categories = await Category.find().populate('offerId');
-        console.log("After the Category query");
-        console.log("Categories:", categories); 
+        const categories = await Category.find(); 
         const msg = req.body.msg || null;
         res.render("admin/add-category", { categories, msg });
     } catch (error) {
@@ -35,11 +31,14 @@ export const renderCategoryPage = async (req, res) => {
             .populate("subcategories")
             .populate({
                 path: 'offerId',
-                match: { isActive: true },
+                match: { isActive: true, isDeleted: false },
             });
 
         const totalCategories = await Category.countDocuments();
 
+        // console.log("Fetched Categories:", JSON.stringify(CategoryData, null, 2));
+
+        
         const totalPages = Math.ceil(totalCategories / limit);
         const msg = req.query.msg || null;
         const type = req.query.type || null;
@@ -61,7 +60,6 @@ export const addCategory = async (req, res) => {
     try {
         const { categoryName, description, subcategoryName, subcategoryDescription } = req.body;
 
-        // Ensure that all required fields are provided
         if (!categoryName || !description || !subcategoryName || !subcategoryDescription) {
             return res.status(400).send("All fields (category and subcategory) are required");
         }
@@ -92,7 +90,6 @@ export const addCategory = async (req, res) => {
 
         await newSubcategory.save();
 
-        // Add the subcategory's ID to the category's subcategories array
         newCategory.subcategories.push(newSubcategory._id);
 
         await newCategory.save();
@@ -298,7 +295,6 @@ export const renderAddOfferPage = async (req, res) => {
 
 
 
-
 export const addOffer = async (req, res) => {
     try {
         const { categoryId, offerType, offerValue, description, startDate, endDate } = req.body;
@@ -318,98 +314,20 @@ export const addOffer = async (req, res) => {
             });
         }
 
-        const products = await Product.find({ categoryId: categoryId, isDeleted: false });
-
-        // Apply the offer to the products
-        const updatedProducts = products.map(async (product) => {
-            product.variants.forEach(async (variant) => {
-                let newSalePrice = variant.regularPrice;
-
-                // Apply the offer if applicable
-                if (offerType === 'flat') {
-                    newSalePrice = variant.regularPrice - offerValue;
-                } else if (offerType === 'percentage') {
-                    newSalePrice = variant.regularPrice - (variant.regularPrice * (offerValue / 100));
-                }
-
-                variant.salePrice = newSalePrice;
-            });
-
-            await product.save();
-        });
-
-        await Promise.all(updatedProducts);
-
-        // Create the new offer with isActive set to false initially
         const newOffer = new Offer({
-            categoryId,
             offerType,
             offerValue,
             name: description,
             startDate,
             endDate,
-            isActive: false,  // Offer is inactive when created
+            isActive: false,
+            isDeleted: false,  
         });
 
         await newOffer.save();
 
-        // Save the offer ID in the category
         category.offerId = newOffer._id;
         await category.save();
-
-        // Cron job to activate the offer when the start date is reached
-        cron.schedule('* * * * *', async () => {
-            const currentDate = new Date();
-
-            // Activate the offer if the current date is >= startDate
-            if (currentDate >= newOffer.startDate && !newOffer.isActive) {
-                newOffer.isActive = true;
-                await newOffer.save();
-                console.log("offer added");
-
-                // Apply offer logic to products
-                const products = await Product.find({ categoryId: categoryId, isDeleted: false });
-                const updatedProducts = products.map(async (product) => {
-                    product.variants.forEach(async (variant) => {
-                        let newSalePrice = variant.regularPrice;
-
-                        // Apply the offer
-                        if (offerType === 'flat') {
-                            newSalePrice = variant.regularPrice - offerValue;
-                        } else if (offerType === 'percentage') {
-                            newSalePrice = variant.regularPrice - (variant.regularPrice * (offerValue / 100));
-                        }
-
-                        variant.salePrice = newSalePrice;
-                    });
-
-                    await product.save();
-                });
-
-                await Promise.all(updatedProducts);
-            }
-
-            // Deactivate the offer if the current date is >= endDate
-            if (currentDate >= newOffer.endDate && newOffer.isActive) {
-                newOffer.isActive = false;
-                await newOffer.save();
-
-                console.log("Offer is false");
-                // Revert sale prices to regular prices
-                const products = await Product.find({ categoryId: categoryId, isDeleted: false });
-                const revertedProducts = products.map(async (product) => {
-                    product.variants.forEach(async (variant) => {
-                        // Calculate original sale price
-                        const originalSalePrice = variant.salePrice / (1 - offerValue / 100);
-                        variant.salePrice = originalSalePrice;  // Revert back to the original price
-                    });
-
-                    await product.save();
-                });
-
-                await Promise.all(revertedProducts);
-            }
-        });
 
         return res.status(200).json({
             success: true,
@@ -424,12 +342,96 @@ export const addOffer = async (req, res) => {
     }
 };
 
+cron.schedule('* * * * *', async () => {
+    try {
+        const currentDate = new Date().toISOString();
+
+        // Activate offers
+        const activeOffers = await Offer.find({ isActive: false, isDeleted: false, startDate: { $lte: currentDate } });
+
+        for (const offer of activeOffers) {
+            offer.isActive = true;
+            await offer.save();
+            console.log(`Offer ${offer._id} activated.`);
+
+            const maxDiscountPercentage = 70;
+
+            const category = await Category.findOne({ offerId: offer._id });
+            if (!category) {
+                console.error(`Category not found for offer ${offer._id}`);
+                continue;
+            }
+
+            const products = await Product.find({ categoryId: category._id, isDeleted: false });
+
+            for (const product of products) {
+                for (const variant of product.variants) {
+                    let newSalePrice = variant.regularPrice;
+                    const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
+
+                    if (offer.offerType === 'flat') {
+                        const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+                        newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0); // Ensure price is not negative
+                    } else if (offer.offerType === 'percentage') {
+                        const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
+                        newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0); // Ensure price is not negative
+                    }
+
+                    variant.salePrice = Math.round(newSalePrice);
+                }
+
+                await product.save();
+            }
+        }
+
+        // Deactivate expired offers
+        const expiredOffers = await Offer.find({ isActive: true, endDate: { $lte: currentDate } });
+
+        for (const offer of expiredOffers) {
+            offer.isActive = false;
+            offer.isDeleted = true; 
+            await offer.save();
+            console.log(`Offer ${offer._id} deactivated.`);
+
+            const category = await Category.findOne({ offerId: offer._id });
+            if (!category) {
+                console.error(`Category not found for offer ${offer._id}`);
+                continue;
+            }
+
+            const products = await Product.find({ categoryId: category._id, isDeleted: false });
+
+            for (const product of products) {
+                for (const variant of product.variants) {
+                    let originalPrice = variant.salePrice;
+                    const maxDiscountValue = (70 / 100) * variant.regularPrice;
+
+                    if (offer.offerType === 'flat') {
+                        const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+                        originalPrice = Math.min(variant.salePrice + appliedDiscount, variant.regularPrice); 
+                    } else if (offer.offerType === 'percentage') {
+                        const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
+                        originalPrice = Math.min(variant.salePrice + appliedDiscount, variant.regularPrice);
+                    }
+
+                    variant.salePrice = originalPrice;
+                }
+                await product.save();
+            }
+        }
+
+    } catch (error) {
+        console.error('Error in cron job:', error);
+    }
+});
+
+
+
+
+
 export const removeOffer = async (req, res) => {
     try {
-
         const categoryId = req.params.categoryId;
-
-
         const { offerId } = req.body;
 
         if (!offerId) {
@@ -447,7 +449,6 @@ export const removeOffer = async (req, res) => {
             });
         }
 
-
         const offer = await Offer.findById(offerId);
         if (!offer) {
             return res.status(404).json({
@@ -456,24 +457,36 @@ export const removeOffer = async (req, res) => {
             });
         }
 
+        offer.isDeleted = true
         offer.isActive = false;
         await offer.save();
+        console.log(`Offer ${offerId} deactivated.`);
 
+        const maxDiscountPercentage = 70;
         const products = await Product.find({ categoryId: category._id, isDeleted: false });
 
         for (const product of products) {
             for (const variant of product.variants) {
-                const originalSalePrice = variant.salePrice / (1 - offer.offerValue / 100);
-                console.log(originalSalePrice)
-                // variant.salePrice = originalSalePrice;  
-                variant.salePrice = (variant.regularPrice - 100);  
+                let previousSalePrice = variant.salePrice; // Current sale price after offer applied
+                let restoredSalePrice = previousSalePrice;
+    
+                const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
+    
+                if (offer.offerType === 'flat') {
+                    const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+                    restoredSalePrice = Math.min(previousSalePrice + appliedDiscount, variant.regularPrice);
+                } else if (offer.offerType === 'percentage') {
+                    const appliedDiscount = Math.min(variant.regularPrice * (offer.offerValue / 100), maxDiscountValue);
+                    restoredSalePrice = Math.min(previousSalePrice + appliedDiscount, variant.regularPrice);
+                }
+    
+                variant.salePrice = Math.round(restoredSalePrice);
             }
-
-            // Save the updated product
+    
             await product.save();
         }
+        console.log("Offer removed, prices restored.");
 
-        // Send response indicating successful removal
         return res.status(200).json({
             success: true,
             message: 'Offer removed and sale prices reverted successfully.',

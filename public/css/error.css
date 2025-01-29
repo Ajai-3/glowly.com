@@ -1,0 +1,152 @@
+/* ------------------------------------------------------------------- 
+ * ## fonts 
+ * ------------------------------------------------------------------- */
+ @import url("https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&display=swap");
+ @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@100;200;300;400;500;600;700;800;900&display=swap");
+ :root {
+    /* Font Families */
+    --font-1: "ZCOOL XiaoWei", serif;
+    --font-2: "DM Sans", sans-serif;
+
+    /* Font Sizes */
+    --font-size-logo: 2.5rem;
+    --font-size-heading: 3rem;
+    --font-size-heading2: 1.2rem;
+    --font-size-err1: 0.6rem;
+    --font-size-err2: 0.7rem;
+    --font-size-err3: 0.9rem;
+    --font-size-p: 0.75rem;
+    --font-size-normal: 1rem;
+    --font-size-second: 0.875rem;
+    --font-size-third: 0.7rem;
+    --font-size-fourth: 0.6rem;  
+    --font-size-fifth: 0.5rem;  
+
+    /* Colors */
+    --main-color: #e80071; 
+    --main-color2: #eb5ca1;
+    --text-color: #f3f4f7;
+    --text-color-2: #848383;
+    --text-color-3: #b4b4b4;
+    --text-color-4: #e2e2e2;
+    --second-text-color: #515151;
+    --red-text-color: #ea4335;
+    --blue-text-color: #316ff6;
+    --green-text-color: #28a745;
+    --bg-color: #121212;
+    --bg-color-6: #212121;
+    --bg-color-2: #161927;
+    --bg-color-3: #232942;
+    --bg-color-4: #1a1a1a;
+    --bg-color-5: #222222;
+    --bg-color-7: #242424;
+    --bg-color-btn-hover: #242d56;
+    --bg-color-tbl-hover: #242d5673;
+    --bg-color-btn-hover2: #212e64;
+    --bg-color-btn-hover3: #1a3294;
+    --bg-green-color: #009829;
+    --bg-red-color: #e51e1e;
+    --bg-blue-color: #3d99f5;
+    --bg-purple-color: #6261cc;
+}
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+}
+
+.error-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+    max-width: 600px; 
+}
+
+.error-code {
+    font-size: 10rem;
+    font-weight: bolder;
+    background: linear-gradient(90deg, #e80071, #ff0048);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: colorAnimation 3s infinite;
+    background-size: 200% 200%;
+    margin: 0;
+}
+
+.error-message {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+.error-container button {
+    padding: 6px 20px;
+    border-radius: 4px;
+    border: none;
+    background: linear-gradient(90deg, #e80071, #ff0044);
+    color: white;
+    font-size: 1rem; 
+    cursor: pointer;
+    transition: background 0.5s ease, transform 0.4s ease;
+}
+
+.error-container button:hover {
+    background: linear-gradient(90deg, #ff0044, #e80071);
+    transform: scale(1.08);
+}
+
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 8rem; 
+    }
+    .error-message {
+        font-size: 1rem; 
+    }
+    .error-container button {
+        font-size: 0.875rem; 
+    }
+}
+
+@media (max-width: 480px) {
+    .error-code {
+        font-size: 6rem; 
+    }
+    .error-message {
+        font-size: 0.875rem; 
+    }
+    .error-container button {
+        font-size: 0.75rem; 
+    }
+}
+
+@keyframes colorAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+

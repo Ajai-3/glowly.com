@@ -70,6 +70,15 @@
                   </div>
                 </div>
               <% }); %>
+              <div class="cart-pagination-container mt-3">
+                <% if (totalPages > 1) { %>
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>" class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <div class="page-link"><%= i %></div>
+                    </a>
+                  <% } %>
+                <% } %>
+              </div>
             </div>
             
       
@@ -97,22 +106,13 @@
                     <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
                   </p>
                   <a href="/user/checkout">
-                    <button class="buy-now-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
+                    <button class="main-btn w-100 mt-3">Proceed to Checkout <i class="fas fa-check-circle"></i></button>
                   </a>
                 </div>
               </div>
             </div>
           </div>
           <div>
-            <div class="cart-pagination-container mt-3">
-              <% if (totalPages > 1) { %>
-                <% for (let i = 1; i <= totalPages; i++) { %>
-                  <a href="?page=<%= i %>" class="page-item <%= i === currentPage ? 'active' : '' %>">
-                    <div class="page-link"><%= i %></div>
-                  </a>
-                <% } %>
-              <% } %>
-            </div>
 
           </div>
         <% } else { %>

@@ -19,17 +19,17 @@ export const verifyToken = async (req, res, next) => {
     const resetPasswordPattern = /^\/reset-password\/[a-f0-9]{24}$/;
     if (resetPasswordPattern.test(req.path)) {
         if (!token) {
-            return next(); // Allow access to reset password page if no token
+            return next(); 
         }
 
         try {
             const decoded = jwt.verify(token, JWT_SECRET_KEY);
             if (decoded) {
-                return res.redirect("/home"); // Redirect to home if user is logged in and tries to access reset password page
+                return res.redirect("/home"); 
             }
         } catch (error) {
             console.error("JWT Verification Error:", error);
-            return next(); // Allow access to reset password page if token is invalid
+            return next(); 
         }
     }
     if (resetPasswordPattern.test(req.path)) {

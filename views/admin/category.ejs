@@ -88,27 +88,19 @@
                     </td>
                       <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
                       <td>
-                        <% if (cat.offerId) { %>
+                        <% if (cat.offerId && cat.offerId.isActive) { %>
                           <p>Offer: <%= cat.offerId.name %> (<%= cat.offerId.offerValue %>%)</p>
-                           <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
-                        <% } else { %> 
+                          <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
+                      <% } else { %> 
                           <a href="/admin/add-offer/<%= cat._id %>">
                               <button class="add-offer-btn">Add Offer</button>
                           </a>
-                        <% } %>
+                      <% } %>
                       </td>
-                      
-                      <!-- <td>
-                        <% if (!cat.isListed) { %>
-                            <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
-                          <% } else { %>
-                            <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
-                          <% } %>
-                    </td> -->
+
                     
                       <td> 
                         <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
-                        <!-- <a href="/admin/category/delete/<%= cat._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn">Delete</button></a> -->
                         <% if (!cat.isListed) { %>
                             <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
                           <% } else { %>
@@ -212,7 +204,6 @@
       const result = await response.json();
       toastSuccess(result.message || 'Category updated successfully');
 
-      // Dynamically update the button
       const button = document.querySelector(`[data-id="${id}"]`);
       if (button) {
         if (isList) {
@@ -249,7 +240,6 @@ const toggleSubcategory = async (id, isList) => {
     if (response.ok) {
       const result = await response.json();
       toastSuccess(result.message || 'Subcategory updated successfully');
-      // Optional: Update the UI dynamically here if needed
     } else {
       toastError('Failed to update subcategory');
     }
@@ -260,30 +250,28 @@ const toggleSubcategory = async (id, isList) => {
 };
 
 async function removeOffer(categoryId, offerId) {
-    // Make sure offerId is passed dynamically
     if (!offerId) {
         alert('Offer ID is required.');
         return;
     }
 
     const response = await fetch(`/admin/remove-offer/${categoryId}`, {
-        method: 'POST',  // Ensure method is POST
+        method: 'POST', 
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            offerId: offerId,  // Sending the offerId in the body
+            offerId: offerId,  
         }),
     });
 
     const result = await response.json();
 
     if (result.success) {
-        // Optionally, update the UI or alert the user
-        alert('Offer removed successfully!');
-        location.reload();  // Reload to reflect changes
+        toastSuccess('Offer removed successfully!');
+        location.reload();  
     } else {
-        alert(`Failed to remove offer: ${result.message}`);
+        toastError(`Failed to remove offer: ${result.message}`);
     }
 }
 </script>
