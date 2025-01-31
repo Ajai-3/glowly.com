@@ -19,12 +19,12 @@ const transactionSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['credited', 'debited', 'refund', 'cashback'], 
+    enum: ['Credited', 'Debited', 'Refund', 'Cashback'], 
     required: true,
   },
   description: {
     type: String,
-    enum: ['order placed', 'order returned', 'money added', 'refund', 'cashback'],
+    enum: ['Order placed', 'Order returned', 'Money added', 'Refund', 'Cashback'],
     required: true,
   },
   date: {

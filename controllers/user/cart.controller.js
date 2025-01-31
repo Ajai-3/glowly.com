@@ -7,6 +7,80 @@ import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 
+
+
+
+
+export const renderCartPage = async (req, res, next) => {
+  try {
+    const { user, wishlist, cart, cartVariants, categories } = req;
+    let cartProducts = [];
+
+    const products = await Product.find({ isDeleted: false });
+    const brands = await Brand.find({ isListed: true });
+
+    if (cart && cart.products && cart.products.length > 0) {
+      const sortedCartProducts = cart.products.sort(
+        (a, b) => new Date(b.added_at) - new Date(a.added_at)
+      );
+
+      // Fetch product and variant details for all cart items (no pagination in backend)
+      cartProducts = await Promise.all(
+        sortedCartProducts.map(async (item) => {
+          const productDetails = await Product.findById(item.product_id);
+          if (!productDetails) {
+            return null;
+          }
+
+          const variantDetails = productDetails.variants.find(
+            (variant) =>
+              variant._id &&
+              variant._id.toString() === item.variant_id?.toString()
+          );
+
+          if (!variantDetails) {
+            return null;
+          }
+
+          return {
+            product: productDetails,
+            variant: variantDetails,
+            quantity: item.quantity,
+            added_at: item.added_at,
+          };
+        })
+      );
+
+      // Filter out null items if there are any
+      cartProducts = cartProducts.filter((item) => item !== null);
+    }
+
+    const cartCount = cart ? cart.products.length : 0;
+
+    return res.render("user/cart", {
+      name: user ? user.name : "",
+      user,
+      cartProducts,
+      products,
+      brands,
+      categories,
+      cartCount,
+    });
+  } catch (error) {
+    console.log("Error occurred while rendering the cart page:", error);
+    next({ statusCode: 500, message: error.message });
+  }
+};
+
+{/* <div class="cart-pagination-container mt-3">
+                <% if (totalPages > 1) { %>
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>" class="page-item <%= i === currentPage ? 'active' : '' %>">
+                      <div class="page-link"><%= i %></div>
+                    </a>
+                  <% } %>
+                <% } %>
+              </div> */}
 // export const renderCartPage = async (req, res) => {
 //   try {
 //     const token = req.cookies.token;
@@ -84,74 +158,74 @@ import Category from "../../models/category.model.js";
 //     res.status(500).send("Internal Server Error");
 //   }
 // };
-export const renderCartPage = async (req, res, next) => {
-  try {
-    const { user, wishlist, cart, cartVariants, categories } = req;
-    let cartProducts = [];
-    const PAGE_SIZE = 3;
-    const currentPage = parseInt(req.query.page) || 1;
+// export const renderCartPage = async (req, res, next) => {
+//   try {
+//     const { user, wishlist, cart, cartVariants, categories } = req;
+//     let cartProducts = [];
+//     const PAGE_SIZE = 3;
+//     const currentPage = parseInt(req.query.page) || 1;
 
-    const products = await Product.find({ isDeleted: false });
-    const brands = await Brand.find({ isListed: true });
+//     const products = await Product.find({ isDeleted: false });
+//     const brands = await Brand.find({ isListed: true });
 
-    if (cart && cart.products && cart.products.length > 0) {
-      const sortedCartProducts = cart.products.sort(
-        (a, b) => new Date(b.added_at) - new Date(a.added_at)
-      );
+//     if (cart && cart.products && cart.products.length > 0) {
+//       const sortedCartProducts = cart.products.sort(
+//         (a, b) => new Date(b.added_at) - new Date(a.added_at)
+//       );
 
-      const startIndex = (currentPage - 1) * PAGE_SIZE;
-      const endIndex = startIndex + PAGE_SIZE;
+//       const startIndex = (currentPage - 1) * PAGE_SIZE;
+//       const endIndex = startIndex + PAGE_SIZE;
 
-      const paginatedCartProducts = sortedCartProducts.slice(startIndex, endIndex);
+//       const paginatedCartProducts = sortedCartProducts.slice(startIndex, endIndex);
 
-      cartProducts = await Promise.all(
-        paginatedCartProducts.map(async (item) => {
-          const productDetails = await Product.findById(item.product_id);
-          if (!productDetails) {
-            return null;
-          }
+//       cartProducts = await Promise.all(
+//         paginatedCartProducts.map(async (item) => {
+//           const productDetails = await Product.findById(item.product_id);
+//           if (!productDetails) {
+//             return null;
+//           }
 
-          const variantDetails = productDetails.variants.find(
-            (variant) =>
-              variant._id &&
-              variant._id.toString() === item.variant_id?.toString()
-          );
+//           const variantDetails = productDetails.variants.find(
+//             (variant) =>
+//               variant._id &&
+//               variant._id.toString() === item.variant_id?.toString()
+//           );
 
-          if (!variantDetails) {
-            return null;
-          }
+//           if (!variantDetails) {
+//             return null;
+//           }
 
-          return {
-            product: productDetails,
-            variant: variantDetails,
-            quantity: item.quantity,
-            added_at: item.added_at,
-          };
-        })
-      );
+//           return {
+//             product: productDetails,
+//             variant: variantDetails,
+//             quantity: item.quantity,
+//             added_at: item.added_at,
+//           };
+//         })
+//       );
 
-      cartProducts = cartProducts.filter((item) => item !== null);
-    }
+//       cartProducts = cartProducts.filter((item) => item !== null);
+//     }
 
-    const cartCount = cart ? cart.products.length : 0;
-    const totalPages = Math.ceil(cartCount / PAGE_SIZE);
+//     const cartCount = cart ? cart.products.length : 0;
+//     const totalPages = Math.ceil(cartCount / PAGE_SIZE);
 
-    return res.render("user/cart", {
-      name: user ? user.name : "",
-      user,
-      cartProducts,
-      products,
-      brands,
-      categories,
-      cartCount,
-      currentPage,
-      totalPages,
-    });
-  } catch (error) {
-    console.log("Error occurred while rendering the cart page:", error);
-    next({ statusCode: 500, message: error.message });
-  }
-};
+//     return res.render("user/cart", {
+//       name: user ? user.name : "",
+//       user,
+//       cartProducts,
+//       products,
+//       brands,
+//       categories,
+//       cartCount,
+//       currentPage,
+//       totalPages,
+//     });
+//   } catch (error) {
+//     console.log("Error occurred while rendering the cart page:", error);
+//     next({ statusCode: 500, message: error.message });
+//   }
+// };
 
 
 
@@ -251,7 +325,7 @@ export const addToCart = async (req, res) => {
   try {
     let { quantity, productId, variantId } = req.body;
     quantity = quantity || 1;
-    const { user, cart } = req;
+    let { user, cart } = req;
     let cartCount;
 
     const product = await Product.findById(productId);

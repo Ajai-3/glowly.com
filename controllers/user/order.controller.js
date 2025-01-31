@@ -4,7 +4,7 @@ import Cart from "../../models/cart.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
-
+import Razorpay from 'razorpay';
 
 // next({ statusCode: 500, message: error.message });
 
@@ -45,20 +45,15 @@ export const renderOrderListPage = async (req, res, next) => {
       })
       .populate("address_id")
       .sort({ createdAt: -1 })
-      .select("_id user_id address_id products total_order_amount payment_method coupon_applied createdAt updatedAt");
+      .select("_id user_id address_id products total_order_amount payment_method payment_status coupon_applied createdAt updatedAt");
 
-    const totalProductsCount = allOrders.reduce((sum, order) => sum + order.products.length, 0);
+    const totalProductsCount = allOrders.length;
     const totalPages = Math.ceil(totalProductsCount / PAGE_SIZE);
 
     const startIndex = (currentPage - 1) * PAGE_SIZE;
     const endIndex = startIndex + PAGE_SIZE;
 
-    const paginatedProducts = allOrders.flatMap(order => order.products).slice(startIndex, endIndex);
-
-    const paginatedOrders = allOrders.map(order => ({
-      ...order.toObject(),
-      products: order.products.filter(product => paginatedProducts.includes(product)),
-    })).filter(order => order.products.length > 0);
+    const paginatedOrders = allOrders.slice(startIndex, endIndex);
 
     return res.render("user/my-orders", {
       user,

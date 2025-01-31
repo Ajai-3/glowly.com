@@ -100,14 +100,16 @@
             </p2>
           </td>
           <td>
-            <select name="order-action" class="order-action" data-order-id="<%= order.orderId %>" data-product-id="<%= order.product._id %>" data-variant-id="<%= order.variantId %>" >
-              <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>pending</option>
-              <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>processing</option>
-              <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>shipped</option>
-              <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>delivered</option>
-              <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %>>canceled</option>
-              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %>>returned</option>
+            <select name="order-action" class="order-action" data-order-id="<%= order.orderId %>" data-product-id="<%= order.product._id %>" data-variant-id="<%= order.variantId %>">
+              <option value="" disabled selected>Select Status</option>
+              <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %> <%= order.status !== 'pending' ? 'disabled' : '' %>>pending</option>
+              <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' ? 'disabled' : '' %>>processing</option>
+              <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' ? 'disabled' : '' %>>shipped</option>
+              <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' ? 'disabled' : '' %>>delivered</option>
+              <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' && order.status !== 'canceled' ? 'disabled' : '' %>>canceled</option>
+              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_req' ? 'disabled' : '' %>>returned</option>
             </select>
+                   
           </td>
         </tr>
       <% }) %>

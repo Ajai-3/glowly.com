@@ -33,7 +33,7 @@ import {
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
 import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, getAddress, updateAddress } from "../controllers/user/user.account.controller.js";
-import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage, verifyCoupon } from "../controllers/user/checkout.controller.js";
+import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage, verifyCoupon, verifyRazorpayPayment, paymentRetry  } from "../controllers/user/checkout.controller.js";
 import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from "../controllers/user/order.controller.js";
 import { get } from "mongoose";
 import { addMoneyToWallet, myWallet } from "../controllers/user/wallet.controller.js";
@@ -95,18 +95,20 @@ router.get("/my-cart", loadUserData, renderCartPage)
 router.post("/add-to-cart", loadUserData, addToCart);
 router.post("/buy-now", loadUserData, buyNow);
 router.post("/remove-cart-product", loadUserData, removeCartProduct);
-router.post("/update-cart-product", loadUserData, updateCartPageProduct)
+router.patch("/update-cart-product", loadUserData, updateCartPageProduct)
 
 // Checkout Mangement
 router.get("/checkout", loadUserData, renderCheckoutPage);
 router.post("/place-order", loadUserData, placeOrder);
 router.post("/verify-coupon", loadUserData, verifyCoupon);
 router.get('/placeOrderWithBuyNow', loadUserData, placeOrderWithBuyNow);
+router.post('/verify-razorpay-payment', loadUserData, verifyRazorpayPayment);
 
 // Order Management
 router.get("/my-orders", loadUserData, renderOrderListPage);
 router.patch("/cancel-order", loadUserData, cancelOrder)
 router.patch("/return-order", loadUserData, returnOrder)
+router.post("/payment-failed-retry", loadUserData, paymentRetry);
 // router.post("/verify-razorpay-place-order", verifyRazorPayOrderPayment)
 router.get('/product-details/:orderId/:productId/:variantId/:addressId', loadUserData, orderDetailsPage)
 //Wish list Management

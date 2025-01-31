@@ -2,8 +2,9 @@
 <html lang="en">
 <%- include('partials/headforhome', { user, categories }) %>
 
+
 <div class="user-contents">
-  <div class="container my-2">
+  <div class="container my-2 p-2">
     <div id="breadcrumbs" class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a> > <a href="/my-orders">My Orders</a></div>
     <div class="row">
       <!-- Left Side Box -->
@@ -33,62 +34,114 @@
           <% if (orders.length > 0) { %>
             <h5 class="card-title">My Orders</h5>
             <% orders.forEach(order => { %>
-              <% order.products.forEach(product => { %>
-                <!-- Product Item -->
-                <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
-                  <div class="row g-0 align-items-center">
-                    
-                    <!-- Product Image -->
-                    <div class="col-md-2 text-center p-2">
-                      <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
-                      <% let imageUrl = variant?.images?.[0]; %>
-                      <% if (imageUrl) { %>
-                        <img src="<%= imageUrl %>" style="max-width: 90px;">
-                      <% } else { %>
-                        <p>No image</p>
-                      <% } %>
+              <div class="card shadow-sm mb-3 order-box" data-expanded="false">
+                <div class="order-header p-0" onclick="toggleOrderProducts('<%= order._id %>', this)">
+                  <div class="d-flex justify-content-between order-info-row">
+                    <p class="m-0 order-id">
+                      <span>Order #<%= order._id %></span>
+                      <i class="fas fa-chevron-down toggle-icon"></i>
+                    </p>
+                  </div>
+                  <div class="order-info-row">
+                    <div>
+                      <span class="order-info-label">Ordered on:</span>
+                      <span class="order-info-value"><%= order.createdAt.toLocaleString() %></span>
                     </div>
-                    
-                    <!-- Product Details -->
-                    <div class="col-md-8 p-1">
-                      <div class="product-details">
-                        <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
-                        <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
-                        <div class="d-flex justify-content-between mt-2">
-                          <p class="m-0">Quantity: <%= product.quantity %></p>
-                          <p class="m-0">Unit Price: <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
-                          <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <!-- Order Status -->
-                    <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
-                      <!-- Status Display -->
-                      <p2 class="m-0 mb-4 
-                        <% if (product.status === 'pending') { %> yellow-p <% } %>
-                        <% if (product.status === 'processing') { %> blue-p <% } %>
-                        <% if (product.status === 'shipped') { %> pink-p <% } %>
-                        <% if (product.status === 'delivered') { %> green-p <% } %>
-                        <% if (product.status === 'canceled') { %> red-p <% } %>
-                        <% if (product.status === 'return_req') { %> yellow-p <% } %>
-                        <% if (product.status === 'returned') { %> blue-p <% } %>">
-                        <%= product.status %>
-                      </p2>
-              
-                      <!-- Buttons -->
-                      <% if (product.status === 'delivered') { %>
-                        <!-- Return Button -->
-                        <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Return</button>
-                      <% } else if (product.status === 'processing' || product.status === 'pending') { %>
-                        <!-- Cancel Button -->
-                        <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Cancel</button>
-                      <% } %>
+                    <div>
+                      <span class="price-inr">₹<%= order.total_order_amount %></span>
                     </div>
                   </div>
+                  <div class="order-info-row">
+                    <div>
+                      <span class="order-info-label">Payment Status:</span>
+                      <span class="payment_status_my_orders 
+                        <%= order.payment_status === 'Payment completed' ? 'green-p' : 
+                            order.payment_status === 'Payment failed' ? 'red-p' : 'yellow-p' %>">
+                        <%= order.payment_status ? order.payment_status : 'Not Available' %>
+                      </span>
+                      <span>
+                        <% if (order.payment_status === 'Payment failed') { %>
+                          <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
+                        <% } %>
+                      </span>
+                    </div>
+                    <div>
+                      <span class="order-info-label">Method:</span>
+                      <span class="order-info-value"><%= order.payment_method ? order.payment_method : 'Not Available' %></span>
+                    </div>
+                  </div>
+                  <div class="order-info-row">
+                    <div>
+                      <span class="order-info-label">Total Products:</span>
+                      <span class="order-info-value"><%= order.products.length %></span>
+                    </div>
+                  </div>
+                  <div class="order-address">
+                    <span class="order-info-label">Delivery Address:</span><br>
+                    <span class="order-info-value">
+                      <%= order.address_id ? `Address type: ${order.address_id.address_type}, ${order.address_id.city}, ${order.address_id.district}, ${order.address_id.state}, ${order.address_id.country}, ${order.address_id.pin_code}` : 'Not Available' %>
+                    </span>
+                  </div>
                 </div>
-              <% }) %>
-            <% }) %>
+                <div id="products-<%= order._id %>" style="display: none;">
+                <% order.products.forEach(product => { %>
+                  <!-- Product Item -->
+                  <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
+                    <div class="row g-0 align-items-center">
+                      
+                      <!-- Product Image -->
+                      <div class="col-md-2 text-center p-2">
+                        <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
+                        <% let imageUrl = variant?.images?.[0]; %>
+                        <% if (imageUrl) { %>
+                          <img src="<%= imageUrl %>" style="max-width: 90px;">
+                        <% } else { %>
+                          <p>No image</p>
+                        <% } %>
+                      </div>
+                      
+                      <!-- Product Details -->
+                      <div class="col-md-8 p-1">
+                        <div class="product-details">
+                          <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
+                          <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
+                          <div class="d-flex justify-content-between mt-2">
+                            <p class="m-0">Quantity: <%= product.quantity %></p>
+                            <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant.regularPrice %></span> <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
+                            <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <!-- Order Status -->
+                      <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
+                        <!-- Status Display -->
+                        <p2 class="m-0 mb-4 
+                          <% if (product.status === 'pending') { %> yellow-p <% } %>
+                          <% if (product.status === 'processing') { %> blue-p <% } %>
+                          <% if (product.status === 'shipped') { %> pink-p <% } %>
+                          <% if (product.status === 'delivered') { %> green-p <% } %>
+                          <% if (product.status === 'canceled') { %> red-p <% } %>
+                          <% if (product.status === 'return_req') { %> yellow-p <% } %>
+                          <% if (product.status === 'returned') { %> blue-p <% } %>">
+                          <%= product.status %>
+                        </p2>
+                
+                        <!-- Buttons -->
+                        <% if (product.status === 'delivered') { %>
+                          <!-- Return Button -->
+                          <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Return</button>
+                        <% } else if (product.status === 'processing' || product.status === 'pending') { %>
+                          <!-- Cancel Button -->
+                          <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Cancel</button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+                </div>
+              </div>
+            <% }); %>
             <div class="order-pagination-container">
               <% if (totalPages > 1) { %>
                 <nav aria-label="Page navigation">
@@ -146,7 +199,7 @@
 </div>
 
 <%- include('partials/footerforhome') %>
-
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const toastSuccess = (message) => {
@@ -288,6 +341,106 @@ document.addEventListener("DOMContentLoaded", function () {
       event.stopPropagation(); 
     });
   });
+
+  const payButtons = document.querySelectorAll(".pay-btn-order-page");
+
+  payButtons.forEach(button => {
+    button.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const orderId = button.getAttribute("data-order-id");
+
+      try {
+        const response = await fetch("/payment-failed-retry", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ orderId }),
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+          const { key, order } = data;
+          
+          const options = {
+            key: key,
+            amount: order.amount,
+            currency: "INR",
+            order_id: order.id,
+            name: "Glowly.com",
+            description: "Payment retry for order",
+            handler: async function (response) {
+              try {
+                const verifyResponse = await fetch("/verify-razorpay-payment", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    order_id: order.orderId
+                  }),
+                });
+
+                const verifyData = await verifyResponse.json();
+                if (verifyData.success) {
+                  toastSuccess("Payment successful!");
+                  setTimeout(() => {
+                    window.location.reload();
+                  }, 1500);
+                } else {
+                  toastError(verifyData.message || "Payment verification failed");
+                }
+              } catch (error) {
+                console.error("Payment verification error:", error);
+                toastError("An error occurred during payment verification");
+              }
+            },
+            prefill: {
+              name: "<%= user.name %>",
+              email: "<%= user.email %>",
+              contact: "<%= user.mobile %>"
+            },
+            theme: {
+              color: "#ff00b3"
+            },
+            modal: {
+              ondismiss: function() {
+                toastInfo("Payment cancelled. You can try again later.");
+              }
+            }
+          };
+
+          const rzp = new Razorpay(options);
+          
+          rzp.on("payment.failed", function(response) {
+            console.error("Payment failed:", response.error);
+            toastError("Payment failed. Please try again.");
+          });
+
+          rzp.open();
+        } else {
+          toastError(data.message || "Failed to initiate payment");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        toastError("An error occurred while processing your request");
+      }
+    });
+  });
 });
+
+function toggleOrderProducts(orderId, headerElement) {
+  const orderBox = headerElement.closest('.order-box');
+  const productsDiv = document.getElementById('products-' + orderId);
+  const isExpanded = orderBox.getAttribute('data-expanded') === 'true';
+  
+  orderBox.setAttribute('data-expanded', !isExpanded);
+  productsDiv.style.display = isExpanded ? 'none' : 'block';
+}
+
 </script>
 </html>

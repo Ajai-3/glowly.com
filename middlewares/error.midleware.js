@@ -13,6 +13,6 @@ export const errorHandler = (err, req, res, next) => {
 
     res.status(statusCode).render('user/page-404', {
         statusCode: statusCode,
-        message: message,
+        message: "Oops! Something went wrong on our end. We're working to fix it. Please try again later.",
     });
 };

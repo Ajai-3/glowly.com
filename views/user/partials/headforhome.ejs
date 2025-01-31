@@ -103,13 +103,14 @@
                 <% if (user && user.name) { %> 
                     <!-- If User Is Logged In -->
                      
-                     
+                    <a href="/my-cart">  
                      <div class="nav-cart">
                         <div class="nav-cart-count" style="display: <%= cartCount > 0 ? 'block' : 'none' %>;">
                             <%= cartCount %>
                         </div>
-                        <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+                        <i class="fa-solid fa-bag-shopping"></i>
                     </div>
+                    </a>
                     
                     <a href="/my-wishlist"><i class="fa-solid fa-heart"></i></a>
                    

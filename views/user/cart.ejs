@@ -3,22 +3,31 @@
     <%- include('partials/headforhome', { user, categories }) %>
 
     <div class="user-contents">
-      <div class="container my-4">
+      <div class="container my-4 p-2">
         <% if (cartProducts.length > 0) { %>
           <div class="row">
             <!-- Left Column: Cart Items -->
-            <div class="col-md-8">
+            <div class="col-12 col-lg-8">
               <% cartProducts.forEach(({ product, variant, quantity }) => { %>
                 <!-- Cart Item -->
                 <div class="card mb-1 px-2 shadow-sm cart-box" id="cart-box" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
                   <div class="row g-0">
-                    <div class="col-md-2 text-center mt-2">
-                      <img id="main-display-image" src="<%= variant.images[0] %>" 
-                      class="img-fluid rounded" alt="<%= product.title %>">
+                    <!-- Image Column -->
+                    <div class="col-4 col-md-2 text-center mt-2">
+                      <a href="/product/<%= product._id %>/<%= variant._id %>">
+                        <img id="main-display-image" src="<%= variant.images[0] %>" 
+                        class="img-fluid rounded" alt="<%= product.title %>">
+                      </a>
+                     
                     </div>
-                    <div class="col-md-10">
+                  
+                    <!-- Content Column -->
+                    <div class="col-8 col-md-10">
                       <div class="card-body px-3 py-2">
-                        <h6 class="card-title"><%= product.title %> - <%= variant.shade %></h6>
+                        <a href="/product/<%= product._id %>/<%= variant._id %>">
+                          <h6 class="card-title"><%= product.title %> - <%= variant.shade %></h6>
+                        </a>
+                        
                         <div class="cart-box-quantity-selector d-flex my-1">
                           <p class="qty m-0">QTY:
                             <select class="quantity-select">
@@ -41,11 +50,11 @@
                               }
                             %>
                             <%= stockMessage %>
-                          </p>                     
+                          </p>
                         </div>
-                        <a href="/product/<%= product._id %>/<%= variant._id %>">details</a>
+                        <a href="/product/<%= product._id %>/<%= variant._id %>" class="cart-product-details">details</a>
                         <div class="d-flex justify-content-between cart-price">
-                          <p class="card-text mb-2">Unit Price: 
+                          <p class="card-text mb-1">Unit Price: 
                             <span class="original-price price-inr">₹<%= variant.regularPrice %></span> 
                             <span class="sales-price price-inr">₹<%= variant.salePrice %></span> 
                             <span class="discount-percentage">| 
@@ -68,22 +77,16 @@
                       </div>
                     </div>
                   </div>
+                  
+
                 </div>
               <% }); %>
-              <div class="cart-pagination-container mt-3">
-                <% if (totalPages > 1) { %>
-                  <% for (let i = 1; i <= totalPages; i++) { %>
-                    <a href="?page=<%= i %>" class="page-item <%= i === currentPage ? 'active' : '' %>">
-                      <div class="page-link"><%= i %></div>
-                    </a>
-                  <% } %>
-                <% } %>
-              </div>
+              
             </div>
             
       
             <!-- Right Column: Price Summary -->
-            <div class="col-md-4">
+            <div class="col-12 col-lg-4">
               <div class="card shadow-sm price-summary">
                 <div class="card-body">
                   <h5 class="card-title">PRICE SUMMARY (<%= cartProducts.length %> ITEMS)</h5>
@@ -121,9 +124,11 @@
             <a href="/home">
               <img src="/assets/logo/cartEmpty.png" alt="Empty Cart Image" class="empty-cart-image" />
             </a>
-            <h3>Your Shopping Bag is empty</h3>
+            <div class="text-center">
+              <h3>Your Shopping Bag is empty</h3>
             <p>This feels too light! Go on, add all your favorites</p>
             <a href="/home"><button class="main-btn">Start Shopping</button></a>
+            </div>
           </div>       
         <% } %>
       </div>
@@ -225,7 +230,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const newQuantity = Number(this.value);
 
             fetch("/update-cart-product", {
-                method: 'POST',
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },

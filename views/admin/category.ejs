@@ -89,7 +89,8 @@
                       <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
                       <td>
                         <% if (cat.offerId && cat.offerId.isActive) { %>
-                          <p>Offer: <%= cat.offerId.name %> (<%= cat.offerId.offerValue %>%)</p>
+                          <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
+                          (<%= cat.offerId.offerValue %>%)</p>
                           <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
                       <% } else { %> 
                           <a href="/admin/add-offer/<%= cat._id %>">

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <%- include('partials/headforhome', { user, categories }) %>
+ 
 
     <div class="user-contents">
         <div class="container my-2">
@@ -25,7 +26,7 @@
                 <div class="card shadow-sm p-4 user-menu-wishlist">
                   <div class="my-order-datailpage">
                     <!-- Product Status -->
-                    <div class="my-order-datailpage-status mb-2">
+                    <!-- <div class="my-order-datailpage-status mb-2">
                       <p>
                         Product Status:&nbsp;&nbsp;
                         <p2 class="m-0 mb-4 
@@ -39,10 +40,10 @@
                           <%= productStatus %>
                         </p2>
                       </p>
-                    </div>
+                    </div> -->
 
                     <!-- Delivery Address -->
-                    <div class="my-order-datailpage-address p-2 mb-2">
+                    <!-- <div class="my-order-datailpage-address p-2 mb-2">
                       <p><strong>Delivery Address</strong></p>
                       <p>
                         Address Type: <%= address.address_type %>, <%= address.address %>, 
@@ -51,6 +52,99 @@
                         <%= address.pin_code %>, <%= address.country %>
                       </p>
                     </div>
+                  </div> -->
+
+                  <!-- Timeline Chart -->
+                  <div class="timeline">
+                    <div class="timeline-items">
+                      <% 
+                        const statuses = [
+                          { key: 'order_placed_at', label: 'Order Placed' },
+                          { key: 'processing_at', label: 'Processing' },
+                          { key: 'shipped_at', label: 'Shipped' },
+                          { key: 'delivered_at', label: 'Delivered' }
+                        ];
+
+                        // Find latest status
+                        let latestStatus = '';
+                        let latestDate = null;
+                        
+                        for (const status of statuses) {
+                          if (product[status.key] && (!latestDate || new Date(product[status.key]) > latestDate)) {
+                            latestStatus = status.key;
+                            latestDate = new Date(product[status.key]);
+                          }
+                        }
+
+                        // Special statuses override
+                        if (product.canceled_at) {
+                          latestStatus = 'canceled_at';
+                          latestDate = new Date(product.canceled_at);
+                        } else if (product.returned_at) {
+                          latestStatus = 'returned_at';
+                          latestDate = new Date(product.returned_at);
+                        } else if (product.return_reqested_at) {
+                          latestStatus = 'return_reqested_at';
+                          latestDate = new Date(product.return_reqested_at);
+                        }
+
+                        let progress = 0;
+                        statuses.forEach((status, index) => {
+                          let itemClass = '';
+                          let dotClass = '';
+
+                          // If we have a later status, mark this as completed
+                          const statusDate = product[status.key] ? new Date(product[status.key]) : null;
+                          const isCompleted = statusDate || (latestDate && statuses.findIndex(s => s.key === latestStatus) > index);
+
+                          if (isCompleted) {
+                            if (status.key === latestStatus) {
+                              itemClass = 'current';
+                              dotClass = 'current';
+                              progress = ((index + 1) / statuses.length) * 100;
+                            } else {
+                              itemClass = 'completed';
+                              dotClass = 'completed';
+                            }
+                          }
+
+                          if (latestStatus === 'canceled_at') {
+                            itemClass += ' canceled';
+                            progress = 100;
+                          } else if (latestStatus === 'returned_at' || latestStatus === 'return_reqested_at') {
+                            itemClass += ' returned';
+                            progress = 100;
+                          }
+                      %>
+                        <div class="timeline-item <%= itemClass %>">
+                          <div class="timeline-dot <%= dotClass %>"></div>
+                          <div class="timeline-content">
+                            <div class="timeline-status"><%= status.label %></div>
+                            <% if (statusDate) { %>
+                              <div class="timeline-date">
+                                <%= statusDate.toLocaleString() %>
+                              </div>
+                            <% } %>
+                          </div>
+                        </div>
+                      <% }); %>
+
+                      <% if (latestStatus === 'canceled_at' || latestStatus === 'returned_at' || latestStatus === 'return_reqested_at') { %>
+                        <div class="timeline-item <%= latestStatus === 'canceled_at' ? 'canceled' : 'returned' %> current">
+                          <div class="timeline-dot current"></div>
+                          <div class="timeline-content">
+                            <div class="timeline-status">
+                              <%= latestStatus === 'canceled_at' ? 'Canceled' : 
+                                  latestStatus === 'returned_at' ? 'Returned' : 'Return Requested' %>
+                            </div>
+                            <div class="timeline-date">
+                              <%= latestDate.toLocaleString() %>
+                            </div>
+                          </div>
+                        </div>
+                      <% } %>
+                    </div>
+                    <div class="timeline-progress" style="transform: translateY(-50%) scaleX(<%= progress/100 %>)"></div>
                   </div>
 
                   <!-- Product Details -->
@@ -93,7 +187,11 @@
                               <p class="card-text m-0">Unit Price:</p>
                             </div>
                             <div class="col-6 text-end px-4">
-                              <p class="card-text m-0 price-inr">₹ <%= product.total_amount / product.quantity %></p>
+                              <p class="mb-1">
+                                <span class="original-price price-inr"> <%= variant.regularPrice %></span>
+                                <span class="card-text m-0 price-inr">₹ <%= product.total_amount / product.quantity %></span>
+                              </p>
+                              
                             </div>
                           </div>
 
@@ -110,14 +208,46 @@
                     </div>
                   </div>
 
-                  <!-- Add Review Section -->
-                  <div class="mt-4">
-                    <% if (productStatus === "delivered") { %>
-                      <p>Add review</p>
-                    <% } else { %>
-                      ""
-                    <% } %>
-                  </div>
+                  <!-- Review Section -->
+                  <% if (product.delivered_at || product.canceled_at || product.returned_at) { %>
+                    <div class="review-section">
+                      <div class="review-header <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
+                        <h5>
+                            Share Your Product Experience
+                        </h5>
+                      </div>
+
+                      <form action="/submit-review" method="POST" class="review-form">
+                        <input type="hidden" name="productId" value="<%= product.product_id._id %>">
+                        <input type="hidden" name="orderId" value="<%= orderId %>">
+                        <input type="hidden" name="reviewType" value="<%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : 'delivered') %>">
+                        
+                        <div class="mb-3">
+                          <label>
+                            
+                              Rate this product
+                          </label>
+                          <div class="star-rating">
+                            <% for(let i = 5; i >= 1; i--) { %>
+                              <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>">
+                              <label for="star<%= i %>">★</label>
+                            <% } %>
+                          </div>
+                        </div>
+
+                        <div class="mb-3">
+                          <label>Write your review:</label>
+                          <textarea class="review-input" name="review" placeholder="Tell us what you think about this product..."></textarea>
+                    
+                        </div>
+
+                        <button type="submit" class="submit-review <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
+                          <i class="fas <%= product.canceled_at ? 'fa-paper-plane' : (product.returned_at ? 'fa-paper-plane' : 'fa-paper-plane') %>"></i>
+                          Submit Review
+                        </button>
+                      </form>
+                    </div>
+                  <% } %>
                 </div>
               </div>
 
@@ -126,7 +256,7 @@
           </div>
           
     </div>
-    
+    </div>
     
 
 

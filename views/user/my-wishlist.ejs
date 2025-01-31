@@ -3,7 +3,7 @@
   <%- include('partials/headforhome', { name: name, categories: categories }) %>
 
   <div class="user-contents">
-    <div class="container my-2">
+    <div class="container my-2 p-2">
       <div class="brudcrumbs-user-menu">
         <a href="/home">Home</a> > <a href="/my-wishlist">My Wishlist</a>
       </div>
@@ -174,11 +174,13 @@
                   class="empty-cart-image"
                 />
               </a>
-              <h3>Your wishlist is empty</h3>
-              <p>
+              <div class="d-flex flex-column align-items-center justify-content-center">  
+                <h3>Your wishlist is empty</h3>
+              <p class="text-center">
                 Browse our collection and add your favorites to your wishlist!
               </p>
               <a href="/home" class="main-btn">Start Shopping</a>
+              </div>
             </div>
             <% } %>
           </div>

@@ -139,43 +139,59 @@ export const updateOrderStatus = async (req, res) => {
     const product = order.products.find(
       (p) => p.product_id.toString() === productId.toString()
     );
-    const refundAmount = product.total_amount;
+    const refundAmount = product.amount_after_coupon;
 
     productInOrder.status = status;
-    if (status === 'processing') {
-      productInOrder.processing_at = new Date();  
-    } else if (status === 'shipped') {
-      productInOrder.shipped_at = new Date();
-    } else if (status === 'delivered') {
-      productInOrder.delivered_at = new Date();
-    } else if (status === 'canceled') {
-      productInOrder.canceled_at = new Date();
-    } else if (status === 'returned') {
-      const wallet = await Wallet.findOne({ user_id: userId });
-      if (!wallet) {
-        const newWallet = new Wallet({
-            user_id: userId,
-            balance: 0, 
-            createdAt: new Date(),
-            updatedAt: new Date()
-        });
+
+    switch (status) {
+      case 'processing':
+        productInOrder.processing_at = new Date();
+        break;
     
-        await newWallet.save();
-        console.log("New wallet created for user:", userId);
+      case 'shipped':
+        productInOrder.shipped_at = new Date();
+        break;
+    
+      case 'delivered':
+        productInOrder.delivered_at = new Date();
+        break;
+    
+      case 'canceled':
+        productInOrder.canceled_at = new Date();
+        break;
+    
+      case 'returned':
+        const wallet = await Wallet.findOne({ user_id: userId });
+        if (!wallet) {
+          const newWallet = new Wallet({
+            user_id: userId,
+            balance: 0,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+        
+          await newWallet.save();
+          // console.log("New wallet created for user:", userId);
+        }
+        wallet.balance += refundAmount;
+        await wallet.save();
+        const transaction = new Transaction({
+          wallet_id: wallet._id,
+          user_id: userId,
+          transaction_type: "wallet",
+          description: "Order returned",
+          amount: refundAmount,
+          type: 'Refund',
+        });
+        await transaction.save();
+        productInOrder.returned_at = new Date();
+        break;
+    
+      default:
+        return res.status(400).json({ success: false, message: 'Invalid order status.' });
     }
-      wallet.balance += refundAmount;
-      await wallet.save();
-      const transaction = new Transaction({
-        wallet_id: wallet._id,
-        user_id: userId,
-        transaction_type: "wallet",
-        description: "order returned",
-        amount: refundAmount,
-        type: 'refund',
-      });
-      await transaction.save();
-      productInOrder.returned_at = new Date();
-    } 
+    await order.save();
+    
 
     await order.save();
 

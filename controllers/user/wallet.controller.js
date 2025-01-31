@@ -129,17 +129,23 @@ export const addMoneyToWallet = async (req, res, next) => {
 
     // Update Wallet and create Transaction
     userWallet.balance += amount;
-    await userWallet.save();
 
     const transaction = new Transaction({
       wallet_id: userWallet._id,
       user_id: user.userId,
       transaction_type: "wallet",
-      description: "money added",
+      description: "Money added",
       amount,
-      type: "credited",
+      type: "Credited",
     });
-    await transaction.save();
+
+    await Promise.all([
+      userWallet.save(),
+      transaction.save()
+    ]);
+
+    // await userWallet.save();
+    // await transaction.save();
 
     return res.json({
       message: "Payment verified and wallet updated",

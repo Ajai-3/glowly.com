@@ -10,7 +10,7 @@ import Wishlist from "../../models/wishlist.model.js";
 
 export const renderWishlistPage = async (req, res, next) => {
     try {
-        const { user, wishlist, token, cartCount, cartVariants, categories } = req;
+        let { user, wishlist, token, cartCount, cartVariants, categories } = req;
         // const token = req.cookies.token;
         // let user = null;
         // let cart;
@@ -101,7 +101,7 @@ export const renderWishlistPage = async (req, res, next) => {
 // Add A To Wishlist
 export const addToWishlist = async (req, res, next) => {
     try {
-        const { user, wishlist, token } = req;
+        let { user, wishlist, token } = req;
         const { product_id, variant_id } = req.body;
         // const token = req.cookies.token;
 

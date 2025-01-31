@@ -36,7 +36,12 @@
   <div class="container my-2 px-4 checkout-page-main-div" id="step1">
     <div class="row g-5">
       <nav>
+        <div class="nav-bar-checkout-page1">
+          <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+        </div>
+        
         <div class="nav-bar-checkout-page">
+          
             <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
             <div class="">
               <div class="circle-container d-flex justify-content-between align-items-center">
@@ -338,7 +343,7 @@
       <nav>
         <div class="nav-bar-checkout-page">
             <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
-            <div class="">
+            <div class="order-satus-indicator-checkout-page">
               <div class="circle-container d-flex justify-content-between align-items-center">
                 <div class="d-flex flex-column align-items-center">
                   <div class="circle">1</div>
@@ -761,27 +766,28 @@ couponButton.addEventListener("click", applyCoupon);
 
 
 
-    const payButton = document.querySelector(".pay-btn-checkoutpage");
-    payButton.addEventListener("click", async () => {
-        const cartProducts = getCartProducts();
-        const selectedPaymentMethod = getSelectedPaymentMethod();
+const payButton = document.querySelector(".pay-btn-checkoutpage");
+payButton.addEventListener("click", async () => {
+    const cartProducts = getCartProducts();
+    const selectedPaymentMethod = getSelectedPaymentMethod();
 
-        if (!selectedPaymentMethod) {
-            toastError("Please select a payment method.");
-            return;
-        }
+    if (!selectedPaymentMethod) {
+        toastError("Please select a payment method.");
+        return;
+    }
 
-        const orderData = {
-            address_id: selectedAddressId,
-            cart: cartProducts,
-            grandTotal: couponId ? (grandTotal - discountAmount) : grandTotal,
-            coupon: couponId || null,
-            payment_method: selectedPaymentMethod,
-        };
+    const orderData = {
+        address_id: selectedAddressId,
+        cart: cartProducts,
+        grandTotal: couponId ? (grandTotal - discountAmount) : grandTotal,
+        coupon: couponId || null,
+        payment_method: selectedPaymentMethod,
+    };
 
-        try {
-            if (selectedPaymentMethod === "wallet") {
-                // **Wallet Payment Logic**
+    try {
+        if (selectedPaymentMethod === "razorpay") {
+            try {
+                console.log("Creating Razorpay order on the server...");
                 const response = await fetch("/place-order", {
                     method: "POST",
                     headers: {
@@ -790,116 +796,136 @@ couponButton.addEventListener("click", applyCoupon);
                     body: JSON.stringify(orderData),
                 });
 
-                const result = await response.json();
-
-                if (response.ok) {
-                    handleOrderSuccess();
-                } else {
-                    toastError(result.message || "Something went wrong with wallet payment.");
+                if (!response.ok) {
+                    toastError("Failed to create Razorpay order. Please try again.");
+                    return;
                 }
-            } else if (selectedPaymentMethod === "razorpay") {
-                // **Razorpay Payment Logic**
-                const response = await fetch("/place-order", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(orderData),
-                });
 
                 const { key, order } = await response.json();
+                console.log("Razorpay order created:", order);
 
-                if (response.ok) {
-                    const razorpayOptions = {
-                        key: key, 
-                        amount: order.amount,
-                        currency: order.currency,
-                        name: "Glowly.com",
-                        description: "Test Transaction",
-                        order_id: order.id, 
-                        handler: async function (response) {
-                            const verificationResponse = await fetch("/verify-razorpay-payment", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                    razorpay_order_id: response.razorpay_order_id,
-                                    razorpay_payment_id: response.razorpay_payment_id,
-                                    razorpay_signature: response.razorpay_signature,
-                                }),
-                            });
+                const options = {
+                    key: key,
+                    amount: order.amount,
+                    currency: "INR",
+                    order_id: order.id,
+                    name: "Glowly.com",
+                    description: "Payment for order",
+                    handler: async function (response) {
+                        console.log("Razorpay Payment Success:", response);
 
-                            const result = await verificationResponse.json();
+                        const verifyResponse = await fetch("/verify-razorpay-payment", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_signature: response.razorpay_signature,
+                                order_id: order.id 
+                            }),
+                        });
 
-                            if (verificationResponse.ok) {
-                                handleOrderSuccess();
-                            } else {
-                                toastError(result.message || "Razorpay payment verification failed.");
-                            }
-                        },
-                        prefill: {
-                            name: "Your Name",
-                            email: "your@email.com",
-                            contact: "1234567890",
-                        },
-                        theme: {
-                            color: "#3399cc",
-                        },
-                    };
-
-                    const razorpay = new Razorpay(razorpayOptions);
-                    razorpay.open();
-
-                    handleOrderSuccess()
-                } else {
-                    toastError("Failed to create Razorpay order. Please try again.");
-                }
-
-                    
-            } else if (selectedPaymentMethod === "cash") {
-                // **Cash on Delivery Logic**
-                const response = await fetch("/place-order", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
+                        const verifyData = await verifyResponse.json();
+                        if (verifyData.success) {
+                            handleOrderSuccess();
+                        } else {
+                            toastError(verifyData.message || "Razorpay payment verification failed.");
+                        }
                     },
-                    body: JSON.stringify(orderData),
+                    modal: {
+                        escape: false,
+                        ondismiss: async function () {
+                            console.log("Razorpay modal dismissed (without payment)");
+                            toastWarning("Payment window closed. Order status set to 'Payment pending'.");
+                            handleOrderSuccess();
+                        },
+                    },
+                };
+
+                const rzp1 = new Razorpay(options);
+
+                rzp1.on("payment.failed", async function (response) {
+                    console.log("Payment failed:", response.error);
+                    toastWarning("Payment failed. Order status set to 'Payment pending'.");
+                    handleOrderSuccess(); 
                 });
 
-                const result = await response.json();
+                console.log("Opening Razorpay modal...");
+                rzp1.open();
 
-                if (response.ok) {    
-                  handleOrderSuccess()
-                } else {
-                    toastError(result.message || "Something went wrong. Please try again.");
-                }
+            } catch (error) {
+                console.error("Error in Razorpay flow:", error);
+                toastError("An error occurred while processing your payment. Please try again.");
             }
-        } catch (error) {
-            console.error(error);
-            toastWarning("There was an error processing your payment. Please try again.");
+        } else if (selectedPaymentMethod === "wallet") {
+
+            const response = await fetch("/place-order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                handleOrderSuccess();
+            } else {
+                toastError(result.message || "Something went wrong with wallet payment.");
+            }
+        } else if (selectedPaymentMethod === "cash") {
+            const response = await fetch("/place-order", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(orderData),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                handleOrderSuccess();
+            } else {
+                toastError(result.message || "Something went wrong. Please try again.");
+            }
         }
+    } catch (error) {
+        console.error(error);
+        toastWarning("There was an error processing your payment. Please try again.");
+    }
+});
+
+
+function handleOrderSuccess() {
+    showStep(step1);
+    const modalElement = document.getElementById("orderConfirmationModal");
+    if (!modalElement) {
+        console.error("Modal element not found");
+        return;
+    }
+
+    const orderConfirmationModal = new bootstrap.Modal(modalElement, {
+        backdrop: 'static', 
+        keyboard: false 
     });
 
-
-    function handleOrderSuccess() {
-      showStep(step1);
-      const orderConfirmationModal = new bootstrap.Modal(document.getElementById("orderConfirmationModal"), {
-      backdrop: 'static', 
-      keyboard: false 
-    });
-
+    console.log("Order placed successfully!");
     orderConfirmationModal.show();
 
     document.getElementById("goToOrders").addEventListener("click", () => {
-      window.location.href = "/my-orders";
+        console.log("Redirecting to My Orders");
+        window.location.href = "/my-orders";
     });
 
     document.getElementById("continueShopping").addEventListener("click", () => {
-      window.location.href = "/home";
+        console.log("Redirecting to Home");
+        window.location.href = "/home";
     });
-            
-    }
+}
 
     function getCartProducts() {
         const productElements = document.querySelectorAll(".cart-box-in-checkout");
