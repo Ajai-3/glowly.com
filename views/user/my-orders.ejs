@@ -330,7 +330,6 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener('click', (event) => showPopup(event, 'return'));
     });
 
-    // Add click event listener to product images and titles to navigate to product details page
     document.querySelectorAll('.product-image, .product-title').forEach(element => {
     element.addEventListener('click', (event) => {
       const orderId = element.getAttribute('data-order-id');
@@ -348,6 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
     button.addEventListener("click", async (e) => {
       e.preventDefault();
       const orderId = button.getAttribute("data-order-id");
+      console.log("orderId", orderId);
 
       try {
         const response = await fetch("/payment-failed-retry", {

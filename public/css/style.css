@@ -2707,6 +2707,7 @@ border: 1px solid transparent;
   background: var(--bg-color-6);
   padding: 6px 10px;
   border-radius: 15px;
+  flex-direction: row-reverse;
 }
 
 .star-rating input {

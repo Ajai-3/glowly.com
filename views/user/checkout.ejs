@@ -137,15 +137,8 @@
               <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
             </p>
             <p class="d-flex justify-content-between">
-              <span>Delivery Charges</span>
-              <% if (cartProducts.some(product => product.delivery_charge)) { %>
-                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
-              <% } else { %>
-                <span>
-                  <span class="original-price price-inr mx-2">₹ 60</span>
-                  <span class="discount-percentage">Free</span>
-                </span>
-              <% } %>
+              <span>Delivery Charges</span> 
+             <span class="discount-percentage">₹ 60</span>
             </p>
             <p class="d-flex justify-content-between">
               <span>GST (18%)</span>
@@ -159,7 +152,7 @@
             <hr>
             <p class="d-flex justify-content-between mt-2 mb-1">
               <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
             </p>
           </div>
         </div>
@@ -302,17 +295,8 @@
         <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
       </p>
       <p class="d-flex justify-content-between">
-        <span>Delivery Charges</span>
-        <% if (cartProducts.some(product => product.delivery_charge)) { %>
-          <span class="price-inr">
-            ₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %>
-          </span>
-        <% } else { %>
-          <span>
-            <span class="original-price price-inr mx-2">₹ 60</span>
-            <span class="discount-percentage">Free</span>
-          </span>
-        <% } %>
+        <span>Delivery Charges</span> 
+        <span class="discount-percentage">₹ 60</span>
       </p>
       <p class="d-flex justify-content-between">
         <span>GST (18%)</span>
@@ -327,7 +311,7 @@
       <p class="d-flex justify-content-between mt-2 mb-1">
         <strong>Total</strong>
         <strong class="price-inr">
-          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>
+          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %>
         </strong>
       </p>
     </div>
@@ -450,15 +434,8 @@
               <span id="coupon-discount" class="discount-percentage"></span>
           </p>
             <p class="d-flex justify-content-between">
-              <span>Delivery Charges</span>
-              <% if (cartProducts.some(product => product.delivery_charge)) { %>
-                <span class="price-inr">₹<%= cartProducts.reduce((total, product) => total + (product.delivery_charge || 0), 0) %></span>
-              <% } else { %>
-                <span>
-                  <span class="original-price price-inr mx-2">₹ 60</span>
-                  <span class="discount-percentage">Free</span>
-                </span>
-              <% } %>
+              <span>Delivery Charges</span> 
+             <span class="delivery-charge discount-percentage">₹ 60</span>
             </p>
             <p class="d-flex justify-content-between">
               <span>GST (18%)</span>
@@ -473,7 +450,7 @@
             <hr>
             <p class="d-flex justify-content-between mt-2 mb-1">
               <strong>Total</strong>
-              <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></strong>
+              <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
             </p>
           </div>
         </div>
@@ -544,18 +521,6 @@
 
       });
     };
-
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
     const toastInfo = (message) => {
       iziToast.info({
         message: message,
@@ -567,6 +532,18 @@
         position: 'topRight',
       });
     };
+    const toastError = (message) => {
+      iziToast.error({
+        message: message,
+        backgroundColor: '#e51e1e',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-times',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+      });
+    };
+
 
     const toastWarning = (message) => {
       iziToast.warning({
@@ -596,9 +573,7 @@ document.addEventListener("DOMContentLoaded", () => {
   container.addEventListener("scroll", () => {
     const { scrollTop, scrollHeight, clientHeight } = container;
 
-    // Check if the user has scrolled to the bottom
     if (scrollTop + clientHeight >= scrollHeight - 5) {
-      // Show the next batch of 3 items
       for (let i = 0; i < 3; i++) {
         if (hiddenItems.length > 0) {
           hiddenItems.shift().classList.remove("hidden");
@@ -768,6 +743,8 @@ couponButton.addEventListener("click", applyCoupon);
 
 const payButton = document.querySelector(".pay-btn-checkoutpage");
 payButton.addEventListener("click", async () => {
+  const deliveryCharge = document.getElementsByClassName("delivery-charge")[0].textContent;
+  
     const cartProducts = getCartProducts();
     const selectedPaymentMethod = getSelectedPaymentMethod();
 
@@ -834,11 +811,14 @@ payButton.addEventListener("click", async () => {
                             toastError(verifyData.message || "Razorpay payment verification failed.");
                         }
                     },
+                    theme: {
+                       color: "#ff00b3"
+                    },
                     modal: {
                         escape: false,
                         ondismiss: async function () {
                             console.log("Razorpay modal dismissed (without payment)");
-                            toastWarning("Payment window closed. Order status set to 'Payment pending'.");
+                            toastInfo("Payment cancelled. You can try again later.");
                             handleOrderSuccess();
                         },
                     },
@@ -848,7 +828,7 @@ payButton.addEventListener("click", async () => {
 
                 rzp1.on("payment.failed", async function (response) {
                     console.log("Payment failed:", response.error);
-                    toastWarning("Payment failed. Order status set to 'Payment pending'.");
+                    toastInfo("Payment cancelled. You can try again later.");
                     handleOrderSuccess(); 
                 });
 

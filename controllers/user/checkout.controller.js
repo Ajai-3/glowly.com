@@ -262,7 +262,7 @@ export const placeOrder = async (req, res) => {
             total_order_amount: grandTotal,
             payment_method,
             coupon_applied: coupon || false,
-            payment_status: payment_status || 'Payment pending',
+            payment_status: payment_method === 'razorpay' ? 'Payment failed' : (payment_status || 'Payment pending'),
         });
 
         if (payment_method === 'wallet') {
@@ -307,7 +307,6 @@ export const placeOrder = async (req, res) => {
                 };
 
                 const razorpayOrder = await razorpay.orders.create(options);
-                order.payment_status = 'Payment failed';
                 order.razorpay_order_id = razorpayOrder.id;
 
                 await Promise.all([
@@ -348,6 +347,7 @@ export const placeOrder = async (req, res) => {
             
         } else if (payment_method === 'cash') {
 
+            order.payment_status = 'Payment pending COD';
             await Promise.all([
                 order.save(),
                 updateCouponUsage(coupon, user.userId),
@@ -375,11 +375,11 @@ export const placeOrder = async (req, res) => {
 export const paymentRetry = async (req, res, next) => {
     try {
       const { orderId } = req.body;
+
       if (!orderId) {
         return res.status(400).json({ success: false, message: "Order ID is required" });
       }
   
-      // Find the order and populate products
       const order = await Order.findById(orderId).populate({
         path: 'products.product_id',
         populate: {
@@ -388,56 +388,70 @@ export const paymentRetry = async (req, res, next) => {
       });
   
       if (!order) {
+        console.log("[PaymentRetry] Order not found:", orderId);
         return res.status(404).json({ success: false, message: "Order not found" });
       }
-  
-      // Check if payment is already completed
+
+
       if (order.payment_status === 'Payment completed') {
         return res.status(400).json({ success: false, message: "Payment is already completed for this order" });
       }
+
+      if (!['Payment failed', 'Payment pending COD'].includes(order.payment_status)) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Payment retry is only available for failed or pending payments" 
+        });
+      }
   
-      // Verify product availability and variants
+      let unavailableProducts = [];
       for (const item of order.products) {
         const product = item.product_id;
         
-        // Check if product exists
         if (!product) {
-          return res.status(400).json({ 
-            success: false, 
-            message: "One or more products in your order are no longer available" 
-          });
+          unavailableProducts.push('Unknown Product');
+          continue;
         }
   
-        // Check variant availability if product has variants
         if (product.variants && product.variants.length > 0) {
           const variant = product.variants.find(v => v._id.toString() === item.variant_id.toString());
           if (!variant || variant.stock < item.quantity) {
-            return res.status(400).json({ 
-              success: false, 
-              message: `${product.name} is out of stock or has insufficient quantity` 
-            });
+            unavailableProducts.push(product.name);
           }
         } else if (product.stock < item.quantity) {
-          return res.status(400).json({ 
-            success: false, 
-            message: `${product.name} is out of stock or has insufficient quantity` 
-          });
+          unavailableProducts.push(product.name);
         }
       }
+
+      if (unavailableProducts.length > 0) {
+        console.log("[PaymentRetry] Products unavailable:", unavailableProducts);
+        return res.status(400).json({ 
+          success: false, 
+          message: `The following products are out of stock: ${unavailableProducts.join(', ')}` 
+        });
+      }
   
-      // Create Razorpay order
-      const instance = new razorpay({
-        key_id: process.env.RAZORPAY_KEY_ID,
-        key_secret: process.env.RAZORPAY_SECRET_KEY,
-      });
-  
+      // Create Razorpay order using the configured instance
+      const amount = Math.round(order.total_order_amount * 100); // Ensure amount is in paise and rounded
+      console.log("[PaymentRetry] Creating Razorpay order with amount:", amount);
+
       const options = {
-        amount: order.total_order_amount * 100, 
+        amount,
         currency: "INR",
-        receipt: orderId,
+        receipt: orderId.toString(),
+        notes: {
+          order_id: orderId.toString(),
+          retry: "true"
+        }
       };
-  
-      const razorpayOrder = await instance.orders.create(options);
+
+      const razorpayOrder = await razorpay.orders.create(options);
+      console.log("[PaymentRetry] Razorpay order created:", razorpayOrder.id);
+
+      // Only update the Razorpay order ID, keep the payment status as is
+      await Order.findByIdAndUpdate(orderId, {
+        razorpay_order_id: razorpayOrder.id
+      });
   
       // Send the order details and key to client
       res.status(200).json({
@@ -446,13 +460,20 @@ export const paymentRetry = async (req, res, next) => {
         order: {
           id: razorpayOrder.id,
           amount: razorpayOrder.amount,
-          orderId: order._id
+          orderId: order._id,
+          receipt: options.receipt
         }
       });
   
     } catch (error) {
-      console.error("Error in payment retry:", error);
-      next({ statusCode: 500, message: error.message });
+      console.error("[PaymentRetry] Error:", error);
+      if (error.code === 'BAD_REQUEST_ERROR') {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Invalid request to payment gateway" 
+        });
+      }
+      next({ statusCode: 500, message: "Failed to process payment retry. Please try again." });
     }
   };
   
@@ -888,55 +909,3 @@ export const verifyCoupon = async (req, res) => {
 //         return res.status(500).send("Error verifying the Razorpay payment.");
 //     }
 // };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

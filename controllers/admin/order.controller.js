@@ -9,16 +9,16 @@ import Transaction from "../../models/transaction.model.js";
 export const renderOrderPage = async (req, res) => {
   try {
       const page = parseInt(req.query.page) || 1;
-      const limit = 5; 
+      const limit = 4; 
       const skip = (page - 1) * limit;
 
       const status = req.query.status || 'all'; 
-
-      let query = {};
       
-      if (status !== 'all') {
-          query['products.status'] = status;
-      }
+      let query = {
+        payment_status: { $in: ['Payment pending COD', 'Payment completed'] }
+      };
+      
+ 
 
       const orders = await Order.find(query)
           .populate("user_id")
@@ -41,7 +41,9 @@ export const renderOrderPage = async (req, res) => {
                   quantity: product.quantity,
                   totalAmount: product.total_amount,
                   status: product.status,
-                  variantId: product.variant_id 
+                  variantId: product.variant_id,
+                  payment_method: order.payment_method,
+                  payment_status: order.payment_status
               };
           })
       );

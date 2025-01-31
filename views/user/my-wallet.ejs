@@ -269,9 +269,9 @@
             <div class="filter-section">
               <div class="filter-buttons">
                 <button class="filter-btn active" data-type="all">All</button>
-                <button class="filter-btn" data-type="credited">Credited</button>
-                <button class="filter-btn" data-type="debited">Debited</button>
-                <button class="filter-btn" data-type="refunded">Refunded</button>
+                <button class="filter-btn" data-type="Credited">Credited</button>
+                <button class="filter-btn" data-type="Debited">Debited</button>
+                <button class="filter-btn" data-type="Refunded">Refunded</button>
               </div>
             </div>
 
@@ -303,7 +303,7 @@
                           </span>
                         </td>
                         <td class="amount-<%= transaction.type %>">
-                          <%= transaction.type === 'credited' ? '+' : (transaction.type === 'refunded' ? '↺' : '-') %> 
+                          <%= transaction.type === 'Credited' ? '+' : (transaction.type === 'Refund' ? '↺' : '-') %> 
                           ₹<%= transaction.amount.toFixed(2) %>
                         </td>
                       </tr>
