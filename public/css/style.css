@@ -4390,3 +4390,11 @@ input.quantity-input {
   color: var(--red-text-color-4);
 }
 
+.breadcrumbs a {
+  text-decoration: none;
+  color: var(--text-color-4);
+}
+.main-content a {
+  text-decoration: none;
+  color: var(--text-color-4);
+}

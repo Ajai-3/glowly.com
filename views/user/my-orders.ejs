@@ -462,7 +462,6 @@ function generateInvoice(button) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
 
-        // Company Info
         const companyInfo = {
             name: 'Glowly.com',
             address: '123 Beauty Street, Fashion District',
@@ -474,19 +473,16 @@ function generateInvoice(button) {
             gst: 'GSTIN: 32AABCG1234A1Z5'
         };
 
-        // Set initial font
         doc.setFont('helvetica', 'normal');
 
-        // Add Logo/Header
         doc.setFillColor(232, 0, 113);
         doc.rect(0, 0, 210, 30, 'F');  
-        
+
         doc.setTextColor(255, 255, 255);
         doc.setFontSize(24);  
         doc.setFont('helvetica', 'bold');
         doc.text(companyInfo.name, 20, 20); 
         
-
         doc.setFontSize(12);
         doc.text('TAX INVOICE', 150, 20); 
 
@@ -512,7 +508,6 @@ function generateInvoice(button) {
         ];
         doc.text(invoiceDetails, 120, 40);
 
-        // Billing Details
         doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
         doc.text('BILLING DETAILS', 20, 75);  
@@ -539,12 +534,14 @@ function generateInvoice(button) {
             orderData.products.forEach(product => {
                 if (product && product.product_id) {
                     const unitPrice = Math.round((product.total_amount / product.quantity) * 100) / 100;
+                    const discountPrice = parseFloat(product.amount_after_coupon / product.quantity).toFixed(2);
                     subtotal += parseFloat(product.total_amount);
                     tableData.push([
                         product.product_id.title || 'N/A',
                         product.quantity || '0',
-                        'INR ' + unitPrice.toFixed(2),
-                        'INR ' + parseFloat(product.total_amount).toFixed(2)
+                        'INR ' + unitPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 }),
+                        'INR ' + parseFloat(product.amount_after_coupon).toLocaleString('en-IN', { maximumFractionDigits: 2 }),
+                        'INR ' + parseFloat(product.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })
                     ]);
                 }
             });
@@ -552,12 +549,13 @@ function generateInvoice(button) {
 
         doc.autoTable({
             startY: 100,  
-            head: [['Product Description', 'Qty', 'Unit Price', 'Amount']],
+            margin: { left: 10, right: 10 }, 
+            head: [['Product Description', 'Qty', 'Unit Price','Discount Price', 'Amount']],
             body: tableData,
             theme: 'grid',
             styles: {
                 fontSize: 9,
-                cellPadding: 5,
+                cellPadding: 4,
                 lineWidth: 0.1
             },
             headStyles: {
@@ -568,10 +566,11 @@ function generateInvoice(button) {
                 halign: 'center'
             },
             columnStyles: {
-                0: { cellWidth: 80 },
-                1: { cellWidth: 20, halign: 'center' },
-                2: { cellWidth: 40, halign: 'right' },
-                3: { cellWidth: 40, halign: 'right' }
+                0: { halign: 'center' },
+                1: { halign: 'center' },
+                2: { halign: 'right' },
+                3: { halign: 'right' },
+                4: { halign: 'right' }
             }
         });
 
@@ -588,10 +587,10 @@ function generateInvoice(button) {
         doc.text('GST (18%):', 130, finalY + 7);
         doc.text('Total Amount:', 130, finalY + 14);
 
-        doc.text('INR ' + subtotal.toFixed(2), 190, finalY, { align: 'right' });
-        doc.text('INR ' + tax.toFixed(2), 190, finalY + 7, { align: 'right' });
+        doc.text('INR ' + subtotal.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY, { align: 'right' });
+        doc.text('INR ' + tax.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY + 7, { align: 'right' });
         doc.setTextColor(232, 0, 113);
-        doc.text('INR ' + total.toFixed(2), 190, finalY + 14, { align: 'right' });
+        doc.text('INR ' + total.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY + 14, { align: 'right' });
 
         doc.setFontSize(8);
         doc.setTextColor(128, 128, 128);
@@ -619,6 +618,8 @@ function generateInvoice(button) {
         toastError('Could not generate invoice. Please try again.');
     }
 }
+
+
 
 
 

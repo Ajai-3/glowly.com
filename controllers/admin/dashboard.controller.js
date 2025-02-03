@@ -1,11 +1,6 @@
-import mongoose from "mongoose"
 import User from "../../models/user.model.js"
 import Order from "../../models/order.model.js"
-import Brand from "../../models/brand.model.js";
-import Coupon from "../../models/coupon.model.js";
-import Product from "../../models/product.model.js"
-import Category from "../../models/category.model.js";
-import SubCategory from "../../models/subcategory.model.js";
+
 
 
 
@@ -13,23 +8,23 @@ import SubCategory from "../../models/subcategory.model.js";
 export const renderDashboardPage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = 10; // Show only 10 products per page
+        const limit = 10;
         const skip = (page - 1) * limit;
         const filter = req.query.filter || 'all_time';
         const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
         const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
 
-        // Build the match stage based on filters
         let matchStage = { 'products.status': 'delivered' };
 
+        const now = new Date();
         if (filter === 'today') {
-            const startOfDay = new Date();
+            const startOfDay = new Date(now);
             startOfDay.setHours(0, 0, 0, 0);
-            const endOfDay = new Date(startOfDay);
+            const endOfDay = new Date(now);
             endOfDay.setHours(23, 59, 59, 999);
             matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
         } else if (filter === 'this_week') {
-            const startOfWeek = new Date();
+            const startOfWeek = new Date(now);
             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
             startOfWeek.setHours(0, 0, 0, 0);
             const endOfWeek = new Date(startOfWeek);
@@ -37,66 +32,48 @@ export const renderDashboardPage = async (req, res) => {
             endOfWeek.setHours(23, 59, 59, 999);
             matchStage.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
         } else if (filter === 'this_month') {
-            const startOfMonth = new Date();
-            startOfMonth.setDate(1);
-            startOfMonth.setHours(0, 0, 0, 0);
-            const endOfMonth = new Date(startOfMonth);
-            endOfMonth.setMonth(startOfMonth.getMonth() + 1);
-            endOfMonth.setDate(0); // last day of previous month
-            endOfMonth.setHours(23, 59, 59, 999);
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
             matchStage.createdAt = { $gte: startOfMonth, $lte: endOfMonth };
         } else if (filter === 'this_year') {
-            const startOfYear = new Date();
-            startOfYear.setMonth(0, 1);
-            startOfYear.setHours(0, 0, 0, 0);
-            const endOfYear = new Date(startOfYear);
-            endOfYear.setFullYear(startOfYear.getFullYear() + 1);
-            endOfYear.setDate(0); // last day of previous year
-            endOfYear.setHours(23, 59, 59, 999);
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const endOfYear = new Date(now.getFullYear(), 11, 31);
             matchStage.createdAt = { $gte: startOfYear, $lte: endOfYear };
         } else if (filter === 'custom') {
-            if (startDate) matchStage.createdAt = { $gte: startDate };
-            if (endDate) {
-                matchStage.createdAt = matchStage.createdAt || {};
-                matchStage.createdAt.$lte = endDate;
-            }
-        } else {
-            // No additional match stage needed for all_time
+            matchStage.createdAt = {};
+            if (startDate) matchStage.createdAt.$gte = startDate;
+            if (endDate) matchStage.createdAt.$lte = endDate;
         }
 
-        // Ensure no data before 2024, unless custom filter is used
-        const year2024 = new Date('2024-01-01T00:00:00Z');
-        if (filter !== 'custom') {
-            matchStage.createdAt = matchStage.createdAt || {};
-            matchStage.createdAt.$gte = matchStage.createdAt.$gte || year2024;
-        }
-
-        // Get the total count of delivered products and aggregate necessary data
-        const aggregatePipeline = [
+        const totalsPipeline = [
             { $unwind: '$products' },
             { $match: matchStage },
             {
                 $group: {
                     _id: null,
-                    totalOrders: { $sum: 1 },
+                    totalSales: { $sum: 1 },
                     totalRevenue: { $sum: '$products.total_amount' },
-                    totalDiscount: { $sum: '$products.discount_amount' }
+                    totalDiscount: { $sum: { $subtract: ['$products.total_amount', '$products.amount_after_coupon'] } }
                 }
             }
         ];
 
-        const [aggregateData] = await Order.aggregate(aggregatePipeline);
-        const totalOrders = aggregateData ? aggregateData.totalOrders : 0;
-        const totalRevenue = aggregateData ? aggregateData.totalRevenue : 0;
-        const totalDiscount = aggregateData ? aggregateData.totalDiscount : 0;
-        const netRevenue = totalRevenue - totalDiscount;
+        const chartPipeline = [
+            { $unwind: '$products' },
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: {
+                        date: '$createdAt'
+                    },
+                    total_amount: { $sum: '$products.total_amount' },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { '_id.date': 1 } } 
+        ];
 
-        console.log('Total Orders:', totalOrders);
-        console.log('Total Revenue:', totalRevenue);
-        console.log('Total Discount:', totalDiscount);
-        console.log('Net Revenue:', netRevenue);
-
-        const pipeline = [
+        const tablePipeline = [
             { $unwind: '$products' },
             { $match: matchStage },
             {
@@ -132,58 +109,678 @@ export const renderDashboardPage = async (req, res) => {
             { $limit: limit }
         ];
 
-        const orders = await Order.aggregate(pipeline);
-        const salesData = orders.flatMap(order => 
+
+        const [totalsData, chartData, orders] = await Promise.all([
+            Order.aggregate(totalsPipeline),
+            Order.aggregate(chartPipeline),
+            Order.aggregate(tablePipeline)
+        ]);
+
+
+        const totals = totalsData[0] || { totalSales: 0, totalRevenue: 0, totalDiscount: 0 };
+
+
+        const salesData = orders.flatMap(order =>
             order.products.map((product, index) => ({
                 ...order,
                 product: order.productDetails[index],
                 product_id: product.product_id,
                 quantity: product.quantity,
                 total_amount: product.total_amount,
-                discount_amount: product.discount_amount
+                discount_amount: product.total_amount - product.amount_after_coupon,
             }))
-        ).slice(0, limit);
+        );
+
+
+        let processedChartData;
+        if (filter === 'all_time') {
+            const yearlyData = {};
+            chartData.forEach(record => {
+                const year = new Date(record._id.date).getFullYear();
+                if (!yearlyData[year]) {
+                    yearlyData[year] = { sales: 0, revenue: 0, orders: 0 };
+                }
+                yearlyData[year].sales += record.count;
+                yearlyData[year].revenue += record.total_amount;
+                yearlyData[year].orders += record.count;
+            });
+            processedChartData = Object.keys(yearlyData)
+                .map(year => ({
+                    date: year,
+                    sales: yearlyData[year].sales,
+                    revenue: yearlyData[year].revenue,
+                    orders: yearlyData[year].orders
+                }))
+                .sort((a, b) => parseInt(a.date) - parseInt(b.date)); 
+        } else if (filter === 'this_year') {
+            const months = [...Array(12)].map((_, i) => new Date(2000, i).toLocaleString('en', { month: 'short' }));
+            const monthlyData = {};
+            chartData.forEach(record => {
+                const date = new Date(record._id.date);
+                if (date.getFullYear() === now.getFullYear()) {
+                    const monthIndex = date.getMonth();
+                    if (!monthlyData[monthIndex]) {
+                        monthlyData[monthIndex] = { sales: 0, revenue: 0, orders: 0 };
+                    }
+                    monthlyData[monthIndex].sales += record.count;
+                    monthlyData[monthIndex].revenue += record.total_amount;
+                    monthlyData[monthIndex].orders += record.count;
+                }
+            });
+            processedChartData = months.map((month, index) => ({
+                date: month,
+                sales: monthlyData[index]?.sales || 0,
+                revenue: monthlyData[index]?.revenue || 0,
+                orders: monthlyData[index]?.orders || 0
+            }));
+        } else if (filter === 'today') {
+            processedChartData = chartData.map(record => ({
+                date: new Date(record._id.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                sales: record.count,
+                revenue: record.total_amount,
+                orders: record.count
+            }));
+        } else if (filter === 'this_week' || filter === 'this_month' || filter === 'custom') {
+            processedChartData = chartData.map(record => ({
+                date: new Date(record._id.date).toLocaleDateString(),
+                sales: record.count,
+                revenue: record.total_amount,
+                orders: record.count
+            }));
+        }
 
         const userCount = await User.countDocuments({ role: "user" });
-
-        const totalPages = Math.ceil(totalOrders / limit);
-        const hasNextPage = page < totalPages;
-        const hasPrevPage = page > 1;
-
-        const chartData = orders.map(order => {
-            const date = new Date(order.createdAt);
-            return {
-                date: filter === 'today' ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
-                      filter === 'this_week' || filter === 'this_month' ? date.toLocaleDateString() :
-                      filter === 'this_year' ? date.toLocaleString('default', { month: 'long' }) :
-                      date.getFullYear(),
-                orders: order.products.length,
-                revenue: order.products.reduce((sum, product) => sum + product.total_amount, 0)
-            };
-        });
+        const totalPages = Math.ceil(totals.totalSales / limit);
 
         return res.render("admin/dashboard", {
             salesData,
             userCount,
-            totalOrders,
-            totalRevenue,
-            totalDiscount,
-            netRevenue,
+            totalSalesCount: totals.totalSales,
+            totalRevenue: totals.totalRevenue,
+            totalDiscount: totals.totalDiscount,
+            netRevenue: totals.totalRevenue - totals.totalDiscount,
             page,
             totalPages,
-            hasNextPage,
-            hasPrevPage,
-            chartData,
+            hasNextPage: page < totalPages,
+            hasPrevPage: page > 1,
+            chartData: processedChartData,
             filter,
             startDate: req.query.startDate || '',
             endDate: req.query.endDate || ''
         });
+
     } catch (error) {
         console.error("Error fetching sales data:", error);
         return res.status(500).send("Internal Server Error");
     }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 2-2 2025
+
+// export const renderDashboardPage = async (req, res) => {
+//     try {
+//         const page = parseInt(req.query.page) || 1;
+//         const limit = 10; 
+//         const skip = (page - 1) * limit;
+//         const filter = req.query.filter || 'all_time';
+//         const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
+//         const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
+
+//         let matchStage = { 'products.status': 'delivered' };
+
+//         if (filter === 'today') {
+//             const startOfDay = new Date();
+//             startOfDay.setHours(0, 0, 0, 0);
+//             const endOfDay = new Date(startOfDay);
+//             endOfDay.setHours(23, 59, 59, 999);
+//             matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
+//         } else if (filter === 'this_week') {
+//             const startOfWeek = new Date();
+//             startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+//             startOfWeek.setHours(0, 0, 0, 0);
+//             const endOfWeek = new Date(startOfWeek);
+//             endOfWeek.setDate(startOfWeek.getDate() + 6);
+//             endOfWeek.setHours(23, 59, 59, 999);
+//             matchStage.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
+//         } else if (filter === 'this_month') {
+//             const startOfMonth = new Date();
+//             startOfMonth.setDate(1);
+//             startOfMonth.setHours(0, 0, 0, 0);
+//             const endOfMonth = new Date(startOfMonth);
+//             endOfMonth.setMonth(startOfMonth.getMonth() + 1);
+//             endOfMonth.setDate(0); 
+//             endOfMonth.setHours(23, 59, 59, 999);
+//             matchStage.createdAt = { $gte: startOfMonth, $lte: endOfMonth };
+//         } else if (filter === 'this_year') {
+//             const startOfYear = new Date();
+//             startOfYear.setMonth(0, 1);
+//             startOfYear.setHours(0, 0, 0, 0);
+//             const endOfYear = new Date(startOfYear);
+//             endOfYear.setFullYear(startOfYear.getFullYear() + 1);
+//             endOfYear.setDate(0); 
+//             endOfYear.setHours(23, 59, 59, 999);
+//             matchStage.createdAt = { $gte: startOfYear, $lte: endOfYear };
+//         } else if (filter === 'custom') {
+//             if (startDate) matchStage.createdAt = { $gte: startDate };
+//             if (endDate) {
+//                 matchStage.createdAt = matchStage.createdAt || {};
+//                 matchStage.createdAt.$lte = endDate;
+//             }
+//         } else {
+//             // No additional match stage needed for all_time
+//         }
+
+//         // Ensure no data before 2024, unless custom filter is used
+//         const year2024 = new Date('2024-01-01T00:00:00Z');
+//         if (filter !== 'custom') {
+//             matchStage.createdAt = matchStage.createdAt || {};
+//             matchStage.createdAt.$gte = matchStage.createdAt.$gte || year2024;
+//         }
+
+//         // Get the total count of delivered products and aggregate necessary data
+//         const aggregatePipeline = [
+//             { $unwind: '$products' },
+//             { $match: matchStage },
+//             {
+//                 $group: {
+//                     _id: null,
+//                     totalOrders: { $sum: 1 },
+//                     totalRevenue: { $sum: '$products.total_amount' },
+//                     totalDiscount: { $sum: '$products.discount_amount' }
+//                 }
+//             }
+//         ];
+
+//         const [aggregateData] = await Order.aggregate(aggregatePipeline);
+//         const totalOrders = aggregateData ? aggregateData.totalOrders : 0;
+//         const totalRevenue = aggregateData ? aggregateData.totalRevenue : 0;
+//         const totalDiscount = aggregateData ? aggregateData.totalDiscount : 0;
+//         const netRevenue = totalRevenue - totalDiscount;
+
+//         console.log('Total Orders:', totalOrders);
+//         console.log('Total Revenue:', totalRevenue);
+//         console.log('Total Discount:', totalDiscount);
+//         console.log('Net Revenue:', netRevenue);
+
+//         const pipeline = [
+//             { $unwind: '$products' },
+//             { $match: matchStage },
+//             {
+//                 $lookup: {
+//                     from: 'users',
+//                     localField: 'user_id',
+//                     foreignField: '_id',
+//                     as: 'user'
+//                 }
+//             },
+//             { $unwind: '$user' },
+//             {
+//                 $lookup: {
+//                     from: 'products',
+//                     localField: 'products.product_id',
+//                     foreignField: '_id',
+//                     as: 'productDetails'
+//                 }
+//             },
+//             { $unwind: '$productDetails' },
+//             {
+//                 $group: {
+//                     _id: '$_id',
+//                     user_name: { $first: '$user.name' },
+//                     createdAt: { $first: '$createdAt' },
+//                     payment_method: { $first: '$payment_method' },
+//                     products: { $push: '$products' },
+//                     productDetails: { $push: '$productDetails' }
+//                 }
+//             },
+//             { $sort: { createdAt: -1 } },
+//             { $skip: skip },
+//             { $limit: limit }
+//         ];
+
+//         const orders = await Order.aggregate(pipeline);
+//         const salesData = orders.flatMap(order => 
+//             order.products.map((product, index) => ({
+//                 ...order,
+//                 product: order.productDetails[index],
+//                 product_id: product.product_id,
+//                 quantity: product.quantity,
+//                 total_amount: product.total_amount,
+//                 discount_amount: product.discount_amount
+//             }))
+//         ).slice(0, limit);
+
+//         const userCount = await User.countDocuments({ role: "user" });
+
+//         const totalPages = Math.ceil(totalOrders / limit);
+//         const hasNextPage = page < totalPages;
+//         const hasPrevPage = page > 1;
+
+//         const chartData = orders.map(order => {
+//             const date = new Date(order.createdAt);
+//             return {
+//                 date: filter === 'today' ? date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) :
+//                       filter === 'this_week' || filter === 'this_month' ? date.toLocaleDateString() :
+//                       filter === 'this_year' ? date.toLocaleString('default', { month: 'long' }) :
+//                       date.getFullYear(),
+//                 orders: order.products.length,
+//                 revenue: order.products.reduce((sum, product) => sum + product.total_amount, 0)
+//             };
+//         });
+
+//         return res.render("admin/dashboard", {
+//             salesData,
+//             userCount,
+//             totalOrders,
+//             totalRevenue,
+//             totalDiscount,
+//             netRevenue,
+//             page,
+//             totalPages,
+//             hasNextPage,
+//             hasPrevPage,
+//             chartData,
+//             filter,
+//             startDate: req.query.startDate || '',
+//             endDate: req.query.endDate || ''
+//         });
+//     } catch (error) {
+//         console.error("Error fetching sales data:", error);
+//         return res.status(500).send("Internal Server Error");
+//     }
+// };
+
+// <html lang="en">
+// <%- include('partials/head') %>
+
+// <body>
+//     <%
+//     let totalOrders = 0;
+//     let totalRevenue = 0;
+//     let totalDiscount = 0;
+
+//     salesData.forEach(order => {
+//         totalOrders += 1; // Count each delivered product as an order
+//         totalRevenue += order.total_amount || 0;
+//         totalDiscount += order.discount_amount || 0;
+//     });
+
+//     // Reverse the chartData array to make the latest data appear on the right side
+//     const reversedChartData = chartData.reverse();
+//     %>
+
+//     <div class="main-content">
+//         <div class="header">
+//             <div class="search-bar">
+//                 <form action="/search" method="GET">
+//                     <input type="text" name="search" placeholder="Search">
+//                 </form>
+//             </div>
+//             <div class="admin-profile mx-3">
+//                 <a href="/admin/settings">
+//                     <i class="fa-solid fa-circle-user"></i>
+//                 </a>
+//             </div>
+//         </div>
+//         <div class="breadcrumbs">breadcrumbs</div>
+
+//         <div class="dashboard-summary-container">
+//             <div class="row">
+//                 <div class="col-12 pe-3 dashboard-summary">
+//                     <div class="dashboard-summary1">
+//                         <h3>Total Users</h3>
+//                         <p><%= userCount %></p>
+//                         <p1>
+//                             <i class="fa-solid fa-chart-simple"></i>
+//                             <p2>Active Users</p2>
+//                         </p1>
+//                     </div>
+//                     <div class="dashboard-summary2">
+//                         <h3>Total Orders</h3>
+//                         <p id="total-orders"><%= totalOrders %></p>
+//                         <p1>
+//                             <i class="fa-solid fa-chart-simple"></i>
+//                             <p2>Delivered Orders</p2>
+//                         </p1>
+//                     </div>
+//                     <div class="dashboard-summary3">
+//                         <h3>Total Revenue</h3>
+//                         <p id="gross-revenue">₹ <%= totalRevenue.toFixed(2) %></p>
+//                         <p2>
+//                             <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
+//                         </p2>
+//                     </div>
+//                     <div class="dashboard-summary3">
+//                         <h3>Total Discount</h3>
+//                         <p id="total-discount">₹ <%= totalDiscount.toFixed(2) %></p>
+//                         <p2>
+//                             <i class="fa-solid fa-chart-simple"></i> Applied Discounts
+//                         </p2>
+//                     </div>
+//                     <div class="dashboard-summary3">
+//                         <h3>Net Revenue</h3>
+//                         <p id="net-revenue">₹ <%= (totalRevenue - totalDiscount).toFixed(2) %></p>
+//                         <p2>
+//                             <i class="fa-solid fa-chart-simple"></i> After Discounts
+//                         </p2>
+//                     </div>
+//                 </div>
+//             </div>
+        
+//             <div class="row">
+//                 <div class="col-8">
+//                     <div class="chart-wrapper">
+//                         <div class="chart-container">
+//                             <div class="filter-container">
+//                                 <div class="download">
+//                                     <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
+//                                     <button id="download-excel" class="download-excel">Download Excel</button>
+//                                 </div>
+//                                 <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
+//                                     <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
+//                                     <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+//                                     <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
+//                                     <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
+//                                     <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
+//                                     <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
+//                                 </select>
+//                                 <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
+//                                     <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
+//                                     <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
+//                                     <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
+//                                 </div>
+//                                 <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
+//                             </div>
+//                             <canvas id="salesChart"></canvas>
+//                         </div>
+//                     </div>
+//                 </div>
+//                 <div class="col-4">
+//                     <div class="chart-wrapper">
+//                         <div class="chart-container">
+//                             <h6>Payment Methods</h6>
+//                             <canvas id="paymentMethodsChart"></canvas>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+        
+//             <div class="table-container">
+//                 <h2>Sales Data (Delivered Orders)</h2>
+//                 <table class="all-table">
+//                     <thead>
+//                         <tr>
+//                             <th>Order ID</th>
+//                             <th>Customer</th>
+//                             <th>Product</th>
+//                             <th>Quantity</th>
+//                             <th>Amount</th>
+//                             <th>Discount</th>
+//                             <th>Date</th>
+//                         </tr>
+//                     </thead>
+//                     <tbody id="sales-table-body">
+//                         <% salesData.forEach(order => { %>
+//                             <tr>
+//                                 <td><%= order._id %></td>
+//                                 <td><%= order.user_name %></td>
+//                                 <td><%= order.product.title %></td>
+//                                 <td><%= order.quantity || 0 %></td>
+//                                 <td>₹ <%= (order.total_amount || 0) %></td>
+//                                 <td>₹ <%= (order.discount_amount || 0) %></td>
+//                                 <td><%= new Date(order.createdAt).toLocaleString() %></td>
+//                             </tr>
+//                         <% }); %>
+//                     </tbody>
+//                 </table>
+//                 <div class="d-flex justify-content-center    align-items-center">
+//                     <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
+                    
+//                         <ul class="pagination mb-0">
+//                             <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
+//                                 <li class="page-item">
+//                                     <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
+//                                         <span aria-hidden="true">&laquo;</span>
+//                                     </a>
+//                                 </li>
+//                             <% } %>
+                            
+//                             <% 
+//                             const currentPage = typeof page !== 'undefined' ? page : 1;
+//                             const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
+//                             let startPage = Math.max(1, currentPage - 2);
+//                             let endPage = Math.min(totalPagesCount, startPage + 4);
+//                             if (endPage - startPage < 4) {
+//                                 startPage = Math.max(1, endPage - 4);
+//                             }
+//                             %>
+                            
+//                             <% for(let i = startPage; i <= endPage; i++) { %>
+//                                 <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+//                                     <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
+//                                 </li>
+//                             <% } %>
+                            
+//                             <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
+//                                 <li class="page-item">
+//                                     <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
+//                                         <span aria-hidden="true">&raquo;</span>
+//                                     </a>
+//                                 </li>
+//                             <% } %>
+//                         </ul>
+//                     </nav>
+//                 </div>
+                
+
+//                 <script>
+//                     function applyFilter(filter) {
+//                         const url = new URL(window.location.href);
+//                         url.searchParams.set('filter', filter);
+//                         if (filter !== 'custom') {
+//                             url.searchParams.delete('startDate');
+//                             url.searchParams.delete('endDate');
+//                         }
+//                         window.location.href = url.toString();
+//                     }
+                
+//                     function applyCustomFilter() {
+//                         const filter = 'custom';
+//                         const startDate = document.getElementById('start-date').value;
+//                         const endDate = document.getElementById('end-date').value;
+//                         const url = new URL(window.location.href);
+//                         url.searchParams.set('filter', filter);
+//                         if (startDate) url.searchParams.set('startDate', startDate);
+//                         if (endDate) url.searchParams.set('endDate', endDate);
+//                         window.location.href = url.toString();
+//                     }
+                
+//                     document.addEventListener('DOMContentLoaded', function () {
+//                         const salesData = <%- JSON.stringify(salesData || []) %>;
+//                         const chartData = <%- JSON.stringify(reversedChartData || []) %>;
+                
+//                         // Process payment methods from sales data
+//                         const paymentMethods = {};
+//                         salesData.forEach(order => {
+//                             const method = order.payment_method || 'unknown';
+//                             paymentMethods[method] = (paymentMethods[method] || 0) + 1;
+//                         });
+                
+//                         const paymentMethodsData = Object.entries(paymentMethods).map(([method, count]) => ({
+//                             _id: method,
+//                             count: count
+//                         }));
+                
+//                         // Sales Chart
+//                         const ctx = document.getElementById('salesChart').getContext('2d');
+//                         let currentChartType = 'bar';
+//                         let chart;
+                
+//                         function createChart(type) {
+//                             if (chart) {
+//                                 chart.destroy();
+//                             }
+//                             chart = new Chart(ctx, {
+//                                 type: type,
+//                                 data: {
+//                                     labels: chartData.map(d => d.date),
+//                                     datasets: [
+//                                         {
+//                                             label: 'Revenue (₹) and Orders',
+//                                             data: chartData.map(d => ({ x: d.date, y: d.revenue, orders: d.orders })),
+//                                             borderColor: '#d81b60',
+//                                             backgroundColor: 'rgba(232, 55, 146, 0.5)',
+//                                             borderWidth: 2,
+//                                             fill: true,
+//                                             tension: 0.1
+//                                         }
+//                                     ]
+//                                 },
+//                                 options: {
+//                                     responsive: true,
+//                                     scales: {
+//                                         y: {
+//                                             beginAtZero: true,
+//                                             title: {
+//                                                 display: true,
+//                                                 text: 'Revenue (₹)',
+//                                                 color: 'rgba(255, 255, 255, 0.7)'
+//                                             },
+//                                             grid: {
+//                                                 color: 'rgba(255, 255, 255, 0.1)'
+//                                             },
+//                                             ticks: {
+//                                                 color: 'rgba(255, 255, 255, 0.7)'
+//                                             }
+//                                         },
+//                                         x: {
+//                                             title: {
+//                                                 display: true,
+//                                                 text: '<%= filter === "today" ? "Time" : (filter === "this_week" ? "Day" : (filter === "this_month" ? "Day" : (filter === "this_year" ? "Month" : "Year"))) %>',
+//                                                 color: 'rgba(255, 255, 255, 0.7)'
+//                                             },
+//                                             grid: {
+//                                                 color: 'rgba(255, 255, 255, 0.1)'
+//                                             },
+//                                             ticks: {
+//                                                 color: 'rgba(255, 255, 255, 0.7)'
+//                                             }
+//                                         }
+//                                     },
+//                                     plugins: {
+//                                         tooltip: {
+//                                             callbacks: {
+//                                                 label: function(context) {
+//                                                     const { revenue, orders } = chartData[context.dataIndex];
+//                                                     return `Revenue: ₹${revenue} | Products: ${orders}`;
+//                                                 }
+//                                             }
+//                                         }
+//                                     }
+//                                 }
+//                             });
+//                         }
+                
+//                         createChart(currentChartType);
+                
+//                         document.getElementById('toggleChart').addEventListener('click', function() {
+//                             currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+//                             createChart(currentChartType);
+//                         });
+                
+//                         // Payment Methods Chart
+//                         const paymentCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+//                         new Chart(paymentCtx, {
+//                             type: 'doughnut',
+//                             data: {
+//                                 labels: paymentMethodsData.map(d => d._id.toUpperCase()),
+//                                 datasets: [{
+//                                     data: paymentMethodsData.map(d => d.count),
+//                                     backgroundColor: [
+//                                         '#5c6bc0',  // Indigo Blue
+//                                         '#26c6da',  // Cyan
+//                                         '#ec407a',  // Pink
+//                                         '#ffa726',  // Orange
+//                                         '#66bb6a',  // Green
+//                                         '#7e57c2'   // Purple
+//                                     ],
+//                                     borderColor: [
+//                                         '#4a59a7',  // Darker Indigo
+//                                         '#1ea7b8',  // Darker Cyan
+//                                         '#d81b60',  // Darker Pink
+//                                         '#fb8c00',  // Darker Orange
+//                                         '#43a047',  // Darker Green
+//                                         '#673ab7'   // Darker Purple
+//                                     ],
+//                                     borderWidth: 2
+//                                 }]
+//                             },
+//                             options: {
+//                                 responsive: true,
+//                                 plugins: {
+//                                     legend: {
+//                                         position: 'top',
+//                                     },
+//                                     tooltip: {
+//                                         callbacks: {
+//                                             label: function(context) {
+//                                                 const data = paymentMethodsData[context.dataIndex];
+//                                                 const percentage = ((data.count / paymentMethodsData.reduce((a, b) => a + b.count, 0)) * 100).toFixed(1);
+//                                                 return `${data._id.toUpperCase()}: ${data.count} orders (${percentage}%)`;
+//                                             }
+//                                         }
+//                                     }
+//                                 }
+//                             }
+//                         });
+//                     });
+//                 </script>
+//             </div>
+//         </div>
+//     </div>
+
+//     <%- include('partials/footer') %>
+
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+// <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+// </body>
+// </html>
 
 {/* <html lang="en">
 <%- include('partials/head') %>

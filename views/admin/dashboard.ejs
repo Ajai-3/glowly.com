@@ -1,22 +1,8 @@
+<!DOCTYPE html>
 <html lang="en">
 <%- include('partials/head') %>
 
 <body>
-    <%
-    let totalOrders = 0;
-    let totalRevenue = 0;
-    let totalDiscount = 0;
-
-    salesData.forEach(order => {
-        totalOrders += 1; // Count each delivered product as an order
-        totalRevenue += order.total_amount || 0;
-        totalDiscount += order.discount_amount || 0;
-    });
-
-    // Reverse the chartData array to make the latest data appear on the right side
-    const reversedChartData = chartData.reverse();
-    %>
-
     <div class="main-content">
         <div class="header">
             <div class="search-bar">
@@ -30,7 +16,7 @@
                 </a>
             </div>
         </div>
-        <div class="breadcrumbs">breadcrumbs</div>
+        <div class="breadcrumbs">Dashboard</div>
 
         <div class="dashboard-summary-container">
             <div class="row">
@@ -44,8 +30,8 @@
                         </p1>
                     </div>
                     <div class="dashboard-summary2">
-                        <h3>Total Orders</h3>
-                        <p id="total-orders"><%= totalOrders %></p>
+                        <h3>Total Sales Count</h3>
+                        <p id="total-orders"><%= totalSalesCount %></p>
                         <p1>
                             <i class="fa-solid fa-chart-simple"></i>
                             <p2>Delivered Orders</p2>
@@ -53,21 +39,21 @@
                     </div>
                     <div class="dashboard-summary3">
                         <h3>Total Revenue</h3>
-                        <p id="gross-revenue">₹ <%= totalRevenue.toFixed(2) %></p>
+                        <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
                         <p2>
                             <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
                         </p2>
                     </div>
                     <div class="dashboard-summary3">
                         <h3>Total Discount</h3>
-                        <p id="total-discount">₹ <%= totalDiscount.toFixed(2) %></p>
+                        <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
                         <p2>
                             <i class="fa-solid fa-chart-simple"></i> Applied Discounts
                         </p2>
                     </div>
                     <div class="dashboard-summary3">
                         <h3>Net Revenue</h3>
-                        <p id="net-revenue">₹ <%= (totalRevenue - totalDiscount).toFixed(2) %></p>
+                        <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
                         <p2>
                             <i class="fa-solid fa-chart-simple"></i> After Discounts
                         </p2>
@@ -106,7 +92,7 @@
                 <div class="col-4">
                     <div class="chart-wrapper">
                         <div class="chart-container">
-                            <h6>Payment Methods Distribution</h6>
+                            <h6>Payment Methods</h6>
                             <canvas id="paymentMethodsChart"></canvas>
                         </div>
                     </div>
@@ -134,14 +120,14 @@
                                 <td><%= order.user_name %></td>
                                 <td><%= order.product.title %></td>
                                 <td><%= order.quantity || 0 %></td>
-                                <td>₹ <%= (order.total_amount || 0) %></td>
-                                <td>₹ <%= (order.discount_amount || 0) %></td>
+                                <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
+                                <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
                                 <td><%= new Date(order.createdAt).toLocaleString() %></td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-center    align-items-center">
+                <div class="d-flex justify-content-center align-items-center">
                     <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
                     
                         <ul class="pagination mb-0">
@@ -179,105 +165,122 @@
                         </ul>
                     </nav>
                 </div>
-                
+            </div>
+        </div>
+    </div>
 
-                <script>
-                    function applyFilter(filter) {
-                        const url = new URL(window.location.href);
-                        url.searchParams.set('filter', filter);
-                        if (filter !== 'custom') {
-                            url.searchParams.delete('startDate');
-                            url.searchParams.delete('endDate');
-                        }
-                        window.location.href = url.toString();
-                    }
-                
-                    function applyCustomFilter() {
-                        const filter = 'custom';
-                        const startDate = document.getElementById('start-date').value;
-                        const endDate = document.getElementById('end-date').value;
-                        const url = new URL(window.location.href);
-                        url.searchParams.set('filter', filter);
-                        if (startDate) url.searchParams.set('startDate', startDate);
-                        if (endDate) url.searchParams.set('endDate', endDate);
-                        window.location.href = url.toString();
-                    }
-                
-                    document.addEventListener('DOMContentLoaded', function () {
-                        const salesData = <%- JSON.stringify(salesData || []) %>;
-                        const chartData = <%- JSON.stringify(reversedChartData || []) %>;
-                
-                        // Process payment methods from sales data
-                        const paymentMethods = {};
-                        salesData.forEach(order => {
-                            const method = order.payment_method || 'unknown';
-                            paymentMethods[method] = (paymentMethods[method] || 0) + 1;
-                        });
-                
-                        const paymentMethodsData = Object.entries(paymentMethods).map(([method, count]) => ({
-                            _id: method,
-                            count: count
-                        }));
-                
-                        // Sales Chart
-                        const ctx = document.getElementById('salesChart').getContext('2d');
-                        let currentChartType = 'bar';
-                        let chart;
-                
-                        function createChart(type) {
-                            if (chart) {
-                                chart.destroy();
+    <script>
+        function applyFilter(filter) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('filter', filter);
+            if (filter !== 'custom') {
+                url.searchParams.delete('startDate');
+                url.searchParams.delete('endDate');
+            }
+            window.location.href = url.toString();
+        }
+    
+        function applyCustomFilter() {
+            const filter = 'custom';
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const url = new URL(window.location.href);
+            url.searchParams.set('filter', filter);
+            if (startDate) url.searchParams.set('startDate', startDate);
+            if (endDate) url.searchParams.set('endDate', endDate);
+            window.location.href = url.toString();
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const salesData = <%- JSON.stringify(salesData || []) %>;
+            const chartData = <%- JSON.stringify(chartData || []) %>;
+    
+            // Process payment methods from sales data
+            const paymentMethods = {};
+            salesData.forEach(order => {
+                const method = order.payment_method || 'unknown';
+                paymentMethods[method] = (paymentMethods[method] || 0) + 1;
+            });
+    
+            const paymentMethodsData = Object.entries(paymentMethods).map(([method, count]) => ({
+                _id: method,
+                count: count
+            }));
+    
+            // Sales Chart
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            let currentChartType = 'bar';
+            let chart;
+    
+            function createChart(type) {
+                if (chart) {
+                    chart.destroy();
+                }
+                chart = new Chart(ctx, {
+                    type: type,
+                    data: {
+                        labels: chartData.map(d => d.date),
+                        datasets: [
+                            {
+                                label: 'Revenue (₹) and Orders',
+                                data: chartData.map(d => ({ x: d.date, y: d.revenue, orders: d.orders })),
+                                borderColor: '#d81b60',
+                                backgroundColor: 'rgba(232, 55, 146, 0.5)',
+                                borderWidth: 2,
+                                fill: true,
+                                tension: 0.1
                             }
-                            chart = new Chart(ctx, {
-                                type: type,
-                                data: {
-                                    labels: chartData.map(d => d.date),
-                                    datasets: [
-                                        {
-                                            label: 'Revenue (₹) and Orders',
-                                            data: chartData.map(d => ({ x: d.date, y: d.revenue, orders: d.orders })),
-                                            borderColor: 'rgb(75, 192, 192)',
-                                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                                            fill: true,
-                                            tension: 0.1
-                                        }
-                                    ]
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Revenue (₹)',
+                                    color: 'rgba(255, 255, 255, 0.7)'
                                 },
-                                options: {
-                                    responsive: true,
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            title: {
-                                                display: true,
-                                                text: 'Revenue (₹)'
-                                            }
-                                        },
-                                        x: {
-                                            title: {
-                                                display: true,
-                                                text: '<%= filter === "today" ? "Time" : (filter === "this_week" ? "Day" : (filter === "this_month" ? "Day" : (filter === "this_year" ? "Month" : "Year"))) %>'
-                                            }
-                                        }
-                                    },
-                                    plugins: {
-                                        tooltip: {
-                                            callbacks: {
-                                                label: function(context) {
-                                                    const { revenue, orders } = chartData[context.dataIndex];
-                                                    return `Revenue: ₹${revenue} | Products: ${orders}`;
-                                                }
-                                            }
-                                        }
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '<%= filter === "today" ? "Time" : (filter === "this_week" ? "Day" : (filter === "this_month" ? "Day" : (filter === "this_year" ? "Month" : "Year"))) %>',
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                },
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        },
+                        plugins: {
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const { revenue, orders } = chartData[context.dataIndex];
+                                        return `Revenue: ₹${revenue} | Products: ${orders}`;
                                     }
                                 }
-                            });
+                            }
                         }
-                
-                        createChart(currentChartType);
-                
-                        document.getElementById('toggleChart').addEventListener('click', function() {
-                            currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+                    }
+                });
+            }
+    
+            createChart(currentChartType);
+    
+            document.getElementById('toggleChart').addEventListener('click', function() {
+                currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
                             createChart(currentChartType);
                         });
                 
@@ -290,16 +293,22 @@
                                 datasets: [{
                                     data: paymentMethodsData.map(d => d.count),
                                     backgroundColor: [
-                                        'rgba(255, 99, 132, 0.8)',
-                                        'rgba(54, 162, 235, 0.8)',
-                                        'rgba(255, 206, 86, 0.8)'
+                                        '#5c6bc0',  // Indigo Blue
+                                        '#26c6da',  // Cyan
+                                        '#ec407a',  // Pink
+                                        '#ffa726',  // Orange
+                                        '#66bb6a',  // Green
+                                        '#7e57c2'   // Purple
                                     ],
                                     borderColor: [
-                                        'rgba(255, 99, 132, 1)',
-                                        'rgba(54, 162, 235, 1)',
-                                        'rgba(255, 206, 86, 1)'
+                                        '#4a59a7',  // Darker Indigo
+                                        '#1ea7b8',  // Darker Cyan
+                                        '#d81b60',  // Darker Pink
+                                        '#fb8c00',  // Darker Orange
+                                        '#43a047',  // Darker Green
+                                        '#673ab7'   // Darker Purple
                                     ],
-                                    borderWidth: 1
+                                    borderWidth: 2
                                 }]
                             },
                             options: {
@@ -321,10 +330,73 @@
                             }
                         });
                     });
+
+                    
+                    document.getElementById('download-pdf').addEventListener('click', function () {
+                        const { jsPDF } = window.jspdf;
+                        const doc = new jsPDF();
+
+                        // Add total summary data to PDF
+                        doc.setFontSize(18);
+                        doc.text('Sales Dashboard Summary', 14, 20);
+
+                        doc.setFontSize(14);
+                        doc.text(`Total Users: ${<%= userCount %>}`, 14, 30);
+                        doc.text(`Total Sales Count: ${<%= totalSalesCount %>}`, 14, 40);
+                        doc.text(`Total Revenue: ₹${<%= totalRevenue.toLocaleString('en-IN') %>}`, 14, 50);
+                        doc.text(`Total Discount: ₹${<%= totalDiscount.toLocaleString('en-IN') %>}`, 14, 60);
+                        doc.text(`Net Revenue: ₹${<%= netRevenue.toLocaleString('en-IN') %>}`, 14, 70);
+
+                        // Save the PDF
+                        doc.save('sales_dashboard_summary.pdf');
+                    });
+                    document.getElementById('download-excel').addEventListener('click', function () {
+                        const salesData = <%- JSON.stringify(salesData || []) %>;
+
+                        // Prepare total summary data for Excel
+                        const summaryData = [
+                            ['Total Users', <%= userCount %>],
+                            ['Total Sales Count', <%= totalSalesCount %>],
+                            ['Total Revenue', `₹${<%= totalRevenue.toLocaleString('en-IN') %>}`],
+                            ['Total Discount', `₹${<%= totalDiscount.toLocaleString('en-IN') %>}`],
+                            ['Net Revenue', `₹${<%= netRevenue.toLocaleString('en-IN') %>}`],
+                        ];
+
+                        // Prepare the sales table data for Excel
+                        const tableData = [
+                            ['Order ID', 'Customer', 'Product', 'Quantity', 'Amount', 'Discount', 'Date'],
+                            ...salesData.map(order => [
+                                order._id,
+                                order.user_name,
+                                order.product.title,
+                                order.quantity || 0,
+                                `₹${(order.total_amount.toLocaleString('en-IN') || 0)}`,
+                                `₹${(order.discount_amount.toLocaleString('en-IN') || 0)}`,
+                                new Date(order.createdAt).toLocaleString()
+                            ])
+                        ];
+
+                        // Create a workbook
+                        const wb = XLSX.utils.book_new();
+                        
+                        // Add the total summary sheet
+                        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+                        XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+                        
+                        // Add the sales data sheet
+                        const salesSheet = XLSX.utils.aoa_to_sheet(tableData);
+                        XLSX.utils.book_append_sheet(wb, salesSheet, 'Sales Data');
+
+                        // Write the Excel file to the browser
+                        XLSX.writeFile(wb, 'sales_dashboard_report.xlsx');
+                    });
+
                 </script>
             </div>
         </div>
     </div>
+
+    
 
     <%- include('partials/footer') %>
 
