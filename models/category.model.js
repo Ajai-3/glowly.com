@@ -9,6 +9,10 @@ const categorySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    soldCount: {
+        type: Number,
+        defualt: 0
+      },
     isListed: {
         type: Boolean,
         default: true 

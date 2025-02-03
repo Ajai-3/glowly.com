@@ -13,6 +13,10 @@ const subcategorySchema = new mongoose.Schema({
         type: Boolean,
         default: true 
     },
+    soldCount: {
+        type: Number,
+        defualt: 0
+      },
     deleted_at: {
        type: Date,
        default: null

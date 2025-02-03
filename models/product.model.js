@@ -62,6 +62,10 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: 0,
       },
+      soldCount: {
+        type: Number,
+        defualt: 0
+      },
       images: {
         type: [String],
         required: true,
