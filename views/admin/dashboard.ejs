@@ -3,143 +3,143 @@
 <%- include('partials/head') %>
 
 <body>
-    <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/search" method="GET">
-                    <input type="text" name="search" placeholder="Search">
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="breadcrumbs">Dashboard</div>
+  <div class="main-content">
+    <div class="header">
+      <div class="search-bar">
+        <form action="/search" method="GET">
+          <input type="text" name="search" placeholder="Search">
+        </form>
+      </div>
+      <div class="admin-profile mx-3">
+        <a href="/admin/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+      </div>
+    </div>
+    <div class="breadcrumbs">Dashboard</div>
 
-        <div class="dashboard-summary-container">
-            <div class="row">
-                <div class="col-12 pe-3 dashboard-summary">
-                    <div class="dashboard-summary1">
-                        <h3>Total Users</h3>
-                        <p><%= userCount %></p>
-                        <p1>
-                            <i class="fa-solid fa-chart-simple"></i>
-                            <p2>Active Users</p2>
-                        </p1>
-                    </div>
-                    <div class="dashboard-summary2">
-                        <h3>Total Sales Count</h3>
-                        <p id="total-orders"><%= totalSalesCount %></p>
-                        <p1>
-                            <i class="fa-solid fa-chart-simple"></i>
-                            <p2>Delivered Orders</p2>
-                        </p1>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Total Revenue</h3>
-                        <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
-                        </p2>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Total Discount</h3>
-                        <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> Applied Discounts
-                        </p2>
-                    </div>
-                    <div class="dashboard-summary3">
-                        <h3>Net Revenue</h3>
-                        <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
-                        <p2>
-                            <i class="fa-solid fa-chart-simple"></i> After Discounts
-                        </p2>
-                    </div>
+    <div class="dashboard-summary-container">
+      <div class="row">
+        <div class="col-12 pe-3 dashboard-summary">
+          <div class="dashboard-summary1">
+            <h3>Total Users</h3>
+            <p><%= userCount %></p>
+            <p1>
+              <i class="fa-solid fa-chart-simple"></i>
+              <p2>Active Users</p2>
+            </p1>
+          </div>
+          <div class="dashboard-summary2">
+            <h3>Total Sales Count</h3>
+            <p id="total-orders"><%= totalSalesCount %></p>
+            <p1>
+              <i class="fa-solid fa-chart-simple"></i>
+              <p2>Delivered Orders</p2>
+            </p1>
+          </div>
+          <div class="dashboard-summary3">
+            <h3>Total Revenue</h3>
+            <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
+            <p2>
+              <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
+            </p2>
+          </div>
+          <div class="dashboard-summary3">
+            <h3>Total Discount</h3>
+            <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
+            <p2>
+              <i class="fa-solid fa-chart-simple"></i> Applied Discounts
+            </p2>
+          </div>
+          <div class="dashboard-summary3">
+            <h3>Net Revenue</h3>
+            <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
+            <p2>
+              <i class="fa-solid fa-chart-simple"></i> After Discounts
+            </p2>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-8">
+          <div class="chart-wrapper">
+            <div class="chart-container">
+              <div class="filter-container">
+                <div class="download">
+                  <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
+                  <button id="download-excel" class="download-excel">Download Excel</button>
                 </div>
+                <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
+                  <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
+                  <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+                  <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
+                  <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
+                  <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
+                  <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
+                </select>
+                <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
+                  <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
+                  <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
+                  <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
+                </div>
+                <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
+              </div>
+              <canvas id="salesChart"></canvas>
             </div>
-        
-            <div class="row">
-                <div class="col-8">
-                    <div class="chart-wrapper">
-                        <div class="chart-container">
-                            <div class="filter-container">
-                                <div class="download">
-                                    <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
-                                    <button id="download-excel" class="download-excel">Download Excel</button>
-                                </div>
-                                <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
-                                    <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
-                                    <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
-                                    <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
-                                    <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
-                                    <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
-                                    <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
-                                </select>
-                                <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
-                                    <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
-                                    <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
-                                    <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
-                                </div>
-                                <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
-                            </div>
-                            <canvas id="salesChart"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-4">
-                    <div class="chart-wrapper">
-                        <div class="chart-container">
-                            <h6>Payment Methods</h6>
-                            <canvas id="paymentMethodsChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="chart-wrapper">
+            <div class="chart-container">
+              <h6>Payment Methods</h6>
+              <canvas id="paymentMethodsChart"></canvas>
             </div>
-        
-            <div class="table-container">
-                <h2>Sales Data (Delivered Orders)</h2>
-                <table class="all-table">
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Customer</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Amount</th>
-                            <th>Discount</th>
-                            <th>Date</th>
-                        </tr>
-                    </thead>
-                    <tbody id="sales-table-body">
-                        <% salesData.forEach(order => { %>
-                            <tr>
-                                <td><%= order._id %></td>
-                                <td><%= order.user_name %></td>
-                                <td><%= order.product.title %></td>
-                                <td><%= order.quantity || 0 %></td>
-                                <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
-                                <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
-                                <td><%= new Date(order.createdAt).toLocaleString() %></td>
-                            </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-                <div class="d-flex justify-content-center align-items-center">
-                    <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
-                    
-                        <ul class="pagination mb-0">
-                            <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
-                                        <span aria-hidden="true">&laquo;</span>
-                                    </a>
-                                </li>
-                            <% } %>
-                            
-                            <% 
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <h2>Sales Data (Delivered Orders)</h2>
+        <table class="all-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Amount</th>
+              <th>Discount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="sales-table-body">
+            <% salesData.forEach(order => { %>
+            <tr>
+              <td><%= order._id %></td>
+              <td><%= order.user_name %></td>
+              <td><%= order.product.title %></td>
+              <td><%= order.quantity || 0 %></td>
+              <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
+              <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
+              <td><%= new Date(order.createdAt).toLocaleString() %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+        <div class="d-flex justify-content-center align-items-center">
+          <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
+
+            <ul class="pagination mb-0">
+              <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              <% } %>
+
+              <% 
                             const currentPage = typeof page !== 'undefined' ? page : 1;
                             const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
                             let startPage = Math.max(1, currentPage - 2);
@@ -148,259 +148,513 @@
                                 startPage = Math.max(1, endPage - 4);
                             }
                             %>
-                            
-                            <% for(let i = startPage; i <= endPage; i++) { %>
-                                <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                                    <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
-                                </li>
-                            <% } %>
-                            
-                            <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
-                                <li class="page-item">
-                                    <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
-                                        <span aria-hidden="true">&raquo;</span>
-                                    </a>
-                                </li>
-                            <% } %>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        function applyFilter(filter) {
-            const url = new URL(window.location.href);
-            url.searchParams.set('filter', filter);
-            if (filter !== 'custom') {
-                url.searchParams.delete('startDate');
-                url.searchParams.delete('endDate');
-            }
-            window.location.href = url.toString();
+              <% for(let i = startPage; i <= endPage; i++) { %>
+              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
+              </li>
+              <% } %>
+
+              <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              <% } %>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function applyFilter(filter) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('filter', filter);
+      if (filter !== 'custom') {
+        url.searchParams.delete('startDate');
+        url.searchParams.delete('endDate');
+      }
+      window.location.href = url.toString();
+    }
+
+    function applyCustomFilter() {
+      const filter = 'custom';
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('filter', filter);
+      if (startDate) url.searchParams.set('startDate', startDate);
+      if (endDate) url.searchParams.set('endDate', endDate);
+      window.location.href = url.toString();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const salesData = <%- JSON.stringify(salesData || []) %>;
+      const chartData = <%- JSON.stringify(chartData || []) %>;
+
+      // Process payment methods from sales data
+      const paymentMethods = {};
+      salesData.forEach(order => {
+        const method = order.payment_method || 'unknown';
+        paymentMethods[method] = (paymentMethods[method] || 0) + 1;
+      });
+
+      const paymentMethodsData = Object.entries(paymentMethods).map(([method, count]) => ({
+        _id: method,
+        count: count
+      }));
+
+      // Sales Chart
+      const ctx = document.getElementById('salesChart').getContext('2d');
+      let currentChartType = 'bar';
+      let chart;
+
+      function createChart(type) {
+        if (chart) {
+          chart.destroy();
         }
-    
-        function applyCustomFilter() {
-            const filter = 'custom';
-            const startDate = document.getElementById('start-date').value;
-            const endDate = document.getElementById('end-date').value;
-            const url = new URL(window.location.href);
-            url.searchParams.set('filter', filter);
-            if (startDate) url.searchParams.set('startDate', startDate);
-            if (endDate) url.searchParams.set('endDate', endDate);
-            window.location.href = url.toString();
-        }
-    
-        document.addEventListener('DOMContentLoaded', function () {
-            const salesData = <%- JSON.stringify(salesData || []) %>;
-            const chartData = <%- JSON.stringify(chartData || []) %>;
-    
-            // Process payment methods from sales data
-            const paymentMethods = {};
-            salesData.forEach(order => {
-                const method = order.payment_method || 'unknown';
-                paymentMethods[method] = (paymentMethods[method] || 0) + 1;
-            });
-    
-            const paymentMethodsData = Object.entries(paymentMethods).map(([method, count]) => ({
-                _id: method,
-                count: count
-            }));
-    
-            // Sales Chart
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            let currentChartType = 'bar';
-            let chart;
-    
-            function createChart(type) {
-                if (chart) {
-                    chart.destroy();
+        chart = new Chart(ctx, {
+          type: type,
+          data: {
+            labels: chartData.map(d => d.date),
+            datasets: [{
+              label: 'Revenue (₹) and Orders',
+              data: chartData.map(d => ({
+                x: d.date,
+                y: d.revenue,
+                orders: d.orders
+              })),
+              borderColor: '#d81b60',
+              backgroundColor: 'rgba(232, 55, 146, 0.5)',
+              borderWidth: 2,
+              fill: true,
+              tension: 0.1
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Revenue (₹)',
+                  color: 'rgba(255, 255, 255, 0.7)'
+                },
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: 'rgba(255, 255, 255, 0.7)'
                 }
-                chart = new Chart(ctx, {
-                    type: type,
-                    data: {
-                        labels: chartData.map(d => d.date),
-                        datasets: [
-                            {
-                                label: 'Revenue (₹) and Orders',
-                                data: chartData.map(d => ({ x: d.date, y: d.revenue, orders: d.orders })),
-                                borderColor: '#d81b60',
-                                backgroundColor: 'rgba(232, 55, 146, 0.5)',
-                                borderWidth: 2,
-                                fill: true,
-                                tension: 0.1
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Revenue (₹)',
-                                    color: 'rgba(255, 255, 255, 0.7)'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: 'rgba(255, 255, 255, 0.7)'
-                                }
-                            },
-                            x: {
-                                title: {
-                                    display: true,
-                                    text: '<%= filter === "today" ? "Time" : (filter === "this_week" ? "Day" : (filter === "this_month" ? "Day" : (filter === "this_year" ? "Month" : "Year"))) %>',
-                                    color: 'rgba(255, 255, 255, 0.7)'
-                                },
-                                grid: {
-                                    color: 'rgba(255, 255, 255, 0.1)'
-                                },
-                                ticks: {
-                                    color: 'rgba(255, 255, 255, 0.7)'
-                                }
-                            }
-                        },
-                        plugins: {
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const { revenue, orders } = chartData[context.dataIndex];
-                                        return `Revenue: ₹${revenue} | Products: ${orders}`;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: '<%= filter === "today" ? "Time" : (filter === "this_week" ? "Day" : (filter === "this_month" ? "Day" : (filter === "this_year" ? "Month" : "Year"))) %>',
+                  color: 'rgba(255, 255, 255, 0.7)'
+                },
+                grid: {
+                  color: 'rgba(255, 255, 255, 0.1)'
+                },
+                ticks: {
+                  color: 'rgba(255, 255, 255, 0.7)'
+                }
+              }
+            },
+            plugins: {
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const {
+                      revenue,
+                      orders
+                    } = chartData[context.dataIndex];
+                    return `Revenue: ₹${revenue} | Products: ${orders}`;
+                  }
+                }
+              }
             }
-    
-            createChart(currentChartType);
-    
-            document.getElementById('toggleChart').addEventListener('click', function() {
-                currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
-                            createChart(currentChartType);
-                        });
-                
-                        // Payment Methods Chart
-                        const paymentCtx = document.getElementById('paymentMethodsChart').getContext('2d');
-                        new Chart(paymentCtx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: paymentMethodsData.map(d => d._id.toUpperCase()),
-                                datasets: [{
-                                    data: paymentMethodsData.map(d => d.count),
-                                    backgroundColor: [
-                                        '#5c6bc0',  // Indigo Blue
-                                        '#26c6da',  // Cyan
-                                        '#ec407a',  // Pink
-                                        '#ffa726',  // Orange
-                                        '#66bb6a',  // Green
-                                        '#7e57c2'   // Purple
-                                    ],
-                                    borderColor: [
-                                        '#4a59a7',  // Darker Indigo
-                                        '#1ea7b8',  // Darker Cyan
-                                        '#d81b60',  // Darker Pink
-                                        '#fb8c00',  // Darker Orange
-                                        '#43a047',  // Darker Green
-                                        '#673ab7'   // Darker Purple
-                                    ],
-                                    borderWidth: 2
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                plugins: {
-                                    legend: {
-                                        position: 'top',
-                                    },
-                                    tooltip: {
-                                        callbacks: {
-                                            label: function(context) {
-                                                const data = paymentMethodsData[context.dataIndex];
-                                                const percentage = ((data.count / paymentMethodsData.reduce((a, b) => a + b.count, 0)) * 100).toFixed(1);
-                                                return `${data._id.toUpperCase()}: ${data.count} orders (${percentage}%)`;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    });
+          }
+        });
+      }
 
-                    
-                    document.getElementById('download-pdf').addEventListener('click', function () {
-                        const { jsPDF } = window.jspdf;
-                        const doc = new jsPDF();
+      createChart(currentChartType);
 
-                        // Add total summary data to PDF
-                        doc.setFontSize(18);
-                        doc.text('Sales Dashboard Summary', 14, 20);
+      document.getElementById('toggleChart').addEventListener('click', function() {
+        currentChartType = currentChartType === 'bar' ? 'line' : 'bar';
+        createChart(currentChartType);
+      });
 
-                        doc.setFontSize(14);
-                        doc.text(`Total Users: ${<%= userCount %>}`, 14, 30);
-                        doc.text(`Total Sales Count: ${<%= totalSalesCount %>}`, 14, 40);
-                        doc.text(`Total Revenue: ₹${<%= totalRevenue.toLocaleString('en-IN') %>}`, 14, 50);
-                        doc.text(`Total Discount: ₹${<%= totalDiscount.toLocaleString('en-IN') %>}`, 14, 60);
-                        doc.text(`Net Revenue: ₹${<%= netRevenue.toLocaleString('en-IN') %>}`, 14, 70);
+      // Payment Methods Chart
+      const paymentCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+      new Chart(paymentCtx, {
+        type: 'doughnut',
+        data: {
+          labels: paymentMethodsData.map(d => d._id.toUpperCase()),
+          datasets: [{
+            data: paymentMethodsData.map(d => d.count),
+            backgroundColor: [
+              '#5c6bc0', // Indigo Blue
+              '#26c6da', // Cyan
+              '#ec407a', // Pink
+              '#ffa726', // Orange
+              '#66bb6a', // Green
+              '#7e57c2' // Purple
+            ],
+            borderColor: [
+              '#4a59a7', // Darker Indigo
+              '#1ea7b8', // Darker Cyan
+              '#d81b60', // Darker Pink
+              '#fb8c00', // Darker Orange
+              '#43a047', // Darker Green
+              '#673ab7' // Darker Purple
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const data = paymentMethodsData[context.dataIndex];
+                  const percentage = ((data.count / paymentMethodsData.reduce((a, b) => a + b.count, 0)) * 100).toFixed(1);
+                  return `${data._id.toUpperCase()}: ${data.count} orders (${percentage}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    });
 
-                        // Save the PDF
-                        doc.save('sales_dashboard_summary.pdf');
-                    });
-                    document.getElementById('download-excel').addEventListener('click', function () {
-                        const salesData = <%- JSON.stringify(salesData || []) %>;
 
-                        // Prepare total summary data for Excel
-                        const summaryData = [
-                            ['Total Users', <%= userCount %>],
-                            ['Total Sales Count', <%= totalSalesCount %>],
-                            ['Total Revenue', `₹${<%= totalRevenue.toLocaleString('en-IN') %>}`],
-                            ['Total Discount', `₹${<%= totalDiscount.toLocaleString('en-IN') %>}`],
-                            ['Net Revenue', `₹${<%= netRevenue.toLocaleString('en-IN') %>}`],
-                        ];
+    async function fetchAllSalesData(filter, startDate, endDate) {
+      const params = new URLSearchParams({
+        filter
+      });
+      if (startDate) params.append('startDate', startDate);
+      if (endDate) params.append('endDate', endDate);
 
-                        // Prepare the sales table data for Excel
-                        const tableData = [
-                            ['Order ID', 'Customer', 'Product', 'Quantity', 'Amount', 'Discount', 'Date'],
-                            ...salesData.map(order => [
-                                order._id,
-                                order.user_name,
-                                order.product.title,
-                                order.quantity || 0,
-                                `₹${(order.total_amount.toLocaleString('en-IN') || 0)}`,
-                                `₹${(order.discount_amount.toLocaleString('en-IN') || 0)}`,
-                                new Date(order.createdAt).toLocaleString()
-                            ])
-                        ];
+      try {
+        const response = await fetch(`/admin/all-sales-data?${params.toString()}`);
+        if (!response.ok) {
+          console.error(`Error fetching data: ${response.status} ${response.statusText}`);
+          return null;
+        }
 
-                        // Create a workbook
-                        const wb = XLSX.utils.book_new();
-                        
-                        // Add the total summary sheet
-                        const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-                        XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
-                        
-                        // Add the sales data sheet
-                        const salesSheet = XLSX.utils.aoa_to_sheet(tableData);
-                        XLSX.utils.book_append_sheet(wb, salesSheet, 'Sales Data');
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Error parsing JSON response:', error);
+        return null;
+      }
+    }
 
-                        // Write the Excel file to the browser
-                        XLSX.writeFile(wb, 'sales_dashboard_report.xlsx');
-                    });
+    function applyFilter(filter) {
+      const url = new URL(window.location.href);
+      url.searchParams.set('filter', filter);
+      if (filter !== 'custom') {
+        url.searchParams.delete('startDate');
+        url.searchParams.delete('endDate');
+      }
+      window.location.href = url.toString();
+    }
 
-                </script>
-            </div>
-        </div>
-    </div>
+    function applyCustomFilter() {
+      const filter = 'custom';
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+      const url = new URL(window.location.href);
+      url.searchParams.set('filter', filter);
+      if (startDate) url.searchParams.set('startDate', startDate);
+      if (endDate) url.searchParams.set('endDate', endDate);
+      window.location.href = url.toString();
+    }
 
-    
+    async function updateDashboard() {
+      const filter = document.getElementById('filter').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
 
-    <%- include('partials/footer') %>
+      const data = await fetchAllSalesData(filter, startDate, endDate);
+      if (!data) {
+        alert('Failed to fetch sales data. Please check the console for errors.');
+        return;
+      }
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+      // Update totals
+      document.getElementById('total-sales-count').textContent = data.totals.totalSales;
+      document.getElementById('total-revenue').textContent = `₹${data.totals.totalRevenue.toLocaleString('en-IN')}`;
+      document.getElementById('total-discount').textContent = `₹${data.totals.totalDiscount.toLocaleString('en-IN')}`;
+      document.getElementById('net-revenue').textContent = `₹${(data.totals.totalRevenue - data.totals.totalDiscount).toLocaleString('en-IN')}`;
+
+      // Update table
+      const tableBody = document.getElementById('sales-table-body');
+      tableBody.innerHTML = '';
+      data.salesData.forEach(order => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+                    <td>${order._id}</td>
+                    <td>${order.user_name}</td>
+                    <td>${order.product.title}</td>
+                    <td>${order.quantity || 0}</td>
+                    <td>₹${(order.total_amount ? order.total_amount.toLocaleString('en-IN') : 0)}</td>
+                    <td>₹${(order.discount_amount ? order.discount_amount.toLocaleString('en-IN') : 0)}</td>
+                    <td>${order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
+                `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', updateDashboard);
+
+    document.getElementById('download-pdf').addEventListener('click', async function() {
+      const {
+        jsPDF
+      } = window.jspdf;
+      const doc = new jsPDF();
+
+      const filter = document.getElementById('filter').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      const data = await fetchAllSalesData(filter, startDate, endDate);
+      if (!data) {
+        return;
+      }
+
+      doc.setFillColor(232, 0, 113);
+      doc.rect(0, 0, 210, 34, 'F');
+      doc.setFontSize(22);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(255, 255, 255);
+      doc.text('Glowly.com Sales Report', 14, 20);
+
+      doc.setFontSize(12);
+      doc.setTextColor(255, 255, 255);
+      doc.text('An Overview of Sales Performance', 14, 30);
+
+      const pageWidth = doc.internal.pageSize.width;
+      const dateText = 'Generated on: ' + new Date().toLocaleDateString();
+      const dateWidth = doc.getTextWidth(dateText);
+      const rightX = pageWidth - dateWidth - 14;
+
+
+      doc.setFontSize(10);
+      doc.text(dateText, rightX, 30);
+
+      doc.setDrawColor(232, 0, 113);
+      doc.setLineWidth(0.5);
+      doc.line(14, 45, 196, 45);
+
+      doc.setFontSize(16);
+      doc.setTextColor(232, 0, 113);
+      doc.text('Sales Summary', 14, 55);
+
+      doc.setFontSize(12);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`Total Users: ${<%= userCount %>}`, 14, 65);
+      doc.text(`Total Sales Count: ${data.totals.totalSales}`, 14, 75);
+      doc.text(`Total Revenue: INR ${data.totals.totalRevenue.toLocaleString('en-IN')}`, 14, 85);
+      doc.text(`Total Discount: INR ${data.totals.totalDiscount.toLocaleString('en-IN')}`, 14, 95);
+      doc.text(`Net Revenue: INR ${(data.totals.totalRevenue - data.totals.totalDiscount).toLocaleString('en-IN')}`, 14, 105);
+
+      doc.autoTable({
+        startY: 110,
+        head: [
+          ['Order ID', 'Customer', 'Product', 'Quantity', 'Amount', 'Discount', 'Date']
+        ],
+        body: data.salesData.map(order => [
+          order._id,
+          order.user_name,
+          order.product.title,
+          order.quantity || 0,
+          `INR ${(order.total_amount ? order.total_amount.toLocaleString('en-IN') : 0)}`,
+          `INR ${(order.discount_amount ? order.discount_amount.toLocaleString('en-IN') : 0)}`,
+          order.createdAt ? new Date(order.createdAt).toLocaleString() : ''
+        ]),
+        styles: {
+          fillColor: [255, 255, 255],
+          textColor: [0, 0, 0],
+          fontSize: 8,
+          cellPadding: 4,
+          halign: 'center',
+          lineWidth: 0.2,
+          overflow: 'linebreak'
+        },
+        headStyles: {
+          fillColor: '#e80071',
+          textColor: 255,
+          fontStyle: 'bold',
+          fontSize: 8,
+          halign: 'center',
+          valign: 'middle',
+          lineWidth: 0.3
+        },
+        columnStyles: {
+          0: {
+            halign: 'center',
+            cellWidth: 30
+          },
+          1: {
+            halign: 'center',
+            cellWidth: 23
+          },
+          2: {
+            halign: 'left',
+            cellWidth: 50
+          },
+          3: {
+            halign: 'center',
+            cellWidth: 20
+          },
+          4: {
+            halign: 'right',
+            cellWidth: 25
+          },
+          5: {
+            halign: 'right',
+            cellWidth: 20
+          },
+          6: {
+            halign: 'center',
+            cellWidth: 30
+          },
+        },
+        margin: {
+          top: 10,
+          bottom: 20,
+          left: 7,
+          right: 10
+        },
+        tableWidth: 'wrap',
+        pageBreak: 'auto',
+      });
+
+      const totalPages = doc.internal.getNumberOfPages();
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(5);
+        doc.text(`Page ${i} of ${totalPages}`, 10, 290);
+
+
+        doc.setFontSize(60);
+        doc.setTextColor(240, 240, 240);
+        doc.text('Glowly.com', 130, 210, {
+          angle: 45,
+          align: 'center'
+        });
+      }
+
+      const reportDate = new Date().toLocaleDateString().replace(/\//g, '-');
+
+      const fileName = `Sales_Report_${reportDate}.pdf`;
+      doc.save(fileName);
+    });
+
+
+
+
+    document.getElementById('download-excel').addEventListener('click', async function() {
+      const filter = document.getElementById('filter').value;
+      const startDate = document.getElementById('start-date').value;
+      const endDate = document.getElementById('end-date').value;
+
+      const data = await fetchAllSalesData(filter, startDate, endDate);
+      if (!data) {
+        alert('Failed to fetch sales data. Please check the console for errors.');
+        return;
+      }
+
+      const summaryData = [
+        ['Total Users', <%= userCount %>],
+        ['Total Sales Count', data.totals.totalSales],
+        ['Total Revenue', `₹${data.totals.totalRevenue.toLocaleString('en-IN')}`],
+        ['Total Discount', `₹${data.totals.totalDiscount.toLocaleString('en-IN')}`],
+        ['Net Revenue', `₹${(data.totals.totalRevenue - data.totals.totalDiscount).toLocaleString('en-IN')}`],
+      ];
+
+      const tableData = [
+        ['Order ID', 'Customer', 'Product', 'Quantity', 'Amount', 'Discount', 'Date'],
+        ...data.salesData.map(order => [
+          order._id,
+          order.user_name,
+          order.product.title,
+          order.quantity || 0,
+          `₹${(order.total_amount ? order.total_amount.toLocaleString('en-IN') : 0)}`,
+          `₹${(order.discount_amount ? order.discount_amount.toLocaleString('en-IN') : 0)}`,
+          order.createdAt ? new Date(order.createdAt).toLocaleString() : ''
+        ])
+      ];
+
+      const wb = XLSX.utils.book_new();
+
+      const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
+      XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+
+      const salesSheet = XLSX.utils.aoa_to_sheet(tableData);
+      salesSheet['!cols'] = [{
+          wch: 30
+        },
+        {
+          wch: 20
+        },
+        {
+          wch: 50
+        },
+        {
+          wch: 10
+        },
+        {
+          wch: 15
+        },
+        {
+          wch: 15
+        },
+        {
+          wch: 20
+        },
+      ];
+
+      salesSheet['!rows'] = [];
+      for (let i = 1; i < tableData.length; i++) {
+        salesSheet['!rows'][i] = {
+          hpt: 20
+        };
+      }
+
+      salesSheet['!cols'][2] = {
+        wch: 40,
+        alignment: {
+          wrapText: true
+        }
+      };
+
+      XLSX.utils.book_append_sheet(wb, salesSheet, 'Sales Data');
+
+      XLSX.writeFile(wb, 'sales_dashboard_report.xlsx');
+    });
+  </script>
+  </div>
+  </div>
+  </div>
+
+  <%- include('partials/footer') %>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 </body>
+</body>
+
 </html>

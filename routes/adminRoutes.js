@@ -19,7 +19,7 @@ import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProdu
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
-import { renderDashboardPage } from "../controllers/admin/dashboard.controller.js";
+import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
 
 
 // Pages Are Protected With adminAuthMiddleware
@@ -35,6 +35,7 @@ router.use(pageMiddlware);
 
 // Dashboard Controller
 router.get("/dashboard", verifyAdminToken, renderDashboardPage);
+router.get("/all-sales-data", verifyAdminToken, salesData)
 
 // Product Routes
 router.get("/products", verifyAdminToken, renderProductsPage);

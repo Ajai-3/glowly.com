@@ -218,6 +218,117 @@ export const renderDashboardPage = async (req, res) => {
 
 
 
+export const salesData = async (req, res) => {
+    try {
+        const filter = req.query.filter || 'all_time';
+        const startDate = req.query.startDate ? new Date(req.query.startDate) : null;
+        const endDate = req.query.endDate ? new Date(req.query.endDate) : null;
+
+        let matchStage = { 'products.status': 'delivered' };
+
+        const now = new Date();
+        if (filter === 'today') {
+            const startOfDay = new Date(now);
+            startOfDay.setHours(0, 0, 0, 0);
+            const endOfDay = new Date(now);
+            endOfDay.setHours(23, 59, 59, 999);
+            matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
+        } else if (filter === 'this_week') {
+            const startOfWeek = new Date(now);
+            startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+            startOfWeek.setHours(0, 0, 0, 0);
+            const endOfWeek = new Date(startOfWeek);
+            endOfWeek.setDate(startOfWeek.getDate() + 6);
+            endOfWeek.setHours(23, 59, 59, 999);
+            matchStage.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
+        } else if (filter === 'this_month') {
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+            matchStage.createdAt = { $gte: startOfMonth, $lte: endOfMonth };
+        } else if (filter === 'this_year') {
+            const startOfYear = new Date(now.getFullYear(), 0, 1);
+            const endOfYear = new Date(now.getFullYear(), 11, 31);
+            matchStage.createdAt = { $gte: startOfYear, $lte: endOfYear };
+        } else if (filter === 'custom') {
+            matchStage.createdAt = {};
+            if (startDate) matchStage.createdAt.$gte = startDate;
+            if (endDate) matchStage.createdAt.$lte = endDate;
+        }
+
+        const totalsPipeline = [
+            { $unwind: '$products' },
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: null,
+                    totalSales: { $sum: 1 },
+                    totalRevenue: { $sum: '$products.total_amount' },
+                    totalDiscount: { $sum: { $subtract: ['$products.total_amount', '$products.amount_after_coupon'] } }
+                }
+            }
+        ];
+
+        const tablePipeline = [
+            { $unwind: '$products' },
+            { $match: matchStage },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'user_id',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            { $unwind: '$user' },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'products.product_id',
+                    foreignField: '_id',
+                    as: 'productDetails'
+                }
+            },
+            { $unwind: '$productDetails' },
+            {
+                $group: {
+                    _id: '$_id',
+                    user_name: { $first: '$user.name' },
+                    createdAt: { $first: '$createdAt' },
+                    payment_method: { $first: '$payment_method' },
+                    products: { $push: '$products' },
+                    productDetails: { $push: '$productDetails' }
+                }
+            },
+            { $sort: { createdAt: -1 } }
+        ];
+
+        const [totalsData, orders] = await Promise.all([
+            Order.aggregate(totalsPipeline),
+            Order.aggregate(tablePipeline)
+        ]);
+
+        const totals = totalsData[0] || { totalSales: 0, totalRevenue: 0, totalDiscount: 0 };
+
+        const salesData = orders.flatMap(order =>
+            order.products.map((product, index) => ({
+                ...order,
+                product: order.productDetails[index],
+                product_id: product.product_id,
+                quantity: product.quantity,
+                total_amount: product.total_amount,
+                discount_amount: product.total_amount - product.amount_after_coupon,
+            }))
+        );
+
+        res.json({
+            totals,
+            salesData
+        });
+    } catch (error) {
+        console.error("Error fetching all sales data:", error);
+        res.status(500).send("Internal Server Error");
+    }
+};
 
 
 
