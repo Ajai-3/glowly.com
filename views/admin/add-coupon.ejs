@@ -139,6 +139,7 @@
         position: 'topRight',
       });
     };
+    
     document.addEventListener('DOMContentLoaded', (event) => {
             const form = document.getElementById('couponForm');
             const inputs = form.querySelectorAll('input, select');
@@ -154,6 +155,10 @@
                 dateRange: 'Start date must be before expiry date.',
                 priceRange: 'Max price must be greater than min price.',
             };
+
+
+
+
 
             const validateField = (input) => {
                 const errorElement = document.getElementById(`${input.id}Error`);

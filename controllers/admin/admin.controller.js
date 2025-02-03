@@ -20,14 +20,6 @@ export const renderLoginPage = (req, res) => {
 
 
 
-// Rendre Orderlists Page
-
-
-// Rendre Sales Report Page
-export const renderSalesReportPage = (req, res) => {
-    return res.render("admin/sales-report")
-}
-
 
 // Rendre Banner Management Page
 export const renderBannerManagementPage= (req, res) => {

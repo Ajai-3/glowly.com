@@ -323,137 +323,192 @@ const toggleCouponStatus = async (couponId, action) => {
     toastWarning("An error occurred. Please try again.");
   }
 };
+document.addEventListener('DOMContentLoaded', (event) => {
+    const startDateInput = document.getElementById('startDate');
+    const expiryDateInput = document.getElementById('expiryDate');
+    const discountTypeInput = document.getElementById('discountType'); 
+    const discountValueInput = document.getElementById('value'); 
+    const minPriceInput = document.getElementById('minPrice');
+    const maxPriceInput = document.getElementById('maxPrice');
+    
+    const today = new Date().toISOString().split('T')[0];
+    startDateInput.setAttribute('min', today);
+    
+    startDateInput.addEventListener('change', () => {
+        const startDateValue = startDateInput.value;
+        if (startDateValue) {
+            const minExpiryDate = new Date(startDateValue);
+            minExpiryDate.setDate(minExpiryDate.getDate() + 1); 
+            expiryDateInput.setAttribute('min', minExpiryDate.toISOString().split('T')[0]);
+        }
+    });
+    
 
+    discountTypeInput.addEventListener('change', () => {
+        validateDiscountValue();
+    });
 
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const form = document.getElementById('couponForm');
-        const inputs = form.querySelectorAll('input, select');
-        const errorMessages = {
-            code: 'This field is required.',
-            discountType: 'This field is required.',
-            value: 'Please enter a valid value.',
-            limit: 'Please enter a valid limit.',
-            minPrice: 'Please enter a valid minimum price.',
-            maxPrice: 'Please enter a valid maximum price.',
-            expiryDate: 'This field is required.',
-            startDate: 'This field is required.',
-            dateRange: 'Start date must be before expiry date.',
-            priceRange: 'Max price must be greater than min price.',
-        };
+    discountValueInput.addEventListener('input', () => {
+        validateDiscountValue();
+    });
 
-        const validateField = (input) => {
-            const errorElement = document.getElementById(`${input.id}Error`);
-            if (!input.value || input.validity.rangeUnderflow) {
-                input.classList.add('error');
-                errorElement.textContent = errorMessages[input.id];
+    const validateDiscountValue = () => {
+        const discountType = discountTypeInput.value;
+        const discountValue = parseFloat(discountValueInput.value);
+        const minPrice = parseFloat(minPriceInput.value);
+        const maxPrice = parseFloat(maxPriceInput.value);
+        const errorElement = document.getElementById('valueError');
+  
+        discountValueInput.classList.remove('error');
+        errorElement.style.display = 'none';
+
+        if (discountType === 'percentage') {
+            if (discountValue > 60) {
+                discountValueInput.classList.add('error');
+                errorElement.textContent = 'Percentage cannot exceed 60%';
                 errorElement.style.display = 'block';
                 return false;
-            } else {
-                input.classList.remove('error');
-                errorElement.style.display = 'none';
-                return true;
             }
-        };
-
-        const validateDateRange = () => {
-            const startDate = document.getElementById('startDate');
-            const expiryDate = document.getElementById('expiryDate');
-            const errorElement = document.getElementById('expiryDateError');
-            if (new Date(startDate.value) >= new Date(expiryDate.value)) {
-                expiryDate.classList.add('error');
-                errorElement.textContent = errorMessages.dateRange;
+        } else if (discountType === 'flat') {
+            if (discountValue < minPrice || discountValue > maxPrice) {
+                discountValueInput.classList.add('error');
+                errorElement.textContent = `Flat value must be between ${minPrice} and ${maxPrice}`;
                 errorElement.style.display = 'block';
                 return false;
-            } else {
-                expiryDate.classList.remove('error');
-                errorElement.style.display = 'none';
-                return true;
             }
-        };
+        }
 
-        const validatePriceRange = () => {
-            const minPrice = document.getElementById('minPrice');
-            const maxPrice = document.getElementById('maxPrice');
-            const errorElement = document.getElementById('maxPriceError');
-            if (parseFloat(minPrice.value) >= parseFloat(maxPrice.value)) {
-                maxPrice.classList.add('error');
-                errorElement.textContent = errorMessages.priceRange;
-                errorElement.style.display = 'block';
-                return false;
-            } else {
-                maxPrice.classList.remove('error');
-                errorElement.style.display = 'none';
-                return true;
-            }
-        };
+        return true;
+    };
 
-        inputs.forEach(input => {
-            if (input.type === 'date') {
-                input.addEventListener('change', () => {
-                    validateField(input);
-                    if (input.id === 'startDate' || input.id === 'expiryDate') {
-                        validateDateRange();
-                    }
-                });
-            } else if (input.type === 'number') {
-                input.addEventListener('input', () => {
-                    validateField(input);
-                    if (input.id === 'minPrice' || input.id === 'maxPrice') {
-                        validatePriceRange();
-                    }
-                });
-            } else {
-                input.addEventListener('input', () => validateField(input));
-            }
-        });
+    const form = document.getElementById('couponForm');
+    const inputs = form.querySelectorAll('input, select');
+    const errorMessages = {
+        code: 'This field is required.',
+        discountType: 'This field is required.',
+        value: 'Please enter a valid value.',
+        limit: 'Please enter a valid limit.',
+        minPrice: 'Please enter a valid minimum price.',
+        maxPrice: 'Please enter a valid maximum price.',
+        expiryDate: 'This field is required.',
+        startDate: 'This field is required.',
+        dateRange: 'Start date must be before expiry date.',
+        priceRange: 'Max price must be greater than min price.',
+    };
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            let valid = true;
-            inputs.forEach(input => {
-                if (!validateField(input)) {
-                    valid = false;
+    const validateField = (input) => {
+        const errorElement = document.getElementById(`${input.id}Error`);
+        if (!input.value || input.validity.rangeUnderflow) {
+            input.classList.add('error');
+            errorElement.textContent = errorMessages[input.id];
+            errorElement.style.display = 'block';
+            return false;
+        } else {
+            input.classList.remove('error');
+            errorElement.style.display = 'none';
+            return true;
+        }
+    };
+
+    const validateDateRange = () => {
+        const startDate = document.getElementById('startDate');
+        const expiryDate = document.getElementById('expiryDate');
+        const errorElement = document.getElementById('expiryDateError');
+        if (new Date(startDate.value) >= new Date(expiryDate.value)) {
+            expiryDate.classList.add('error');
+            errorElement.textContent = errorMessages.dateRange;
+            errorElement.style.display = 'block';
+            return false;
+        } else {
+            expiryDate.classList.remove('error');
+            errorElement.style.display = 'none';
+            return true;
+        }
+    };
+
+    const validatePriceRange = () => {
+        const minPrice = document.getElementById('minPrice');
+        const maxPrice = document.getElementById('maxPrice');
+        const errorElement = document.getElementById('maxPriceError');
+        if (parseFloat(minPrice.value) >= parseFloat(maxPrice.value)) {
+            maxPrice.classList.add('error');
+            errorElement.textContent = errorMessages.priceRange;
+            errorElement.style.display = 'block';
+            return false;
+        } else {
+            maxPrice.classList.remove('error');
+            errorElement.style.display = 'none';
+            return true;
+        }
+    };
+
+    inputs.forEach(input => {
+        if (input.type === 'date') {
+            input.addEventListener('change', () => {
+                validateField(input);
+                if (input.id === 'startDate' || input.id === 'expiryDate') {
+                    validateDateRange();
                 }
             });
-            if (!validateDateRange() || !validatePriceRange()) {
+        } else if (input.type === 'number') {
+            input.addEventListener('input', () => {
+                validateField(input);
+                if (input.id === 'minPrice' || input.id === 'maxPrice') {
+                    validatePriceRange();
+                }
+            });
+        } else {
+            input.addEventListener('input', () => validateField(input));
+        }
+    });
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        let valid = true;
+        inputs.forEach(input => {
+            if (!validateField(input)) {
                 valid = false;
             }
-            if (!valid) {
-                return;
-            }
+        });
+        if (!validateDateRange() || !validatePriceRange() || !validateDiscountValue()) {
+            valid = false;
+        }
+        if (!valid) {
+            return;
+        }
 
-            // AJAX request
-            const formData = new FormData(form);
-            const data = {};
-            formData.forEach((value, key) => {
-                data[key] = value;
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+
+        try {
+            const response = await fetch('/admin/add-coupon', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
             });
 
-            try {
-                const response = await fetch('/admin/add-coupon', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
-
-                if (response.ok) {
-                    $('#couponModal').modal('hide');
-                    form.reset();
-                    toastSuccess('Coupon added successfully!');
-                    setTimeout(() => {
-                        window.location.href = "/admin/coupons";
-                    }, 1500);
-                } else {
-                    const errorText = await response.text();
-                    toastError(`Error: ${errorText}`);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                toastWarning("Internal server error");
+            if (response.ok) {
+                $('#couponModal').modal('hide');
+                form.reset();
+                toastSuccess('Coupon added successfully!');
+                setTimeout(() => {
+                    window.location.href = "/admin/coupons";
+                }, 1500);
+            } else {
+                const errorText = await response.text();
+                toastError(`Error: ${errorText}`);
             }
-        });
+        } catch (error) {
+            console.error('Error:', error);
+            toastWarning("Internal server error");
+        }
     });
+});
+
 </script>
 </html>

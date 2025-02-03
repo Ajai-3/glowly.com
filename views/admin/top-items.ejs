@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/head') %> 
+
+ <div class="main-content">
+        <div class="header">
+            <div class="search-bar">
+                <form action="/admin/search-user" method="GET">
+                    <input type="text" name="search" placeholder="Search " readonly>
+                    <button  class="admin-search-button"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+            <div class="admin-profile mx-3 mt-2">
+                <a href="/admin/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                </a>
+            </div>
+        </div>
+    
+        <div class="breadcrumbs"><a href="/admin/top-items">Top Items</a></div>
+    </div>
+
+
+</body>
+<%- include('partials/footer') %> 
+</html>
