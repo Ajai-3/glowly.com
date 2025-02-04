@@ -84,6 +84,7 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
+      background-color: #212121;
       color: #fff;
       font-size: 13px;
       margin-bottom: 15px;
@@ -188,8 +189,8 @@
         font-size: 10px;
       }
     }
-  </style>
-  
+</style>
+
 <%- include('partials/headforhome', { user, categories }) %>
 
 <div class="user-contents">
@@ -277,7 +278,7 @@
 
             <% if (transactions && transactions.length > 0) { %>
               <div class="table-responsive">
-                <table class="table">
+                <table class="table table-dark">
                   <thead>
                     <tr>
                       <th>Date & Time</th>

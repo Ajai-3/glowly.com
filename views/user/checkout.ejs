@@ -96,7 +96,7 @@
             </label>
             <button class="checkout-btn address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
             <div class="checkout-edit-remove">
-              <a href="/">Edit</a> | <a href="/">Remove</a>
+              <a href="/user/edit-address/<%= address._id %>">Edit</a> | <a href="/user/manage-address">Remove</a>
             </div>
           </div>
           <% }) %>
@@ -138,7 +138,10 @@
             </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span> 
-             <span class="discount-percentage">₹ 60</span>
+              <span>
+                <span class="original-price">₹ 60</span>
+                <span class="discount-percentage">free</span>
+              </span>
             </p>
             <p class="d-flex justify-content-between">
               <span>GST (18%)</span>
@@ -296,7 +299,11 @@
       </p>
       <p class="d-flex justify-content-between">
         <span>Delivery Charges</span> 
-        <span class="discount-percentage">₹ 60</span>
+        <span>
+          <span class="original-price">₹ 60</span>
+          <span class="discount-percentage">free</span>
+        </span>
+        
       </p>
       <p class="d-flex justify-content-between">
         <span>GST (18%)</span>
@@ -435,7 +442,10 @@
           </p>
             <p class="d-flex justify-content-between">
               <span>Delivery Charges</span> 
-             <span class="delivery-charge discount-percentage">₹ 60</span>
+              <span>
+                <span class="original-price">₹ 60</span>
+                <span class="discount-percentage">free</span>
+              </span>
             </p>
             <p class="d-flex justify-content-between">
               <span>GST (18%)</span>

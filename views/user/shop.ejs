@@ -420,6 +420,10 @@
     });
   })
 
+
+
+
+
   document.addEventListener('DOMContentLoaded', function() {
   const filterForm = document.getElementById('filter-form');
   const searchInput = document.getElementById('search-input');
@@ -429,7 +433,6 @@
     const formData = new FormData(filterForm);
     const filterParams = {};
 
-    // Collect filter parameters from the form
     for (let [key, value] of formData.entries()) {
       if (!filterParams[key]) {
         filterParams[key] = [];
@@ -442,10 +445,9 @@
       filterParams.search = searchQuery;
     }
 
-    // Create query string from filter parameters
     const queryString = new URLSearchParams(filterParams).toString();
-    history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
-    fetchFilteredProducts(filterParams, 1);
+    history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}&search=${searchQuery}`);
+    fetchFilteredProducts(filterParams, searchQuery, 1);
   }
 
   filterForm.addEventListener('change', applyFilters);
@@ -462,9 +464,10 @@
     });
   }
 
-  function fetchFilteredProducts(filterParams, page) {
+  function fetchFilteredProducts(filterParams, searchQuery, page) {
     const params = {
       filters: JSON.stringify(filterParams),
+      search: searchQuery,
       page: page
     };
     const queryString = new URLSearchParams(params).toString();
@@ -533,16 +536,13 @@
     }
   }
 
-  // Function to toggle subcategory visibility based on selected categories
   function toggleSubcategories() {
     const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
 
-    // Hide all subcategories initially
     document.querySelectorAll('.subcategory-options').forEach(div => {
       div.style.display = 'none';
     });
 
-    // Show subcategories for selected categories
     selectedCategories.forEach(categoryId => {
       const subcategoryDiv = document.getElementById(`subcategory-options-${categoryId}`);
       if (subcategoryDiv) {
@@ -551,48 +551,218 @@
     });
   }
 
-  // Attach event listener to category checkboxes
   const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
   categoryCheckboxes.forEach(checkbox => {
     checkbox.addEventListener('change', toggleSubcategories);
   });
 
-  // Initial call to set up subcategory visibility
   toggleSubcategories();
 
-  // Attach pagination event listeners
   let debounceTimeout;
-function attachPaginationListeners() {
-  document.querySelectorAll('.pagination-controls a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      e.preventDefault();
+  function attachPaginationListeners() {
+    document.querySelectorAll('.pagination-controls a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
 
-      // Optional: Smooth scroll to the top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
-      const page = parseInt(this.getAttribute('data-page'));
-      const filters = getUrlParameter('filters');
-      let filterParams = {};
-      try {
-        filterParams = filters ? JSON.parse(decodeURIComponent(filters)) : {};
-      } catch (error) {
-        console.error('Error parsing filters:', error);
-      }
+        const page = parseInt(this.getAttribute('data-page'));
+        const filters = getUrlParameter('filters');
+        const search = getUrlParameter('search');
+        let filterParams = {};
+        try {
+          filterParams = filters ? JSON.parse(decodeURIComponent(filters)) : {};
+        } catch (error) {
+          console.error('Error parsing filters:', error);
+        }
 
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        fetchFilteredProducts(filterParams, page);
-      }, 300); 
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          fetchFilteredProducts(filterParams, search, page);
+        }, 300);
+      });
     });
-  });
-}
-
+  }
 
   attachPaginationListeners();
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
-  
+
 });
+
+
+//   document.addEventListener('DOMContentLoaded', function() {
+//   const filterForm = document.getElementById('filter-form');
+//   const searchInput = document.getElementById('search-input');
+//   const clearFiltersButton = document.getElementById('clear-filters');
+
+//   function applyFilters() {
+//     const formData = new FormData(filterForm);
+//     const filterParams = {};
+
+//     for (let [key, value] of formData.entries()) {
+//       if (!filterParams[key]) {
+//         filterParams[key] = [];
+//       }
+//       filterParams[key].push(value);
+//     }
+
+//     const searchQuery = searchInput ? searchInput.value.trim() : '';
+//     if (searchQuery) {
+//       filterParams.search = searchQuery;
+//     }
+
+
+//     const queryString = new URLSearchParams(filterParams).toString();
+//     history.replaceState(null, '', `/shop?page=1&filters=${encodeURIComponent(JSON.stringify(filterParams))}`);
+//     fetchFilteredProducts(filterParams, 1);
+//   }
+
+//   filterForm.addEventListener('change', applyFilters);
+
+//   if (searchInput) {
+//     searchInput.addEventListener('keyup', applyFilters);
+//   }
+
+//   if (clearFiltersButton) {
+//     clearFiltersButton.addEventListener('click', function() {
+//       filterForm.reset();
+//       if (searchInput) searchInput.value = '';
+//       applyFilters();
+//     });
+//   }
+
+//   function fetchFilteredProducts(filterParams, page) {
+//     const params = {
+//       filters: JSON.stringify(filterParams),
+//       page: page
+//     };
+//     const queryString = new URLSearchParams(params).toString();
+
+//     fetch(`/shop?${queryString}`)
+//       .then(response => response.text())
+//       .then(html => {
+//         const tempDiv = document.createElement('div');
+//         tempDiv.innerHTML = html;
+
+//         const newProductGrid = tempDiv.querySelector('.product-grid');
+//         if (newProductGrid) {
+//           document.querySelector('.product-grid').innerHTML = newProductGrid.innerHTML;
+//         }
+
+//         const newPaginationControls = tempDiv.querySelector('.pagination-controls');
+//         if (newPaginationControls) {
+//           document.querySelector('.pagination-controls').innerHTML = newPaginationControls.innerHTML;
+//         }
+
+//         // Reattach event listeners after updating the product grid
+//         attachPaginationListeners();
+//       })
+//       .catch(error => console.error('Error fetching products:', error));
+//   }
+
+//   // Toggling visibility for filter options
+//   document.querySelectorAll('.filter-header').forEach(header => {
+//     header.addEventListener('click', () => {
+//       const options = header.nextElementSibling;
+//       options.style.display = options.style.display === 'none' ? 'block' : 'none';
+//       header.querySelector('i').classList.toggle('fa-chevron-down');
+//       header.querySelector('i').classList.toggle('fa-chevron-up');
+//     });
+//   });
+
+//   // Function to get URL parameters
+//   function getUrlParameter(name) {
+//     name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+//     const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+//     const results = regex.exec(location.search);
+//     return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+//   }
+
+//   // Get the selected category and subcategory from the URL
+//   const selectedCategoryId = getUrlParameter('selectedCategory');
+//   const selectedSubcategoryId = getUrlParameter('selectedSubcategory');
+
+//   if (selectedCategoryId) {
+//     const categoryCheckbox = document.querySelector(`input[name="category"][value="${selectedCategoryId}"]`);
+//     if (categoryCheckbox) {
+//       categoryCheckbox.checked = true;
+
+//       // Show the subcategories for the selected category
+//       const subcategoryDiv = document.getElementById(`subcategory-options-${selectedCategoryId}`);
+//       if (subcategoryDiv) {
+//         subcategoryDiv.style.display = 'block';
+//       }
+//     }
+//   }
+
+//   if (selectedSubcategoryId) {
+//     const subcategoryCheckbox = document.querySelector(`input[name="subcategory"][value="${selectedSubcategoryId}"]`);
+//     if (subcategoryCheckbox) {
+//       subcategoryCheckbox.checked = true;
+//     }
+//   }
+
+//   // Function to toggle subcategory visibility based on selected categories
+//   function toggleSubcategories() {
+//     const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(checkbox => checkbox.value);
+
+//     // Hide all subcategories initially
+//     document.querySelectorAll('.subcategory-options').forEach(div => {
+//       div.style.display = 'none';
+//     });
+
+//     // Show subcategories for selected categories
+//     selectedCategories.forEach(categoryId => {
+//       const subcategoryDiv = document.getElementById(`subcategory-options-${categoryId}`);
+//       if (subcategoryDiv) {
+//         subcategoryDiv.style.display = 'block';
+//       }
+//     });
+//   }
+
+//   // Attach event listener to category checkboxes
+//   const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+//   categoryCheckboxes.forEach(checkbox => {
+//     checkbox.addEventListener('change', toggleSubcategories);
+//   });
+
+//   // Initial call to set up subcategory visibility
+//   toggleSubcategories();
+
+//   // Attach pagination event listeners
+//   let debounceTimeout;
+// function attachPaginationListeners() {
+//   document.querySelectorAll('.pagination-controls a').forEach(link => {
+//     link.addEventListener('click', function(e) {
+//       e.preventDefault();
+
+//       // Optional: Smooth scroll to the top
+//       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+//       const page = parseInt(this.getAttribute('data-page'));
+//       const filters = getUrlParameter('filters');
+//       let filterParams = {};
+//       try {
+//         filterParams = filters ? JSON.parse(decodeURIComponent(filters)) : {};
+//       } catch (error) {
+//         console.error('Error parsing filters:', error);
+//       }
+
+//       clearTimeout(debounceTimeout);
+//       debounceTimeout = setTimeout(() => {
+//         fetchFilteredProducts(filterParams, page);
+//       }, 300); 
+//     });
+//   });
+// }
+
+
+//   attachPaginationListeners();
+
+//   window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+// });
 </script>
   </body>
 </html>

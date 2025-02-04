@@ -320,35 +320,46 @@ export const removeAddress = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-export const getAddress = async (req, res) => {
+export const editAddressPage = async (req, res) => {
     try {
+        const { user, token, cartCount, categories } = req;
+        if (!token) {
+            return res.redirect('/home')
+        }
+        const { id } = req.params;
+        console.log(id);
+        const address = await Address.findById(id);
 
-      const address = await Address.findById(req.params.addressId);
-      console.log(address)
-      if (!address) {
-        return res.status(404).json({ message: 'Address not found' });
-      }
-      res.status(200).json(address);
+        if (!address) {
+            return res.status(404).send('Address not found');
+        }
+
+        return res.render("user/edit-address.ejs", { 
+            cartCount, 
+            categories,
+            address,
+            user
+        });
     } catch (error) {
-      console.error('Error fetching address:', error);
-      res.status(500).json({ message: 'Server error' });
+        console.error("Error in edit address Page", error);
+        return res.status(500).send('Internal Server Error');
     }
-  };
-  
+};
+
+
+
+
+
+
+
+
+
+
+
   // Update address
 export const updateAddress = async (req, res) => {
     try {
+        console.log(req.body)
       const updatedAddress = await Address.findByIdAndUpdate(
         req.params.addressId,
         req.body,

@@ -93,6 +93,7 @@ export const renderProductsPage = async (req, res) => {
         const search = req.query.search || '';
         const status = req.query.status || 'all';
 
+
         // Base Match Conditions
         const matchConditions = {};
 
@@ -159,6 +160,22 @@ export const renderProductsPage = async (req, res) => {
     } catch (error) {
         console.error('Error fetching products:', error);
         return res.status(500).send('Internal Server Error');
+    }
+};
+
+
+export const topProducts = async (req, res) => {
+    try {
+        const topProducts = await Product.aggregate([
+            { $unwind: "$variants" },
+            { $group: { _id: "$_id", name: { $first: "$title" }, totalSold: { $sum: "$variants.soldCount" } } },
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 }
+        ]);
+        res.json(topProducts);
+    } catch (error) {
+        console.error('Error fetching top products:', error);
+        res.status(500).send('Internal Server Error');
     }
 };
 

@@ -32,7 +32,7 @@ import {
 } from "../controllers/user/product-page.controller.js";
 import { renderCartPage, addToCart, buyNow, removeCartProduct, updateCartPageProduct } from "../controllers/user/cart.controller.js"
 import { renderWishlistPage, addToWishlist } from "../controllers/user/wishlist.controller.js";
-import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, getAddress, updateAddress } from "../controllers/user/user.account.controller.js";
+import { handleAddAddress, handleProfileUpdate, renderManageAddressPage, removeAddress, renderMyAccountPage, updateAddress, editAddressPage } from "../controllers/user/user.account.controller.js";
 import { placeOrder, placeOrderWithBuyNow, renderCheckoutPage, verifyCoupon, verifyRazorpayPayment, paymentRetry  } from "../controllers/user/checkout.controller.js";
 import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from "../controllers/user/order.controller.js";
 import { get } from "mongoose";
@@ -88,7 +88,9 @@ router.post("/my-account",  upload.single('profile-pic'), loadUserData, handlePr
 router.get("/manage-address", loadUserData, renderManageAddressPage);
 router.post("/add-address", loadUserData, handleAddAddress);
 router.post("/remove-address/:addressId", loadUserData, removeAddress);
-router.get('/get-address/:addressId', loadUserData, getAddress);
+// router.get('/get-address/:addressId', loadUserData, getAddress);
+
+router.get('/edit-address/:id', loadUserData, editAddressPage)
 router.post('/edit-address/:addressId', loadUserData, updateAddress);
 
 // Cart Management

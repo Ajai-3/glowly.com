@@ -13,9 +13,9 @@ import {
 } from "../controllers/admin/admin.controller.js";
 import { redirectIfLoggedIn, verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
-import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer } from "../controllers/admin/category.controller.js";
-import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct } from "../controllers/admin/product.controller.js";
-import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand } from "../controllers/admin/brand.controller.js";
+import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer, topCategories, topSubCategories } from "../controllers/admin/category.controller.js";
+import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct, topProducts } from "../controllers/admin/product.controller.js";
+import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand, topBrands } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
@@ -45,6 +45,7 @@ router.get("/products", verifyAdminToken, renderProductsPage);
 router.get('/search-products', verifyAdminToken, renderProductsPage)
 router.get("/add-products", verifyAdminToken, renderAddProductsPage);
 router.patch("/toggle-product/:id", verifyAdminToken, toggleProduct); // Delete And Restore
+router.get("/top-products", verifyAdminToken, topProducts)
 // router.post('/add-products', verifyAdminToken, uploads.array('productImages', 4), addProduct);
 
 router.post('/add-products', uploadImages, addProduct);
@@ -60,6 +61,7 @@ router.post("/add-new-brand", verifyAdminToken, uploads.single("image"), addBran
 router.get("/edit-brand/:brandId", verifyAdminToken, renderEditBrandPage);
 router.patch('/edit-brand/:brandId', verifyAdminToken, uploads.single('image'), editBrand);
 router.get("/delete-brand/:brandId", verifyAdminToken, deleteBrand);
+router.get("/top-brands", verifyAdminToken, topBrands)
 
 // Category & Subcategory Routes
 router.get("/category", verifyAdminToken, renderCategoryPage);
@@ -72,6 +74,8 @@ router.get('/category/edit/:id', verifyAdminToken, renderEditCategoryPage);
 router.patch('/category/edit/:id', verifyAdminToken, updateCategory);
 router.get('/category/delete/:id', verifyAdminToken, deleteCategory);
 router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
+router.get("/top-categories", verifyAdminToken, topCategories)
+router.get("/top-subcategories", verifyAdminToken, topSubCategories)
 // router.post("/add-offer/:categoryId", verifyAdminToken, addOffer);
 router.post("/add-offer", verifyAdminToken, addOffer);
 router.post("/remove-offer/:categoryId", verifyAdminToken, removeOffer);

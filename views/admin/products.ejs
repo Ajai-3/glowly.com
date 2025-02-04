@@ -40,11 +40,17 @@
         </form>
       </div>
 
-      <a href="/admin/add-products">
-        <button class="add-product-btn">
-          Add New Products
+      <div>
+        <button type="button" class="top-items-btn add-product-btn" data-toggle="modal" data-target="#topItemsModal">
+          <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Products
         </button>
-      </a>
+        <a href="/admin/add-products">
+          <button class="add-product-btn">
+            <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Add New Products
+          </button>
+        </a>
+      </div>
+     
     </div>
   </div>
 
@@ -113,6 +119,28 @@
   </div>
 </div> <!-- <div class="main-content"></div> -->
 
+
+
+
+<div class="modal fade top-items-modal" id="topItemsModal" tabindex="-1" role="dialog" aria-labelledby="topItemsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="topItemsModalLabel">Top 10 Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul id="top-items-list" class="list-group">
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <%- include('partials/footer') %>
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <script>
@@ -163,6 +191,53 @@
       position: 'topRight',
     });
   };
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.querySelector(".top-items-btn");
+  const itemList = document.getElementById("top-items-list");
+
+  btn.onclick = async function () {
+    try {
+      const response = await fetch('/admin/top-products');
+      const topItems = await response.json();
+
+      itemList.innerHTML = '';
+
+      topItems.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.classList.add('top-items-item');
+
+        const itemNumber = document.createElement('span');
+        itemNumber.classList.add('top-items-number');
+        itemNumber.textContent = index + 1;
+
+        const itemName = document.createElement('span');
+        itemName.classList.add('top-items-name');
+        itemName.textContent = item.name;
+
+        const soldCount = document.createElement('span');
+        soldCount.classList.add('top-items-sold-count');
+        soldCount.textContent = `Total Sold: ${item.totalSold}`;
+
+        li.appendChild(itemNumber);
+        li.appendChild(itemName);
+        li.appendChild(soldCount);
+
+        itemList.appendChild(li);
+      });
+    } catch (error) {
+      console.error('Error fetching top items:', error);
+    }
+  };
+});
+
+
+
+
+
+
+
 
   document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.delete-btn, .restore-btn');

@@ -33,9 +33,10 @@
                         <% addresses.forEach(address => { %>
                             <div class="user-address-display">
                                 <div class="d-flex user-address-display-button">
-                                  <form class="edit-address-form" data-id="<%= address._id %>">
-                                    <button type="submit" class="edit-btn me-2">Edit</button>
-                                </form>
+                                    <a href="/edit-address/<%= address._id %>">
+                                      <button type="submit" class="edit-btn me-2">Edit</button>
+                                    </a>
+
                                 <form class="remove-address-form" data-id="<%= address._id %>">
                                   <button type="submit" class="block-btn">Remove</button>
                               </form>                                                           

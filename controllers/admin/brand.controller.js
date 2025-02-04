@@ -55,6 +55,20 @@ export const renderBrandPage = async (req, res) => {
   }
 };
 
+export const topBrands = async (req, res) => {
+    try {
+      const topBrands = await Brand.aggregate([
+        { $group: { _id: "$_id", name: { $first: "$brandName" }, totalSold: { $sum: "$soldCount" } } },
+        { $sort: { totalSold: -1 } },
+        { $limit: 10 }
+    ]);
+      res.json(topBrands);
+    } catch (error) {
+      console.error('Error fetching top brands:', error);
+      res.status(500).send('Internal Server Error');
+    }
+}
+
 
 
 // Render Add Brand Page

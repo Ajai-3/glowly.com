@@ -7,16 +7,7 @@ import Subcategory from '../../models/subcategory.model.js';
 
 
 // Render Add Category Page
-export const renderAddCategoryPage = async (req, res) => {
-    try {
-        const categories = await Category.find(); 
-        const msg = req.body.msg || null;
-        res.render("admin/add-category", { categories, msg });
-    } catch (error) {
-        console.error("Error fetching categories:", error); 
-        res.status(500).send("Error fetching categories");
-    }
-};
+
 
 export const renderCategoryPage = async (req, res) => {
     try {
@@ -55,6 +46,46 @@ export const renderCategoryPage = async (req, res) => {
     }
 };
 
+
+export const topCategories = async (req, res) => {
+    try {
+        const categories = await Category.aggregate([
+            { $group: { _id: "$_id", name: { $first: "$name" }, totalSold: { $sum: "$soldCount" } } },
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 }
+        ]);
+        res.json(categories);
+    } catch (error) {
+        console.error('Error fetching top categories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+export const topSubCategories = async (req, res) => {
+    try {
+        const subcategories = await Subcategory.aggregate([
+            { $group: { _id: "$_id", name: { $first: "$name" }, totalSold: { $sum: "$soldCount" } } },
+            { $sort: { totalSold: -1 } },
+            { $limit: 10 }
+        ]);
+        res.json(subcategories);
+    } catch (error) {
+        console.error('Error fetching top subcategories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
+
+export const renderAddCategoryPage = async (req, res) => {
+    try {
+        const categories = await Category.find(); 
+        const msg = req.body.msg || null;
+        res.render("admin/add-category", { categories, msg });
+    } catch (error) {
+        console.error("Error fetching categories:", error); 
+        res.status(500).send("Error fetching categories");
+    }
+};
 
 export const addCategory = async (req, res) => {
     try {

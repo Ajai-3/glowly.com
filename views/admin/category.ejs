@@ -1,279 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
-    <div class="main-content">
-            
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search-category" method="GET">
-                    <input type="text" name="search" placeholder="Search User" disabled>
-                    <button  class="admin-search-button" disabled><i class="fas fa-search"></i></button>
-                </form>
-            </div>
-            <div class="admin-profile mx-3">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
-        <div class="brudcrumbs"><a href="/admin/category">Category</a></div>
-        <div class="filter-container">
-            <div class="filter-div1">
-                <div class="filter-box">
-                    <i class="fa-solid fa-filter"></i>
-                </div>
-                
-                <form action="/admin/users" method="GET">
-                    <div class="filter-box">
-                        <label for="filter">Filter By
-                            <select name="filter" id="filter">
-                                <option value="date">14 feb 2014</option>
-                            </select>
-                        </label>
-                       </div>
-                </form>
-                <form action="/admin/users" method="GET">
-                    <div class="filter-box">
-                        <label for="status">Status
-                            <select name="status" id="status" onchange="this.form.submit()">
-                                <option value="all" >All</option>
-                                <option value="block" >Blocked</option>
-                                <option value="unblock">Active</option>
-                            </select>
-                        </label>
-                    </div>
-                </form>
-            </div>
-            <a href="/admin/add-category">
-                <button class="add-btn">
-                    Add Category
-                </button>
-            </a>
-        </div>
-        
-        <table class="all-table">
-            <thead>
-                <tr>
-                    <th>S.No</th>
-                    <th>Category name</th>
-                    <th>Sub categories</th>
-                    <th>Created At</th>
-                    <th>Offer</th>
-                    <!-- <th>List / Unlist</th> -->
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% if (category && category.length > 0) { %>
-                  <% category.forEach((cat, index) => { %>
-                    <tr>
-                      <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
-                      <td> <%= cat.name %> </td>
-                      <td> 
-                        <ul>
-                            <% cat.subcategories.forEach((sub) => { %>
-                                <li class="<%= sub.isListed ? '' : 'unlisted' %>">
-                                    <form id="subcategoryForm-<%= sub._id %>">
-                                      <input 
-                                        type="checkbox" 
-                                        name="isListed" 
-                                        value="true" 
-                                        <%= sub.isListed ? 'checked' : '' %> 
-                                        onchange="toggleSubcategory('<%= sub._id %>', this.checked)">
-                                      <%= sub.name %>
-                                    </form>
-                                  </li>
-                            <% }) %>
-                        </ul>
-                    </td>
-                      <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
-                      <td>
-                        <% if (cat.offerId && cat.offerId.isActive) { %>
-                          <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
-                          (<%= cat.offerId.offerValue %>%)</p>
-                          <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
-                      <% } else { %> 
-                          <a href="/admin/add-offer/<%= cat._id %>">
-                              <button class="add-offer-btn">Add Offer</button>
-                          </a>
-                      <% } %>
-                      </td>
+<%- include('partials/head') %>
+<div class="main-content">
 
-                    
-                      <td> 
-                        <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
-                        <% if (!cat.isListed) { %>
-                            <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
-                          <% } else { %>
-                            <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
-                          <% } %>
-                      </td>
-                    </tr>
-                  <% }) %>
-                <% } else { %>
-                  <tr>
-                    <td colspan="6">No categories found.</td>
-                  </tr>
-                <% } %>
-              </tbody>
-              
-        </table>
-        <div class="pagination">
-            <!-- Example for the previous page -->
-            <% if (currentPage > 1) { %>
-                <a href="/admin/category?page=<%= currentPage - 1 %><%= queryParams ? '&' + queryParams : '' %>">Previous</a>
-            <% } %>
-        
-            <!-- Example for individual page numbers -->
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/category?page=<%= i %><%= queryParams ? '&' + queryParams : '' %>" 
-                   class="<%= currentPage === i ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-        
-            <!-- Example for the next page -->
-            <% if (currentPage < totalPages) { %>
-                <a href="/admin/category?page=<%= currentPage + 1 %><%= queryParams ? '&' + queryParams : '' %>">Next</a>
-            <% } %>
+  <div class="header">
+    <div class="search-bar">
+      <form action="/admin/search-category" method="GET">
+        <input type="text" name="search" placeholder="Search User" disabled>
+        <button class="admin-search-button" disabled><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+    <div class="admin-profile mx-3">
+      <a href="/admin/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
+    </div>
+  </div>
+  <div class="brudcrumbs"><a href="/admin/category">Category</a></div>
+  <div class="filter-container">
+    <div class="filter-div1">
+      <div class="filter-box">
+        <i class="fa-solid fa-filter"></i>
+      </div>
+
+      <form action="/admin/users" method="GET">
+        <div class="filter-box">
+          <label for="filter">Filter By
+            <select name="filter" id="filter">
+              <option value="date">14 feb 2014</option>
+            </select>
+          </label>
         </div>
-        
-        
-        
-    </div>  
+      </form>
+      <form action="/admin/users" method="GET">
+        <div class="filter-box">
+          <label for="status">Status
+            <select name="status" id="status" onchange="this.form.submit()">
+              <option value="all">All</option>
+              <option value="block">Blocked</option>
+              <option value="unblock">Active</option>
+            </select>
+          </label>
+        </div>
+      </form>
+    </div>
+
+    <div>
+      <button type="button" class="top-items-btn add-btn" data-toggle="modal" data-target="#topItemsModal">
+        <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Categories
+      </button>
+      <button type="button" class="top-items-btn add-btn" data-toggle="modal" data-target="#topItemsModal">
+        <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Subcategories
+      </button>
+
+
+
+      <a href="/admin/add-category">
+        <button class="add-btn">
+          Add Category
+        </button>
+      </a>
+    </div>
+
+  </div>
+
+  <table class="all-table">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Category name</th>
+        <th>Sub categories</th>
+        <th>Created At</th>
+        <th>Offer</th>
+        <!-- <th>List / Unlist</th> -->
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (category && category.length > 0) { %>
+      <% category.forEach((cat, index) => { %>
+      <tr>
+        <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
+        <td> <%= cat.name %> </td>
+        <td>
+          <ul>
+            <% cat.subcategories.forEach((sub) => { %>
+            <li class="<%= sub.isListed ? '' : 'unlisted' %>">
+              <form id="subcategoryForm-<%= sub._id %>">
+                <input type="checkbox" name="isListed" value="true" <%= sub.isListed ? 'checked' : '' %> onchange="toggleSubcategory('<%= sub._id %>', this.checked)">
+                <%= sub.name %>
+              </form>
+            </li>
+            <% }) %>
+          </ul>
+        </td>
+        <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
+        <td>
+          <% if (cat.offerId && cat.offerId.isActive) { %>
+          <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
+            (<%= cat.offerId.offerValue %>%)</p>
+          <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
+          <% } else { %>
+          <a href="/admin/add-offer/<%= cat._id %>">
+            <button class="add-offer-btn">Add Offer</button>
+          </a>
+          <% } %>
+        </td>
+
+
+        <td>
+          <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
+          <% if (!cat.isListed) { %>
+          <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
+          <% } else { %>
+          <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
+          <% } %>
+        </td>
+      </tr>
+      <% }) %>
+      <% } else { %>
+      <tr>
+        <td colspan="6">No categories found.</td>
+      </tr>
+      <% } %>
+    </tbody>
+
+  </table>
+  <div class="pagination">
+    <!-- Example for the previous page -->
+    <% if (currentPage > 1) { %>
+    <a href="/admin/category?page=<%= currentPage - 1 %><%= queryParams ? '&' + queryParams : '' %>">Previous</a>
+    <% } %>
+
+    <!-- Example for individual page numbers -->
+    <% for (let i = 1; i <= totalPages; i++) { %>
+    <a href="/admin/category?page=<%= i %><%= queryParams ? '&' + queryParams : '' %>" class="<%= currentPage === i ? 'active' : '' %>">
+      <%= i %>
+    </a>
+    <% } %>
+
+    <!-- Example for the next page -->
+    <% if (currentPage < totalPages) { %>
+    <a href="/admin/category?page=<%= currentPage + 1 %><%= queryParams ? '&' + queryParams : '' %>">Next</a>
+    <% } %>
+  </div>
+
+
+
+</div>
+
+
+
+
+
+<div class="modal fade top-items-modal" id="topItemsModal" tabindex="-1" role="dialog" aria-labelledby="topItemsModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="topItemsModalLabel">Top 10 Items</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul id="top-items-list" class="list-group">
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 </body>
-<%- include('partials/footer') %> 
+<%- include('partials/footer') %>
 <script>
-    const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-    const toggleCategory = async (id, isList) => {
-  try {
-    const response = await fetch(`/admin/toggle-category/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ isListed: isList }),
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
     });
+  };
 
-    if (response.ok) {
-      const result = await response.json();
-      toastSuccess(result.message || 'Category updated successfully');
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-      const button = document.querySelector(`[data-id="${id}"]`);
-      if (button) {
-        if (isList) {
-          button.textContent = 'Unlist';
-          button.classList.remove('list-btn');
-          button.classList.add('unlist-btn');
-          button.setAttribute('onclick', `toggleCategory('${id}', false)`);
-        } else {
-          button.textContent = 'List';
-          button.classList.remove('unlist-btn');
-          button.classList.add('list-btn');
-          button.setAttribute('onclick', `toggleCategory('${id}', true)`);
-        }
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const itemList = document.getElementById("top-items-list");
+
+    async function loadCategories() {
+      try {
+        const response = await fetch('/admin/top-categories');
+        const categories = await response.json();
+        updateModal('Categories', categories);
+      } catch (error) {
+        console.error('Error fetching top categories:', error);
       }
-    } else {
-      toastError('Failed to update category');
     }
-  } catch (error) {
-    console.error(error);
-    toastError('Error updating category');
-  }
-};
 
-const toggleSubcategory = async (id, isList) => {
-  try {
-    const response = await fetch(`/admin/toggle-subcategory/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ isListed: isList }),
-    });
-
-    if (response.ok) {
-      const result = await response.json();
-      toastSuccess(result.message || 'Subcategory updated successfully');
-    } else {
-      toastError('Failed to update subcategory');
+    async function loadSubcategories() {
+      try {
+        const response = await fetch('/admin/top-subcategories');
+        const subcategories = await response.json();
+        updateModal('Subcategories', subcategories);
+      } catch (error) {
+        console.error('Error fetching top subcategories:', error);
+      }
     }
-  } catch (error) {
-    console.error(error);
-    toastError('Error updating subcategory');
-  }
-};
 
-async function removeOffer(categoryId, offerId) {
+    function updateModal(title, items) {
+      const modalLabel = document.getElementById('topItemsModalLabel');
+      modalLabel.textContent = `Top 10 ${title}`;
+
+      itemList.innerHTML = '';
+
+      if (items.length > 0) {
+        items.forEach((item, index) => {
+          const li = document.createElement('li');
+          li.classList.add('top-items-item');
+
+          const itemNumber = document.createElement('span');
+          itemNumber.classList.add('top-items-number');
+          itemNumber.textContent = index + 1;
+
+          const itemName = document.createElement('span');
+          itemName.classList.add('top-items-name');
+          itemName.textContent = item.name;
+
+          const soldCount = document.createElement('span');
+          soldCount.classList.add('top-items-sold-count');
+          soldCount.textContent = `Total Sold: ${item.totalSold}`;
+
+          li.appendChild(itemNumber);
+          li.appendChild(itemName);
+          li.appendChild(soldCount);
+
+          itemList.appendChild(li);
+        });
+      } else {
+        itemList.innerHTML = '<li>No items available</li>';
+      }
+    }
+
+    const categoryButton = document.querySelector("button[data-target='#topItemsModal']:nth-of-type(1)");
+    const subcategoryButton = document.querySelector("button[data-target='#topItemsModal']:nth-of-type(2)");
+
+    categoryButton.addEventListener('click', loadCategories);
+    subcategoryButton.addEventListener('click', loadSubcategories);
+  });
+
+
+
+
+  const toggleCategory = async (id, isList) => {
+    try {
+      const response = await fetch(`/admin/toggle-category/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isListed: isList
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toastSuccess(result.message || 'Category updated successfully');
+
+        const button = document.querySelector(`[data-id="${id}"]`);
+        if (button) {
+          if (isList) {
+            button.textContent = 'Unlist';
+            button.classList.remove('list-btn');
+            button.classList.add('unlist-btn');
+            button.setAttribute('onclick', `toggleCategory('${id}', false)`);
+          } else {
+            button.textContent = 'List';
+            button.classList.remove('unlist-btn');
+            button.classList.add('list-btn');
+            button.setAttribute('onclick', `toggleCategory('${id}', true)`);
+          }
+        }
+      } else {
+        toastError('Failed to update category');
+      }
+    } catch (error) {
+      console.error(error);
+      toastError('Error updating category');
+    }
+  };
+
+  const toggleSubcategory = async (id, isList) => {
+    try {
+      const response = await fetch(`/admin/toggle-subcategory/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          isListed: isList
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toastSuccess(result.message || 'Subcategory updated successfully');
+      } else {
+        toastError('Failed to update subcategory');
+      }
+    } catch (error) {
+      console.error(error);
+      toastError('Error updating subcategory');
+    }
+  };
+
+  async function removeOffer(categoryId, offerId) {
     if (!offerId) {
-        alert('Offer ID is required.');
-        return;
+      alert('Offer ID is required.');
+      return;
     }
 
     const response = await fetch(`/admin/remove-offer/${categoryId}`, {
-        method: 'POST', 
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            offerId: offerId,  
-        }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        offerId: offerId,
+      }),
     });
 
     const result = await response.json();
 
     if (result.success) {
-        toastSuccess('Offer removed successfully!');
-        location.reload();  
+      toastSuccess('Offer removed successfully!');
+      location.reload();
     } else {
-        toastError(`Failed to remove offer: ${result.message}`);
+      toastError(`Failed to remove offer: ${result.message}`);
     }
-}
+  }
 </script>
+
 </html>
