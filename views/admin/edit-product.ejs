@@ -26,7 +26,7 @@
   </div>
 
  <!-- Edit Products Container -->
-<form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
+ <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
   <div class="edit-products-container row">
     <div class="add-products-container1 col-6">
       <!-- Form To Edit Product -->
@@ -70,15 +70,6 @@
           <label for="subCategory">Sub Category</label><br>
           <select name="subCategory" id="subCategory">
             <option value="">Select Sub Category</option>
-            <% if (product.subcategoryId) { %>
-            <% categories.forEach(category => { %>
-              <% if (category._id.toString() === product.categoryId._id.toString()) { %>
-                <% category.subcategories.forEach(subcategory => { %>
-                <option value="<%= subcategory._id %>" <%= product.subcategoryId._id.toString() === subcategory._id.toString() ? 'selected' : '' %>><%= subcategory.name %></option>
-                <% }) %>
-              <% } %>
-            <% }) %>
-            <% } %>
           </select>
         </div>
       </div>
@@ -92,14 +83,14 @@
           <div class="add-products-container-center d-flex align-items-end">
             <div>
               <label for="variantColor<%= index %>">Color</label>
-              <input type="color" name="variants[<%= index %>][color]" id="variantColor<%= index %>" value="<%= variant.color %>" >
+              <input type="color" name="variants[<%= index %>][color]" id="variantColor<%= index %>" value="<%= variant.color %>">
             </div>
             <div>
               <label for="variantShade<%= index %>">Shade</label>
               <input type="text" name="variants[<%= index %>][shade]" id="variantShade<%= index %>" value="<%= variant.shade %>" placeholder="Shade">
             </div>
             <div>
-              <button class="btn-primary">Remove Varient</button>
+              <button class="btn-primary">Remove Variant</button>
             </div>
           </div>
           <div class="d-flex justify-content-between">
@@ -117,87 +108,52 @@
             </div>
           </div>
           <div>
+            <div class="my-2">
+              <% variant.images.forEach(image => { %>
+                <img src="<%= image %>" alt="Variant Image" style="width: 70px; height: 70px;">
+                <% }) %>
+            </div>
             <label for="variantImages<%= index %>">Images</label>
             <input type="file" name="variants[<%= index %>][images][]" id="variantImages<%= index %>" multiple>
-            <% variant.images.forEach(image => { %>
-            <img src="<%= image %>" alt="Variant Image" style="width: 50px; height: 50px;">
-            <% }) %>
           </div>
         </div>
         <% }) %>
       </div>
 
-      <!-- Submit Button -->
       <button type="submit" class="add-product-btn2 my-3">Update Product</button>
     </div>
   </div>
 </form>
 
+
   <!-- JavaScript Section -->
   <script>
-    const categorySubcategories = {};
-    const product = <%- JSON.stringify(product) %>;
-    <% categories.forEach(category => { %>
-    categorySubcategories["<%= category._id %>"] = [
-      <% category.subcategories.forEach(subcategory => { %> {
-        id: "<%= subcategory._id %>",
-        name: "<%= subcategory.name %>"
-      },
-      <% }) %>
-    ]
-    <% }) %>
-    console.log(categorySubcategories);
 
-    function updateSubCategories() {
-      const categorySelect = document.getElementById('category');
-      const subCategorySelect = document.getElementById('subCategory');
-      const selectedCategoryId = categorySelect.value;
+  function updateSubCategories() {
+    const categoryId = document.getElementById('category').value;
+    const subCategorySelect = document.getElementById('subCategory');
+    subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>'; 
 
-      subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+    const categories = <%- JSON.stringify(categories) %>;
+    const productSubCategoryId = '<%= product.subcategoryId ? product.subcategoryId._id.toString() : '' %>';
 
-      if (categorySubcategories[selectedCategoryId]) {
-        const subcategories = categorySubcategories[selectedCategoryId];
-        subcategories.forEach(subcategory => {
+    categories.forEach(category => {
+      if (category._id.toString() === categoryId) {
+        category.subcategories.forEach(subcategory => {
           const option = document.createElement('option');
-          option.value = subcategory.id;
-          option.textContent = subcategory.name;
+          option.value = subcategory._id;
+          option.text = subcategory.name;
+          if (subcategory._id.toString() === productSubCategoryId) {
+            option.selected = true; 
+          }
           subCategorySelect.appendChild(option);
         });
-
-        if (product && product.subcategory_id && product.category_id && product.category_id._id === selectedCategoryId) {
-          subCategorySelect.value = product.subcategory_id._id;
-        }
       }
-    }
-
-    function handleSubCategoryChange() {
-      const subCategorySelect = document.getElementById('subCategory');
-      const selectedSubCategoryId = subCategorySelect.value;
-      console.log('Selected Subcategory ID:', selectedSubCategoryId);
-      const subcategoryInput = document.getElementById('subcategoryInput');
-      if (subcategoryInput) {
-        subcategoryInput.value = selectedSubCategoryId;
-      }
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-      updateSubCategories();
-      const subCategorySelect = document.getElementById('subCategory');
-      subCategorySelect.addEventListener('change', handleSubCategoryChange);
     });
+  }
 
-    function previewProductImage(event, previewId) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.onload = function() {
-        const productImagePreview = document.getElementById(previewId);
-        productImagePreview.src = reader.result;
-        productImagePreview.style.display = "block";
-      };
-      if (file) {
-        reader.readAsDataURL(file);
-      }
-    }
+
+  updateSubCategories();
   </script>
 
   <%- include('partials/footer') %>
