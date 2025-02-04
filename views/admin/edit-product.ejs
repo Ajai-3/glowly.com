@@ -24,176 +24,182 @@
   <div class="breadcrumbs">
     <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit Product</a>
   </div>
-  <% if (msg) { %>
-  <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-    <%= msg.text %>
-  </div>
-  <% } %>
-  <!-- Edit Products Container -->
-  <div class="edit-products-container">
-    <div class="add-products-container1">
+
+ <!-- Edit Products Container -->
+<form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
+  <div class="edit-products-container row">
+    <div class="add-products-container1 col-6">
       <!-- Form To Edit Product -->
-      <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
-        <h4>Edit Product</h4>
+      <h4>Edit Product</h4>
 
-        <!-- Product Name -->
-        <div>
-          <label for="productName">Product Name</label>
-          <input type="text" name="productName" id="productName" value="<%= product.title %>" placeholder="Type product name">
-        </div>
-
-        <!-- Select Brand -->
-        <div class="add-products-container-center">
-          <div>
-            <label for="brand">Select Brand</label>
-            <select name="brand" id="brand">
-              <option value="">Select Brand</option>
-              <% brands.forEach(brand => { %>
-              <option value="<%= brand._id %>" <%= product.brand_id && product.brand_id._id.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
-              <% }) %>
-            </select>
-          </div>
-        </div>
-
-        <!-- Description -->
-        <label for="description">Description</label><br>
-        <textarea id="description" name="description" placeholder="Enter product description here..."><%= product.description %></textarea>
-
-        <!-- Category And Subcategory -->
-        <div class="add-products-container-center">
-          <div>
-            <label for="category">Category</label><br>
-            <select name="category" id="category" onchange="updateSubCategories()">
-              <option value="">Select Category</option>
-              <% categories.forEach(category => { %>
-              <option value="<%= category._id %>" <%= product.category_id && product.category_id._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div>
-            <label for="subCategory">Sub Category</label><br>
-            <select name="subCategory" id="subCategory" onchange="handleSubCategoryChange()">
-              <option value="">Select Sub Category</option>
-              <% if (product.subcategory_id) { %>
-              <% product.category_id.subcategories.forEach(subcategory => { %>
-              <option value="<%= subcategory._id %>" <%= product.subcategory_id._id.toString() === subcategory._id.toString() ? 'selected' : '' %>><%= subcategory.name %></option>
-              <% }) %>
-              <% } %>
-            </select>
-          </div>
-        </div>
-
-        <!-- Stock Quantity And Prices -->
-        <div class="add-products-container-center">
-          <div>
-            <label for="availableQuantity">Stock Quantity</label>
-            <input type="number" name="availableQuantity" id="availableQuantity" value="<%= product.available_quantity %>" placeholder="303" min="1" value="1">
-          </div>
-          <div>
-            <label for="regularPrice">Regular Price</label>
-            <input type="number" name="regularPrice" id="regularPrice" value="<%= product.price %>" placeholder="&#8377;21,400" min="1" value="1">
-          </div>
-          <div>
-            <label for="salePrice">Sale Price</label>
-            <input type="number" name="salePrice" id="salePrice" value="<%= product.sales_price %>" placeholder="&#8377;18,949" min="1" value="1">
-          </div>
-        </div>
-
-        <!-- Submit Button -->
-        <button type="submit" class="add-product-btn2 my-3">Update Product</button>
-    </div>
-
-    <!-- Edit Product Images Section -->
-    <div class="add-products-container2">
-      <h4>Edit Product Images</h4>
-
-      <!-- Image Previews And File Uploads -->
-      <% if (product.product_imgs && product.product_imgs.length > 0) { %>
-      <% for (let i = 0; i < product.product_imgs.length; i++) { %>
-      <div class="image-upload-slot">
-        <label for="productImage<%= i + 1 %>" class="custom-image-input">
-          <img id="productImagePreview<%= i + 1 %>" src="/uploads/<%= product.product_imgs[i] %>" alt="Product Image <%= i + 1 %>" />
-        </label>
-        <input type="file" id="productImage<%= i + 1 %>" name="productImages" accept="image/*" onchange="previewProductImage(event, 'productImagePreview<%= i + 1 %>')" style="display: none;" multiple />
+      <!-- Product Name -->
+      <div>
+        <label for="productName">Product Name</label>
+        <input type="text" name="productName" id="productName" value="<%= product.title %>" placeholder="Type product name">
       </div>
-      <% } %>
-      <% } else { %>
-      <p>No images uploaded yet.</p>
-      <% } %>
+
+      <!-- Select Brand -->
+      <div class="add-products-container-center">
+        <div>
+          <label for="brand">Select Brand</label>
+          <select name="brand" id="brand">
+            <option value="">Select Brand</option>
+            <% brands.forEach(brand => { %>
+            <option value="<%= brand._id %>" <%= product.brandId && product.brandId._id.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
+            <% }) %>
+          </select>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <label for="description">Description</label><br>
+      <textarea id="description" name="description" placeholder="Enter product description here..."><%= product.description %></textarea>
+
+      <!-- Category And Subcategory -->
+      <div class="add-products-container-center">
+        <div>
+          <label for="category">Category</label><br>
+          <select name="category" id="category" onchange="updateSubCategories()">
+            <option value="">Select Category</option>
+            <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" <%= product.categoryId && product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
+            <% }) %>
+          </select>
+        </div>
+        <div>
+          <label for="subCategory">Sub Category</label><br>
+          <select name="subCategory" id="subCategory">
+            <option value="">Select Sub Category</option>
+            <% if (product.subcategoryId) { %>
+            <% categories.forEach(category => { %>
+              <% if (category._id.toString() === product.categoryId._id.toString()) { %>
+                <% category.subcategories.forEach(subcategory => { %>
+                <option value="<%= subcategory._id %>" <%= product.subcategoryId._id.toString() === subcategory._id.toString() ? 'selected' : '' %>><%= subcategory.name %></option>
+                <% }) %>
+              <% } %>
+            <% }) %>
+            <% } %>
+          </select>
+        </div>
+      </div>
     </div>
-    </form>
+    <div class="add-products-container1">
+      <!-- Variants -->
+      <div id="variants-section">
+        <% product.variants.forEach((variant, index) => { %>
+        <div class="variant">
+          <h5>Variant <%= index + 1 %></h5>
+          <div class="add-products-container-center d-flex align-items-end">
+            <div>
+              <label for="variantColor<%= index %>">Color</label>
+              <input type="color" name="variants[<%= index %>][color]" id="variantColor<%= index %>" value="<%= variant.color %>" >
+            </div>
+            <div>
+              <label for="variantShade<%= index %>">Shade</label>
+              <input type="text" name="variants[<%= index %>][shade]" id="variantShade<%= index %>" value="<%= variant.shade %>" placeholder="Shade">
+            </div>
+            <div>
+              <button class="btn-primary">Remove Varient</button>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <div>
+              <label for="variantStockQuantity<%= index %>">Stock Quantity</label>
+              <input type="number" name="variants[<%= index %>][stockQuantity]" id="variantStockQuantity<%= index %>" value="<%= variant.stockQuantity %>" min="0">
+            </div>
+            <div>
+              <label for="variantRegularPrice<%= index %>">Regular Price</label>
+              <input type="number" name="variants[<%= index %>][regularPrice]" id="variantRegularPrice<%= index %>" value="<%= variant.regularPrice %>" min="0">
+            </div>
+            <div>
+              <label for="variantSalePrice<%= index %>">Sale Price</label>
+              <input type="number" name="variants[<%= index %>][salePrice]" id="variantSalePrice<%= index %>" value="<%= variant.salePrice %>" min="0">
+            </div>
+          </div>
+          <div>
+            <label for="variantImages<%= index %>">Images</label>
+            <input type="file" name="variants[<%= index %>][images][]" id="variantImages<%= index %>" multiple>
+            <% variant.images.forEach(image => { %>
+            <img src="<%= image %>" alt="Variant Image" style="width: 50px; height: 50px;">
+            <% }) %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="add-product-btn2 my-3">Update Product</button>
+    </div>
   </div>
-</div>
+</form>
 
-<!-- JavaScript Section -->
-<script>
-  const categorySubcategories = {};
-  const product = <%- JSON.stringify(product) %>;
-  <% categories.forEach(category => { %>
-  categorySubcategories["<%= category._id %>"] = [
-    <% category.subcategories.forEach(subcategory => { %> {
-      id: "<%= subcategory._id %>",
-      name: "<%= subcategory.name %>"
-    },
+  <!-- JavaScript Section -->
+  <script>
+    const categorySubcategories = {};
+    const product = <%- JSON.stringify(product) %>;
+    <% categories.forEach(category => { %>
+    categorySubcategories["<%= category._id %>"] = [
+      <% category.subcategories.forEach(subcategory => { %> {
+        id: "<%= subcategory._id %>",
+        name: "<%= subcategory.name %>"
+      },
+      <% }) %>
+    ]
     <% }) %>
-  ]
-  <% }) %>
-  console.log(categorySubcategories);
+    console.log(categorySubcategories);
 
-  function updateSubCategories() {
-    const categorySelect = document.getElementById('category');
-    const subCategorySelect = document.getElementById('subCategory');
-    const selectedCategoryId = categorySelect.value;
+    function updateSubCategories() {
+      const categorySelect = document.getElementById('category');
+      const subCategorySelect = document.getElementById('subCategory');
+      const selectedCategoryId = categorySelect.value;
 
-    subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+      subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
 
-    if (categorySubcategories[selectedCategoryId]) {
-      const subcategories = categorySubcategories[selectedCategoryId];
-      subcategories.forEach(subcategory => {
-        const option = document.createElement('option');
-        option.value = subcategory.id;
-        option.textContent = subcategory.name;
-        subCategorySelect.appendChild(option);
-      });
+      if (categorySubcategories[selectedCategoryId]) {
+        const subcategories = categorySubcategories[selectedCategoryId];
+        subcategories.forEach(subcategory => {
+          const option = document.createElement('option');
+          option.value = subcategory.id;
+          option.textContent = subcategory.name;
+          subCategorySelect.appendChild(option);
+        });
 
-      if (product && product.subcategory_id && product.category_id && product.category_id._id === selectedCategoryId) {
-        subCategorySelect.value = product.subcategory_id._id;
+        if (product && product.subcategory_id && product.category_id && product.category_id._id === selectedCategoryId) {
+          subCategorySelect.value = product.subcategory_id._id;
+        }
       }
     }
-  }
 
-  function handleSubCategoryChange() {
-    const subCategorySelect = document.getElementById('subCategory');
-    const selectedSubCategoryId = subCategorySelect.value;
-    console.log('Selected Subcategory ID:', selectedSubCategoryId);
-    const subcategoryInput = document.getElementById('subcategoryInput');
-    if (subcategoryInput) {
-      subcategoryInput.value = selectedSubCategoryId;
+    function handleSubCategoryChange() {
+      const subCategorySelect = document.getElementById('subCategory');
+      const selectedSubCategoryId = subCategorySelect.value;
+      console.log('Selected Subcategory ID:', selectedSubCategoryId);
+      const subcategoryInput = document.getElementById('subcategoryInput');
+      if (subcategoryInput) {
+        subcategoryInput.value = selectedSubCategoryId;
+      }
     }
-  }
 
-  document.addEventListener('DOMContentLoaded', function() {
-    updateSubCategories();
-    const subCategorySelect = document.getElementById('subCategory');
-    subCategorySelect.addEventListener('change', handleSubCategoryChange);
-  });
+    document.addEventListener('DOMContentLoaded', function() {
+      updateSubCategories();
+      const subCategorySelect = document.getElementById('subCategory');
+      subCategorySelect.addEventListener('change', handleSubCategoryChange);
+    });
 
-  function previewProductImage(event, previewId) {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = function() {
-      const productImagePreview = document.getElementById(previewId);
-      productImagePreview.src = reader.result;
-      productImagePreview.style.display = "block";
-    };
-    if (file) {
-      reader.readAsDataURL(file);
+    function previewProductImage(event, previewId) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+      reader.onload = function() {
+        const productImagePreview = document.getElementById(previewId);
+        productImagePreview.src = reader.result;
+        productImagePreview.style.display = "block";
+      };
+      if (file) {
+        reader.readAsDataURL(file);
+      }
     }
-  }
+  </script>
 
-  
-</script>
-
-<%- include('partials/footer') %>
+  <%- include('partials/footer') %>
 
 </html>

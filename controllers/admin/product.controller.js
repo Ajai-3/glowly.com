@@ -110,7 +110,6 @@ export const renderProductsPage = async (req, res) => {
             matchConditions.isDeleted = false;
         }
 
-        // Aggregation Pipeline
         const pipeline = [
             { $match: matchConditions },
             { $lookup: { from: 'categories', localField: 'categoryId', foreignField: '_id', as: 'category' } },
@@ -124,7 +123,7 @@ export const renderProductsPage = async (req, res) => {
 
         const products = await Product.aggregate(pipeline);
 
-        // Flatten the products array to get a list of all variants
+ 
         const allVariants = products.reduce((acc, product) => {
             product.variants.forEach(variant => {
                 acc.push({
@@ -140,13 +139,10 @@ export const renderProductsPage = async (req, res) => {
             return acc;
         }, []);
 
-        // Paginate the variants
         const paginatedVariants = allVariants.slice((page - 1) * perPage, page * perPage);
 
-        // Calculate total pages
         const totalPages = Math.ceil(allVariants.length / perPage);
 
-        // Render The Products Page
         return res.render('admin/products', {
             variants: paginatedVariants,
             currentPage: page,
@@ -183,7 +179,7 @@ export const topProducts = async (req, res) => {
 // Rendre Add Products Page
 export const renderAddProductsPage = async (req, res) => {
     try {
-        const brands = await Brand.find();
+        const brands = await Brand.find({ isListed: true });
         const categories = await Category.find({ isListed: true }).populate({
             path: 'subcategories',
             match: { isListed: true }, 
@@ -286,9 +282,9 @@ export const renderEditProductPage = async (req, res) => {
     try {
         const msg = req.query.msg ? { text: req.query.msg, type: req.query.type } : null;
         const product = await Product.findById(req.params.id)
-            .populate('brand_id')  
-            .populate('category_id') 
-            .populate('subcategory_id') 
+            .populate('brandId')  
+            .populate('categoryId') 
+            .populate('subcategoryId') 
             .exec();
         
         const brands = await Brand.find();
