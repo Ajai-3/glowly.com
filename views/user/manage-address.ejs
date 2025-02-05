@@ -13,62 +13,56 @@
         <div class="col-md-3">
           <div class="card shadow-sm user-menu">
             <hr>
-            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-            <a href="/manage-address" class="active"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
-            <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a><hr>
-            <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
-            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
+            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
+            <hr>
+            <a href="/manage-address" class="active"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
+            <hr>
+            <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
+            <hr>
+            <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
+            <hr>
+            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+            <hr>
+            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+            <hr>
+            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+            <hr>
           </div>
         </div>
         <div class="col-md-9">
           <div id="view-address" class="card shadow-sm p-4 user-menu-account">
             <div class="d-flex justify-content-between">
-                <h5>Your Saved Addresses</h5>
-                <button id="add-address-btn" class="large-button-blue mt-4 mb-2">Add Address</button>
+              <h5>Your Saved Addresses</h5>
+              <button id="add-address-btn" class="large-button-blue mt-4 mb-2">Add Address</button>
             </div>
             <div class="d-flex flex-wrap">
-                <% if (addresses.length > 0) { %>
-                        <% addresses.forEach(address => { %>
-                            <div class="user-address-display">
-                                <div class="d-flex user-address-display-button">
-                                    <a href="/edit-address/<%= address._id %>">
-                                      <button type="submit" class="edit-btn me-2">Edit</button>
-                                    </a>
+              <% if (addresses.length > 0) { %>
+              <% addresses.forEach(address => { %>
+              <div class="user-address-display">
+                <div class="d-flex user-address-display-button">
+                  <a href="/edit-address/<%= address._id %>">
+                    <button type="submit" class="edit-btn me-2">Edit</button>
+                  </a>
 
-                                <form class="remove-address-form" data-id="<%= address._id %>">
-                                  <button type="submit" class="block-btn">Remove</button>
-                              </form>                                                           
-                                </div>
-                               <p><strong>Address Type: </strong> <%= address.address_type %> </p>
-                               <p><%= address.address %></p>
-                               <p><%= address.land_mark %></p>
-                               <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
-                                <p><%= address.country %></p>
-                                <!-- <p>Alternate Contact:</p> -->
-                                <% if (activeUser && activeUser.phone_no) { %>
-                                  <p>Contact: <%= activeUser.phone_no %></p>
-                                <% } %>
-                                <!-- <% if (activeUser.email) { %>
-                                  <p>Contact: <%= activeUser.email %></p>
-                                <% } %>  -->
-                                <!-- <% if (address.alternative_phone_no) { %>
-                                    <p>Contact: <%= address.alternative_phone_no %></p>
-                                <% } %>
-                                <% if (address.alternative_email) { %>
-                                    <p>Email: <%= address.alternative_email %></p>
-                                <% } %> -->
-                            </div>
-                        <% }) %>
-                <% } else { %>
-                  <div class="empty-address d-flex flex-column justify-content-center align-items-center w-100">
-                    <a href="#">
-                      <img src="/assets/logo/address.empty.jpg" alt="Address not found" class="empty-address" />
-                    </a>
-                    <p>No addresses found. Add a new address!</p>
-                  </div>
-                <% } %>
+                  <form class="remove-address-form" data-id="<%= address._id %>">
+                    <button type="submit" class="block-btn">Remove</button>
+                  </form>
+                </div>
+                <p><strong>Address Type: </strong> <%= address.address_type %> </p>
+                <p><%= address.address %></p>
+                <p><%= address.land_mark %></p>
+                <p><%= address.district %>, <%= address.city %>, <%= address.state %>, <%= address.pin_code %></p>
+                <p><%= address.country %></p>
+              </div>
+              <% }) %>
+              <% } else { %>
+              <div class="empty-address d-flex flex-column justify-content-center align-items-center w-100">
+                <a href="#">
+                  <img src="/assets/logo/address.empty.jpg" alt="Address not found" class="empty-address" />
+                </a>
+                <p>No addresses found. Add a new address!</p>
+              </div>
+              <% } %>
             </div>
           </div>
 
@@ -85,7 +79,7 @@
                   <div>
                     <label for="district">District</label><br>
                     <input type="text" name="district" id="district" placeholder="District">
-                    <div id="districtError" class="error-message"></div> 
+                    <div id="districtError" class="error-message"></div>
                   </div>
                 </div>
                 <div class="d-flex justify-content-between gap-5 mb-2">
@@ -139,88 +133,20 @@
               </div>
             </form>
           </div>
-         <!-- Edit Address Form -->
-<div id="edit-address" class="card shadow-sm p-4 user-menu-account" style="display: none;">
-  <form id="editAddressForm" action="/edit-address" method="POST" onsubmit="return addressFormValidation()">
-    <input type="hidden" name="address_id" id="edit_address_id">
-    <div class="d-flex flex-column align-items-center">
-      <h5 class="mb-4">Edit Address</h5>
-      <div class="d-flex justify-content-between gap-5 mb-2">
-        <div>
-          <label for="edit_city">City</label><br>
-          <input type="text" name="city" id="edit_city" placeholder="City">
-          <div id="edit_cityError" class="error-message"></div>
-        </div>
-        <div>
-          <label for="edit_district">District</label><br>
-          <input type="text" name="district" id="edit_district" placeholder="District">
-          <div id="edit_districtError" class="error-message"></div>
-        </div>
-      </div>
-      <div class="d-flex justify-content-between gap-5 mb-2">
-        <div>
-          <label for="edit_state">State</label><br>
-          <input type="text" name="state" id="edit_state" placeholder="State">
-          <div id="edit_stateError" class="error-message"></div>
-        </div>
-        <div>
-          <label for="edit_country">Country</label><br>
-          <input type="text" name="country" id="edit_country" placeholder="Country">
-          <div id="edit_countryError" class="error-message"></div>
-        </div>
-      </div>
-      <div>
-        <label for="edit_address">Address</label><br>
-        <textarea name="address" id="edit_address" placeholder="Address"></textarea>
-        <div id="edit_addressError" class="error-message"></div>
-      </div>
-      <div class="d-flex mb-2">
-        <div class="center-div me-">
-          <label for="edit_pincode">Pincode</label><br>
-          <input type="number" name="pin_code" id="edit_pincode" placeholder="682311">
-          <div id="edit_pincodeError" class="error-message"></div>
-        </div>
-        <div class="center-div-checkbox mx-4">
-          <label for="edit_address_type">Address Type</label><br>
-          <input type="radio" class="checkbox-user" id="edit_address_type_home" name="address_type" value="home"> Home
-          <input type="radio" class="checkbox-user" id="edit_address_type_work" name="address_type" value="work"> Work
-          <div id="edit_checkboxError" class="error-message"></div>
-        </div>
-        <div class="center-div ms-">
-          <label for="edit_land_mark">LandMark</label><br>
-          <input type="text" name="land_mark" id="edit_land_mark" placeholder="LandMark">
-          <div id="edit_LandMarkError" class="error-message"></div>
-        </div>
-      </div>
-      <div class="d-flex justify-content-between gap-5 mb-1">
-        <div>
-          <label for="edit_alternative_phone_no">Alternate Number (optional)</label><br>
-          <input type="number" name="alternative_phone_no" id="edit_alternative_phone_no" placeholder="+91 9834274898">
-          <div id="edit_phoneError" class="error-message"></div>
-        </div>
-        <div>
-          <label for="edit_alternative_email">Alternate Email (optional)</label><br>
-          <input type="email" name="alternative_email" id="edit_alternative_email" placeholder="annadearmas@gmail.com">
-          <div id="edit_emailError" class="error-message"></div>
-        </div>
-      </div>
-      <button type="submit" class="large-button-green px-5 my-2"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;UPDATE ADDRESS</button>
-    </div>
-  </form>
-</div>
-
-
-          
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="preloader">
+    <div class="loader"></div>
   </div>
 
 
   <div id="customPopup" class="popup hidden">
     <div class="popup-content">
       <h5 class="popup-title">Remove Address?</h5>
-      <p class="popup-text">This cannot be restored!</p>          
+      <p class="popup-text">This cannot be restored!</p>
       <div class="popup-buttons">
         <button id="confirmButton" class="popup-button confirm">Yes, remove it!</button>
         <button id="cancelButton" class="popup-button cancel">No, keep it</button>
@@ -228,24 +154,19 @@
     </div>
   </div>
 
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 
   <script>
-    window.onload = function () {
-       window.scrollTo(0, 0);
-    };
+
+window.onload = function() {
+  document.getElementById("preloader").style.display = "none";
+  window.scrollTo(0, 0);
+};
+
+
+
     const toastSuccess = (message) => {
       iziToast.success({
         message: message,
@@ -294,7 +215,7 @@
         position: 'topRight',
       });
     };
-   
+
     document.addEventListener("DOMContentLoaded", () => {
       const addAddressBtn = document.getElementById("add-address-btn");
       const cancelBtn = document.getElementById("cancel-btn");
@@ -326,7 +247,7 @@
     });
 
     document.querySelectorAll('.remove-address-form').forEach(form => {
-    form.addEventListener('submit', async (event) => {
+      form.addEventListener('submit', async (event) => {
         event.preventDefault();
         const addressId = form.getAttribute('data-id');
 
@@ -337,540 +258,302 @@
         const cancelButton = document.getElementById('cancelButton');
 
         confirmButton.addEventListener('click', async () => {
-            try {
-                const response = await fetch(`/remove-address/${addressId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
+          try {
+            const response = await fetch(`/remove-address/${addressId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
 
-                const result = await response.json();
+            const result = await response.json();
 
-                if (response.ok) {
-                  toastSuccess(result.message)
-                    setTimeout(() => {
-                      window.location.href = "/manage-address";
-                    }, 1500)
-                } else {
-                  toastError(result.message)
-                }
-            } catch (error) {
-              toastWarning('Something went wrong!')
+            if (response.ok) {
+              toastSuccess(result.message)
+              setTimeout(() => {
+                window.location.href = "/manage-address";
+              }, 1500)
+            } else {
+              toastError(result.message)
             }
+          } catch (error) {
+            toastWarning('Something went wrong!')
+          }
 
-            popup.classList.add('hidden'); 
+          popup.classList.add('hidden');
         });
 
         cancelButton.addEventListener('click', () => {
-            popup.classList.add('hidden');
+          popup.classList.add('hidden');
         });
+      });
     });
-});
 
 
-function addressFormValidation(prefix) {
-    let isValid = true;
+    function addressFormValidation(prefix) {
+      let isValid = true;
 
-    const addErrorBorder = (element) => {
+      const addErrorBorder = (element) => {
         if (element) {
-            element.style.border = "1px solid var(--red-text-color-4)";
+          element.style.border = "1px solid var(--red-text-color-4)";
         }
-    };
+      };
 
-    const addValidBorder = (element) => {
+      const addValidBorder = (element) => {
         if (element) {
-            element.style.border = "1px solid var(--green-text-color-2)";
+          element.style.border = "1px solid var(--green-text-color-2)";
         }
-    };
+      };
 
-    const resetBorder = (element) => {
+      const resetBorder = (element) => {
         if (element) {
-            element.style.border = "";
+          element.style.border = "";
         }
-    };
+      };
 
-    const city = document.getElementById(prefix + 'city');
-    if (city) {
+      const city = document.getElementById(prefix + 'city');
+      if (city) {
         const cityError = document.getElementById(prefix + 'cityError');
         if (!city.value.trim() || !/^[a-zA-Z\s]+$/.test(city.value.trim())) {
-            cityError.textContent = "Please enter a valid city name (letters and spaces only).";
-            cityError.style.display = "block";
-            addErrorBorder(city);
-            isValid = false;
+          cityError.textContent = "Please enter a valid city name (letters and spaces only).";
+          cityError.style.display = "block";
+          addErrorBorder(city);
+          isValid = false;
         } else {
-            cityError.style.display = "none";
-            addValidBorder(city);
+          cityError.style.display = "none";
+          addValidBorder(city);
         }
-    }
+      }
 
-    const district = document.getElementById(prefix + 'district');
-    if (district) {
+      const district = document.getElementById(prefix + 'district');
+      if (district) {
         const districtError = document.getElementById(prefix + 'districtError');
         if (!district.value.trim() || !/^[a-zA-Z\s]+$/.test(district.value.trim())) {
-            districtError.textContent = "Please enter a valid district name (letters and spaces only).";
-            districtError.style.display = "block";
-            addErrorBorder(district);
-            isValid = false;
+          districtError.textContent = "Please enter a valid district name (letters and spaces only).";
+          districtError.style.display = "block";
+          addErrorBorder(district);
+          isValid = false;
         } else {
-            districtError.style.display = "none";
-            addValidBorder(district);
+          districtError.style.display = "none";
+          addValidBorder(district);
         }
-    }
+      }
 
-    const state = document.getElementById(prefix + 'state');
-    if (state) {
+      const state = document.getElementById(prefix + 'state');
+      if (state) {
         const stateError = document.getElementById(prefix + 'stateError');
         if (!state.value.trim() || !/^[a-zA-Z\s]+$/.test(state.value.trim())) {
-            stateError.textContent = "Please enter a valid state name (letters and spaces only).";
-            stateError.style.display = "block";
-            addErrorBorder(state);
-            isValid = false;
+          stateError.textContent = "Please enter a valid state name (letters and spaces only).";
+          stateError.style.display = "block";
+          addErrorBorder(state);
+          isValid = false;
         } else {
-            stateError.style.display = "none";
-            addValidBorder(state);
+          stateError.style.display = "none";
+          addValidBorder(state);
         }
-    }
+      }
 
-    const country = document.getElementById(prefix + 'country');
-    if (country) {
+      const country = document.getElementById(prefix + 'country');
+      if (country) {
         const countryError = document.getElementById(prefix + 'countryError');
         if (!country.value.trim() || !/^[a-zA-Z\s]+$/.test(country.value.trim())) {
-            countryError.textContent = "Please enter a valid country name (letters and spaces only).";
-            countryError.style.display = "block";
-            addErrorBorder(country);
-            isValid = false;
+          countryError.textContent = "Please enter a valid country name (letters and spaces only).";
+          countryError.style.display = "block";
+          addErrorBorder(country);
+          isValid = false;
         } else {
-            countryError.style.display = "none";
-            addValidBorder(country);
+          countryError.style.display = "none";
+          addValidBorder(country);
         }
-    }
+      }
 
-    const address = document.getElementById(prefix + 'address');
-    if (address) {
+      const address = document.getElementById(prefix + 'address');
+      if (address) {
         const addressError = document.getElementById(prefix + 'addressError');
         if (!address.value.trim()) {
-            addressError.textContent = 'Address is required';
-            addressError.style.display = "block";
-            addErrorBorder(address);
-            isValid = false;
+          addressError.textContent = 'Address is required';
+          addressError.style.display = "block";
+          addErrorBorder(address);
+          isValid = false;
         } else {
-            addressError.style.display = "none";
-            addValidBorder(address);
+          addressError.style.display = "none";
+          addValidBorder(address);
         }
-    }
+      }
 
-    const pincode = document.getElementById(prefix + 'pincode');
-    if (pincode) {
+      const pincode = document.getElementById(prefix + 'pincode');
+      if (pincode) {
         const pincodeError = document.getElementById(prefix + 'pincodeError');
         if (!pincode.value.trim() || isNaN(pincode.value.trim()) || pincode.value.trim().length !== 6) {
-            pincodeError.textContent = 'Enter a valid 6-digit Pincode';
-            pincodeError.style.display = "block";
-            addErrorBorder(pincode);
-            isValid = false;
+          pincodeError.textContent = 'Enter a valid 6-digit Pincode';
+          pincodeError.style.display = "block";
+          addErrorBorder(pincode);
+          isValid = false;
         } else {
-            pincodeError.style.display = "none";
-            addValidBorder(pincode);
+          pincodeError.style.display = "none";
+          addValidBorder(pincode);
         }
-    }
+      }
 
-    const landmark = document.getElementById(prefix + 'land_mark');
-    if (landmark) {
+      const landmark = document.getElementById(prefix + 'land_mark');
+      if (landmark) {
         const landmarkError = document.getElementById(prefix + 'LandMarkError');
         if (landmark.value.trim() && landmark.value.trim().length >= 3) {
-            landmarkError.style.display = "none";
-            addValidBorder(landmark);
+          landmarkError.style.display = "none";
+          addValidBorder(landmark);
         } else if (landmark.value.trim()) {
-            landmarkError.textContent = 'Landmark should be at least 3 characters long';
-            landmarkError.style.display = "block";
-            addErrorBorder(landmark);
-            isValid = false;
+          landmarkError.textContent = 'Landmark should be at least 3 characters long';
+          landmarkError.style.display = "block";
+          addErrorBorder(landmark);
+          isValid = false;
         } else {
-            resetBorder(landmark);
-            landmarkError.style.display = "none";
+          resetBorder(landmark);
+          landmarkError.style.display = "none";
         }
-    }
+      }
 
-    const alternativePhone = document.getElementById(prefix + 'alternative_phone_no');
-    if (alternativePhone) {
+      const alternativePhone = document.getElementById(prefix + 'alternative_phone_no');
+      if (alternativePhone) {
         const phoneError = document.getElementById(prefix + 'phoneError');
         if (alternativePhone.value.trim() && alternativePhone.value.trim().length >= 10 && !isNaN(alternativePhone.value.trim())) {
-            phoneError.style.display = "none";
-            addValidBorder(alternativePhone);
+          phoneError.style.display = "none";
+          addValidBorder(alternativePhone);
         } else if (alternativePhone.value.trim()) {
-            phoneError.textContent = 'Enter a valid phone number';
-            phoneError.style.display = "block";
-            addErrorBorder(alternativePhone);
-            isValid = false;
+          phoneError.textContent = 'Enter a valid phone number';
+          phoneError.style.display = "block";
+          addErrorBorder(alternativePhone);
+          isValid = false;
         } else {
-            resetBorder(alternativePhone);
-            phoneError.style.display = "none";
+          resetBorder(alternativePhone);
+          phoneError.style.display = "none";
         }
-    }
+      }
 
-    const alternativeEmail = document.getElementById(prefix + 'alternative_email');
-    if (alternativeEmail) {
+      const alternativeEmail = document.getElementById(prefix + 'alternative_email');
+      if (alternativeEmail) {
         const emailError = document.getElementById(prefix + 'email');
         if (alternativeEmail.value.trim() && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(alternativeEmail.value.trim())) {
-            emailError.style.display = "none";
-            addValidBorder(alternativeEmail);
+          emailError.style.display = "none";
+          addValidBorder(alternativeEmail);
         } else if (alternativeEmail.value.trim()) {
-            emailError.textContent = 'Enter a valid email address';
-            emailError.style.display = "block";
-            addErrorBorder(alternativeEmail);
-            isValid = false;
+          emailError.textContent = 'Enter a valid email address';
+          emailError.style.display = "block";
+          addErrorBorder(alternativeEmail);
+          isValid = false;
         } else {
-            resetBorder(alternativeEmail);
-            emailError.style.display = "none";
+          resetBorder(alternativeEmail);
+          emailError.style.display = "none";
         }
-    }
+      }
 
-    const addressType = document.querySelector(`input[name="${prefix}address_type"]:checked`);
-    if (addressType) {
+      const addressType = document.querySelector(`input[name="${prefix}address_type"]:checked`);
+      if (addressType) {
         const checkboxError = document.getElementById(prefix + 'checkboxError');
         checkboxError.style.display = "none";
-    } else {
+      } else {
         const checkboxError = document.getElementById(prefix + 'checkboxError');
         checkboxError.textContent = 'Please select an address type.';
         checkboxError.style.display = "block";
         isValid = false;
+      }
+
+      return isValid;
     }
 
-    return isValid;
-}
 
+    document.addEventListener("DOMContentLoaded", () => {
+      const editAddressDiv = document.getElementById("edit-address");
+      const editAddressForm = document.getElementById("editAddressForm");
+      const viewAddressDiv = document.getElementById("view-address");
 
-document.addEventListener("DOMContentLoaded", () => {
-    const editAddressDiv = document.getElementById("edit-address");
-    const editAddressForm = document.getElementById("editAddressForm");
-    const viewAddressDiv = document.getElementById("view-address");
-
-    // Fetching and displaying the address data for editing
-    document.querySelectorAll('.edit-address-form').forEach(form => {
+      // Fetching and displaying the address data for editing
+      document.querySelectorAll('.edit-address-form').forEach(form => {
         form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const addressId = form.getAttribute('data-id');
-            try {
-                const response = await fetch(`/get-address/${addressId}`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const result = await response.json();
-                if (response.ok) {
-                    // Populate form fields with existing address data
-                    document.getElementById('edit_address_id').value = result._id;
-                    document.getElementById('edit_city').value = result.city;
-                    document.getElementById('edit_district').value = result.district;
-                    document.getElementById('edit_state').value = result.state;
-                    document.getElementById('edit_country').value = result.country;
-                    document.getElementById('edit_address').value = result.address;
-                    document.getElementById('edit_pincode').value = result.pin_code;
-                    document.getElementById('edit_land_mark').value = result.land_mark;
-                    document.getElementById('edit_alternative_phone_no').value = result.alternative_phone_no;
-                    document.getElementById('edit_alternative_email').value = result.alternative_email;
-                    document.getElementById(`edit_address_type_${result.address_type}`).checked = true;
+          event.preventDefault();
+          const addressId = form.getAttribute('data-id');
+          try {
+            const response = await fetch(`/get-address/${addressId}`, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            const result = await response.json();
+            if (response.ok) {
+              // Populate form fields with existing address data
+              document.getElementById('edit_address_id').value = result._id;
+              document.getElementById('edit_city').value = result.city;
+              document.getElementById('edit_district').value = result.district;
+              document.getElementById('edit_state').value = result.state;
+              document.getElementById('edit_country').value = result.country;
+              document.getElementById('edit_address').value = result.address;
+              document.getElementById('edit_pincode').value = result.pin_code;
+              document.getElementById('edit_land_mark').value = result.land_mark;
+              document.getElementById('edit_alternative_phone_no').value = result.alternative_phone_no;
+              document.getElementById('edit_alternative_email').value = result.alternative_email;
+              document.getElementById(`edit_address_type_${result.address_type}`).checked = true;
 
-                    viewAddressDiv.style.display = 'none';
-                    editAddressDiv.style.display = 'block';
-                } else {
-                    toastSuccess(result.message);
-                }
-            } catch (error) {
-                toastError('Something went wrong!');
+              viewAddressDiv.style.display = 'none';
+              editAddressDiv.style.display = 'block';
+            } else {
+              toastSuccess(result.message);
             }
+          } catch (error) {
+            toastError('Something went wrong!');
+          }
         });
-    });
+      });
 
-    // Submitting the edited address form
-    editAddressForm.addEventListener('submit', async (event) => {
+      // Submitting the edited address form
+      editAddressForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         if (!addressFormValidation('edit_')) {
-            return;
+          return;
         }
 
         const addressId = document.getElementById('edit_address_id').value;
         const data = {
-            city: document.getElementById('edit_city').value,
-            district: document.getElementById('edit_district').value,
-            state: document.getElementById('edit_state').value,
-            country: document.getElementById('edit_country').value,
-            address: document.getElementById('edit_address').value,
-            pin_code: document.getElementById('edit_pincode').value,
-            address_type: document.querySelector('input[name="edit_address_type"]:checked').value,
-            land_mark: document.getElementById('edit_land_mark').value,
-            alternative_phone_no: document.getElementById('edit_alternative_phone_no').value,
-            alternative_email: document.getElementById('edit_alternative_email').value,
+          city: document.getElementById('edit_city').value,
+          district: document.getElementById('edit_district').value,
+          state: document.getElementById('edit_state').value,
+          country: document.getElementById('edit_country').value,
+          address: document.getElementById('edit_address').value,
+          pin_code: document.getElementById('edit_pincode').value,
+          address_type: document.querySelector('input[name="edit_address_type"]:checked').value,
+          land_mark: document.getElementById('edit_land_mark').value,
+          alternative_phone_no: document.getElementById('edit_alternative_phone_no').value,
+          alternative_email: document.getElementById('edit_alternative_email').value,
         };
 
         try {
-            const response = await fetch(`/edit-address/${addressId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            const result = await response.json();
-            if (response.ok) {
-                toastSuccess(result.message);
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                toastError(result.message);
-            }
+          const response = await fetch(`/edit-address/${addressId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+          const result = await response.json();
+          if (response.ok) {
+            toastSuccess(result.message);
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } else {
+            toastError(result.message);
+          }
         } catch (error) {
-            toastWarning('Something went wrong!');
+          toastWarning('Something went wrong!');
         }
-    });
+      });
 
-    // Add address form validation
-    document.getElementById('addAddressForm').addEventListener('submit', function(event) {
+      // Add address form validation
+      document.getElementById('addAddressForm').addEventListener('submit', function(event) {
         if (!addressFormValidation('')) {
-            event.preventDefault();
+          event.preventDefault();
         }
+      });
     });
-});
-
-
-// document.addEventListener("DOMContentLoaded", () => {
-//   const editAddressDiv = document.getElementById("edit-address");
-//   const editAddressForm = document.getElementById("editAddressForm");
-//   const viewAddressDiv = document.getElementById("view-address");
-
-//   document.querySelectorAll('.edit-address-form').forEach(form => {
-//     form.addEventListener('submit', async (event) => {
-//       event.preventDefault();
-//       const addressId = form.getAttribute('data-id');
-
-//       try {
-//         const response = await fetch(`/get-address/${addressId}`, {
-//           method: 'GET',
-//           headers: {
-//             'Content-Type': 'application/json'
-//           }
-//         });
-
-//         const result = await response.json();
-
-//         if (response.ok) {
-//           document.getElementById('edit_address_id').value = result._id;
-//           document.getElementById('edit_city').value = result.city;
-//           document.getElementById('edit_district').value = result.district;
-//           document.getElementById('edit_state').value = result.state;
-//           document.getElementById('edit_country').value = result.country;
-//           document.getElementById('edit_address').value = result.address;
-//           document.getElementById('edit_pincode').value = result.pin_code;
-//           document.getElementById('edit_land_mark').value = result.land_mark;
-//           document.getElementById('edit_alternative_phone_no').value = result.alternative_phone_no;
-//           document.getElementById('edit_alternative_email').value = result.alternative_email;
-//           if (result.address_type === 'home') {
-//             document.getElementById('edit_address_type_home').checked = true;
-//           } else {
-//             document.getElementById('edit_address_type_work').checked = true;
-//           }
-
-//           viewAddressDiv.style.display = 'none';
-//           editAddressDiv.style.display = 'block';
-//         } else {
-//           toastSuccess(result.message)
-//         }
-//       } catch (error) {
-//         toastError('Something went wrong!')
-//       }
-//     });
-//   });
-
-//   editAddressForm.addEventListener('submit', async (event) => {
-//     event.preventDefault();
-
-//     const addressId = document.getElementById('edit_address_id').value;
-//     const data = {
-//       city: document.getElementById('edit_city').value,
-//       district: document.getElementById('edit_district').value,
-//       state: document.getElementById('edit_state').value,
-//       country: document.getElementById('edit_country').value,
-//       address: document.getElementById('edit_address').value,
-//       pin_code: document.getElementById('edit_pincode').value,
-//       address_type: document.querySelector('input[name="address_type"]:checked').value,
-//       land_mark: document.getElementById('edit_land_mark').value,
-//       alternative_phone_no: document.getElementById('edit_alternative_phone_no').value,
-//       alternative_email: document.getElementById('edit_alternative_email').value,
-//     };
-
-//     try {
-//       const response = await fetch(`/edit-address/${addressId}`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(data)
-//       });
-
-//       const result = await response.json();
-
-//       if (response.ok) {
-//         toastSuccess(result.message)
-//         setTimeout(() => {
-//           window.location.reload();
-//         }, 1500);
-//       } else {
-//         toastError(result.message)
-//       }
-//     } catch (error) {
-//       toastWarning('Something went wrong!')
-//     }
-//   });
-// });
-
-//     document.getElementById('addAddressForm').addEventListener('submit', function(event) {
-//         if (!addressFormValidation()) {
-//             event.preventDefault();
-//         }
-//     });
-
-//     function addressFormValidation() {
-//         let isValid = true;
-
-//         const addErrorBorder = (element) => {
-//             element.style.border = "1px solid var(--red-text-color-4)";
-//         };
-
-//         const addValidBorder = (element) => {
-//             element.style.border = "1px solid var(--green-text-color-2)";
-//         };
-
-//         const resetBorder = (element) => {
-//             element.style.border = "";
-//         };
-
-//         const city = document.getElementById('city');
-//         const cityError = document.getElementById('cityError');
-//         if (!city.value.trim() || !/^[a-zA-Z\s]+$/.test(city.value.trim())) {
-//             cityError.textContent = "Please enter a valid city name (letters and spaces only).";
-//             cityError.style.display = "block";
-//             addErrorBorder(city);
-//             isValid = false;
-//         } else {
-//             cityError.style.display = "none";
-//             addValidBorder(city);
-//         }
-
-//         const district = document.getElementById('district');
-//         const districtError = document.getElementById('districtError');
-//         if (!district.value.trim() || !/^[a-zA-Z\s]+$/.test(district.value.trim())) {
-//             districtError.textContent = "Please enter a valid district name (letters and spaces only).";
-//             districtError.style.display = "block";
-//             addErrorBorder(district);
-//             isValid = false;
-//         } else {
-//             districtError.style.display = "none";
-//             addValidBorder(district);
-//         }
-
-//         const state = document.getElementById('state');
-//         const stateError = document.getElementById('stateError');
-//         if (!state.value.trim() || !/^[a-zA-Z\s]+$/.test(state.value.trim())) {
-//             stateError.textContent = "Please enter a valid state name (letters and spaces only).";
-//             stateError.style.display = "block";
-//             addErrorBorder(state);
-//             isValid = false;
-//         } else {
-//             stateError.style.display = "none";
-//             addValidBorder(state);
-//         }
-
-//         const country = document.getElementById('country');
-//         const countryError = document.getElementById('countryError');
-//         if (!country.value.trim() || !/^[a-zA-Z\s]+$/.test(country.value.trim())) {
-//             countryError.textContent = "Please enter a valid country name (letters and spaces only).";
-//             countryError.style.display = "block";
-//             addErrorBorder(country);
-//             isValid = false;
-//         } else {
-//             countryError.style.display = "none";
-//             addValidBorder(country);
-//         }
-
-//         const address = document.getElementById('address');
-//         const addressError = document.getElementById('addressError');
-//         if (!address.value.trim()) {
-//             addressError.textContent = 'Address is required';
-//             addressError.style.display = "block";
-//             addErrorBorder(address);
-//             isValid = false;
-//         } else {
-//             addressError.style.display = "none";
-//             addValidBorder(address);
-//         }
-
-//         const pincode = document.getElementById('pincode');
-//         const pincodeError = document.getElementById('pincodeError');
-//         if (!pincode.value.trim() || isNaN(pincode.value.trim()) || pincode.value.trim().length !== 6) {
-//             pincodeError.textContent = 'Enter a valid 6-digit Pincode';
-//             pincodeError.style.display = "block";
-//             addErrorBorder(pincode);
-//             isValid = false;
-//         } else {
-//             pincodeError.style.display = "none";
-//             addValidBorder(pincode);
-//         }
-
-//         const landmark = document.getElementById('land_mark');
-//         const landmarkError = document.getElementById('LandMarkError');
-//         if (landmark.value.trim() && landmark.value.trim().length >= 3) {
-//             landmarkError.style.display = "none";
-//             addValidBorder(landmark);
-//         } else if (landmark.value.trim()) {
-//             landmarkError.textContent = 'Landmark should be at least 3 characters long';
-//             landmarkError.style.display = "block";
-//             addErrorBorder(landmark);
-//             isValid = false;
-//         } else {
-//             resetBorder(landmark);
-//             landmarkError.style.display = "none";
-//         }
-
-//         const alternativePhone = document.getElementById('alternative_phone_no');
-//         const phoneError = document.getElementById('phoneError');
-//         if (alternativePhone.value.trim() && alternativePhone.value.trim().length >= 10 && !isNaN(alternativePhone.value.trim())) {
-//             phoneError.style.display = "none";
-//             addValidBorder(alternativePhone);
-//         } else if (alternativePhone.value.trim()) {
-//             phoneError.textContent = 'Enter a valid phone number';
-//             phoneError.style.display = "block";
-//             addErrorBorder(alternativePhone);
-//             isValid = false;
-//         } else {
-//             resetBorder(alternativePhone);
-//             phoneError.style.display = "none";
-//         }
-
-//         const alternativeEmail = document.getElementById('alternative_email');
-//         const emailError = document.getElementById('email');
-//         if (alternativeEmail.value.trim() && /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(alternativeEmail.value.trim())) {
-//             emailError.style.display = "none";
-//             addValidBorder(alternativeEmail);
-//         } else if (alternativeEmail.value.trim()) {
-//             emailError.textContent = 'Enter a valid email address';
-//             emailError.style.display = "block";
-//             addErrorBorder(alternativeEmail);
-//             isValid = false;
-//         } else {
-//             resetBorder(alternativeEmail);
-//             emailError.style.display = "none";
-//         }
-
-//         const addressType = document.querySelector('input[name="address_type"]:checked');
-//         const checkboxError = document.getElementById('checkboxError');
-//         if (!addressType) {
-//             checkboxError.textContent = 'Please select an address type.';
-//             checkboxError.style.display = "block";
-//             isValid = false;
-//         } else {
-//             checkboxError.style.display = "none";
-//         }
-
-//         return isValid;
-//     }
 
   </script>
 

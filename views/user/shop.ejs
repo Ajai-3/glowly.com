@@ -272,6 +272,13 @@
         </div>
       </div>
     </div>
+
+    
+    <div id="preloader">
+      <div class="loader"></div>
+    </div>
+
+    
     <%- include('partials/footerforhome') %>
 <script>
 
@@ -335,6 +342,11 @@
       position: 'topRight',
     });
   };
+
+  window.onload = function() {
+        document.getElementById("preloader").style.display = "none";
+        document.getElementById("content").style.display = "block";
+    };
 
   document.addEventListener('DOMContentLoaded', () => {
     // Handle Wishlist form submission

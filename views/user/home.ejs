@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/headforhome', { user: user, categories: categories }) %>
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
+
 
 <div class="user-contents">
   <div id="carouselExampleDark" class="carousel carousel-dark slide carousel-home" data-bs-ride="carousel">
@@ -109,10 +113,16 @@
 </body>
 <%- include('partials/footerforhome') %>
 <script>
-  // Scroll to top on page load
-  window.onload = function() {
-    window.scrollTo(0, 0);
-  };
+ window.onload = function() {
+      clearTimeout(preloaderTimeout);
+      document.getElementById("preloader").style.display = "none";
+      window.scrollTo(0, 0);
+    };
+
+    preloaderTimeout = setTimeout(function() {
+      document.getElementById("preloader").style.display = "flex";
+    }, 100);
+
 
   $(document).ready(function () {
             const offers = $('#offers-container .offer-item');

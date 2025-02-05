@@ -6,37 +6,17 @@ import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 import Razorpay from 'razorpay';
 
-// next({ statusCode: 500, message: error.message });
 
 
 // Render Order List Page
 export const renderOrderListPage = async (req, res, next) => {
   try {
-    const { user, token, cartCount, categories } = req;
+    const { user, token, brands, cartCount, categories } = req;
     const PAGE_SIZE = 6;
-    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("/user/home");
     }
     const currentPage = parseInt(req.query.page) || 1;
-
-    // let user;
-    // let cart;
-    // try {
-    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    //   user = decoded;
-    //   cart = await Cart.findOne({ user_id: user.userId });
-    // } catch (error) {
-    //   console.error("Invalid token:", error);
-    // }
-
-    
-    // const cartCount = cart?.products?.length || 0;
-
-    // const categories = await Category.find({ isListed: true }).populate({
-    //   path: "subcategories",
-    //   match: { isListed: true },
-    // });
 
     const allOrders = await Order.find({ user_id: user.userId })
       .populate({
@@ -57,6 +37,7 @@ export const renderOrderListPage = async (req, res, next) => {
 
     return res.render("user/my-orders", {
       user,
+      brands,
       categories,
       cartCount,
       orders: paginatedOrders,
@@ -76,19 +57,9 @@ export const cancelOrder = async (req, res, next) => {
   try {
     const { user, token, cartCount, categories } = req;
     const { orderId, productId, variantId, quantity } = req.body;
-    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("user/home");
     }
-
-    // let user;
-    // try {
-    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    //   user = decoded;
-    // } catch (error) {
-    //   console.error("Invalid token:", error);
-    //   // return res.json({ success: false, message: 'Invalid token' });
-    // }
 
 
     if (!productId || !variantId || !orderId || !quantity) {
@@ -127,7 +98,7 @@ export const cancelOrder = async (req, res, next) => {
         // Update product status in the order
         productInOrder.status = "canceled";
         productInOrder.canceled_at = new Date();
-        // Save the updated order
+
         await order.save();
       }
 
@@ -145,20 +116,9 @@ export const returnOrder = async (req, res, next) => {
   try {
     const { user, token, cartCount, categories } = req;
     const { orderId, productId, variantId, quantity } = req.body;
-    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("user/home");
     }
-
-    // let user;
-    // try {
-    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    //   user = decoded;
-    // } catch (error) {
-    //   console.error("Invalid token:", error);
-    //   // return res.json({ success: false, message: 'Invalid token' });
-    // }
-
 
     if (!productId || !variantId || !orderId || !quantity) {
       return res.status(400).json({ success: false, message: "Missing data." });
@@ -188,10 +148,6 @@ export const returnOrder = async (req, res, next) => {
         return res.status(404).json({ success: false, message: 'Product not found in the order.' });
       }
   
-      // // Update product quantity
-      // variant.stockQuantity += productInOrder.quantity;
-      // await product.save();
-  
       // Update product status in the order
       productInOrder.status = "return_req";
       productInOrder.return_reqested_at = new Date();
@@ -216,29 +172,12 @@ export const returnOrder = async (req, res, next) => {
 // Render Order Details Page
 export const orderDetailsPage = async (req, res) => {
   try {
-    const { user, cart, token, cartCount, categories } = req;
+    const { user, cart, brands, token, cartCount, categories } = req;
     const { orderId, productId, variantId, addressId } = req.params;
-    // const token = req.cookies.token;
     if (!token) {
       return res.redirect("/user/home");
     }
 
-    // let user;
-    // let cart;
-    // try {
-    //   const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    //   user = decoded;
-    //   cart = await Cart.findOne({ user_id: user.userId });
-    // } catch (error) {
-    //   console.error("Invalid token:", error);
-    //   return res.redirect("/user/home");
-    // }
-
-    // const cartCount = cart?.products?.length || 0;
-    // const categories = await Category.find({ isListed: true }).populate({
-    //   path: "subcategories",
-    //   match: { isListed: true },
-    // });
 
     const order = await Order.findById(orderId)
       .populate({
@@ -271,6 +210,7 @@ export const orderDetailsPage = async (req, res) => {
     return res.render("user/order-details", {
       user,
       categories,
+      brands,
       order,
       orderId,
       product,

@@ -50,12 +50,19 @@ export const loadUserData = async (req, res, next) => {
         if (!categories) {
           return next({ statusCode: 404, message: 'Categories not found' });
         }
+
+        let brands = await Brand.find({ isListed: true });
       
+        if (!brands) {
+          return next({ statusCode: 404, message: 'Brands not found' });
+        }
+
         req.user = user;
         req.token = token;
         req.wallet = wallet;
         req.wishlist = wishlist;
         req.cart = cart;
+        req.brands = brands;
         req.cartCount = cartCount;
         req.cartVariants = cartVariants;
         req.categories = categories;

@@ -128,13 +128,6 @@
                 Signup  with Google
             </button>
           </a>
-          
-          <!-- <a href="/auth/facebook" >
-            <button class="btn social-facebook social-auth-btn">
-                <i class="fab fa-facebook-f"></i>
-                Signup with facebook
-            </button>
-          </a>           -->
       </div>
       <p>Already have account ? <a href="/login">Login</a></p>
     </div>
@@ -142,9 +135,25 @@
 
 
 
-    
-  </body>
-  <script src="/js/script.js"></script>
+    <div id="preloader">
+      <div class="loader"></div>
+    </div>
+
+
+
+    <script src="/js/script.js"></script>
   <%- include('partials/footer') %>
   
+  <script>
+    window.onload = function() {
+      document.getElementById("preloader").style.display = "none";
+  };
+  document.getElementById("signup_form").addEventListener("submit", function(event) {
+        document.getElementById("preloader").style.display = "flex";
+        document.querySelector('button[type="submit"]').disabled = true;
+      });
+</script>
+  </body>
+
+
 </html>

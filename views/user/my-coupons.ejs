@@ -33,7 +33,7 @@
             
             <% if (coupons && coupons.length > 0) { %>
               <h5 class="card-title m-0">My Coupons</h5>
-                fgdfg
+                coupons
             <% } else { %>
               <div
               class="empty-cart-section d-flex flex-column justify-content-center align-items-center"
@@ -73,6 +73,9 @@
   </div>
 </div>
 
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
 <%- include('partials/footerforhome') %>
 
 <script>
@@ -124,6 +127,19 @@
         position: 'topRight',
       });
     };
+
+    let preloaderTimeout;
+
+window.onload = function() {
+  clearTimeout(preloaderTimeout);
+  document.getElementById("preloader").style.display = "none";
+  window.scrollTo(0, 0);
+};
+
+preloaderTimeout = setTimeout(function() {
+  document.getElementById("preloader").style.display = "flex";
+}, 1000);
+
 
 
 </script>

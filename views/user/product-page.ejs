@@ -64,16 +64,13 @@
 
           <div class="variant-colors d-flex mt-2">
             <% product.variants.forEach(function (variant) { %>
-              <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
-                <div 
-                  class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" 
-                  title="<%= variant.shade %>" 
-                  style="background-color: <%= variant.color %>;">
-                </div>
-              </a>
+            <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
+              <div class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" title="<%= variant.shade %>" style="background-color: <%= variant.color %>;">
+              </div>
+            </a>
             <% }); %>
           </div>
-          
+
 
           <div class="d-flex align-items-center">
             <div class="quantity-selector-new m-1">
@@ -101,7 +98,7 @@
                 Add to Bag &nbsp;&nbsp;<i class="fa-solid fa-bag-shopping"></i>
               </button>
             </form>
-            
+
 
             <form action="/buy-now" id="buy-now-form" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
               <button id="buy-now-button" class="buy-now-btn">Buy Now</button>
@@ -204,15 +201,15 @@
         </div>
         <% const variantInCart = cartVariants.includes(relatedVariant._id.toString()); %>
         <% if (variantInCart) { %>
-          <!-- Go to Cart Button -->
-          <a href="/user/my-cart">
-            <button type="button" class="go-to-cart-btn">Go To Bag</button>
-          </a>
+        <!-- Go to Cart Button -->
+        <a href="/user/my-cart">
+          <button type="button" class="go-to-cart-btn">Go To Bag</button>
+        </a>
         <% } else { %>
-          <!-- Second Add to Bag Button -->
-          <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= relatedVariant.productId %>" data-variant-id="<%= relatedVariant._id %>">
-            <button type="button" class="add-to-cart-btn">Add to Bag</button>
-          </form>
+        <!-- Second Add to Bag Button -->
+        <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= relatedVariant.productId %>" data-variant-id="<%= relatedVariant._id %>">
+          <button type="button" class="add-to-cart-btn">Add to Bag</button>
+        </form>
         <% } %>
       </div>
       <% }) %>
@@ -225,6 +222,11 @@
 
 
   </div>
+</div>
+
+
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
 </div>
 
 
@@ -289,9 +291,18 @@
       position: 'topRight',
     });
   };
+  let preloaderTimeout;
+
   window.onload = function() {
+    clearTimeout(preloaderTimeout);
+    document.getElementById("preloader").style.display = "none";
     window.scrollTo(0, 0);
   };
+
+  preloaderTimeout = setTimeout(function() {
+    document.getElementById("preloader").style.display = "flex";
+  }, 100);
+
 
   document.addEventListener('DOMContentLoaded', function() {
     const priceElements = document.querySelectorAll('.price-inr');
@@ -315,7 +326,7 @@
     });
   });
 
-// Image Zoom
+  // Image Zoom
   const zoomContainer = document.querySelector('.zoom-container');
   zoomContainer.addEventListener('click', () => {
     zoomContainer.classList.toggle('zoomed');
@@ -391,90 +402,86 @@
   });
 
 
- // Add To Cart
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
-    button.addEventListener("click", (event) => {
-      event.preventDefault();
+  // Add To Cart
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".add-to-cart-btn").forEach((button) => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
 
-      const form = event.target.closest("form");
-      if (!form) {
-        console.log("Form not found for the clicked button");
-        return;
-      }
+        const form = event.target.closest("form");
+        if (!form) {
+          console.log("Form not found for the clicked button");
+          return;
+        }
 
-      const productId = form.dataset.productId;
-      const variantId = form.dataset.variantId;
+        const productId = form.dataset.productId;
+        const variantId = form.dataset.variantId;
 
-      const isMainButton = event.target.id === "main-add-to-cart-btn";
+        const isMainButton = event.target.id === "main-add-to-cart-btn";
 
-      const quantity = isMainButton
-        ? parseInt(document.getElementById("quantity").value || 1, 10)
-        : 1;
+        const quantity = isMainButton ?
+          parseInt(document.getElementById("quantity").value || 1, 10) :
+          1;
 
-      handleCart({ quantity, productId, variantId, form, isMainButton });
+        handleCart({
+          quantity,
+          productId,
+          variantId,
+          form,
+          isMainButton
+        });
+      });
     });
   });
-});
 
-// Handle Cart Logic
-function handleCart({ quantity, productId, variantId, form, isMainButton }) {
-  const user = "<%= user %>";
+  // Handle Cart Logic
+  function handleCart({
+    quantity,
+    productId,
+    variantId,
+    form,
+    isMainButton
+  }) {
+    const user = "<%= user %>";
 
-  // console.log("handleCart called with:", { quantity, productId, variantId, form, isMainButton });
-
-  if (user) {
-    fetch("/add-to-cart", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ quantity, productId, variantId }),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.success) {
-          if (!isMainButton) {
-            const newButton = document.createElement("a");
-            newButton.href = "/user/my-cart";
-            newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
-            form.parentNode.replaceChild(newButton, form);
+    if (user) {
+      fetch("/add-to-cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            quantity,
+            productId,
+            variantId
+          }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            if (!isMainButton) {
+              const newButton = document.createElement("a");
+              newButton.href = "/user/my-cart";
+              newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+              form.parentNode.replaceChild(newButton, form);
+            }
+            const cartCountElement = document.querySelector('.nav-cart-count');
+            if (cartCountElement) {
+              cartCountElement.innerText = data.cartCount;
+              cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
+            }
+            toastSuccess(data.message);
+          } else {
+            toastError(data.message);
           }
-          const cartCountElement = document.querySelector('.nav-cart-count');
-          if (cartCountElement) {
-            cartCountElement.innerText = data.cartCount;
-            cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
-          }
-          toastSuccess(data.message);
-        } else {
-          toastError(data.message);
-        }
-      })
-      .catch(() => {
-        toastWarning("Error adding product to cart.");
-      });
-  } else {
-     window.location = '/login'
-    // const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    // const existingItem = cart.find(
-    //   (item) => item.productId === productId && item.variantId === variantId
-    // );
-    // if (existingItem) {
-    //   existingItem.quantity += parseInt(quantity, 10);
-    // } else {
-    //   cart.push({ quantity: parseInt(quantity, 10), productId, variantId });
-    // }
-    // localStorage.setItem("cart", JSON.stringify(cart));
-    // toastSuccess("Product added to cart");
-
-    // if (!isMainButton) {
-    //   const newButton = document.createElement("a");
-    //   newButton.href = "/user/my-cart";
-    //   newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Cart</button>`;
-    //   form.parentNode.replaceChild(newButton, form);
-    // }
+        })
+        .catch(() => {
+          toastWarning("Error adding product to cart.");
+        });
+    } else {
+      window.location = '/login'
+    }
   }
-}
 
 
 
@@ -490,16 +497,16 @@ function handleCart({ quantity, productId, variantId, form, isMainButton }) {
       const productId = form.dataset.productId;
       const variantId = form.dataset.variantId;
 
-      // console.log("quantity", quantity)
-      // console.log("productId", productId)
-      // console.log("variantId", variantId)
-
       fetch(form.action, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ quantity, productId, variantId }),
+          body: JSON.stringify({
+            quantity,
+            productId,
+            variantId
+          }),
         })
         .then(response => response.json())
         .then(data => {
@@ -524,7 +531,6 @@ function handleCart({ quantity, productId, variantId, form, isMainButton }) {
         });
     });
   });
-
 </script>
 
 </html>

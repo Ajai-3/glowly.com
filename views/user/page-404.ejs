@@ -16,6 +16,17 @@
         <p class="error-message"><%= message %></p>
         <a href="/" class="error-link"><button>Go Back to Home</button></a>
     </div>
+
+    <div id="preloader">
+        <div class="loader"></div>
+      </div>
+
+      <script>
+              window.onload = function() {
+        document.getElementById("preloader").style.display = "none";
+        document.getElementById("content").style.display = "block";
+    };
+      </script>
 </body>
 <%- include('partials/footer') %> 
 </html>

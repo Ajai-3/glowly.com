@@ -7,38 +7,20 @@ import Category from "../../models/category.model.js";
 
 export const renderMyAccountPage = async (req, res, next) => {
     try {
-        const { user, token, cartCount, categories } = req;
-        // const token = req.cookies.token;
-        // let user = null; 
-        // let cart;
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded; 
-        //     cart = await Cart.findOne({ user_id: user.userId })
-        // }  
+        const { user, token, brands, cartCount, categories } = req;
         
         if (!token) {
             return res.redirect('/home')
         }
        
         
-        const activeUser = await User.findById({ _id: user.userId })
-        //  console.log(activeUser)
-        //  console.log(user)
-       
-        // const products = await Product.find({ isDeleted: false });
-        // const brands = await Brand.find({ isListed: true })
-        // const cartCount = cart?.products?.length || 0;
-        // const categories = await Category.find({ isListed: true })
-        // .populate({
-        //     path: 'subcategories',
-        //     match: { isListed: true },  
-        // });      
+        const activeUser = await User.findById({ _id: user.userId })    
              
       return res.render("user/my-account", {
         name: user ? user.name : "",
         user: user,
         categories,
+        brands,
         activeUser,
         cartCount
       })  
@@ -51,13 +33,7 @@ export const renderMyAccountPage = async (req, res, next) => {
 // Update Profile
 export const handleProfileUpdate = async (req, res, next) => {
     try {
-        const { user } = req;
-        // const token = req.cookies.token;
-        // let user = null; 
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded; 
-        // }  
+        const { user } = req; 
 
         const { name, dateOfBirth, phone_no } = req.body;
         const updatedData = { name, dateOfBirth, phone_no };
@@ -71,8 +47,6 @@ export const handleProfileUpdate = async (req, res, next) => {
             updatedData,
             { new: true }
         );
-        // console.log(req.body)
-        // console.log(updatedUser)
 
         if (!updatedUser) {
             return res.status(404).send("User not found");
@@ -95,67 +69,21 @@ export const handleProfileUpdate = async (req, res, next) => {
 };
 
 
-// export const removeProfilePicture = async (req, res) => {
-//     try {
-//         const token = req.cookies.token;
-//         let user = null; 
-//         if (token) {
-//             const decoded = jwt.decode(token);
-//             user = decoded; 
-//         }  
-//         const userId = user.userId
-//         const activeUser = await User.findById(userId); 
-
-//         if (!activeUser || !activeUser.profilePic) {
-//             return res.status(400).send("No profile picture to remove.");
-//         }
-
-
-//         activeUser.profilePic = null;
-//         await activeUser.save();
-
-//         res.status(200).send("Profile picture removed successfully.");
-//     } catch (error) {
-//         console.error("Error removing profile picture from the database:", error);
-//         res.status(500).send("Error removing profile picture.");
-//     }
-// };
-
-
 
 export const renderManageAddressPage = async (req, res, next) => {
     try {
-        const { user, token, cartCount, categories } = req;
-        // const token = req.cookies.token;
-        // let user = null; 
-        // let cart;
-        
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded; 
-        //     cart = await Cart.findOne({ user_id: user.userId })
-        // }  
+        const { user, token, brands, cartCount, categories } = req;
 
         if (!token) {
             return res.redirect('/home')
-        }
-       
-        // const activeUser = await User.findById(user.userId)
-
-        // const products = await Product.find({ isDeleted: false });
-        // const brands = await Brand.find({ isListed: true })
-        // const cartCount = cart?.products?.length || 0;
-        // const categories = await Category.find({ isListed: true })
-        // .populate({
-        //     path: 'subcategories',
-        //     match: { isListed: true },  
-        // });      
+        }     
              
         const addresses = await Address.find({ user_id: user.userId, isActive: true });
 
       return res.render("user/manage-address", {
         name: user ? user.name : "",
         user: user,
+        brands,
         categories,
         cartCount,
         addresses: addresses,
@@ -172,27 +100,10 @@ export const renderManageAddressPage = async (req, res, next) => {
 // Add New Address
 export const handleAddAddress = async (req, res) => {
     try {
-        const { user, token, cartCount, categories } = req;
+        const { user, token, brands, cartCount, categories } = req;
         if (!token) {
             return res.redirect('/home')
         }
-        // const token = req.cookies.token;
-        // let user = null;
-        // let cart = null;
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded;
-        //     cart = await Cart.findOne({ user_id: user.userId })
-        // }
-
-
-        // const cartCount = cart?.products?.length || 0;
-
-        // const categories = await Category.find({ isListed: true })
-        //     .populate({
-        //         path: 'subcategories',
-        //         match: { isListed: true },
-        //     });
 
         const {
             city,
@@ -265,6 +176,7 @@ export const handleAddAddress = async (req, res) => {
             name: user ? user.name : "",
             user: user,
             categories,
+            brands,
             activeUser,
             cartCount,
             addresses: addresses
@@ -282,12 +194,6 @@ export const handleAddAddress = async (req, res) => {
 export const removeAddress = async (req, res) => {
     try {
         const { user } = req;
-        // const token = req.cookies.token;
-        // let user = null;
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded;
-        // }
 
         if (!user) {
             return res.status(401).json({ message: "Unauthorized access. Please log in." });

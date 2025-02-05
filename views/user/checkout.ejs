@@ -495,6 +495,9 @@
       </div>
     </div>
   </div>
+  <div id="preloader">
+  <div class="loader"></div>
+</div>
 </div>
 
 
@@ -891,31 +894,42 @@ payButton.addEventListener("click", async () => {
 
 
 function handleOrderSuccess() {
-    showStep(step1);
-    const modalElement = document.getElementById("orderConfirmationModal");
-    if (!modalElement) {
-        console.error("Modal element not found");
-        return;
-    }
+    // Show the preloader initially
+    document.getElementById("preloader").style.display = "block";
+    document.getElementById("content").style.display = "none";
 
-    const orderConfirmationModal = new bootstrap.Modal(modalElement, {
-        backdrop: 'static', 
-        keyboard: false 
-    });
+    // Set a timeout to hide the preloader and show the content after 3 seconds
+    setTimeout(function() {
+        document.getElementById("preloader").style.display = "none";
+        document.getElementById("content").style.display = "block";
+        
+        // Display the order confirmation modal
+        const modalElement = document.getElementById("orderConfirmationModal");
+        if (!modalElement) {
+            console.error("Modal element not found");
+            return;
+        }
 
-    console.log("Order placed successfully!");
-    orderConfirmationModal.show();
+        const orderConfirmationModal = new bootstrap.Modal(modalElement, {
+            backdrop: 'static', 
+            keyboard: false 
+        });
 
-    document.getElementById("goToOrders").addEventListener("click", () => {
-        console.log("Redirecting to My Orders");
-        window.location.href = "/my-orders";
-    });
+        console.log("Order placed successfully!");
+        orderConfirmationModal.show();
 
-    document.getElementById("continueShopping").addEventListener("click", () => {
-        console.log("Redirecting to Home");
-        window.location.href = "/home";
-    });
-}
+        // Add event listeners for modal buttons
+        document.getElementById("goToOrders").addEventListener("click", () => {
+            console.log("Redirecting to My Orders");
+            window.location.href = "/my-orders";
+        });
+
+        document.getElementById("continueShopping").addEventListener("click", () => {
+            console.log("Redirecting to Home");
+            window.location.href = "/home";
+        });
+    }, 3000);
+} 
 
     function getCartProducts() {
         const productElements = document.querySelectorAll(".cart-box-in-checkout");

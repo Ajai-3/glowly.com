@@ -1,197 +1,209 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { user, categories }) %>
+<%- include('partials/headforhome', { user, categories }) %>
 
-    <div class="user-contents">
-        <div class="container my-2 p-2">
-            <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a></div>
-            <div class="row">
-              <!-- Left Side Box -->
-              <div class="col-md-3">
-                <div class="card shadow-sm user-menu">
-                    <hr>
-                    <a href="/my-account"  class="active"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                    <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
-                    <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a><hr>
-                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
-                    <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                    <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                    <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
+<div class="user-contents">
+  <div class="container my-2 p-2">
+    <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a></div>
+    <div class="row">
+      <!-- Left Side Box -->
+      <div class="col-md-3">
+        <div class="card shadow-sm user-menu">
+          <hr>
+          <a href="/my-account" class="active"><i class="fas fa-user"></i> &nbsp; My Account</a>
+          <hr>
+          <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
+          <hr>
+          <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
+          <hr>
+          <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
+          <hr>
+          <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+          <hr>
+          <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+          <hr>
+          <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+          <hr>
+        </div>
+      </div>
+
+      <!-- Right Side Box -->
+      <div class="col-md-9">
+        <div class="card shadow-sm my-account-form">
+          <form id="myAccountForm" action="/my-account" method="POST" enctype="multipart/form-data">
+            <div class="d-flex flex-column align-items-center justify-content-center">
+              <h5 class="card-title m-0">Your Details</h5>
+              <p>Personal information</p>
+
+              <!-- Profile picture section -->
+              <div class="profile-icon mb-3 d-flex justify-content-center">
+                <label for="profile-pic" class="d-flex justify-content-center">
+                  <% if (activeUser.profilePic) { %>
+                  <img src="<%= activeUser.profilePic %>" alt="Profile Image" class="img-fluid rounded-circle">
+                  <% } else { %>
+                  <i class="fa-solid fa-circle-user" style="font-size: 90px;"></i>
+                  <% } %>
+                </label>
+                <input type="file" name="profile-pic" id="profile-pic" accept="image/*" style="display: none;" onchange="previewImage(event)">
+              </div>
+
+              <!-- Form content using Bootstrap grid for responsiveness -->
+              <div class="row w-100 justify-content-space-between">
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
+                  <label for="name">Name</label>
+                  <input type="text" name="name" id="name" value="<%= activeUser.name %>" placeholder="Name">
+                  <div id="nameError" class="error-message"></div>
+                </div>
+
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
+                  <label for="dateOfBirth">Date Of Birth</label>
+                  <input type="date" name="dateOfBirth" id="dateOfBirth" value="<%= activeUser.dateOfBirth ? activeUser.dateOfBirth.toISOString().split('T')[0] : '' %>">
+                  <div id="dobError" class="error-message"></div>
                 </div>
               </div>
-              
-              <!-- Right Side Box -->
-              <div class="col-md-9">
-                <div class="card shadow-sm my-account-form">
-                    <form id="myAccountForm" action="/my-account" method="POST" enctype="multipart/form-data">
-                        <div class="d-flex flex-column align-items-center justify-content-center">
-                            <h5 class="card-title m-0">Your Details</h5>
-                            <p>Personal information</p>
-            
-                            <!-- Profile picture section -->
-                            <div class="profile-icon mb-3 d-flex justify-content-center">
-                                <label for="profile-pic" class="d-flex justify-content-center">
-                                    <% if (activeUser.profilePic) { %>
-                                        <img src="<%= activeUser.profilePic %>" alt="Profile Image" class="img-fluid rounded-circle">
-                                    <% } else { %>
-                                        <i class="fa-solid fa-circle-user" style="font-size: 90px;"></i>
-                                    <% } %>
-                                </label>
-                                <input type="file" name="profile-pic" id="profile-pic" accept="image/*" style="display: none;" onchange="previewImage(event)">
-                            </div>
-            
-                            <!-- Form content using Bootstrap grid for responsiveness -->
-                            <div class="row w-100 justify-content-space-between">
-                                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
-                                    <label for="name">Name</label>
-                                    <input type="text" name="name" id="name" value="<%= activeUser.name %>" placeholder="Name">
-                                    <div id="nameError" class="error-message"></div>
-                                </div>
-                                
-                                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
-                                    <label for="dateOfBirth">Date Of Birth</label>
-                                    <input type="date" name="dateOfBirth" id="dateOfBirth" value="<%= activeUser.dateOfBirth ? activeUser.dateOfBirth.toISOString().split('T')[0] : '' %>" >
-                                    <div id="dobError" class="error-message"></div>
-                                </div>
-                            </div>
-            
-                            <!-- <div class="d-flex flex-column mb-2 w-100 justify-content-center"> -->
-                                <h6 class="mb-2 mt-2 text-start">Contact information</h6>
 
-                                <div class="row w-100 justify-content-center">
-                                    <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
-                                        <label for="phone_no">Phone Number</label>
-                                        <input type="number" name="phone_no" id="phone_no" class="phone_no" value="<%= activeUser.phone_no ? activeUser.phone_no : 'Not available' %>">
-                                        <div id="phoneError" class="error-message"></div>
-                                    </div>
-                                    
-                                    <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
-                                        <label for="email">Email</label>
-                                        <input type="email" name="email" id="email" value="<%= activeUser.email %>" readonly>
-                                    </div>
-                                </div>
-                            <!-- </div> -->
-            
-                            <!-- Update button -->
-                            <button type="submit" class="main-btn px-5 my-3">UPDATE</button>
-                        </div>
-                    </form>
+              <h6 class="mb-2 mt-2 text-start">Contact information</h6>
+
+              <div class="row w-100 justify-content-center">
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
+                  <label for="phone_no">Phone Number</label>
+                  <input type="number" name="phone_no" id="phone_no" class="phone_no" value="<%= activeUser.phone_no ? activeUser.phone_no : 'Not available' %>">
+                  <div id="phoneError" class="error-message"></div>
                 </div>
-            </div>
-            
-            
-            
-            
-            </div>
-          </div>
-    </div>
 
+                <div class="col-12 col-md-6 d-flex flex-column justify-content-center mb-2">
+                  <label for="email">Email</label>
+                  <input type="email" name="email" id="email" value="<%= activeUser.email %>" readonly>
+                </div>
+              </div>
+
+              <!-- Update button -->
+              <button type="submit" class="main-btn px-5 my-3">UPDATE</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
+
+
+    </div>
+  </div>
+</div>
+<div id="preloader">
+  <div class="loader"></div>
+</div>
 </body>
-<%- include('partials/footerforhome') %> 
+<%- include('partials/footerforhome') %>
 
 <script>
+  window.onload = function() {
+    document.getElementById("preloader").style.display = "none";
+    window.scrollTo(0, 0);
+  };
 
-    document.querySelectorAll('.my-account-form input').forEach(input => {
-        input.addEventListener('focus', function() {
-            const label = document.querySelector(`label[for="${this.id}"]`);
-            if (label) label.classList.add('focused');
-        });
 
-        input.addEventListener('blur', function() {
-            const label = document.querySelector(`label[for="${this.id}"]`);
-            if (label) label.classList.remove('focused');
-        });
+  document.querySelectorAll('.my-account-form input').forEach(input => {
+    input.addEventListener('focus', function() {
+      const label = document.querySelector(`label[for="${this.id}"]`);
+      if (label) label.classList.add('focused');
     });
 
-    function previewImage(event) {
-        const file = event.target.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function () {
-            const label = document.querySelector('label[for="profile-pic"]');
-            
-            const image = document.createElement('img');
-            image.src = reader.result;
-            image.alt = "Profile Image";
-            
-            image.style.width = '90px';
-            image.style.height = '90px';
-            image.style.objectFit = 'cover';
-            image.style.borderRadius = '50%';
-            image.style.cursor = 'pointer';
-
-            label.innerHTML = '';
-            label.appendChild(image); 
-        };
-
-        if (file) {
-            reader.readAsDataURL(file); 
-        }
-    }
-
-
-    document.getElementById('myAccountForm').addEventListener('submit', function(event) {
-        if (!validateMyAccount()) {
-            event.preventDefault();
-        }
+    input.addEventListener('blur', function() {
+      const label = document.querySelector(`label[for="${this.id}"]`);
+      if (label) label.classList.remove('focused');
     });
+  });
 
-    function validateMyAccount() {
-        let isValid = true;
+  function previewImage(event) {
+    const file = event.target.files[0];
+    const reader = new FileReader();
 
-        const nameInput = document.getElementById('name');
-        const nameError = document.getElementById('nameError');
-        const nameValue = nameInput.value.trim();
-        if (!nameValue || !/^[a-zA-Z\s]+$/.test(nameValue)) {
-            nameError.textContent = "Please enter a valid name (letters and spaces only).";
-            nameError.style.display = "block";
-            isValid = false;
-        } else {
-            nameError.style.display = "none";
-        }
+    reader.onload = function() {
+      const label = document.querySelector('label[for="profile-pic"]');
 
-        // Phone Number validation
-        const phoneInput = document.getElementById('phone_no');
-        const phoneError = document.getElementById('phoneError');
-        const phoneValue = phoneInput.value.trim();
-        if (phoneValue && phoneValue.length !== 10) {
-            phoneError.textContent = "Please enter a valid 10-digit phone number.";
-            phoneError.style.display = "block";
-            isValid = false;
-        } else {
-            phoneError.style.display = "none";
-        }
+      const image = document.createElement('img');
+      image.src = reader.result;
+      image.alt = "Profile Image";
 
-        // Date of Birth validation
-        const dobInput = document.getElementById('dateOfBirth'); 
-        const dobError = document.getElementById('dobError');
-        const dobValue = dobInput.value;
+      image.style.width = '90px';
+      image.style.height = '90px';
+      image.style.objectFit = 'cover';
+      image.style.borderRadius = '50%';
+      image.style.cursor = 'pointer';
 
-        if (dobValue) {
-            const dobDate = new Date(dobValue);
-            const currentDate = new Date();
-            const age = currentDate.getFullYear() - dobDate.getFullYear();
-            const monthDifference = currentDate.getMonth() - dobDate.getMonth();
-            const dayDifference = currentDate.getDate() - dobDate.getDate();
+      label.innerHTML = '';
+      label.appendChild(image);
+    };
 
-            const isBirthdayPassedThisYear = (monthDifference > 0) || (monthDifference === 0 && dayDifference >= 0);
-            const correctedAge = isBirthdayPassedThisYear ? age : age - 1;
-
-            if (dobDate > currentDate) {
-                dobError.textContent = "Date of birth cannot be in the future.";
-                dobError.style.display = "block";
-                isValid = false;
-            } else if (correctedAge < 12) {
-                dobError.textContent = "You must be at least 12 years old.";
-                dobError.style.display = "block";
-                isValid = false;
-            } else {
-                dobError.style.display = "none";
-            }
-        }
-
-        return isValid;
+    if (file) {
+      reader.readAsDataURL(file);
     }
+  }
+
+
+  document.getElementById('myAccountForm').addEventListener('submit', function(event) {
+    if (!validateMyAccount()) {
+      event.preventDefault();
+    }
+  });
+
+  function validateMyAccount() {
+    let isValid = true;
+
+    const nameInput = document.getElementById('name');
+    const nameError = document.getElementById('nameError');
+    const nameValue = nameInput.value.trim();
+    if (!nameValue || !/^[a-zA-Z\s]+$/.test(nameValue)) {
+      nameError.textContent = "Please enter a valid name (letters and spaces only).";
+      nameError.style.display = "block";
+      isValid = false;
+    } else {
+      nameError.style.display = "none";
+    }
+
+    // Phone Number validation
+    const phoneInput = document.getElementById('phone_no');
+    const phoneError = document.getElementById('phoneError');
+    const phoneValue = phoneInput.value.trim();
+    if (phoneValue && phoneValue.length !== 10) {
+      phoneError.textContent = "Please enter a valid 10-digit phone number.";
+      phoneError.style.display = "block";
+      isValid = false;
+    } else {
+      phoneError.style.display = "none";
+    }
+
+    // Date of Birth validation
+    const dobInput = document.getElementById('dateOfBirth');
+    const dobError = document.getElementById('dobError');
+    const dobValue = dobInput.value;
+
+    if (dobValue) {
+      const dobDate = new Date(dobValue);
+      const currentDate = new Date();
+      const age = currentDate.getFullYear() - dobDate.getFullYear();
+      const monthDifference = currentDate.getMonth() - dobDate.getMonth();
+      const dayDifference = currentDate.getDate() - dobDate.getDate();
+
+      const isBirthdayPassedThisYear = (monthDifference > 0) || (monthDifference === 0 && dayDifference >= 0);
+      const correctedAge = isBirthdayPassedThisYear ? age : age - 1;
+
+      if (dobDate > currentDate) {
+        dobError.textContent = "Date of birth cannot be in the future.";
+        dobError.style.display = "block";
+        isValid = false;
+      } else if (correctedAge < 12) {
+        dobError.textContent = "You must be at least 12 years old.";
+        dobError.style.display = "block";
+        isValid = false;
+      } else {
+        dobError.style.display = "none";
+      }
+    }
+
+    return isValid;
+  }
 </script>
 
 </html>

@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
-    <%- include('partials/headforhome', { user, categories }) %>
- 
+<%- include('partials/headforhome', { user, categories }) %>
 
-    <div class="user-contents">
-        <div class="container my-2">
-            <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a> > <a href="/my-orders">My Orders</a> > <a href="#">Order Id <%= orderId %></a></div>
-            <div class="row">
-              <!-- Left Side Box -->
-              <div class="col-md-3">
-                <div class="card shadow-sm user-menu">
-                    <hr>
-                    <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                    <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a><hr>
-                    <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a><hr>
-                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a><hr>
-                    <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                    <a href="/my-orders" class="active"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                    <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a><hr>
-                </div>
-              </div>
-              
-              <!-- Right Side Box -->
-              <div class="col-md-9">
-                <div class="card shadow-sm p-4 user-menu-wishlist">
-                  <div class="my-order-datailpage">
-                    <!-- Product Status -->
-                    <!-- <div class="my-order-datailpage-status mb-2">
+
+<div class="user-contents">
+  <div class="container my-2">
+    <div class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a> > <a href="/my-orders">My Orders</a> > <a href="#">Order Id <%= orderId %></a></div>
+    <div class="row">
+      <!-- Left Side Box -->
+      <div class="col-md-3">
+        <div class="card shadow-sm user-menu">
+          <hr>
+          <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
+          <hr>
+          <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
+          <hr>
+          <a href="/my-coupns"><i class="fa-solid fa-gift"></i> &nbsp; My Coupns</a>
+          <hr>
+          <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
+          <hr>
+          <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+          <hr>
+          <a href="/my-orders" class="active"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+          <hr>
+          <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+          <hr>
+        </div>
+      </div>
+
+      <!-- Right Side Box -->
+      <div class="col-md-9">
+        <div class="card shadow-sm p-4 user-menu-wishlist">
+          <div class="my-order-datailpage">
+            <!-- Product Status -->
+            <!-- <div class="my-order-datailpage-status mb-2">
                       <p>
                         Product Status:&nbsp;&nbsp;
                         <p2 class="m-0 mb-4 
@@ -42,8 +49,8 @@
                       </p>
                     </div> -->
 
-                    <!-- Delivery Address -->
-                    <!-- <div class="my-order-datailpage-address p-2 mb-2">
+            <!-- Delivery Address -->
+            <!-- <div class="my-order-datailpage-address p-2 mb-2">
                       <p><strong>Delivery Address</strong></p>
                       <p>
                         Address Type: <%= address.address_type %>, <%= address.address %>, 
@@ -54,10 +61,10 @@
                     </div>
                   </div> -->
 
-                  <!-- Timeline Chart -->
-                  <div class="timeline">
-                    <div class="timeline-items">
-                      <% 
+            <!-- Timeline Chart -->
+            <div class="timeline">
+              <div class="timeline-items">
+                <% 
                         const statuses = [
                           { key: 'order_placed_at', label: 'Order Placed' },
                           { key: 'processing_at', label: 'Processing' },
@@ -116,159 +123,167 @@
                             progress = 100;
                           }
                       %>
-                        <div class="timeline-item <%= itemClass %>">
-                          <div class="timeline-dot <%= dotClass %>"></div>
-                          <div class="timeline-content">
-                            <div class="timeline-status"><%= status.label %></div>
-                            <% if (statusDate) { %>
-                              <div class="timeline-date">
-                                <%= statusDate.toLocaleString() %>
-                              </div>
-                            <% } %>
-                          </div>
-                        </div>
-                      <% }); %>
+                <div class="timeline-item <%= itemClass %>">
+                  <div class="timeline-dot <%= dotClass %>"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-status"><%= status.label %></div>
+                    <% if (statusDate) { %>
+                    <div class="timeline-date">
+                      <%= statusDate.toLocaleString() %>
+                    </div>
+                    <% } %>
+                  </div>
+                </div>
+                <% }); %>
 
-                      <% if (latestStatus === 'canceled_at' || latestStatus === 'returned_at' || latestStatus === 'return_reqested_at') { %>
-                        <div class="timeline-item <%= latestStatus === 'canceled_at' ? 'canceled' : 'returned' %> current">
-                          <div class="timeline-dot current"></div>
-                          <div class="timeline-content">
-                            <div class="timeline-status">
-                              <%= latestStatus === 'canceled_at' ? 'Canceled' : 
+                <% if (latestStatus === 'canceled_at' || latestStatus === 'returned_at' || latestStatus === 'return_reqested_at') { %>
+                <div class="timeline-item <%= latestStatus === 'canceled_at' ? 'canceled' : 'returned' %> current">
+                  <div class="timeline-dot current"></div>
+                  <div class="timeline-content">
+                    <div class="timeline-status">
+                      <%= latestStatus === 'canceled_at' ? 'Canceled' : 
                                   latestStatus === 'returned_at' ? 'Returned' : 'Return Requested' %>
-                            </div>
-                            <div class="timeline-date">
-                              <%= latestDate.toLocaleString() %>
-                            </div>
-                          </div>
-                        </div>
-                      <% } %>
                     </div>
-                    <div class="timeline-progress" style="transform: translateY(-50%) scaleX(<%= progress/100 %>)"></div>
+                    <div class="timeline-date">
+                      <%= latestDate.toLocaleString() %>
+                    </div>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+              <div class="timeline-progress" style="transform: translateY(-50%) scaleX(<%= progress/100 %>)"></div>
+            </div>
+
+            <!-- Product Details -->
+            <div>
+              <div class="card my-order-datailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
+                <div class="row">
+                  <!-- Product Image -->
+                  <div class="col-md-2 text-center">
+                    <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" class="img-fluid rounded" alt="<%= product.title || 'Product Image' %>" style="max-width: 100px; object-fit: cover;">
                   </div>
 
-                  <!-- Product Details -->
-                  <div>
-                    <div class="card my-order-datailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
-                      <div class="row">
-                        <!-- Product Image -->
-                        <div class="col-md-2 text-center">
-                          <img 
-                            src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
-                            class="img-fluid rounded" 
-                            alt="<%= product.title || 'Product Image' %>" 
-                            style="max-width: 100px; object-fit: cover;">
-                        </div>
-
-                        <!-- Product Info -->
-                        <div class="col-md-10 p-0">
-                          <div class="card-body p-0">
-                            <h6 class="card-title"><%= product.product_id.title %></h6>
-                            <div class="product-shade my-1">
-                              <p class="m-0">Shade: <span><%= variant.shade %></span></p>
-                            </div>
-                            <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">View Product</a>
-                          </div>
-                        </div>
-
-                        <!-- Pricing Details -->
-                        <div class="col-12 mt-2">
-                          <div class="row">
-                            <div class="col-6 text-start px-4">
-                              <p class="product-quantity qty m-0">Quantity:</p>
-                            </div>
-                            <div class="col-6 text-end px-4">
-                              <p class="product-quantity qty m-0"><%= product.quantity %></p>
-                            </div>
-                          </div>
-
-                          <div class="row">
-                            <div class="col-6 text-start px-4">
-                              <p class="card-text m-0">Unit Price:</p>
-                            </div>
-                            <div class="col-6 text-end px-4">
-                              <p class="mb-1">
-                                <span class="original-price price-inr"> <%= variant.regularPrice %></span>
-                                <span class="card-text m-0 price-inr">₹ <%= product.total_amount / product.quantity %></span>
-                              </p>
-                              
-                            </div>
-                          </div>
-
-                          <div class="row">
-                            <div class="col-6 text-start px-4">
-                              <p class="card-text m-0">Total:</p>
-                            </div>
-                            <div class="col-6 text-end px-4">
-                              <p class="card-text m-0 price-inr">₹ <%= product.amount_after_coupon %></p>
-                            </div>
-                          </div>
-                        </div>
+                  <!-- Product Info -->
+                  <div class="col-md-10 p-0">
+                    <div class="card-body p-0">
+                      <h6 class="card-title"><%= product.product_id.title %></h6>
+                      <div class="product-shade my-1">
+                        <p class="m-0">Shade: <span><%= variant.shade %></span></p>
                       </div>
+                      <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">View Product</a>
                     </div>
                   </div>
 
-                  <!-- Review Section -->
-                  <% if (product.delivered_at || product.canceled_at || product.returned_at) { %>
-                    <div class="review-section">
-                      <div class="review-header <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
-                        <h5>
-                            Share Your Product Experience
-                        </h5>
+                  <!-- Pricing Details -->
+                  <div class="col-12 mt-2">
+                    <div class="row">
+                      <div class="col-6 text-start px-4">
+                        <p class="product-quantity qty m-0">Quantity:</p>
                       </div>
-
-                      <form action="/submit-review" method="POST" class="review-form">
-                        <input type="hidden" name="productId" value="<%= product.product_id._id %>">
-                        <input type="hidden" name="orderId" value="<%= orderId %>">
-                        <input type="hidden" name="reviewType" value="<%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : 'delivered') %>">
-                        
-                        <div class="mb-3">
-                          <label>
-                            
-                              Rate this product
-                          </label>
-                          <div class="star-rating">
-                            <% for(let i = 1; i <= 5; i++) { %>
-                              <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>">
-                              <label for="star<%= i %>">★</label>
-                            <% } %>
-                          </div>
-                        </div>
-
-                        <div class="mb-3">
-                          <label>Write your review:</label>
-                          <textarea class="review-input" name="review" placeholder="Tell us what you think about this product..."></textarea>
-                    
-                        </div>
-
-                        <button type="submit" class="submit-review <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
-                          <i class="fas <%= product.canceled_at ? 'fa-paper-plane' : (product.returned_at ? 'fa-paper-plane' : 'fa-paper-plane') %>"></i>
-                          Submit Review
-                        </button>
-                      </form>
+                      <div class="col-6 text-end px-4">
+                        <p class="product-quantity qty m-0"><%= product.quantity %></p>
+                      </div>
                     </div>
-                  <% } %>
+
+                    <div class="row">
+                      <div class="col-6 text-start px-4">
+                        <p class="card-text m-0">Unit Price:</p>
+                      </div>
+                      <div class="col-6 text-end px-4">
+                        <p class="mb-1">
+                          <span class="original-price price-inr"> <%= variant.regularPrice %></span>
+                          <span class="card-text m-0 price-inr">₹ <%= product.total_amount / product.quantity %></span>
+                        </p>
+
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-6 text-start px-4">
+                        <p class="card-text m-0">Total:</p>
+                      </div>
+                      <div class="col-6 text-end px-4">
+                        <p class="card-text m-0 price-inr">₹ <%= product.amount_after_coupon %></p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              
             </div>
+
+            <!-- Review Section -->
+            <% if (product.delivered_at || product.canceled_at || product.returned_at) { %>
+            <div class="review-section">
+              <div class="review-header <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
+                <h5>
+                  Share Your Product Experience
+                </h5>
+              </div>
+
+              <form action="/submit-review" method="POST" class="review-form">
+                <input type="hidden" name="productId" value="<%= product.product_id._id %>">
+                <input type="hidden" name="orderId" value="<%= orderId %>">
+                <input type="hidden" name="reviewType" value="<%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : 'delivered') %>">
+
+                <div class="mb-3">
+                  <label>
+
+                    Rate this product
+                  </label>
+                  <div class="star-rating">
+                    <% for(let i = 1; i <= 5; i++) { %>
+                    <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>">
+                    <label for="star<%= i %>">★</label>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Write your review:</label>
+                  <textarea class="review-input" name="review" placeholder="Tell us what you think about this product..."></textarea>
+
+                </div>
+
+                <button type="submit" class="submit-review <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
+                  <i class="fas <%= product.canceled_at ? 'fa-paper-plane' : (product.returned_at ? 'fa-paper-plane' : 'fa-paper-plane') %>"></i>
+                  Submit Review
+                </button>
+              </form>
+            </div>
+            <% } %>
           </div>
-          
-    </div>
-    </div>
-    
+        </div>
 
 
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
 
 
 
 
 </body>
-<%- include('partials/footerforhome') %> 
+<%- include('partials/footerforhome') %>
 
 <script>
+  let preloaderTimeout;
 
+  window.onload = function() {
+    clearTimeout(preloaderTimeout);
+    document.getElementById("preloader").style.display = "none";
+    window.scrollTo(0, 0);
+  };
 
+  preloaderTimeout = setTimeout(function() {
+    document.getElementById("preloader").style.display = "flex";
+  }, 100);
 </script>
+
 </html>

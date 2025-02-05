@@ -3,8 +3,8 @@
 <%- include('partials/headforhome', { user, categories }) %>
 
 <head>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <div class="user-contents">
@@ -36,100 +36,98 @@
       <div class="col-md-9">
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <% if (orders.length > 0) { %>
-            <h5 class="card-title">My Orders</h5>
-            <% orders.forEach(order => { %>
-              <div class="card shadow-sm mb-3 order-box" data-expanded="false">
-                <div class="order-header p-0" onclick="toggleOrderProducts('<%= order._id %>', this)">
-                  <div class="d-flex justify-content-between order-info-row">
-                    <p class="m-0 order-id">
-                      <span>Order #<%= order._id %></span>
-                      <i class="fas fa-chevron-down toggle-icon"></i>
-                    </p>
-                  </div>
-                  <div class="order-info-row">
-                    <div>
-                      <span class="order-info-label">Ordered on:</span>
-                      <span class="order-info-value"><%= order.createdAt.toLocaleString() %></span>
-                    </div>
-                    <div>
-                      <span class="price-inr">₹<%= order.total_order_amount %></span>
-                    </div>
-                  </div>
-                  <div class="order-info-row">
-                    <div>
-                      <span class="order-info-label">Payment Status:</span>
-                      <span class="payment_status_my_orders 
+          <h5 class="card-title">My Orders</h5>
+          <% orders.forEach(order => { %>
+          <div class="card shadow-sm mb-3 order-box" data-expanded="false">
+            <div class="order-header p-0" onclick="toggleOrderProducts('<%= order._id %>', this)">
+              <div class="d-flex justify-content-between order-info-row">
+                <p class="m-0 order-id">
+                  <span>Order #<%= order._id %></span>
+                  <i class="fas fa-chevron-down toggle-icon"></i>
+                </p>
+              </div>
+              <div class="order-info-row">
+                <div>
+                  <span class="order-info-label">Ordered on:</span>
+                  <span class="order-info-value"><%= order.createdAt.toLocaleString() %></span>
+                </div>
+                <div>
+                  <span class="price-inr">₹<%= order.total_order_amount %></span>
+                </div>
+              </div>
+              <div class="order-info-row">
+                <div>
+                  <span class="order-info-label">Payment Status:</span>
+                  <span class="payment_status_my_orders 
                         <%= order.payment_status === 'Payment completed' ? 'green-p' : 
                             order.payment_status === 'Payment failed' ? 'red-p' : 'yellow-p' %>">
-                        <%= order.payment_status ? order.payment_status : 'Not Available' %>
-                      </span>
-                      <span>
-                        <% if (order.payment_status === 'Payment failed') { %>
-                          <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
-                        <% } %>
-                      </span>
-                    </div>
-                    <div>
-                      <span class="order-info-label">Method:</span>
-                      <span class="order-info-value"><%= order.payment_method ? order.payment_method : 'Not Available' %></span>
-                    </div>
-                  </div>
-                  <div class="order-info-row">
-                    <div>
-                      <span class="order-info-label">Total Products:</span>
-                      <span class="order-info-value"><%= order.products.length %></span>
-                    </div>
-                    <div>
-                      <% if (order.payment_status !== 'Payment failed') { %>
-                        <button type="button" class="btn btn-secondary btn-sm" 
-                          onclick="generateInvoice(this)" 
-                          data-order='<%= JSON.stringify(order) %>'>
-                          <i class="fas fa-file-invoice"></i> Download Invoice
-                        </button>
-                      <% } %>
-                    </div>
-                  </div>
-                  <div class="order-address">
-                    <span class="order-info-label">Delivery Address:</span><br>
-                    <span class="order-info-value">
-                      <%= order.address_id ? `Address type: ${order.address_id.address_type}, ${order.address_id.city}, ${order.address_id.district}, ${order.address_id.state}, ${order.address_id.country}, ${order.address_id.pin_code}, ${user.phone_no}` : 'Not Available' %>
-                    </span>
-                  </div>
+                    <%= order.payment_status ? order.payment_status : 'Not Available' %>
+                  </span>
+                  <span>
+                    <% if (order.payment_status === 'Payment failed') { %>
+                    <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
+                    <% } %>
+                  </span>
                 </div>
-                <div id="products-<%= order._id %>" style="display: none;">
-                <% order.products.forEach(product => { %>
-                  <!-- Product Item -->
-                  <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
-                    <div class="row g-0 align-items-center">
-                      
-                      <!-- Product Image -->
-                      <div class="col-md-2 text-center p-2">
-                        <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
-                        <% let imageUrl = variant?.images?.[0]; %>
-                        <% if (imageUrl) { %>
-                          <img src="<%= imageUrl %>" style="max-width: 90px;">
-                        <% } else { %>
-                          <p>No image</p>
-                        <% } %>
+                <div>
+                  <span class="order-info-label">Method:</span>
+                  <span class="order-info-value"><%= order.payment_method ? order.payment_method : 'Not Available' %></span>
+                </div>
+              </div>
+              <div class="order-info-row">
+                <div>
+                  <span class="order-info-label">Total Products:</span>
+                  <span class="order-info-value"><%= order.products.length %></span>
+                </div>
+                <div>
+                  <% if (order.payment_status !== 'Payment failed') { %>
+                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateInvoice(this)" data-order='<%= JSON.stringify(order) %>'>
+                    <i class="fas fa-file-invoice"></i> Download Invoice
+                  </button>
+                  <% } %>
+                </div>
+              </div>
+              <div class="order-address">
+                <span class="order-info-label">Delivery Address:</span><br>
+                <span class="order-info-value">
+                  <%= order.address_id ? `Address type: ${order.address_id.address_type}, ${order.address_id.city}, ${order.address_id.district}, ${order.address_id.state}, ${order.address_id.country}, ${order.address_id.pin_code}, ${user.phone_no}` : 'Not Available' %>
+                </span>
+              </div>
+            </div>
+            <div id="products-<%= order._id %>" style="display: none;">
+              <% order.products.forEach(product => { %>
+              <!-- Product Item -->
+              <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
+                <div class="row g-0 align-items-center">
+
+                  <!-- Product Image -->
+                  <div class="col-md-2 text-center p-2">
+                    <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
+                    <% let imageUrl = variant?.images?.[0]; %>
+                    <% if (imageUrl) { %>
+                    <img src="<%= imageUrl %>" style="max-width: 90px;">
+                    <% } else { %>
+                    <p>No image</p>
+                    <% } %>
+                  </div>
+
+                  <!-- Product Details -->
+                  <div class="col-md-8 p-1">
+                    <div class="product-details">
+                      <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
+                      <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
+                      <div class="d-flex justify-content-between mt-2">
+                        <p class="m-0">Quantity: <%= product.quantity %></p>
+                        <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant.regularPrice %></span> <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
+                        <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
                       </div>
-                      
-                      <!-- Product Details -->
-                      <div class="col-md-8 p-1">
-                        <div class="product-details">
-                          <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
-                          <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
-                          <div class="d-flex justify-content-between mt-2">
-                            <p class="m-0">Quantity: <%= product.quantity %></p>
-                            <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant.regularPrice %></span> <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
-                            <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <!-- Order Status -->
-                      <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
-                        <!-- Status Display -->
-                        <p2 class="m-0 mb-4 
+                    </div>
+                  </div>
+
+                  <!-- Order Status -->
+                  <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
+                    <!-- Status Display -->
+                    <p2 class="m-0 mb-4 
                           <% if (product.status === 'pending') { %> yellow-p <% } %>
                           <% if (product.status === 'processing') { %> blue-p <% } %>
                           <% if (product.status === 'shipped') { %> pink-p <% } %>
@@ -137,61 +135,61 @@
                           <% if (product.status === 'canceled') { %> red-p <% } %>
                           <% if (product.status === 'return_req') { %> yellow-p <% } %>
                           <% if (product.status === 'returned') { %> blue-p <% } %>">
-                          <%= product.status %>
-                        </p2>
-                
-                        <!-- Buttons -->
-                        <% if (product.status === 'delivered') { %>
-                          <!-- Return Button -->
-                          <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Return</button>
-                        <% } else if (product.status === 'processing' || product.status === 'pending') { %>
-                          <!-- Cancel Button -->
-                          <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>"  data-variant-id="<%= product.variant_id %>"  data-quantity="<%= product.quantity %>">Cancel</button>
-                        <% } %>
-                      </div>
-                    </div>
+                      <%= product.status %>
+                    </p2>
+
+                    <!-- Buttons -->
+                    <% if (product.status === 'delivered') { %>
+                    <!-- Return Button -->
+                    <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Return</button>
+                    <% } else if (product.status === 'processing' || product.status === 'pending') { %>
+                    <!-- Cancel Button -->
+                    <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Cancel</button>
+                    <% } %>
                   </div>
-                <% }); %>
                 </div>
               </div>
-            <% }); %>
-            <div class="order-pagination-container">
-              <% if (totalPages > 1) { %>
-                <nav aria-label="Page navigation">
-                  <ul class="pagination">
-                    <% if (currentPage > 1) { %>
-                      <li class="page-item">
-                        <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo;</a>
-                      </li>
-                    <% } %>
-            
-                    <% for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
-                      <li class="page-item <%= i === currentPage ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %>"><%= i %></a>
-                      </li>
-                    <% } %>
-            
-                    <% if (currentPage < totalPages) { %>
-                      <li class="page-item">
-                        <a class="page-link" href="?page=<%= currentPage + 1 %>">&raquo;</a>
-                      </li>
-                    <% } %>
-                  </ul>
-                </nav>
-              <% } %>
+              <% }); %>
             </div>
+          </div>
+          <% }); %>
+          <div class="order-pagination-container">
+            <% if (totalPages > 1) { %>
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                <% if (currentPage > 1) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>">&laquo;</a>
+                </li>
+                <% } %>
+
+                <% for (let i = Math.max(1, currentPage - 1); i <= Math.min(totalPages, currentPage + 1); i++) { %>
+                <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                  <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                </li>
+                <% } %>
+
+                <% if (currentPage < totalPages) { %>
+                <li class="page-item">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>">&raquo;</a>
+                </li>
+                <% } %>
+              </ul>
+            </nav>
+            <% } %>
+          </div>
 
           <% } else { %>
-            <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
-              <a href="/home">
-                <img src="/assets/logo/no-orders.png" alt="Empty Cart Image" class="empty-cart-image" />
-              </a>
-              <h3>You have no orders</h3>
-              <p>Explore our collection and place your first order today!</p>
-              <a href="/home" class="large-button-main">Start Shopping</a>
-            </div>  
+          <div class="empty-cart-section d-flex flex-column justify-content-center align-items-center">
+            <a href="/home">
+              <img src="/assets/logo/no-orders.png" alt="Empty Cart Image" class="empty-cart-image" />
+            </a>
+            <h3>You have no orders</h3>
+            <p>Explore our collection and place your first order today!</p>
+            <a href="/home" class="large-button-main">Start Shopping</a>
+          </div>
           <% } %>
-             
+
 
         </div>
       </div>
@@ -211,12 +209,19 @@
   </div>
 </div>
 
+
+
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
+
+
 <%- include('partials/footerforhome') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-  const toastSuccess = (message) => {
+  document.addEventListener("DOMContentLoaded", function() {
+    const toastSuccess = (message) => {
       iziToast.success({
         message: message,
         backgroundColor: '#0e932d',
@@ -265,6 +270,18 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     };
 
+    let preloaderTimeout;
+
+    window.onload = function() {
+      clearTimeout(preloaderTimeout);
+      document.getElementById("preloader").style.display = "none";
+      window.scrollTo(0, 0);
+    };
+
+    preloaderTimeout = setTimeout(function() {
+      document.getElementById("preloader").style.display = "flex";
+    }, 100);
+
     const popup = document.getElementById('customPopup');
     const popupTitle = document.getElementById('popupTitle');
     const popupText = document.getElementById('popupText');
@@ -277,352 +294,392 @@ document.addEventListener("DOMContentLoaded", function () {
     let buttonElement = null;
 
     const showPopup = (event, type) => {
-        const button = event.target;
-        orderId = button.getAttribute('data-order-id');
-        productId = button.getAttribute('data-product-id');
-        variantId = button.getAttribute('data-variant-id');
-        quantity = button.getAttribute('data-quantity');
-        actionType = type;
-        buttonElement = button;
+      const button = event.target;
+      orderId = button.getAttribute('data-order-id');
+      productId = button.getAttribute('data-product-id');
+      variantId = button.getAttribute('data-variant-id');
+      quantity = button.getAttribute('data-quantity');
+      actionType = type;
+      buttonElement = button;
 
-        popupTitle.textContent = "Are you sure?";
-        popupText.textContent = actionType === 'cancel'
-        ? 'Do you want to cancel this item?'
-        : 'Do you want to return this item?';
+      popupTitle.textContent = "Are you sure?";
+      popupText.textContent = actionType === 'cancel' ?
+        'Do you want to cancel this item?' :
+        'Do you want to return this item?';
 
-        confirmButton.textContent = actionType === 'cancel'
-        ? 'Yes, cancel it!'
-        : 'Yes, return it!';
+      confirmButton.textContent = actionType === 'cancel' ?
+        'Yes, cancel it!' :
+        'Yes, return it!';
 
-        popup.classList.remove("hidden");
-        popup.style.display = 'block';
+      popup.classList.remove("hidden");
+      popup.style.display = 'block';
     };
 
     const hidePopup = () => {
-        popup.classList.add("hidden");
-        popup.style.display = 'none';
+      popup.classList.add("hidden");
+      popup.style.display = 'none';
     };
 
     confirmButton.addEventListener('click', () => {
-        if (productId) {
-            const endpoint = actionType === 'cancel' ? '/cancel-order' : '/return-order';
-            fetch(endpoint, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ orderId, productId, variantId, quantity }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const statusText = actionType === 'cancel' ? 'canceled' : 'return_req';
-                    const statusClass = actionType === 'cancel' ? 'red-p' : 'yellow-p';
-                    const statusElement = buttonElement.closest('.col-md-2').querySelector('p2');
-                    statusElement.textContent = statusText;
-                    statusElement.className = `${statusClass} m-0 mb-4`;
-                    buttonElement.remove();
-                    toastSuccess(`Order successfully ${actionType}ed`)
-                } else {
-                  toastError(data.message || `Failed to ${actionType} the order.`)
-                }
-            })
-            .catch(error => {
-                toastWarning(`An error occurred while ${actionType}ing the order.`)
-            });
-        }
-        hidePopup();
+      if (productId) {
+        const endpoint = actionType === 'cancel' ? '/cancel-order' : '/return-order';
+        fetch(endpoint, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              orderId,
+              productId,
+              variantId,
+              quantity
+            }),
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              const statusText = actionType === 'cancel' ? 'canceled' : 'return_req';
+              const statusClass = actionType === 'cancel' ? 'red-p' : 'yellow-p';
+              const statusElement = buttonElement.closest('.col-md-2').querySelector('p2');
+              statusElement.textContent = statusText;
+              statusElement.className = `${statusClass} m-0 mb-4`;
+              buttonElement.remove();
+              toastSuccess(`Order successfully ${actionType}ed`)
+            } else {
+              toastError(data.message || `Failed to ${actionType} the order.`)
+            }
+          })
+          .catch(error => {
+            toastWarning(`An error occurred while ${actionType}ing the order.`)
+          });
+      }
+      hidePopup();
     });
 
     cancelButton.addEventListener('click', hidePopup);
 
     document.querySelectorAll('.cancel-btn').forEach(button => {
-        button.addEventListener('click', (event) => showPopup(event, 'cancel'));
+      button.addEventListener('click', (event) => showPopup(event, 'cancel'));
     });
 
     document.querySelectorAll('.return-btn').forEach(button => {
-        button.addEventListener('click', (event) => showPopup(event, 'return'));
+      button.addEventListener('click', (event) => showPopup(event, 'return'));
     });
 
     document.querySelectorAll('.product-image, .product-title').forEach(element => {
-    element.addEventListener('click', (event) => {
-      const orderId = element.getAttribute('data-order-id');
-      const productId = element.getAttribute('data-product-id');
-      const variantId = element.getAttribute('data-variant-id');
-      const addressId = element.getAttribute('data-address-id');
-      window.location.href = `/product-details/${orderId}/${productId}/${variantId}/${addressId}`;
-      event.stopPropagation(); 
+      element.addEventListener('click', (event) => {
+        const orderId = element.getAttribute('data-order-id');
+        const productId = element.getAttribute('data-product-id');
+        const variantId = element.getAttribute('data-variant-id');
+        const addressId = element.getAttribute('data-address-id');
+        window.location.href = `/product-details/${orderId}/${productId}/${variantId}/${addressId}`;
+        event.stopPropagation();
+      });
     });
-  });
 
-  const payButtons = document.querySelectorAll(".pay-btn-order-page");
+    const payButtons = document.querySelectorAll(".pay-btn-order-page");
 
-  payButtons.forEach(button => {
-    button.addEventListener("click", async (e) => {
-      e.preventDefault();
-      const orderId = button.getAttribute("data-order-id");
-      console.log("orderId", orderId);
+    payButtons.forEach(button => {
+      button.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const orderId = button.getAttribute("data-order-id");
+        console.log("orderId", orderId);
 
-      try {
-        const response = await fetch("/payment-failed-retry", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ orderId }),
-        });
-
-        const data = await response.json();
-        
-        if (data.success) {
-          const { key, order } = data;
-          
-          const options = {
-            key: key,
-            amount: order.amount,
-            currency: "INR",
-            order_id: order.id,
-            name: "Glowly.com",
-            description: "Payment retry for order",
-            handler: async function (response) {
-              try {
-                const verifyResponse = await fetch("/verify-razorpay-payment", {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    razorpay_payment_id: response.razorpay_payment_id,
-                    razorpay_order_id: response.razorpay_order_id,
-                    razorpay_signature: response.razorpay_signature,
-                    order_id: order.orderId
-                  }),
-                });
-
-                const verifyData = await verifyResponse.json();
-                if (verifyData.success) {
-                  toastSuccess("Payment successful!");
-                  setTimeout(() => {
-                    window.location.reload();
-                  }, 1500);
-                } else {
-                  toastError(verifyData.message || "Payment verification failed");
-                }
-              } catch (error) {
-                console.error("Payment verification error:", error);
-                toastError("An error occurred during payment verification");
-              }
+        try {
+          const response = await fetch("/payment-failed-retry", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-            prefill: {
-              name: "<%= user.name %>",
-              email: "<%= user.email %>",
-              contact: "<%= user.mobile %>"
-            },
-            theme: {
-              color: "#ff00b3"
-            },
-            modal: {
-              ondismiss: function() {
-                toastInfo("Payment cancelled. You can try again later.");
-              }
-            }
-          };
-
-          const rzp = new Razorpay(options);
-          
-          rzp.on("payment.failed", function(response) {
-            console.error("Payment failed:", response.error);
-            toastError("Payment failed. Please try again.");
+            body: JSON.stringify({
+              orderId
+            }),
           });
 
-          rzp.open();
-        } else {
-          toastError(data.message || "Failed to initiate payment")
+          const data = await response.json();
+
+          if (data.success) {
+            const {
+              key,
+              order
+            } = data;
+
+            const options = {
+              key: key,
+              amount: order.amount,
+              currency: "INR",
+              order_id: order.id,
+              name: "Glowly.com",
+              description: "Payment retry for order",
+              handler: async function(response) {
+                try {
+                  const verifyResponse = await fetch("/verify-razorpay-payment", {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                      razorpay_payment_id: response.razorpay_payment_id,
+                      razorpay_order_id: response.razorpay_order_id,
+                      razorpay_signature: response.razorpay_signature,
+                      order_id: order.orderId
+                    }),
+                  });
+
+                  const verifyData = await verifyResponse.json();
+                  if (verifyData.success) {
+                    toastSuccess("Payment successful!");
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 1500);
+                  } else {
+                    toastError(verifyData.message || "Payment verification failed");
+                  }
+                } catch (error) {
+                  console.error("Payment verification error:", error);
+                  toastError("An error occurred during payment verification");
+                }
+              },
+              prefill: {
+                name: "<%= user.name %>",
+                email: "<%= user.email %>",
+                contact: "<%= user.mobile %>"
+              },
+              theme: {
+                color: "#ff00b3"
+              },
+              modal: {
+                ondismiss: function() {
+                  toastInfo("Payment cancelled. You can try again later.");
+                }
+              }
+            };
+
+            const rzp = new Razorpay(options);
+
+            rzp.on("payment.failed", function(response) {
+              console.error("Payment failed:", response.error);
+              toastError("Payment failed. Please try again.");
+            });
+
+            rzp.open();
+          } else {
+            toastError(data.message || "Failed to initiate payment")
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          toastError("An error occurred while processing your request")
         }
-      } catch (error) {
-        console.error("Error:", error);
-        toastError("An error occurred while processing your request")
-      }
+      });
     });
   });
-});
 
-function toggleOrderProducts(orderId, headerElement) {
-  const orderBox = headerElement.closest('.order-box');
-  const productsDiv = document.getElementById('products-' + orderId);
-  const isExpanded = orderBox.getAttribute('data-expanded') === 'true';
-  
-  orderBox.setAttribute('data-expanded', !isExpanded);
-  productsDiv.style.display = isExpanded ? 'none' : 'block';
-}
+  function toggleOrderProducts(orderId, headerElement) {
+    const orderBox = headerElement.closest('.order-box');
+    const productsDiv = document.getElementById('products-' + orderId);
+    const isExpanded = orderBox.getAttribute('data-expanded') === 'true';
 
-function generateInvoice(button) {
+    orderBox.setAttribute('data-expanded', !isExpanded);
+    productsDiv.style.display = isExpanded ? 'none' : 'block';
+  }
+
+  function generateInvoice(button) {
     try {
-        const orderData = JSON.parse(button.getAttribute('data-order'));
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+      const orderData = JSON.parse(button.getAttribute('data-order'));
+      const {
+        jsPDF
+      } = window.jspdf;
+      const doc = new jsPDF();
 
-        const companyInfo = {
-            name: 'Glowly.com',
-            address: '123 Beauty Street, Fashion District',
-            city: 'Kochi, Kerala',
-            pin: '682001',
-            phone: '+91 484-123-4567',
-            email: 'support@glowly.com',
-            website: 'www.glowly.com',
-            gst: 'GSTIN: 32AABCG1234A1Z5'
-        };
+      const companyInfo = {
+        name: 'Glowly.com',
+        address: '123 Beauty Street, Fashion District',
+        city: 'Kochi, Kerala',
+        pin: '682001',
+        phone: '+91 484-123-4567',
+        email: 'support@glowly.com',
+        website: 'www.glowly.com',
+        gst: 'GSTIN: 32AABCG1234A1Z5'
+      };
 
-        doc.setFont('helvetica', 'normal');
+      doc.setFont('helvetica', 'normal');
 
-        doc.setFillColor(232, 0, 113);
-        doc.rect(0, 0, 210, 30, 'F');  
+      doc.setFillColor(232, 0, 113);
+      doc.rect(0, 0, 210, 30, 'F');
 
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);  
-        doc.setFont('helvetica', 'bold');
-        doc.text(companyInfo.name, 20, 20); 
-        
-        doc.setFontSize(12);
-        doc.text('TAX INVOICE', 150, 20); 
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text(companyInfo.name, 20, 20);
 
-        doc.setTextColor(0, 0, 0);
-        doc.setFontSize(9); 
-        doc.setFont('helvetica', 'normal');
-        doc.text([ 
-            companyInfo.address,
-            companyInfo.city + ' - ' + companyInfo.pin,
-            'Phone: ' + companyInfo.phone,
-            'Email: ' + companyInfo.email,
-            'Website: ' + companyInfo.website,
-            companyInfo.gst
-        ], 20, 40);
+      doc.setFontSize(12);
+      doc.text('TAX INVOICE', 150, 20);
 
-        doc.setFont('helvetica', 'bold');
-        const invoiceDetails = [
-            'Invoice No: INV-' + orderData._id.slice(-8).toUpperCase(),
-            'Order ID: #' + orderData._id,
-            'Date: ' + new Date(orderData.createdAt).toLocaleDateString('en-IN'),
-            'Payment Method: ' + (orderData.payment_method || 'N/A'),
-            'Payment Status: ' + (orderData.payment_status || 'N/A')
-        ];
-        doc.text(invoiceDetails, 120, 40);
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text([
+        companyInfo.address,
+        companyInfo.city + ' - ' + companyInfo.pin,
+        'Phone: ' + companyInfo.phone,
+        'Email: ' + companyInfo.email,
+        'Website: ' + companyInfo.website,
+        companyInfo.gst
+      ], 20, 40);
 
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('BILLING DETAILS', 20, 75);  
-        
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        const address = orderData.address_id || {};
-        const addressLines = [];
+      doc.setFont('helvetica', 'bold');
+      const invoiceDetails = [
+        'Invoice No: INV-' + orderData._id.slice(-8).toUpperCase(),
+        'Order ID: #' + orderData._id,
+        'Date: ' + new Date(orderData.createdAt).toLocaleDateString('en-IN'),
+        'Payment Method: ' + (orderData.payment_method || 'N/A'),
+        'Payment Status: ' + (orderData.payment_status || 'N/A')
+      ];
+      doc.text(invoiceDetails, 120, 40);
 
-        if (address.address_type) addressLines.push('Address Type: ' + address.address_type);
-        const cityState = [address.city, address.district, address.state, address.country]
-            .filter(item => item)
-            .join(', ');
-        if (cityState) addressLines.push(cityState);
-        if (address.pin_code) addressLines.push('PIN: ' + address.pin_code);
-        if (address.phone_no) addressLines.push('Phone: ' + address.phone_no);
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('BILLING DETAILS', 20, 75);
 
-        doc.text(addressLines, 20, 85);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      const address = orderData.address_id || {};
+      const addressLines = [];
 
-        const tableData = [];
-        let subtotal = 0;
+      if (address.address_type) addressLines.push('Address Type: ' + address.address_type);
+      const cityState = [address.city, address.district, address.state, address.country]
+        .filter(item => item)
+        .join(', ');
+      if (cityState) addressLines.push(cityState);
+      if (address.pin_code) addressLines.push('PIN: ' + address.pin_code);
+      if (address.phone_no) addressLines.push('Phone: ' + address.phone_no);
 
-        if (Array.isArray(orderData.products)) {
-            orderData.products.forEach(product => {
-                if (product && product.product_id) {
-                    const unitPrice = Math.round((product.total_amount / product.quantity) * 100) / 100;
-                    const discountPrice = parseFloat(product.amount_after_coupon / product.quantity).toFixed(2);
-                    subtotal += parseFloat(product.total_amount);
-                    tableData.push([
-                        product.product_id.title || 'N/A',
-                        product.quantity || '0',
-                        'INR ' + unitPrice.toLocaleString('en-IN', { maximumFractionDigits: 2 }),
-                        'INR ' + parseFloat(product.amount_after_coupon).toLocaleString('en-IN', { maximumFractionDigits: 2 }),
-                        'INR ' + parseFloat(product.total_amount).toLocaleString('en-IN', { maximumFractionDigits: 2 })
-                    ]);
-                }
-            });
-        }
+      doc.text(addressLines, 20, 85);
 
-        doc.autoTable({
-            startY: 100,  
-            margin: { left: 10, right: 10 }, 
-            head: [['Product Description', 'Qty', 'Unit Price','Discount Price', 'Amount']],
-            body: tableData,
-            theme: 'grid',
-            styles: {
-                fontSize: 9,
-                cellPadding: 4,
-                lineWidth: 0.1
-            },
-            headStyles: {
-                fillColor: [232, 0, 113],
-                textColor: 255,
-                fontSize: 10,
-                fontStyle: 'bold',
-                halign: 'center'
-            },
-            columnStyles: {
-                0: { halign: 'center' },
-                1: { halign: 'center' },
-                2: { halign: 'right' },
-                3: { halign: 'right' },
-                4: { halign: 'right' }
-            }
+      const tableData = [];
+      let subtotal = 0;
+
+      if (Array.isArray(orderData.products)) {
+        orderData.products.forEach(product => {
+          if (product && product.product_id) {
+            const unitPrice = Math.round((product.total_amount / product.quantity) * 100) / 100;
+            const discountPrice = parseFloat(product.amount_after_coupon / product.quantity).toFixed(2);
+            subtotal += parseFloat(product.total_amount);
+            tableData.push([
+              product.product_id.title || 'N/A',
+              product.quantity || '0',
+              'INR ' + unitPrice.toLocaleString('en-IN', {
+                maximumFractionDigits: 2
+              }),
+              'INR ' + parseFloat(product.amount_after_coupon).toLocaleString('en-IN', {
+                maximumFractionDigits: 2
+              }),
+              'INR ' + parseFloat(product.total_amount).toLocaleString('en-IN', {
+                maximumFractionDigits: 2
+              })
+            ]);
+          }
         });
+      }
 
-        const tableEndY = doc.lastAutoTable.finalY;  
+      doc.autoTable({
+        startY: 100,
+        margin: {
+          left: 10,
+          right: 10
+        },
+        head: [
+          ['Product Description', 'Qty', 'Unit Price', 'Discount Price', 'Amount']
+        ],
+        body: tableData,
+        theme: 'grid',
+        styles: {
+          fontSize: 9,
+          cellPadding: 4,
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [232, 0, 113],
+          textColor: 255,
+          fontSize: 10,
+          fontStyle: 'bold',
+          halign: 'center'
+        },
+        columnStyles: {
+          0: {
+            halign: 'center'
+          },
+          1: {
+            halign: 'center'
+          },
+          2: {
+            halign: 'right'
+          },
+          3: {
+            halign: 'right'
+          },
+          4: {
+            halign: 'right'
+          }
+        }
+      });
 
-        const finalY = tableEndY + 10;
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'bold');
-        
-        const tax = subtotal * 0.18;
-        const total = parseFloat(orderData.total_order_amount);
+      const tableEndY = doc.lastAutoTable.finalY;
 
-        doc.text('Sub Total:', 130, finalY);
-        doc.text('GST (18%):', 130, finalY + 7);
-        doc.text('Total Amount:', 130, finalY + 14);
+      const finalY = tableEndY + 10;
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
 
-        doc.text('INR ' + subtotal.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY, { align: 'right' });
-        doc.text('INR ' + tax.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY + 7, { align: 'right' });
-        doc.setTextColor(232, 0, 113);
-        doc.text('INR ' + total.toLocaleString('en-IN', { maximumFractionDigits: 2 }), 190, finalY + 14, { align: 'right' });
+      const tax = subtotal * 0.18;
+      const total = parseFloat(orderData.total_order_amount);
 
-        doc.setFontSize(8);
-        doc.setTextColor(128, 128, 128);
-        doc.setFont('helvetica', 'normal');
-        
-        const terms = [
-            'Terms & Conditions:',
-            '1. This is a computer-generated invoice and does not require a physical signature.',
-            '2. All prices are inclusive of GST where applicable.',
-            '3. For return policy and other details, please visit www.glowly.com/terms',
-            '4. For support, contact us at support@glowly.com'
-        ];
+      doc.text('Sub Total:', 130, finalY);
+      doc.text('GST (18%):', 130, finalY + 7);
+      doc.text('Total Amount:', 130, finalY + 14);
 
-        const termsStartY = doc.internal.pageSize.height - 40;
-        doc.text(terms, 20, termsStartY);
+      doc.text('INR ' + subtotal.toLocaleString('en-IN', {
+        maximumFractionDigits: 2
+      }), 190, finalY, {
+        align: 'right'
+      });
+      doc.text('INR ' + tax.toLocaleString('en-IN', {
+        maximumFractionDigits: 2
+      }), 190, finalY + 7, {
+        align: 'right'
+      });
+      doc.setTextColor(232, 0, 113);
+      doc.text('INR ' + total.toLocaleString('en-IN', {
+        maximumFractionDigits: 2
+      }), 190, finalY + 14, {
+        align: 'right'
+      });
 
-        doc.setDrawColor(232, 0, 113);
-        doc.setLineWidth(0.5);
-        doc.line(20, doc.internal.pageSize.height - 20, 190, doc.internal.pageSize.height - 20);
+      doc.setFontSize(8);
+      doc.setTextColor(128, 128, 128);
+      doc.setFont('helvetica', 'normal');
 
-        doc.save(`Glowly_Invoice_${orderData._id || 'order'}.pdf`);
+      const terms = [
+        'Terms & Conditions:',
+        '1. This is a computer-generated invoice and does not require a physical signature.',
+        '2. All prices are inclusive of GST where applicable.',
+        '3. For return policy and other details, please visit www.glowly.com/terms',
+        '4. For support, contact us at support@glowly.com'
+      ];
+
+      const termsStartY = doc.internal.pageSize.height - 40;
+      doc.text(terms, 20, termsStartY);
+
+      doc.setDrawColor(232, 0, 113);
+      doc.setLineWidth(0.5);
+      doc.line(20, doc.internal.pageSize.height - 20, 190, doc.internal.pageSize.height - 20);
+
+      doc.save(`Glowly_Invoice_${orderData._id || 'order'}.pdf`);
 
     } catch (error) {
-        console.error('PDF Generation Error:', error);
-        toastError('Could not generate invoice. Please try again.');
+      console.error('PDF Generation Error:', error);
+      toastError('Could not generate invoice. Please try again.');
     }
-}
-
-
-
-
-
-
+  }
 </script>
+
 </html>

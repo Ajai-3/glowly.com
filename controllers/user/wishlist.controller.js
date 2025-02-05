@@ -10,39 +10,15 @@ import Wishlist from "../../models/wishlist.model.js";
 
 export const renderWishlistPage = async (req, res, next) => {
     try {
-        let { user, wishlist, token, cartCount, cartVariants, categories } = req;
-        // const token = req.cookies.token;
-        // let user = null;
-        // let cart;
-        // let wishlist;
-        // let cartVariants = [];
+        let { user, wishlist, token, brands, cartCount, cartVariants, categories } = req;
+
         let wishlistProducts = [];
         const ITEMS_PER_PAGE = 3;
         const page = parseInt(req.query.page) || 1; 
 
-        // if (token) {
-        //     const decoded = jwt.decode(token);
-        //     user = decoded;
-        //     cart = await Cart.findOne({ user_id: user.userId });
-            // wishlist = await Wishlist.findOne({ user_id: user.userId });
-        // const cartCount = cart?.products?.length || 0;
-        // }
-        // const categories = await Category.find({ isListed: true }).populate({
-        //     path: 'subcategories',
-        //     match: { isListed: true },
-        // });
-
         if (!token) {
             return res.redirect('/home');
         }
-
-        
-
-        // if (cart && cart.products.length > 0) {
-        //     cartVariants = cart.products
-        //         .filter(product => product.variant_id)
-        //         .map(product => product.variant_id.toString());
-        // }
 
         if (wishlist && wishlist.products.length > 0) {
             const totalItems = wishlist.products.length;
@@ -82,6 +58,7 @@ export const renderWishlistPage = async (req, res, next) => {
             name: user ? user.name : "",
             user: user,
             categories,
+            brands,
             cartVariants,
             wishlistProducts,
             currentPage: page,
