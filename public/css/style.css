@@ -2049,7 +2049,7 @@ border: 1px solid transparent;
     background-color: var(--bg-color-7);
     /* min-width: 280px; */
 }
-#phone_no {
+.phone_no {
   background-color: var(--bg-color-7) !important;
 }
 
