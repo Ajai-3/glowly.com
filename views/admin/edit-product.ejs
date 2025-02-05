@@ -114,10 +114,11 @@
                 <% }) %>
             </div>
             <label for="variantImages<%= index %>">Images</label>
-            <input type="file" name="variants[<%= index %>][images][]" id="variantImages<%= index %>" multiple>
+            <input type="file" class="mb-2" name="variants[<%= index %>][images][]" id="variantImages<%= index %>" multiple>
           </div>
         </div>
         <% }) %>
+        <button class="my-3">Add Varient</button>
       </div>
 
       <button type="submit" class="add-product-btn2 my-3">Update Product</button>

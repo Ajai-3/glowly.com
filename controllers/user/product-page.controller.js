@@ -109,7 +109,7 @@ export const renderShopPage = async (req, res, next) => {
     let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
 
     const page = parseInt(req.query.page) || 1;
-    const limit = 12;
+    const limit = 32;
     const filters = req.query.filters ? JSON.parse(req.query.filters) : {};
     const searchQuery = req.query.search || '';
 

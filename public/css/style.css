@@ -1205,9 +1205,28 @@ input[type="number"]::-webkit-input-placeholder {
 
 
 
-
-/* *************************************************************************************** */
-/* Product Page When The User Click The Product Thsi Page Will Show The Product & Details */
+/* ===================================================================
+/* ===================================================================
+ /* ===================================================================
+  * #Product Page & User Side Pages Styles
+  * #Product Page When The User Click The Product Thsi Page Will Show The Product & Details
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *
+  * - Class Naming Conventions:
+  *    --auth-body        : Body styling for all authentication pages
+  *    --auth-container   : Main content container
+  *    --auth-btn         : Buttons for login and signup actions
+  *    --action-btn       : Buttons for actions like Next, Confirm, Reset, Send OTP
+  *    --social-auth-btn  : Buttons for social media authentication like Google, Facebook
+  * -------------------------------------------------------------------
+  */
 
 .breadcrumb-item + .breadcrumb-item::before {
   content: " > ";
@@ -1226,54 +1245,6 @@ input[type="number"]::-webkit-input-placeholder {
 .breadcrumb .active {
   color: var(--main-color2);
 }
-
-
-
-
-
-/* Category page with filter */
-.product-filter-div {
-  position: -webkit-sticky;
-  position: sticky;
-  top: 90px;
-  z-index: 10;
-  height: 100vh;
-  overflow-y: hidden;
-}
-
-.product-filter-div input[type="checkbox"]:checked + label {
-  color: var(--main-color);
-}
-.product-filter-div input[type="checkbox"]:checked + span {
-  color: var(--main-color);
-}
-
-.product-filter-div input[type="checkbox"]:checked {
-  accent-color: var(--main-color);
-}
-
-.filter-item {
-  cursor: pointer;
-  font-size: var(--font-size-third);
-  background-color: var(--bg-color);
-}
-.filter-header {
-  font-size: var(--font-size-third);
-  padding: 10px;
-}
-.filter-item span {
-  font-size: var(--font-size-second);
-}
-
-.filter-item label {
-  font-size: var(--font-size-third);
-}
-.filter-item span:hover,
-.filter-item label:hover {
-  color: var(--main-color);
-}
-
-
 
 .product-container {
   background-color: var(--bg-color);
@@ -1485,6 +1456,83 @@ border: 1px solid transparent;
 }
 
 
+
+/* ===================================================================
+/* ===================================================================
+ /* ===================================================================
+  * #Shop Page & User Side Pages Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *
+  * - Class Naming Conventions:
+  *    
+  * -------------------------------------------------------------------
+  */
+.product-filter-div {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 90px;
+  z-index: 10;
+  height: 100vh;
+  overflow-y: hidden;
+}
+
+.product-filter-div input[type="checkbox"]:checked + label {
+  color: var(--main-color);
+}
+.product-filter-div input[type="checkbox"]:checked + span {
+  color: var(--main-color);
+}
+
+.product-filter-div input[type="checkbox"]:checked {
+  accent-color: var(--main-color);
+}
+
+.filter-item {
+  cursor: pointer;
+  font-size: var(--font-size-third);
+  background-color: var(--bg-color);
+}
+.filter-header {
+  font-size: var(--font-size-third);
+  padding: 10px;
+}
+.filter-item span {
+  font-size: var(--font-size-second);
+}
+
+.filter-item label {
+  font-size: var(--font-size-third);
+}
+.filter-item span:hover,
+.filter-item label:hover {
+  color: var(--main-color);
+}
+
+.clearFiltersButtonShopePage {
+  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--second-text-color);
+  border-top: 1px solid var(--second-text-color);
+  width: 100%;
+}
+
+.pagination-controls a {
+  color: var(--text-color);
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: var(--font-size-normal);
+  background-color: var(--bg-color);
+}
+.pagination-controls a.active {
+  background-color: var(--main-color);
+}
 
 
 
