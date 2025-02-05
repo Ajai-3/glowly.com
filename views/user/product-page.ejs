@@ -218,7 +218,7 @@
       <% }) %>
     </div>
     <div class="d-flex justify-content-center mt-3">
-      <a href="/shop/<%= product.categoryId._id %>">
+      <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= product.categoryId._id %>%22%5D%7D">
         <button class="main-btn px-4">Load More</button>
       </a>
     </div>

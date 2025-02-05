@@ -51,41 +51,62 @@
                     <li class="dropdown">
                         SHOP BY CATEGORY
                         <div class="dropdown-menu">
-                            <div class="categories-container">
-                              <% categories.forEach(category => { %>
-                                <div class="category-block">
-                                  <!-- Render Category Name -->
-                                  <div class="category-name">
-                                    <a href="/shop/<%= category.id %>">
-                                      <%= category.name %>
-                                    </a>
-                                  </div>
-                          
-                                  <!-- Render Subcategories -->
-                                  <div class="subcategory-list">
-                                    <% category.subcategories.forEach(subcategory => { %>
-                                      <div class="subcategory">
-                                        <a href="/shop/<%= category.id %>%= category.id %>&selectedSubcategory=<%= subcategory.id %>">
-                                          <%= subcategory.name %>
-                                        </a>
-                                      </div>
-                                    <% }) %>
-                                  </div>
+                          <div class="categories-container">
+                            <% categories.forEach((category, index) => { %>
+                              <div class="category-block">
+                                <div class="category-name">
+                                  <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%7D">
+                                    <%= category.name %>
+                                  </a>
                                 </div>
-                              <% }) %>
-                            </div>
+                      
+                                <div class="subcategory-list">
+                                  <% category.subcategories.forEach(subcategory => { %>
+                                    <div class="subcategory">
+                                      <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D">
+                                        <%= subcategory.name %>
+                                      </a>
+                                    </div>
+                                  <% }) %>
+                                </div>
+                              </div>
+                            <% }) %>
                           </div>
+                        </div>
+                      
                         <span class="arrow"><i class="fas fa-caret-down"></i></span>
-                    </li>      
+                      </li>
+                      
+                      
+                           
             
                     <!-- Brands -->
                     <li class="dropdown">
-                        <a href="/shop">BRANDS</a>
-                    </li>
+                        <a href="javascript:void(0)">BRANDS</a>
+                        
+                        <div class="dropdown-menu">
+                          <div class="brands-container">
+                            <% brands.forEach(brand => { %>
+                              <div class="brand-block">
+                                <div class="brand-name">
+                                  <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
+                                    <%= brand.brandName %>
+                                  </a>
+                                </div>
+                              </div>
+                            <% }) %>
+                          </div>
+                        </div>
+                        <span class="arrow"><i class="fas fa-caret-down"></i></span>
+                      </li>
+                      
+                      
             
                     <!-- New Menu -->
                     <li class="dropdown">
-                        <a href="/shop">NEW</a>
+                        <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
+                            NEW
+                          </a>
                     </li>
                 </ul>
             </div>

@@ -170,7 +170,7 @@ a {
     margin: 0;
     padding: 1rem 1rem;
     border-radius: 8px;
-    background-color: var(--bg-color-4);
+    background-color: var(--bg-color);
 }
 
 .search-container input {
