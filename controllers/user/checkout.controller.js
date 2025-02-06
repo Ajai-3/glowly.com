@@ -18,73 +18,39 @@ export const renderCheckoutPage = async (req, res, next) => {
         if (!token) {
             return res.redirect('user/login'); 
         }
-        // const token = req.cookies.token;
-        
-
-        // let user = null;
-        // let cart = null;
-
-        // try {
-        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        //     user = decoded;
-        //     cart = await Cart.findOne({ user_id: user.userId });
-        // } catch (error) {
-        //     if (error.name === 'TokenExpiredError') {
-        //         console.error('JWT expired at:', error.expiredAt);
-        //         return res.redirect('/user/home');
-        //     }
-        //     throw error;
-        // }
-
-        
-        // if (!cart) {
-        //     console.log("No cart found for the user, creating a new one.");
-        //     cart = new Cart({
-        //         user_id: user.userId,
-        //         products: [] 
-        //     }); 
-        // }
-        // const cartCount = cart?.products?.length || 0;
-
-        // const categories = await Category.find({ isListed: true })
-        //     .populate({
-        //         path: 'subcategories',
-        //         match: { isListed: true },
-        //     });
 
         const products = await Product.find({ isDeleted: false });
-        const addresses = await Address.find({ user_id: user.userId, isActive: true  }).limit(3);
-        // const userDetails = await User.findById(user.userId);
+        const addresses = await Address.find({ user_id: user.userId, isActive: true }).limit(3);
 
-    
         const cartProducts = await Promise.all(
-            cart.products
-              .sort((a, b) => new Date(b.added_at) - new Date(a.added_at))
-              .map(async (cartProduct) => {
-                const productDetails = await Product.findById(cartProduct.product_id);
-          
-                if (productDetails) {
-                  const variantDetails = productDetails.variants.find(
-                    (variant) => variant._id.toString() === cartProduct.variant_id.toString()
-                  );
-          
-                  if (variantDetails && variantDetails.stockQuantity > 0 && cartProduct.quantity <= variantDetails.stockQuantity) {
-                    return {
-                      ...cartProduct.toObject(),
-                      product_details: productDetails,
-                      variant: variantDetails
-                    };
-                  }
+        cart.products
+            .sort((a, b) => new Date(b.added_at) - new Date(a.added_at))
+            .map(async (cartProduct) => {
+            const productDetails = await Product.findById(cartProduct.product_id);
+            
+            if (productDetails) {
+                const variantDetails = productDetails.variants.find(
+                (variant) => variant._id.toString() === cartProduct.variant_id.toString() && !variant.isDeleted
+                );
+            
+                if (variantDetails && variantDetails.stockQuantity > 0 && cartProduct.quantity <= variantDetails.stockQuantity) {
+                return {
+                    ...cartProduct.toObject(),
+                    product_details: productDetails,
+                    variant: variantDetails
+                };
                 }
-                return null;
-              })
-          );
-          
-          const validCartProducts = cartProducts.filter(product => product !== null);
+            }
+            return null;
+            })
+        );
+
+        const validCartProducts = cartProducts.filter(product => product !== null);
 
         if (validCartProducts.length === 0) {
-            return res.redirect("/user/my-cart?message=Product+not+found&success=false");  
+        return res.redirect("/user/my-cart?message=Product+not+found&success=false");  
         }
+
 
         return res.render('user/checkout', {
             user: user,
@@ -109,38 +75,9 @@ export const placeOrderWithBuyNow = async (req, res, next) => {
         let { user, cart, cartCount, token, categories } = req;
         const { quantity, productId, variantId } = req.query;
         
-
-        // const token = req.cookies.token;
         if (!token) {
             return res.redirect('user/login'); 
         }
-        // let user = null;
-        // let cart = null;
-
-        
-
-        // try {
-        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        //     user = decoded;
-        //     cart = await Cart.findOne({ user_id: user.userId });
-        // } catch (error) {
-        //     if (error.name === 'TokenExpiredError') {
-        //         console.error('JWT expired at:', error.expiredAt);
-        //         return res.redirect('/user/home');
-        //     }
-        //     throw error;
-        // }
-
-        
-
-        // const cartCount = cart?.products?.length || 0;
-
-        // const categories = await Category.find({ isListed: true })
-        //     .populate({
-        //         path: 'subcategories',
-        //         match: { isListed: true },
-        //     });
-
 
 
         if (!cart) {
@@ -262,11 +199,10 @@ export const placeOrder = async (req, res) => {
             total_order_amount: grandTotal,
             payment_method,
             coupon_applied: coupon || false,
-            payment_status: payment_method === 'razorpay' ? 'Payment failed' : (payment_status || 'Payment pending'),
+            payment_status: payment_method === 'razorpay' ? 'Payment failed' : (payment_status || 'Payment completed'),
         });
 
         if (payment_method === 'wallet') {
-            // Wallet Payment Logic
             const wallet = await Wallet.findOne({ user_id: user.userId });
             if (!wallet || wallet.balance < grandTotal) {
                 return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
@@ -292,10 +228,6 @@ export const placeOrder = async (req, res) => {
                 processOrder(cart, user.userId)
               ]);
 
-              
-            // await order.save();
-            // await updateCouponUsage(coupon, user.userId);
-            // await processOrder(cart, user.userId);
 
             return res.status(201).json({ success: true, message: "Order placed successfully using wallet!", order });
         } else if (payment_method === 'razorpay') {
@@ -313,9 +245,6 @@ export const placeOrder = async (req, res) => {
                     order.save(),
                     updateCouponUsage(coupon, user.userId),
                   ]);
-                  
-                // await order.save();
-                // await updateCouponUsage(coupon, user.userId);
                 const purchasedProductIds = [];
 
                 for (let cartItem of cart) {
@@ -353,11 +282,6 @@ export const placeOrder = async (req, res) => {
                 updateCouponUsage(coupon, user.userId),
                 processOrder(cart, user.userId)
               ]);
-              
-
-            // await order.save();
-            // await updateCouponUsage(coupon, user.userId);
-            // await processOrder(cart, user.userId);
 
             return res.status(201).json({ success: true, message: "Order placed successfully with cash on delivery!", order });
         } else {
@@ -432,7 +356,7 @@ export const paymentRetry = async (req, res, next) => {
       }
   
       // Create Razorpay order using the configured instance
-      const amount = Math.round(order.total_order_amount * 100); // Ensure amount is in paise and rounded
+      const amount = Math.round(order.total_order_amount * 100); 
       console.log("[PaymentRetry] Creating Razorpay order with amount:", amount);
 
       const options = {
@@ -501,10 +425,6 @@ export const verifyRazorpayPayment = async (req, res) => {
                 updateCouponUsage(order.coupon, order.user_id),
                 processOrder(order.products, order.user_id)
               ]);
-              
-            // await order.save();
-            // await updateCouponUsage(order.coupon, order.user_id);
-            // await processOrder(order.products, order.user_id);
 
             return res.status(200).json({ success: true, message: "Payment verified and order placed successfully!" });
         } else {
@@ -588,20 +508,9 @@ export const verifyCoupon = async (req, res) => {
         const { coupon, grandTotal } = req.body;
         let { user, cart, cartCount, token, categories } = req;
 
-        // const token = req.cookies.token;
-        // let user;
-
         if (!token) {
             return res.status(401).json({ success: false, message: "User not authenticated." });
         }
-
-        // try {
-        //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        //     user = decoded;
-        // } catch (error) {
-        //     console.error("Invalid token:", error);
-        //     return res.status(401).json({ success: false, message: "Invalid token." });
-        // }
 
         const getCoupon = await Coupon.findOne({ code: coupon, isDelete: false }) 
 
@@ -637,275 +546,3 @@ export const verifyCoupon = async (req, res) => {
 }
 
 
-
-
-
-
-// Place Order
-// export const placeOrder = async (req, res) => {
-//     try {
-//         let { user,  cartCount, token, categories } = req;
-//         const { address_id, cart, grandTotal, payment_method, coupon } = req.body;
-//         // const token = req.cookies.token;
-
-//         if (!token) {
-//             return res.status(401).json({ success: false, message: "User not authenticated." });
-//         }
-
-//         // let user;
-//         // try {
-//         //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//         //     user = decoded;
-//         // } catch (error) {
-//         //     console.error("Invalid token:", error);
-//         //     return res.status(401).json({ success: false, message: "Invalid token." });
-//         // }
-
-//         if (!address_id || !cart || !payment_method || typeof grandTotal !== 'number') {
-//             return res.status(400).json({ success: false, message: "Missing required fields." });
-//         }
-
-//         const userData = await User.findById(user.userId);
-//         if (!userData) {
-//             return res.status(404).json({ success: false, message: "User not found." });
-//         }
-
-//         const address = await Address.findById(address_id);
-//         if (!address) {
-//             return res.status(404).json({ success: false, message: "Address not found." });
-//         }
-
-//         const products = [];
-//         for (let cartItem of cart) {
-//             const product = await Product.findById(cartItem.product_id);
-//             if (!product) {
-//                 return res.status(404).json({ success: false, message: `Product not found` });
-//             }
-
-//             const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
-//             if (!variant || variant.stockQuantity < cartItem.quantity) {
-//                 return res.status(400).json({ success: false, message: `Insufficient stock for variant` });
-//             }
-
-//             products.push({
-//                 product_id: cartItem.product_id,
-//                 variant_id: cartItem.variant_id,
-//                 quantity: cartItem.quantity,
-//                 amount_after_coupon: Math.round(cartItem.totalAmount - cartItem.productAfterCoupon),
-//                 total_amount: cartItem.totalAmount,
-//                 status: 'pending',
-//             });
-//         }
-
-//         const order = new Order({
-//             user_id: user.userId,
-//             address_id: address._id,
-//             products,
-//             total_order_amount: grandTotal,
-//             payment_method,
-//             coupon_applied: coupon || false,
-//         });
-
-
-//         if (payment_method === 'wallet') {
-//             const wallet = await Wallet.findOne({ user_id: user.userId });
-//             if (!wallet || wallet.balance < grandTotal) {
-//                 return res.status(400).json({ success: false, message: "Insufficient wallet balance." });
-//             }
-
-//             wallet.balance -= grandTotal;
-//             await wallet.save();
-
-//             const transaction = new Transaction({
-//                 wallet_id: wallet._id,
-//                 user_id: user.userId,
-//                 amount: grandTotal,
-//                 type: 'debited',
-//                 description :"order placed"
-//             });
-//             await transaction.save();
-
-//             order.payment_status = "completed";
-//             await order.save();
-
-//             await updateCouponUsage(coupon, user.userId)
-//             await processOrder(cart, user.userId);
-
-//             return res.status(201).json({ success: true, message: "Order placed successfully using wallet!", order });
-//         } else if (payment_method === 'razorpay') {
-//             const options = {
-//                 amount: grandTotal * 100,
-//                 currency: "INR",
-//                 receipt: `receipt_${Date.now()}`,
-//             };
-//             const orderData = await razorpay.orders.create(options);
-
-//             order.payment_status = 'completed';
-//             await order.save();
-//             await updateCouponUsage(coupon, user.userId)
-//             await processOrder(cart, user.userId);
-
-//             return res.status(201).json({
-//                 success: true,
-//                 message: "Razorpay order created successfully!",
-//                 key: process.env.RAZORPAY_KEY_ID, 
-//                 order: orderData,
-//             });
-            
-            
-//         } else if (payment_method === 'cash') {
-            
-//             order.payment_status = 'pending';
-//             await order.save();
-//             await updateCouponUsage(coupon, user.userId)
-//             await processOrder(cart, user.userId);
-
-//             return res.status(201).json({ success: true, message: "Order placed successfully with cash on delivery!", order });
-//         } else {
-//             return res.status(400).json({ success: false, message: "Invalid payment method." });
-//         }
-//     } catch (error) {
-//         console.error("Error in place order:", error);
-//         return res.status(500).json({ success: false, message: "Internal server error." });
-//     }
-// };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export const verifyRazorPayOrderPayment = async (req, res) => {
-//     try {
-//         const { razorpay_order_id, razorpay_payment_id, razorpay_signature, address_id, cart, grandTotal, payment_method, coupon } = req.body;
-
-//         console.log("Request Body:", req.body);
-
-//         const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
-//         hmac.update(`${razorpay_order_id}|${razorpay_payment_id}`);
-//         const generatedSignature = hmac.digest('hex');
-
-//         if (generatedSignature === razorpay_signature) {
-//             console.log("Signature verification successful");
-
-//             const token = req.cookies.token;
-//             if (!token) {
-//                 console.log("No token found");
-//                 return res.status(401).json({ success: false, message: "User not authenticated." });
-//             }
-
-//             let user;
-//             try {
-//                 const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-//                 user = decoded;
-//                 console.log("User decoded from token:", user);
-//             } catch (error) {
-//                 console.error("Invalid token:", error);
-//                 return res.status(401).json({ success: false, message: "Invalid token." });
-//             }
-
-//             if (!address_id || !cart || !payment_method || typeof grandTotal !== 'number') {
-//                 console.log("Missing required fields");
-//                 return res.status(400).json({ success: false, message: "Missing required fields." });
-//             }
-
-//             const userData = await User.findById(user.userId);
-//             if (!userData) {
-//                 console.log("User not found");
-//                 return res.status(404).json({ success: false, message: "User not found." });
-//             }
-
-//             const address = await Address.findById(address_id);
-//             if (!address) {
-//                 console.log("Address not found");
-//                 return res.status(404).json({ success: false, message: "Address not found." });
-//             }
-
-//             const products = [];
-//             for (let cartItem of cart) {
-//                 const product = await Product.findById(cartItem.product_id);
-//                 if (!product) {
-//                     console.log(`Product not found: ${cartItem.product_id}`);
-//                     return res.status(404).json({ success: false, message: `Product not found: ${cartItem.product_id}` });
-//                 }
-
-//                 const variant = product.variants.find(v => v._id.toString() === cartItem.variant_id);
-//                 if (!variant || variant.stockQuantity < cartItem.quantity) {
-//                     console.log(`Insufficient stock for variant: ${cartItem.variant_id}`);
-//                     return res.status(400).json({ success: false, message: `Insufficient stock for variant: ${cartItem.variant_id}` });
-//                 }
-
-//                 // Deduct the purchased quantity from the stock
-//                 variant.stockQuantity -= cartItem.quantity;
-//                 await product.save();
-
-//                 products.push({
-//                     product_id: cartItem.product_id,
-//                     variant_id: cartItem.variant_id,
-//                     quantity: cartItem.quantity,
-//                     total_amount: cartItem.totalAmount,
-//                     status: 'pending',
-//                 });
-//             }
-
-//             const order = new Order({
-//                 user_id: user.userId,
-//                 address_id: address._id,
-//                 products,
-//                 total_order_amount: grandTotal,
-//                 payment_method,
-//                 coupon_applied: coupon || false,
-//             });
-
-//             order.payment_status = 'completed';
-//             await order.save();
-//             await updateCouponUsage(coupon, user.userId);
-//             await processOrder(cart, user.userId);
-
-//             return res.status(200).json({
-//                 success: true,
-//                 message: "Payment verified and order processed successfully!",
-//             });
-//         } else {
-//             console.log("Invalid payment signature");
-//             return res.status(400).json({
-//                 success: false,
-//                 message: "Invalid payment signature.",
-//             });
-//         }
-//     } catch (error) {
-//         console.error("Error verifying Razorpay payment:", error);
-//         return res.status(500).send("Error verifying the Razorpay payment.");
-//     }
-// };

@@ -10,32 +10,9 @@ import Subcategory from "../../models/subcategory.model.js";
 export const renderProductPage = async (req, res, next) => {
   try {
     let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
-    // const token = req.cookies.token;
-    // let user = null;
-    // let cart = null;
-    // let wishlist = [];
-    // let cartVariants = [];
 
     const productId = req.params.productId;
     const variantId = req.params.variantId;
-
-    // if (token) {
-    //   try {
-    //     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    //     user = decoded;
-        // wishlist = await Wishlist.findOne({ user_id: user.userId }).populate("products.product_id");
-    //     cart = await Cart.findOne({ user_id: user.userId });
-    //   } catch (error) {
-    //     console.log("Invalid or expired token:", error);
-    //   }
-    // }
-
-
-    // const cartCount = cart?.products?.length || 0;
-    // const categories = await Category.find({ isListed: true }).populate({
-    //   path: "subcategories",
-    //   match: { isListed: true },
-    // });
 
     const brands = await Brand.find({ isListed: true });
     if (cart && cart.products.length > 0) {
@@ -49,19 +26,19 @@ export const renderProductPage = async (req, res, next) => {
     let product = await Product.findById({ _id: productId, isDeleted: false }).populate("categoryId subcategoryId brandId");
 
     if (!product) throw new Error("Product not found");
-    let variant = product.variants.find((item) => item._id.toString() === variantId);
-
+    let variant = product.variants.find((item) => item._id.toString() === variantId && item.isDeleted === false);
+    
     if (!variant) {
-      product = await Product.findOne({ "variants._id": variantId }).populate(
+      product = await Product.findOne({ "variants._id": variantId, isDeleted: false }).populate(
         "categoryId subcategoryId brandId"
       );
       if (!product) throw new Error("Variant not found in any product");
-      variant = product.variants.find((item) => item._id.toString() === variantId);
+      variant = product.variants.find((item) => item._id.toString() === variantId && item.isDeleted === false);
     }
-
-    let relatedVariants = product.variants.filter(item => item._id.toString() !== variantId)
+    
+    let relatedVariants = product.variants.filter(item => item._id.toString() !== variantId && item.isDeleted === false)
         .map(v => ({ ...v.toObject(), productId: product._id, productTitle: product.title }));
-
+    
     if (relatedVariants.length < 10) {
       const additionalProducts = await Product.find({
         subcategoryId: product.subcategoryId,
@@ -69,7 +46,7 @@ export const renderProductPage = async (req, res, next) => {
         isDeleted: false,
       }).limit(10 - relatedVariants.length);
     
-      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
+      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.filter(v => v.isDeleted === false).map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title })))); 
     }
     
     if (relatedVariants.length < 10) {
@@ -79,10 +56,11 @@ export const renderProductPage = async (req, res, next) => {
         isDeleted: false,
       }).limit(10 - relatedVariants.length);
     
-      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
+      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.filter(v => v.isDeleted === false).map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
     }
     
     relatedVariants = relatedVariants.slice(0, 10);
+    
 
     return res.render("user/product-page", {
       name: user ? user.name : "",
@@ -166,10 +144,12 @@ export const renderShopPage = async (req, res, next) => {
 
     // Fetch all products and flatten the variants
     const allProducts = await Product.find(filterConditions)
-      .populate('variants')
-      .sort(sortOptions);
-
+    .populate('variants')
+    .sort(sortOptions);
+  
     allProducts.forEach(product => {
+      product.variants = product.variants.filter(variant => !variant.isDeleted);
+    
       product.variants.sort((a, b) => {
         if (sortOptions['variants.salePrice'] === 1) {
           return a.salePrice - b.salePrice;
@@ -179,9 +159,9 @@ export const renderShopPage = async (req, res, next) => {
         return 0;
       });
     });
-
+    
     const allVariants = [];
-
+    
     allProducts.forEach(product => {
       product.variants.forEach(variant => {
         allVariants.push({
@@ -190,6 +170,7 @@ export const renderShopPage = async (req, res, next) => {
         });
       });
     });
+  
 
     const totalVariants = allVariants.length;
     const totalPages = Math.ceil(totalVariants / limit);

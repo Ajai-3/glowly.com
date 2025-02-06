@@ -23,7 +23,6 @@ export const loadUserData = async (req, res, next) => {
             const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
             user = decoded;
             wishlist = await Wishlist.findOne({ user_id: user.userId })
-            // wishlist = await Wishlist.findOne({ user_id: user.userId }).populate('products.product_id');
             cart = await Cart.findOne({ user_id: user.userId });
             wallet = await Wallet.findOne({ user_id: user.userId });
           } catch (error) {
@@ -35,9 +34,9 @@ export const loadUserData = async (req, res, next) => {
       
         if (cart && cart.products.length > 0) {
           cartVariants = cart.products
-            .filter(product => product.variant_id)
+            .filter(product => product.variant_id && !product.variant_id.isDeleted)
             .map(product => product.variant_id.toString());
-        }
+        }        
       
         let categories = await Category.find({ isListed: true }).populate({
           path: 'subcategories',

@@ -64,11 +64,13 @@
 
           <div class="variant-colors d-flex mt-2">
             <% product.variants.forEach(function (variant) { %>
-            <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
-              <div class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" title="<%= variant.shade %>" style="background-color: <%= variant.color %>;">
-              </div>
-            </a>
-            <% }); %>
+              <% if (variant.isDeleted === false) { %>
+                <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
+                  <div class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" title="<%= variant.shade %>" style="background-color: <%= variant.color %>;">
+                  </div>
+                </a>
+              <% } %>
+            <% }); %>            
           </div>
 
 
