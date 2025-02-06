@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- <link rel="stylesheet" href="/css/otherpages.css"> -->
+
+    <%- include('partials/headforhome', { user, categories }) %>
+
+  
+</head>
+<body>
+        <div class="get-app-container">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 d-flex justify-content-center align-items-center p-0">
+                        <div class="app-mockup">
+                            <img src="/assets/logo/mock-phone.png" alt="Glowly App Mockup">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 p-0 px-2 mb-3">
+                        <div class="get-app-content">
+                            <h3>Get the Glowly App</h3>
+                            <p class="subtitle mb-4">Shop smarter, faster, and better with the Glowly app. Coming soon!</p>
+                            
+                            <!-- App Features -->
+                            <div class="app-features d-flex p-0 mt-4">
+                                <div class="feature d-flex flex-column align-items-center text-center">
+                                    <img src="/assets/logo/phone-1.png" alt="Exclusive Offers" style="width: 40px;">
+                                    <h5 class="mt-2 mb-1">Exclusive Offers</h5>
+                                    <p>Get access to app-only discounts and deals.</p>
+                                </div>
+                                <div class="feature mx-4 d-flex flex-column align-items-center text-center">
+                                    <img src="/assets/logo/phone-2.png" alt="Easy Checkout" style="width: 40px;">
+                                    <h5 class="mt-2 mb-1">Easy Checkout</h5>
+                                    <p>Enjoy a seamless and secure checkout experience.</p>
+                                </div>
+                                <div class="feature d-flex flex-column align-items-center text-center">
+                                    <img src="/assets/logo/phone-3.png" alt="Personalized Recommendations" style="width: 40px;">
+                                    <h5 class="mt-2 mb-1">Personalized Recommendations</h5>
+                                    <p>Discover products tailored just for you.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="app-store-buttons mt-4">
+                                <a href="#" class="app-store-button">
+                                    <img src="https://developer.apple.com/app-store/marketing/guidelines/images/badge-download-on-the-app-store.svg" alt="App Store" style="width: 100px;">
+                                </a>
+                                <a href="#" class="app-store-button">
+                                    <img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" alt="Google Play" style="width: 130px;">
+                                </a>
+                            </div>
+                            
+                            <div class="coming-soon m-0 mt-2">
+                                <h6>Coming Soon to Your Device</h6>
+                                <p>Be the first to know when the Glowly app launches!</p>
+                                <form class="notify-form d-flex align-items-center">
+                                    <input type="email" id="notify-form" placeholder="Enter your email" required>
+                                    <button type="submit" class="main-btn m-0 mx-2">Notify Me</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+    <div id="preloader" style="display: none;">
+        <div class="loader"></div>
+    </div>
+    <%- include('partials/footerforhome') %>
+</body>
+
+
+<script>
+      const toastSuccess = (message) => {
+      iziToast.success({
+        message: message,
+        backgroundColor: '#0e932d',
+        messageColor: '#FFFFFF',
+        icon: 'fa fa-check',
+        iconColor: '#FFFFFF',
+        timeout: 1500,
+        position: 'topRight',
+
+      });
+    };
+
+    let preloaderTimeout;
+
+window.onload = function() {
+  clearTimeout(preloaderTimeout);
+  document.getElementById("preloader").style.display = "none";
+  window.scrollTo(0, 0);
+};
+
+preloaderTimeout = setTimeout(function() {
+  document.getElementById("preloader").style.display = "flex";
+}, 100);
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    toastSuccess('Thank you for your message. We will get back to you soon!');
+    this.reset();
+});
+
+document.getElementById('helpSearch').addEventListener('input', function(e) {
+    // Add search functionality here
+});
+
+function openLiveChat() {
+    alert('Live chat support will be available soon!');
+}
+</script>
+</html>

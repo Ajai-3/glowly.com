@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,198 +12,228 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-  
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/otherpages.css">
   <!-- Favicon -->
   <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
   <title>Glowly.com: Buy Cosmetic Products</title>
 </head>
+
 <body>
 
-    <nav>
-        <div class="help-page-nav">
-            <div class="logo"><a href="/home">Glowly</a></div>
-                <div class="search-container">
-                    <input type="text" placeholder="How can we help you?">
-                </div>
-        </div>
-    </nav>
-    <div class="other-page-user-contents">
-        <div class="help-container m-t2">
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="quick-link-card" onclick="window.location.href='/user/my-orders'">
-                        <i class="fas fa-box-open mb-2"></i>
-                        <h5>Orders & Shipping</h5>
-                        <p class="mb-0">Track orders, shipping info, returns</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="quick-link-card" onclick="window.location.href='/user/my-account'">
-                        <i class="fas fa-user-circle mb-2"></i>
-                        <h5>Account & Payment</h5>
-                        <p class="mb-0">Login issues, payment methods</p>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="quick-link-card" onclick="window.location.href='/user/'">
-                        <i class="fas fa-gift mb-2"></i>
-                        <h5>Products & Offers</h5>
-                        <p class="mb-0">Product info, deals, discounts</p>
-                    </div>
-                </div>
-            </div>
-    
-            <div class="row g-4 mt-3">
-                <!-- FAQ Section -->
-                <div class="col-md-4">
-                    <h5 class="mb-3">Frequently Asked Questions</h5>
-                    <div class="accordion" id="faqAccordion">
-                        <div class="accordion-item">
-                            <h6 class="accordion-header">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" >
-                                    How do I track my order?
-                                </button>
-                            </h6>
-                            <div id="faq1" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    You can track your order by going to "My Orders" section in your account. Click on the specific order to view its current status and tracking information. You'll be able to see if your order is processing, shipped, or delivered.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingTwo">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
-                                    What is your return policy?
-                                </button>
-                            </h2>
-                            <div id="faq2" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    We offer a 15-day return policy for most items. Products must be unused and in their original packaging. Some beauty products may have different return conditions for hygiene reasons. For quality issues, returns are free of cost.
-                                </div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingThree">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
-                                    How can I cancel my order?
-                                </button>
-                            </h2>
-                            <div id="faq3" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
-                                <div class="accordion-body">
-                                    You can cancel your order within 1 hour of placing it through the "My Orders" section. After that, please contact our support team for assistance. Once an order is shipped, it cannot be cancelled but can be returned after delivery.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            
-                <!-- Contact Section -->
-                <div class="col-md-4">
-                    <div class="row">
-                        <!-- Contact Form -->
-                        <div class="col-12 mb-4">
-                            <h5 class="mb-3">Contact Us</h5>
-                            <form id="contactForm" class="contact-form">
-                                <div class="row g-2 mb-2">
-                                    <div class="col-md-6">
-                                        <input type="text" class="form-control" placeholder="Your Name" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="email" class="form-control" placeholder="Email Address" required>
-                                    </div>
-                                </div>
-                                <div class="mb-2">
-                                    <select class="form-select">
-                                        <option selected>Select Issue Type</option>
-                                        <option>Order Related</option>
-                                        <option>Product Query</option>
-                                        <option>Payment Issue</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="mb-2">
-                                    <textarea class="form-control" rows="3" placeholder="Describe your issue"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="background-color: #e80071; border: none;">Send Message</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            
-                <!-- Other Contact Methods -->
-                <div class="col-md-4">
-                    <h5 class="mb-3">Other Ways to Reach Us</h5>
-                    <div class="contact-info">
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fas fa-phone-alt me-2"></i>
-                            <div>
-                                <h6>Phone Support</h6>
-                                <small>+91 484-123-4567 (10 AM - 6 PM IST)</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center mb-2">
-                            <i class="fas fa-envelope me-2"></i>
-                            <div>
-                                <h6>Email Support</h6>
-                                <small>support@glowly.com</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-comments me-2"></i>
-                            <div>
-                                <h6>Live Chat</h6>
-                                <small>Available 24/7</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-
-        </div>
-    </div>
-    <div id="preloader">
-        <div class="loader"></div>
+  <nav>
+    <div class="help-page-nav">
+      <div class="logo"><a href="/home">Glowly</a></div>
+      <div class="search-container">
+        <input type="text" placeholder="How can we help you?">
       </div>
+      <div class="help-user-session">
+        <% if (user && user.name) { %> 
+           <div class="profile-section dropdown">
+               <div class="d-flex align-items-center">
+                   <!-- <span class="username ms-2"><%= user.name %></span> -->
+                   <% if (user && user.profilePic) { %>
+                       <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture" s></a>
+                       
+                   <% } else { %>
+                       <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+                   <% } %>
+               </div>
+               
+           </div> 
+        <% } else { %> 
+            <a href="/login">Log in</a>
+            <button class="nav-bar-last-signup-btn">
+                <a href="/signup">Sign Up</a>
+            </button>
+        <% } %>
+    </div>
+    </div>
+    
+  </nav>
+  <div class="other-page-user-contents">
+    <div class="help-container m-t2">
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <div class="quick-link-card" onclick="window.location.href='/user/my-orders'">
+            <i class="fas fa-box-open mb-2"></i>
+            <h5>Orders & Shipping</h5>
+            <p class="mb-0">Track orders, shipping info, returns</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="quick-link-card" onclick="window.location.href='/user/my-account'">
+            <i class="fas fa-user-circle mb-2"></i>
+            <h5>Account & Payment</h5>
+            <p class="mb-0">Login issues, payment methods</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="quick-link-card" onclick="window.location.href='/user/'">
+            <i class="fas fa-gift mb-2"></i>
+            <h5>Products & Offers</h5>
+            <p class="mb-0">Product info, deals, discounts</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-3">
+        <!-- FAQ Section -->
+        <div class="col-md-4">
+          <h5 class="mb-3">Frequently Asked Questions</h5>
+          <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+              <h6 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                  How do I track my order?
+                </button>
+              </h6>
+              <div id="faq1" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  You can track your order by going to "My Orders" section in your account. Click on the specific order to view its current status and tracking information. You'll be able to see if your order is processing, shipped, or delivered.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingTwo">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">
+                  What is your return policy?
+                </button>
+              </h2>
+              <div id="faq2" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  We offer a 15-day return policy for most items. Products must be unused and in their original packaging. Some beauty products may have different return conditions for hygiene reasons. For quality issues, returns are free of cost.
+                </div>
+              </div>
+            </div>
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="headingThree">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">
+                  How can I cancel my order?
+                </button>
+              </h2>
+              <div id="faq3" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                <div class="accordion-body">
+                  You can cancel your order within 1 hour of placing it through the "My Orders" section. After that, please contact our support team for assistance. Once an order is shipped, it cannot be cancelled but can be returned after delivery.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact Section -->
+        <div class="col-md-4">
+          <div class="row">
+            <!-- Contact Form -->
+            <div class="col-12 mb-4">
+              <h5 class="mb-3">Contact Us</h5>
+              <form id="contactForm" class="contact-form">
+                <div class="row g-2 mb-2">
+                  <div class="col-md-6">
+                    <input type="text" class="form-control" placeholder="Your Name" required>
+                  </div>
+                  <div class="col-md-6">
+                    <input type="email" class="form-control" placeholder="Email Address" required>
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <select class="form-select">
+                    <option selected>Select Issue Type</option>
+                    <option>Order Related</option>
+                    <option>Product Query</option>
+                    <option>Payment Issue</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div class="mb-2">
+                  <textarea class="form-control" rows="3" placeholder="Describe your issue"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="background-color: #e80071; border: none;">Send Message</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Other Contact Methods -->
+        <div class="col-md-4">
+          <h5 class="mb-3">Other Ways to Reach Us</h5>
+          <div class="contact-info">
+            <div class="d-flex align-items-center mb-2">
+              <i class="fas fa-phone-alt me-2"></i>
+              <div>
+                <h6>Phone Support</h6>
+                <small>+91 484-123-4567 (10 AM - 6 PM IST)</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+              <i class="fas fa-envelope me-2"></i>
+              <div>
+                <h6>Email Support</h6>
+                <small>support@glowly.com</small>
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <i class="fas fa-comments me-2"></i>
+              <div>
+                <h6>Live Chat</h6>
+                <small>Available 24/7</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+  <div id="preloader" style="display: none;">
+    <div class="loader"></div>
+  </div>
 
 </body>
 
 <script>
-      const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
 
-      });
-    };
+    });
+  };
 
-    window.onload = function() {
-        document.getElementById("preloader").style.display = "none";
-        document.getElementById("content").style.display = "block";
-    };
-document.getElementById('contactForm').addEventListener('submit', function(e) {
+  let preloaderTimeout;
+
+  window.onload = function() {
+    clearTimeout(preloaderTimeout);
+    document.getElementById("preloader").style.display = "none";
+    window.scrollTo(0, 0);
+  };
+
+  preloaderTimeout = setTimeout(function() {
+    document.getElementById("preloader").style.display = "flex";
+  }, 100);
+  document.getElementById('contactForm').addEventListener('submit', function(e) {
     e.preventDefault();
     toastSuccess('Thank you for your message. We will get back to you soon!');
     this.reset();
-});
+  });
 
-document.getElementById('helpSearch').addEventListener('input', function(e) {
+  document.getElementById('helpSearch').addEventListener('input', function(e) {
     // Add search functionality here
-});
+  });
 
-function openLiveChat() {
-    // Add your live chat implementation here
-    alert('Live chat support will be available soon!');
-}
+  function openLiveChat() {
+    toastSuccess('Live chat support will be available soon!')
+  }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+
 </html>

@@ -27,10 +27,11 @@
   * ------------------------------------------------------------------- */
 :root {
   /* --bg-color: #030405; */
-  --main-color: #e80071; 
+  /* --main-color: #e80071;  */
+  --main-color: #fc2779;
    --main-color2: #eb5ca1;
-  /* --main-color: #a33cdb;
-  --main-color2: #9d68b9; */
+  /* --main-color: #1d96cd;
+  --main-color2: #42a1a1; */
 
   --text-color: #f3f4f7;
   --text-color-2: #848383;
@@ -598,7 +599,7 @@ input[type="number"]::-webkit-input-placeholder {
   align-items: center;
   padding: 0px 100px;
   justify-content: space-between;
-  background-color: var(--main-color);
+  background-color: var(--main-color2);
   z-index: 501;
   position: fixed;
   top: 0;
@@ -717,6 +718,56 @@ input[type="number"]::-webkit-input-placeholder {
 .nav-bar-search input:focus + .nav-bar-search-button {
    color: var(--main-color);
 }
+
+.mobile-search-bar {
+  display: none;
+  background-color: var(--bg-color-7);
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  top: 49px;
+  width: 100%;
+  z-index: 500;
+}
+
+.nav-bar-search-mobile {
+  position: relative;
+  display: none;
+  width: 100%;
+}
+.nav-bar-search-mobile input {
+  position: relative;
+  width: 100%;
+  outline: none;
+  border-style: none;
+  color: var(--text-color);
+  background-color: rgba(60, 60, 60, 0.305);
+  font-size: var(--font-size-second);
+  padding: 4px 4px 4px 30px; 
+  border-radius: 10px;
+  border: 1px solid var(--second-text-color);
+}
+
+.nav-bar-search-mobile-button {
+  position: absolute;
+  top: 10px; 
+  left: 0px;
+  transform: translateY(-50%);
+  border: none;
+  color: var(--text-color-2);
+  background-color: transparent;
+  cursor: pointer; 
+}
+.nav-bar-search-mobile input:focus {
+  border: 1px solid var(--main-color);
+}
+.nav-bar-search-mobile input:focus + .nav-bar-search-mobile-button {
+   color: var(--main-color);
+}
+
+
+
 .nav-bar-last {
   display: flex;
   align-items: center;
@@ -1014,7 +1065,7 @@ input[type="number"]::-webkit-input-placeholder {
 
 
 
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .nav-offer {
       display: none;
   }
@@ -1027,6 +1078,7 @@ input[type="number"]::-webkit-input-placeholder {
       padding: 5px 20px;
   }
 
+
   .nav-bar-left {
       display: flex;
       align-items: center;
@@ -1036,10 +1088,6 @@ input[type="number"]::-webkit-input-placeholder {
 
   .nav-bar-logo {
       padding-bottom: 0;
-  }
-
-  .nav-bar-search {
-    display: none;
   }
 
   .nav-bar-right {
@@ -1093,21 +1141,47 @@ input[type="number"]::-webkit-input-placeholder {
   .nav-bar-lists-mobile {
       display: none;
   }
+  .horizontal-line hr {
+    top: 50px;
+  }
 
   .hamburger-menu {
       display: none;
   }
 }
+@media (max-width: 559px) {
+  .nav-bar-search {
+    display: none;
+    /* width: flex; */
+  }
+  .mobile-search-bar {
+    padding: 5px 25px;
+  }
+  .nav-bar-search-mobile {
+    display: block;
+  }
+  .horizontal-line hr {
+    top: 51px;
+  }
 
+}
 
 /* The User Interface This Div Is The Main Div For All Contents *******************************/
 .user-contents {
   margin: 90px 90px 20px 90px;
 }
 
+@media screen and (max-width: 1000px) {
+  .user-contents {
+    margin: 70px 50px 20px 50px;
+  }
+  .carousel-home {
+    margin-top: 50px;
+  }
+}
 @media screen and (max-width: 768px) {
   .user-contents {
-    margin: 90px 10px 20px 10px;
+    margin: 70px 10px 20px 10px;
   }
   .carousel-home {
     margin-top: 50px;
@@ -1115,9 +1189,9 @@ input[type="number"]::-webkit-input-placeholder {
 }
 
 /* For mobile devices (screen width <= 480px) */
-@media screen and (max-width: 480px) {
+@media screen and (max-width: 562px) {
   .user-contents {
-    margin: 60px 5px 10px 5px; 
+    margin: 95px 5px 10px 5px; 
   }
   .carousel-home {
     margin-top: 50px;
@@ -3233,8 +3307,142 @@ border: 1px solid transparent;
 }
 
 
+/* ====================================================================
+ /* ===================================================================
+  * #Get app page Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
+  .get-app-container {
+    margin: 80px 0px 0px 0px;
+    background-image: url('/assets/logo/get-app-background-img.jpg'); 
+    
+    /* width: 98vw; */
+    /* height: 550px; */
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover; 
+    padding: 60px 50px 60px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.get-app-container h3 {
+ color: var(--text-color-4);
+}
+.get-app-container h6 {
+  color: var(--text-color-3);
+}
+.get-app-container p {
+  font-size: var(--font-size-second);
+  color: var(--text-color-2);
+  margin: 0;
+}
+.app-mockup img {
+  width: 400px;
+}
+.notify-form input {
+  background-color: transparent;
+  outline: none;
+  padding: 4px 10px;
+  border: 1px solid var(--bg-color);
+  border-radius: 4px;
+  color: var(--text-color) !important;
+}
+.notify-form::placeholder {
+  color: var(--text-color);
+}
+/* Large devices (larger screens) */
+@media (max-width: 1107px) {
+  .get-app-container {
+      padding: 20px 100px; 
+      margin: 50px 0px 0px 5px;
+  }
+
+  .get-app-container h1 {
+      font-size: var(--font-size-heading2);
+  }
+
+  .get-app-container p {
+      font-size: var(--font-size-second); 
+  }
+}
 
 
+
+/* Medium devices (tablets) */
+@media (max-width: 768px) {
+  .get-app-container {
+      margin: 50px 0px 0px 0px; 
+      padding: 40px 50px !important; 
+  }
+
+  .get-app-container h6 {
+      font-size: var(--font-size-third);
+  }
+
+  .get-app-container p {
+      font-size: 16px; 
+  }
+  .app-mockup img {
+    width: 300px;
+  }
+  
+}
+
+@media (max-width: 600px) {
+  .get-app-container {
+      margin: 60px 0px 0px 0px; 
+      padding: 20px 30px; 
+  }
+
+  .get-app-container h3 {
+    font-size: var(--font-size-logo); 
+}
+
+  .get-app-container h6 {
+      font-size: var(--font-size-third); 
+  }
+
+  .get-app-container p {
+      font-size: var(--font-size-fourth); 
+  }
+  .app-mockup img {
+    width: 300px;
+  }
+  
+}
+
+@media (max-width: 400px) {
+  .get-app-container {
+      margin: 60px 0px 0px 0px; 
+      padding: 20px 10px; 
+  }
+
+  .get-app-container h3 {
+    font-size: var(--font-size-logo); 
+}
+
+  .get-app-container h5 {
+      font-size: var(--font-size-fourth); 
+  }
+
+  .get-app-container p {
+      font-size: var(--font-size-fifth); 
+  }
+  .app-mockup img {
+    width: 300px;
+  }
+  
+}
 
 /* ====================================================================
  /* ===================================================================
@@ -3250,6 +3458,7 @@ border: 1px solid transparent;
   *    - 
   * -------------------------------------------------------------------
   */
+
 .footer {
   background-color: var(--bg-color-6);
 }

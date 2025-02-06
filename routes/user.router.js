@@ -38,7 +38,7 @@ import { cancelOrder, orderDetailsPage, renderOrderListPage, returnOrder } from 
 import { get } from "mongoose";
 import { addMoneyToWallet, myWallet } from "../controllers/user/wallet.controller.js";
 import { myCoupons } from "../controllers/user/coupon.contoller.js";
-import { helpPage } from "../controllers/user/others.controller.js";
+import { getAppPage, helpPage } from "../controllers/user/others.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -127,6 +127,7 @@ router.get("/my-coupons", loadUserData, myCoupons)
 
 // Other Page Mnagement
 router.get("/help", loadUserData, helpPage);
+router.get("/get-app", loadUserData, getAppPage)
 
 router.get("/logout", loadUserData, handleUserLogout);
 
