@@ -167,6 +167,9 @@
   <div class="container my-2 px-4 checkout-page-main-div" id="step2" style="display: none;">
     <div class="row g-5">
     <nav>
+      <div class="nav-bar-checkout-page1">
+        <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+      </div>
       <div class="nav-bar-checkout-page">
           <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
           <div class="">
@@ -332,6 +335,9 @@
   <div class="container my-2 px-4 checkout-page-main-div" id="step3" style="display: none;">
     <div class="row g-5">
       <nav>
+        <div class="nav-bar-checkout-page1">
+          <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+        </div>
         <div class="nav-bar-checkout-page">
             <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
             <div class="order-satus-indicator-checkout-page">
@@ -495,9 +501,6 @@
       </div>
     </div>
   </div>
-  <div id="preloader">
-  <div class="loader"></div>
-</div>
 </div>
 
 
@@ -894,42 +897,31 @@ payButton.addEventListener("click", async () => {
 
 
 function handleOrderSuccess() {
-    // Show the preloader initially
-    document.getElementById("preloader").style.display = "block";
-    document.getElementById("content").style.display = "none";
+    showStep(step1);
+    const modalElement = document.getElementById("orderConfirmationModal");
+    if (!modalElement) {
+        console.error("Modal element not found");
+        return;
+    }
 
-    // Set a timeout to hide the preloader and show the content after 3 seconds
-    setTimeout(function() {
-        document.getElementById("preloader").style.display = "none";
-        document.getElementById("content").style.display = "block";
-        
-        // Display the order confirmation modal
-        const modalElement = document.getElementById("orderConfirmationModal");
-        if (!modalElement) {
-            console.error("Modal element not found");
-            return;
-        }
+    const orderConfirmationModal = new bootstrap.Modal(modalElement, {
+        backdrop: 'static', 
+        keyboard: false 
+    });
 
-        const orderConfirmationModal = new bootstrap.Modal(modalElement, {
-            backdrop: 'static', 
-            keyboard: false 
-        });
+    console.log("Order placed successfully!");
+    orderConfirmationModal.show();
 
-        console.log("Order placed successfully!");
-        orderConfirmationModal.show();
+    document.getElementById("goToOrders").addEventListener("click", () => {
+        console.log("Redirecting to My Orders");
+        window.location.href = "/my-orders";
+    });
 
-        // Add event listeners for modal buttons
-        document.getElementById("goToOrders").addEventListener("click", () => {
-            console.log("Redirecting to My Orders");
-            window.location.href = "/my-orders";
-        });
-
-        document.getElementById("continueShopping").addEventListener("click", () => {
-            console.log("Redirecting to Home");
-            window.location.href = "/home";
-        });
-    }, 3000);
-} 
+    document.getElementById("continueShopping").addEventListener("click", () => {
+        console.log("Redirecting to Home");
+        window.location.href = "/home";
+    });
+}
 
     function getCartProducts() {
         const productElements = document.querySelectorAll(".cart-box-in-checkout");
