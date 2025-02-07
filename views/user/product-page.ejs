@@ -10,12 +10,12 @@
         <ol class="breadcrumb">
           <li class="breadcrumb-item"><a href="/">Home</a></li>
           <li class="breadcrumb-item">
-            <a href="/shop/<%= product.categoryId._id %>">
+            <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= product.categoryId._id %>%22%5D%7D">
               <%= product.categoryId.name %>
             </a>
           </li>
           <li class="breadcrumb-item">
-            <a href="/shop/<%= product.subcategoryId._id %>">
+            <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= product.categoryId._id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= product.subcategoryId._id %>%22%5D%7D"">
               <%= product.subcategoryId.name %>
             </a>
           </li>

@@ -3,7 +3,7 @@
 <%- include('partials/headforhome', { name: name, categories: categories }) %>
 
 <div class="user-contents">
-  <div class="container my-2 p-2">
+  <div class="container my-2 p-1 p-sm-0">
     <div class="brudcrumbs-user-menu">
       <a href="/home">Home</a> > <a href="/my-wishlist">My Wishlist</a>
     </div>
@@ -30,7 +30,7 @@
       </div>
 
       <!-- Right Side Box -->
-      <div class="col-md-9">
+      <div class="col-md-9 p-0">
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <% if (wishlistProducts.length > 0) { %>
           <h5 class="card-title m-0">My Wishlist</h5>

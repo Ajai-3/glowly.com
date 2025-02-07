@@ -1,5 +1,3 @@
-
-
 // Sign-Up Form Elements
 const nameInput = document.getElementById('name');
 const emailInput = document.getElementById('email');
@@ -15,7 +13,6 @@ const passwordError = document.getElementById('error4');
 const repeatPasswordError = document.getElementById('error5');
 
 const signupForm = document.getElementById('signup_form');
-
 
 // Validation Functions
 function validateName() {
@@ -309,7 +306,6 @@ document.addEventListener('DOMContentLoaded', function () {
         element.textContent = '₹ ' + price.toLocaleString('en-IN');  
     });
 });
-
 
 $(document).ready(function () {
     const offers = $('#offers-container .offer-item');

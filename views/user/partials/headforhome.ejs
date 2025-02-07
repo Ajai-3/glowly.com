@@ -1,183 +1,289 @@
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SweetAlert2 -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/style.css">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
-    <title>Glowly.com: Buy Cosmetic Products</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/css/style.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="/assets/logo/glowly.com.logo.png" type="image/png">
+  <title>Glowly.com: Buy Cosmetic Products</title>
 </head>
 
 <body class="home-body">
-    <nav>
-        <div class="nav-offer">
-            
-            <div id="offers-container" style="display: none;">
-                <% categories.forEach(category => { %>
-                    <% if (category.offerId && category.offerId.name) { %>
-                        <div class="offer-item"><%= category.offerId.name %></div>
-                    <% } %>
-                <% }); %>
-            </div>
-            
-            <div id="current-offer" class="nav-offer1"></div>
-            
-            <div class="nav-offer2">
-                <div class="nav-offer-content"><a href="/get-app"><i class="fa-solid fa-mobile-screen-button"></i>GET APP</a></div>
-                <div class="nav-offer-content"><a href="/my-orders"><i class="fas fa-truck"></i>TRACK ORDER</a></div>
-                <div class="nav-offer-content"><a href="/help"><i class="fas fa-question-circle"></i>HELP</a></div>
-            </div> 
-        </div>
-        <div class="nav-bar">
-            
-            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
-            <div class="nav-bar-lists">
-                <ul>
-                    <!-- Home Menu -->
-                    <li class="dropdown">
-                        <a href="/home">HOME</a>
-                    </li>
-            
-                    <!-- Shop by Category -->
-                    <li class="dropdown">
-                        SHOP BY CATEGORY
-                        <div class="dropdown-menu">
-                          <div class="categories-container">
-                            <% categories.forEach((category, index) => { %>
-                              <div class="category-block">
-                                <div class="category-name">
-                                  <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%7D">
-                                    <%= category.name %>
-                                  </a>
-                                </div>
-                      
-                                <div class="subcategory-list">
-                                  <% category.subcategories.forEach(subcategory => { %>
-                                    <div class="subcategory">
-                                      <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D">
-                                        <%= subcategory.name %>
-                                      </a>
-                                    </div>
-                                  <% }) %>
-                                </div>
-                              </div>
-                            <% }) %>
-                          </div>
-                        </div>
-                      
-                        <span class="arrow"><i class="fas fa-caret-down"></i></span>
-                      </li>
-                      
-                      
-                           
-            
-                    <!-- Brands -->
-                    <li class="dropdown">
-                        <a href="javascript:void(0)">BRANDS</a>
-                        
-                        <div class="dropdown-menu">
-                          <div class="brands-container">
-                            <% brands.forEach(brand => { %>
-                              <div class="brand-block">
-                                <div class="brand-name">
-                                  <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
-                                    <%= brand.brandName %>
-                                  </a>
-                                </div>
-                              </div>
-                            <% }) %>
-                          </div>
-                        </div>
-                        <span class="arrow"><i class="fas fa-caret-down"></i></span>
-                      </li>
-                      
-                      
-            
-                    <!-- New Menu -->
-                    <li class="dropdown">
-                        <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
-                            NEW
-                          </a>
-                    </li>
-                </ul>
-            </div>
-            
-            
-            <div class="nav-bar-search">
-                <form action="/shop" method="GET">
-                    <input type="text" id="nav-search" name="search" placeholder="Search Product and Brands">
-                    <button class="nav-bar-search-button"><i class="fas fa-search"></i></button>
-                  </form>
-                
-                
-            </div>
-            <div class="nav-bar-last">
-                <% if (user && user.name) { %> 
-                    <!-- If User Is Logged In -->
-                     
-                    <a href="/my-cart">  
-                     <div class="nav-cart">
-                        <div class="nav-cart-count" style="display: <%= cartCount > 0 ? 'block' : 'none' %>;">
-                            <%= cartCount %>
-                        </div>
-                        <i class="fa-solid fa-bag-shopping"></i>
-                    </div>
+  <nav>
+    <div class="nav-offer">
+
+      <div id="offers-container" style="display: none;">
+        <% categories.forEach(category => { %>
+        <% if (category.offerId && category.offerId.name) { %>
+        <div class="offer-item"><%= category.offerId.name %></div>
+        <% } %>
+        <% }); %>
+      </div>
+
+      <div id="current-offer" class="nav-offer1"></div>
+
+      <div class="nav-offer2">
+        <div class="nav-offer-content"><a href="/get-app"><i class="fa-solid fa-mobile-screen-button"></i>GET APP</a></div>
+        <div class="nav-offer-content"><a href="/my-orders"><i class="fas fa-truck"></i>TRACK ORDER</a></div>
+        <div class="nav-offer-content"><a href="/help"><i class="fas fa-question-circle"></i>HELP</a></div>
+      </div>
+    </div>
+    <div class="nav-bar">
+      <div class="d-flex align-items-center">
+        <div class="hamburger-menu-user-side me-2"><i class="fa-solid fa-bars"></i></div>
+        <div class="nav-bar-logo mb-1"><a href="/home">Glowly</a></div>
+      </div>
+
+      <div class="nav-bar-lists">
+        <ul>
+          <!-- Home Menu -->
+          <li class="dropdown">
+            <a href="/home">HOME</a>
+          </li>
+
+          <!-- Shop by Category -->
+          <li class="dropdown">
+            SHOP BY CATEGORY
+            <div class="dropdown-menu">
+              <div class="categories-container">
+                <% categories.forEach((category, index) => { %>
+                <div class="category-block">
+                  <div class="category-name">
+                    <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%7D">
+                      <%= category.name %>
                     </a>
-                    
-                    <a href="/my-wishlist"><i class="fa-solid fa-heart"></i></a>
-                   
-                   <div class="profile-section dropdown">
-                       <div class="d-flex align-items-center">
-                           <!-- <span class="username ms-2"><%= user.name %></span> -->
-                           <% if (user && user.profilePic) { %>
-                               <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
-                               
-                           <% } else { %>
-                               <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
-                           <% } %>
-                       </div>
-                       
-                       <div class="dropdown-menu2">
-                           <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a><hr>
-                           <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a><hr>
-                           <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a><hr>
-                           <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
-                       </div>
-                       <span class="arrow"><i class="fas fa-triangle"></i></span>   
-                   </div> 
-                <% } else { %> 
-                    <!-- If User Not Logged In -->
-                    <a href="/login">Log in</a>
-                    <button class="nav-bar-last-signup-btn">
-                        <a href="/signup">Sign Up</a>
-                    </button>
-                    <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
-                <% } %>
+                  </div>
+
+                  <div class="subcategory-list">
+                    <% category.subcategories.forEach(subcategory => { %>
+                    <div class="subcategory">
+                      <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D">
+                        <%= subcategory.name %>
+                      </a>
+                    </div>
+                    <% }) %>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
             </div>
-            
-            
-        </div>
-        
-        <div class="mobile-search-bar">
-          <div class="nav-bar-search-mobile">
-            <form action="/shop" method="GET">
-                <input type="text" id="nav-search" name="search" placeholder="Search Product and Brands">
-                <button class="nav-bar-search-mobile-button"><i class="fas fa-search"></i></button>
-              </form>
+
+            <span class="arrow"><i class="fas fa-caret-down"></i></span>
+          </li>
+
+
+
+
+          <!-- Brands -->
+          <li class="dropdown">
+            <a href="javascript:void(0)">BRANDS</a>
+
+            <div class="dropdown-menu">
+              <div class="brands-container">
+                <% brands.forEach(brand => { %>
+                <div class="brand-block">
+                  <div class="brand-name">
+                    <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
+                      <%= brand.brandName %>
+                    </a>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
             </div>
+            <span class="arrow"><i class="fas fa-caret-down"></i></span>
+          </li>
+
+
+
+          <!-- New Menu -->
+          <li class="dropdown">
+            <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
+              NEW
+            </a>
+          </li>
+        </ul>
+      </div>
+
+
+      <div class="nav-bar-search">
+        <form action="/shop" method="GET">
+          <input type="text" id="nav-search" name="search" placeholder="Search Product and Brands">
+          <button class="nav-bar-search-button"><i class="fas fa-search"></i></button>
+        </form>
+
+
+      </div>
+      <div class="nav-bar-last">
+        <% if (user && user.name) { %>
+        <!-- If User Is Logged In -->
+
+        <a href="/my-cart">
+          <div class="nav-cart">
+            <div class="nav-cart-count" style="display: <%= cartCount > 0 ? 'block' : 'none' %>;">
+              <%= cartCount %>
+            </div>
+            <i class="fa-solid fa-bag-shopping"></i>
+          </div>
+        </a>
+
+        <a href="/my-wishlist"><i class="fa-solid fa-heart"></i></a>
+
+        <div class="profile-section dropdown">
+          <div class="d-flex align-items-center">
+            <!-- <span class="username ms-2"><%= user.name %></span> -->
+            <% if (user && user.profilePic) { %>
+            <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
+
+            <% } else { %>
+            <a href="/my-account" class="ms-2"><i class="fa-solid fa-circle-user"></i></a>
+            <% } %>
+          </div>
+
+          <div class="dropdown-menu2">
+            <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
+            <hr>
+            <a href="/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+            <hr>
+            <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+            <hr>
+            <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+          </div>
+          <span class="arrow"><i class="fas fa-triangle"></i></span>
+        </div>
+        <% } else { %>
+        <!-- If User Not Logged In -->
+        <a href="/login">Log in</a>
+        <button class="nav-bar-last-signup-btn">
+          <a href="/signup">Sign Up</a>
+        </button>
+        <a href="/my-cart"><i class="fa-solid fa-bag-shopping"></i></a>
+        <% } %>
+      </div>
+
+
+    </div>
+
+    <div class="mobile-search-bar">
+      <div class="nav-bar-search-mobile">
+        <form action="/shop" method="GET">
+          <input type="text" id="nav-search" name="search" placeholder="Search Product and Brands">
+          <button class="nav-bar-search-mobile-button"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+    </div>
+
+
+    <div class="sidebar-user-side" id="sidebarMenuUserSide">
+      <button class="btn close-btn" id="closeMenuButton">
+        <!-- <i class="fa fa-times"></i> -->
+      </button>
+
+      <div>
+        <div class="coupon-design-div">
+          coupon
+        </div>
+        <div id="shopByCategory" class="category-toggle sidbar-div">
+          <h4>Categories</h4><i class="fa fa-plus"></i>
         </div>
 
-        
-        <div class="horizontal-line"><hr></div>
+        <div id="category-list" style="display: none;">
+          <% categories.forEach((category, index) => { %>
+          <div class="category-item">
+            <div class="category-div-sid-bar">
+              <div class="category-btn" data-category-id="<%= category.id %>">
+                <%= category.name %>
+              </div>
+              <div class="category-btn" data-category-id="<%= category.id %>">
+                <i class="fa fa-plus"></i>
+              </div>
+            </div>
 
-    </nav>
+            <div class="subcategory-list" id="subcategory-<%= category.id %>" style="display: none; padding-left: 15px;">
+              <% category.subcategories.forEach(subcategory => { %>
+              <div class="sidebar-sub">
+                <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D" class="mb-1">
+                  <%= subcategory.name %>
+                </a>
+              </div>
+              <% }) %>
+            </div>
+          </div>
+          <% }) %>
+        </div>
 
+        <!-- Shop by Brand Section -->
+        <div id="shopByBrand" class="brand-toggle sidbar-div">
+          <h4>Brands</h4><i class="fa fa-plus"></i>
+        </div>
+
+        <div id="brand-list" style="display: none;">
+          <% brands.forEach(brand => { %>
+          <div class="sidebar-sub">
+            <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
+              <%= brand.brandName %>
+            </a>
+          </div>
+          <% }) %>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
+            <h4>NEW</h4>
+          </a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
+          <i class="fa fa-plus"></i>
+        </div>
+        <div class="sidbar-div">
+          <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/my-wallet" class="active"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+          <i class="fa fa-plus"></i>
+        </div>
+
+        <div class="sidbar-div">
+          <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+          <i class="fa fa-plus"></i>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div id="overlay" class="overlay"></div>
+    <div class="horizontal-line">
+      <hr>
+    </div>
+
+  </nav>

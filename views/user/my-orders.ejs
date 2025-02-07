@@ -8,7 +8,7 @@
 </head>
 
 <div class="user-contents">
-  <div class="container my-2 p-2">
+  <div class="container my-2 p-1 p-sm-0">
     <div id="breadcrumbs" class="brudcrumbs-user-menu"><a href="/home">Home</a> > <a href="/my-account">My Account</a> > <a href="/my-orders">My Orders</a></div>
     <div class="row">
       <!-- Left Side Box -->
@@ -33,136 +33,141 @@
       </div>
 
       <!-- Right Side Box -->
-      <div class="col-md-9">
+      <div class="col-md-9 p-0">
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <% if (orders.length > 0) { %>
           <h5 class="card-title">My Orders</h5>
           <% orders.forEach(order => { %>
-          <div class="card shadow-sm mb-3 order-box" data-expanded="false">
-            <div class="order-header p-0" onclick="toggleOrderProducts('<%= order._id %>', this)">
-              <div class="d-flex justify-content-between order-info-row">
-                <p class="m-0 order-id">
-                  <span>Order #<%= order._id %></span>
-                  <i class="fas fa-chevron-down toggle-icon"></i>
-                </p>
-              </div>
-              <div class="order-info-row">
-                <div>
-                  <span class="order-info-label">Ordered on:</span>
-                  <span class="order-info-value"><%= order.createdAt.toLocaleString() %></span>
+            <div class="card shadow-sm mb-3 order-box" data-expanded="false">
+              <div class="order-header" onclick="toggleOrderProducts('<%= order._id %>', this)">
+                <div class="d-flex justify-content-between order-info-row">
+                  <p class="m-0 order-id">
+                    <span>Order #<%= order._id %></span>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                  </p>
                 </div>
-                <div>
-                  <span class="price-inr">₹<%= order.total_order_amount %></span>
-                </div>
-              </div>
-              <div class="order-info-row">
-                <div>
-                  <span class="order-info-label">Payment Status:</span>
-                  <span class="payment_status_my_orders 
-                        <%= order.payment_status === 'Payment completed' ? 'green-p' : 
-                            order.payment_status === 'Payment failed' ? 'red-p' : 'yellow-p' %>">
-                    <%= order.payment_status ? order.payment_status : 'Not Available' %>
-                  </span>
-                  <span>
-                    <% if (order.payment_status === 'Payment failed') { %>
-                    <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
-                    <% } %>
-                  </span>
-                </div>
-                <div>
-                  <span class="order-info-label">Method:</span>
-                  <span class="order-info-value"><%= order.payment_method ? order.payment_method : 'Not Available' %></span>
-                </div>
-              </div>
-              <div class="order-info-row">
-                <div>
-                  <span class="order-info-label">Total Products:</span>
-                  <span class="order-info-value"><%= order.products.length %></span>
-                </div>
-                <div>
-                  <% if (order.payment_status !== 'Payment failed') { %>
-                  <button type="button" class="btn btn-secondary btn-sm" onclick="generateInvoice(this)" data-order='<%= JSON.stringify(order) %>'>
-                    <i class="fas fa-file-invoice"></i> Download Invoice
-                  </button>
-                  <% } %>
-                </div>
-              </div>
-              <div class="order-address">
-                <span class="order-info-label">Delivery Address:</span><br>
-                <span class="order-info-value">
-                  <%= order.address_id ? `Address type: ${order.address_id.address_type}, ${order.address_id.city}, ${order.address_id.district}, ${order.address_id.state}, ${order.address_id.country}, ${order.address_id.pin_code}, ${user.phone_no}` : 'Not Available' %>
-                </span>
-              </div>
-            </div>
-            <div id="products-<%= order._id %>" style="display: none;">
-              <% order.products.forEach(product => { %>
-                <!-- Product Item -->
-                <div class="card shadow-sm mb-2 order-box" id="order-box" 
-                     data-order-id="<%= order._id %>" 
-                     data-product-id="<%= product.product_id ? product.product_id._id : '' %>" 
-                     data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
-                  <div class="row g-0 align-items-center">
-            
-                    <!-- Product Image -->
-                    <div class="col-md-2 text-center p-2">
-                      <% let variant = product.product_id ? product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()) : null; %>
-                      <% let imageUrl = variant?.images?.[0]; %>
-                      <% if (imageUrl) { %>
-                        <img src="<%= imageUrl %>" style="max-width: 90px;">
-                      <% } else { %>
-                        <p>No image</p>
-                      <% } %>
-                    </div>
-            
-                    <!-- Product Details -->
-                    <div class="col-md-8 p-1">
-                      <div class="product-details">
-                        <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
-                          <%= product.product_id ? product.product_id.title : 'No Title' %>
-                        </h6>
-                        <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">
-                          shade: <%= variant ? variant.shade : 'No shade' %>
-                        </h6>
-                        <div class="d-flex justify-content-between mt-2">
-                          <p class="m-0">Quantity: <%= product.quantity %></p>
-                          <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant ? variant.regularPrice : 'N/A' %></span> 
-                            <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span>
-                          </p>
-                          <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span></p>
-                        </div>
-                      </div>
-                    </div>
-            
-                    <!-- Order Status -->
-                    <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
-                      <!-- Status Display -->
-                      <p2 class="m-0 mb-4 
-                                <% if (product.status === 'pending') { %> yellow-p <% } %>
-                                <% if (product.status === 'processing') { %> blue-p <% } %>
-                                <% if (product.status === 'shipped') { %> pink-p <% } %>
-                                <% if (product.status === 'delivered') { %> green-p <% } %>
-                                <% if (product.status === 'canceled') { %> red-p <% } %>
-                                <% if (product.status === 'return_req') { %> yellow-p <% } %>
-                                <% if (product.status === 'returned') { %> blue-p <% } %>">
-                        <%= product.status %>
-                      </p2>
-            
-                      <!-- Buttons -->
-                      <% if (product.status === 'delivered') { %>
-                        <!-- Return Button -->
-                        <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Return</button>
-                      <% } else if (product.status === 'processing' || product.status === 'pending') { %>
-                        <!-- Cancel Button -->
-                        <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Cancel</button>
-                      <% } %>
-                    </div>
+                <div class="order-info-row">
+                  <div>
+                    <span class="order-info-label">Ordered on:</span>
+                    <span class="order-info-value"><%= order.createdAt.toLocaleString() %></span>
+                  </div>
+                  <div>
+                    <span class="price-inr">₹<%= order.total_order_amount %></span>
                   </div>
                 </div>
-              <% }); %>
+            
+                <!-- Payment Status and Method Section (Responsive) -->
+                <div class="row">
+                  <div class="col-12 col-md-6 d-flex justify-content-start">
+                    <span class="order-info-label">Payment Status:</span>
+                    <span class="payment_status_my_orders 
+                                  <%= order.payment_status === 'Payment completed' ? 'green-p' : 
+                                      order.payment_status === 'Payment failed' ? 'red-p' : 'yellow-p' %>">
+                      <%= order.payment_status ? order.payment_status : 'Not Available' %>
+                    </span>
+                    <span>
+                      <% if (order.payment_status === 'Payment failed') { %>
+                        <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
+                      <% } %>
+                    </span>
+                  </div>
+            
+                  <div class="col-12 col-md-6 d-flex justify-content-end">
+                    <span class="order-info-label">Method:</span>
+                    <span class="order-info-value"><%= order.payment_method ? order.payment_method : 'Not Available' %></span>
+                  </div>
+                </div>
+            
+                <!-- Other Info (Total Products, etc.) -->
+                <div class="order-info-row">
+                  <div>
+                    <span class="order-info-label">Total Products:</span>
+                    <span class="order-info-value"><%= order.products.length %></span>
+                  </div>
+                  <div>
+                    <% if (order.payment_status !== 'Payment failed') { %>
+                      <button type="button" class="btn btn-secondary btn-sm" onclick="generateInvoice(this)" data-order='<%= JSON.stringify(order) %>'>
+                        <i class="fas fa-file-invoice"></i> Download Invoice
+                      </button>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="order-address">
+                  <span class="order-info-label">Delivery Address:</span><br>
+                  <span class="order-info-value">
+                    <%= order.address_id ? `Address type: ${order.address_id.address_type}, ${order.address_id.city}, ${order.address_id.district}, ${order.address_id.state}, ${order.address_id.country}, ${order.address_id.pin_code}, ${user.phone_no}` : 'Not Available' %>
+                  </span>
+                </div>
+              </div>
+            
+              <div id="products-<%= order._id %>" style="display: none;">
+                <% order.products.forEach(product => { %>
+                  <!-- Product Item -->
+                  <div class="card shadow-sm mb-2 order-box" id="order-box" 
+                       data-order-id="<%= order._id %>" 
+                       data-product-id="<%= product.product_id ? product.product_id._id : '' %>" 
+                       data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
+                    <div class="row g-0 align-items-center">
+                
+                      <!-- Product Image -->
+                      <div class="col-3 col-sm-2 col-md-2 text-center p-2">
+                        <% let variant = product.product_id ? product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()) : null; %>
+                        <% let imageUrl = variant?.images?.[0]; %>
+                        <% if (imageUrl) { %>
+                          <img src="<%= imageUrl %>" class="img-fluid" style="max-width: 80px;">
+                        <% } else { %>
+                          <p>No image</p>
+                        <% } %>
+                      </div>
+                
+                      <!-- Product Details -->
+                      <div class="col-9 col-sm-8 col-md-8 p-1">
+                        <div class="product-details">
+                          <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
+                            <%= product.product_id ? product.product_id.title : 'No Title' %>
+                          </h6>
+                          <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">
+                            shade: <%= variant ? variant.shade : 'No shade' %>
+                          </h6>
+                          <div class="d-flex justify-content-between mt-2">
+                            <p class="m-0">Quantity: <%= product.quantity %></p>
+                            <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant ? variant.regularPrice : 'N/A' %></span> 
+                              <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span>
+                            </p>
+                            <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span></p>
+                          </div>
+                        </div>
+                      </div>
+                
+                      <!-- Order Status -->
+                      <div class="col-12 col-sm-2 col-md-2 d-flex flex-column justify-content-between align-items-center">
+                        <!-- Status Display -->
+                        <p2 class="m-0 mb-4 
+                                  <% if (product.status === 'pending') { %> yellow-p <% } %>
+                                  <% if (product.status === 'processing') { %> blue-p <% } %>
+                                  <% if (product.status === 'shipped') { %> pink-p <% } %>
+                                  <% if (product.status === 'delivered') { %> green-p <% } %>
+                                  <% if (product.status === 'canceled') { %> red-p <% } %>
+                                  <% if (product.status === 'return_req') { %> yellow-p <% } %>
+                                  <% if (product.status === 'returned') { %> blue-p <% } %>">
+                          <%= product.status %>
+                        </p2>
+                
+                        <!-- Buttons -->
+                        <% if (product.status === 'delivered') { %>
+                          <!-- Return Button -->
+                          <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Return</button>
+                        <% } else if (product.status === 'processing' || product.status === 'pending') { %>
+                          <!-- Cancel Button -->
+                          <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Cancel</button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                <% }); %>
+              </div>
             </div>
             
-
-          </div>
           <% }); %>
           <div class="order-pagination-container">
             <% if (totalPages > 1) { %>
@@ -204,6 +209,8 @@
 
         </div>
       </div>
+
+      
     </div>
   </div>
 </div>
