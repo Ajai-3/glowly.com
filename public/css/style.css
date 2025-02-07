@@ -2866,12 +2866,31 @@ border: 1px solid transparent;
   padding: 15px;
   border: 1px solid var(--second-text-color);
   border-radius: 12px;
-  resize: vertical;
+   resize: vertical; 
   min-height: 120px;
   font-size: var(--font-size-second);
   transition: all 0.3s ease;
   background: #262626;
   color: var(--text-color-4);
+}
+
+.review-input::-webkit-scrollbar {
+  width: 8px;
+  margin-left: 4px;
+}
+
+.review-input::-webkit-scrollbar-thumb {
+  background-color: var(--text-color-2);
+  border-radius: 10px;
+}
+
+.review-input::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-color-2);
+}
+
+.review-input::-webkit-scrollbar-track {
+  background: var(--bg-color-4);
+  border-radius: 10px;
 }
 
 .review-input:focus {

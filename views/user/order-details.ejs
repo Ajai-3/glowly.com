@@ -32,35 +32,6 @@
       <div class="col-md-9">
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <div class="my-order-datailpage">
-            <!-- Product Status -->
-            <!-- <div class="my-order-datailpage-status mb-2">
-                      <p>
-                        Product Status:&nbsp;&nbsp;
-                        <p2 class="m-0 mb-4 
-                        <% if (productStatus === 'pending') { %> yellow-p <% } %>
-                        <% if (productStatus === 'processing') { %> blue-p <% } %>
-                        <% if (productStatus === 'shipped') { %> pink-p <% } %>
-                        <% if (productStatus === 'delivered') { %> green-p <% } %>
-                        <% if (productStatus === 'canceled') { %> red-p <% } %>
-                        <% if (productStatus === 'return_req') { %> yellow-p <% } %>
-                        <% if (productStatus === 'returned') { %> blue-p <% } %>">
-                          <%= productStatus %>
-                        </p2>
-                      </p>
-                    </div> -->
-
-            <!-- Delivery Address -->
-            <!-- <div class="my-order-datailpage-address p-2 mb-2">
-                      <p><strong>Delivery Address</strong></p>
-                      <p>
-                        Address Type: <%= address.address_type %>, <%= address.address %>, 
-                        <%= address.land_mark %>, <%= address.district %>, 
-                        <%= address.city %>, <%= address.state %>, 
-                        <%= address.pin_code %>, <%= address.country %>
-                      </p>
-                    </div>
-                  </div> -->
-
             <!-- Timeline Chart -->
             <div class="timeline">
               <div class="timeline-items">
@@ -157,7 +128,7 @@
             <!-- Product Details -->
             <div>
               <div class="card my-order-datailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
-                <div class="row">
+                <div class="row p-2">
                   <!-- Product Image -->
                   <div class="col-md-2 text-center">
                     <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" class="img-fluid rounded" alt="<%= product.title || 'Product Image' %>" style="max-width: 100px; object-fit: cover;">
@@ -212,26 +183,49 @@
             </div>
 
             <!-- Review Section -->
-            <% if (product.delivered_at || product.canceled_at || product.returned_at) { %>
+            <% if (review) { %>
             <div class="review-section">
-              <div class="review-header <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
+              <div class="review-header">
+                <h5>Your Review</h5>
+              </div>
+
+              <form method="POST" class="review-form-edit" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= variant._id %>" data-order-id="<%= orderId %>" data-review-id="<%= review._id %>">
+                <div class="mb-3">
+                  <label>Rating</label>
+                  <div class="star-rating">
+                    <% for (let i = 5; i >= 1; i--) { %>
+                    <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>" <%= review.rating === i ? 'checked' : '' %> />
+                    <label for="star<%= i %>">★</label>
+                    <% } %>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label>Review:</label>
+                  <textarea class="review-input" name="review" placeholder="Edit your review..."><%= review.review %></textarea>
+                </div>
+
+                <button type="submit" class="submit-review">
+                  <i class="fas fa-paper-plane"></i>
+                  Edit Review
+                </button>
+              </form>
+            </div>
+
+
+            <% } else { %>
+            <div class="review-section">
+              <div class="review-header">
                 <h5>
                   Share Your Product Experience
                 </h5>
               </div>
 
-              <form action="/submit-review" method="POST" class="review-form">
-                <input type="hidden" name="productId" value="<%= product.product_id._id %>">
-                <input type="hidden" name="orderId" value="<%= orderId %>">
-                <input type="hidden" name="reviewType" value="<%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : 'delivered') %>">
-
+              <form method="POST" class="review-form" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= variant._id %>" data-order-id="<%= orderId %>">
                 <div class="mb-3">
-                  <label>
-
-                    Rate this product
-                  </label>
+                  <label>Rate this product</label>
                   <div class="star-rating">
-                    <% for(let i = 1; i <= 5; i++) { %>
+                    <% for (let i = 5; i >= 1; i--) { %>
                     <input type="radio" id="star<%= i %>" name="rating" value="<%= i %>">
                     <label for="star<%= i %>">★</label>
                     <% } %>
@@ -241,18 +235,19 @@
                 <div class="mb-3">
                   <label>Write your review:</label>
                   <textarea class="review-input" name="review" placeholder="Tell us what you think about this product..."></textarea>
-
                 </div>
 
-                <button type="submit" class="submit-review <%= product.canceled_at ? 'canceled' : (product.returned_at ? 'returned' : '') %>">
-                  <i class="fas <%= product.canceled_at ? 'fa-paper-plane' : (product.returned_at ? 'fa-paper-plane' : 'fa-paper-plane') %>"></i>
+                <button type="submit" class="submit-review">
+                  <i class="fas fa-paper-plane"></i>
                   Submit Review
                 </button>
               </form>
+
+
             </div>
-            <% } %>
           </div>
         </div>
+        <% } %>
 
 
       </div>
@@ -260,7 +255,8 @@
 
   </div>
 </div>
-
+</div>
+</div>
 
 <div id="preloader" style="display: none;">
   <div class="loader"></div>
@@ -273,6 +269,66 @@
 <%- include('partials/footerforhome') %>
 
 <script>
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: "#0e932d",
+      messageColor: "#FFFFFF",
+      icon: "fa fa-check",
+      iconColor: "#FFFFFF",
+      timeout: 1500,
+      position: "topRight",
+    });
+  };
+
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: "#e51e1e",
+      messageColor: "#FFFFFF",
+      icon: "fa fa-times",
+      iconColor: "#FFFFFF",
+      timeout: 1500,
+      position: "topRight",
+    });
+  };
+
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: "#2160de",
+      messageColor: "#FFFFFF",
+      icon: "fa fa-info-circle",
+      iconColor: "#FFFFFF",
+      timeout: 1500,
+      position: "topRight",
+    });
+  };
+
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: "#e5811e",
+      messageColor: "#212529",
+      icon: "fa fa-exclamation-triangle",
+      iconColor: "#212529",
+      timeout: 1500,
+      position: "topRight",
+    });
+  };
+
+  const toastWish = (message) => {
+    iziToast.show({
+      message: message,
+      backgroundColor: "#e80071",
+      messageColor: "#FFFFFF",
+      icon: "fas fa-check-circle",
+      iconColor: "#FFFFFF",
+      timeout: 2000,
+      position: "bottomCenter",
+    });
+  };
+
   let preloaderTimeout;
 
   window.onload = function() {
@@ -284,6 +340,67 @@
   preloaderTimeout = setTimeout(function() {
     document.getElementById("preloader").style.display = "flex";
   }, 100);
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewForm = document.querySelector('.review-form');
+
+    if (reviewForm) {
+      reviewForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+
+        const submitButton = reviewForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+          submitButton.disabled = true;
+        }
+
+        const productId = reviewForm.getAttribute('data-product-id');
+        const variantId = reviewForm.getAttribute('data-variant-id');
+        const orderId = reviewForm.getAttribute('data-order-id');
+
+        const rating = reviewForm.querySelector('input[name="rating"]:checked')?.value;
+        const reviewText = reviewForm.querySelector('textarea[name="review"]')?.value;
+
+        if (!rating || !reviewText) {
+          toastError('Please provide a rating and a review!');
+          return;
+        }
+
+        const data = {
+          productId,
+          variantId,
+          orderId,
+          rating,
+          review: reviewText
+        };
+
+        try {
+          const response = await fetch('/submit-review', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            toastSuccess('Review submitted successfully!');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500)
+          } else {
+            toastError('Failed to submit review.');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          toastWarning('Error submitting review.');
+        }
+      });
+    } else {
+      console.error('Review form not found!');
+    }
+  });
 </script>
 
 </html>

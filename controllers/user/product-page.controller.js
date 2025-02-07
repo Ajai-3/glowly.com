@@ -22,7 +22,6 @@ export const renderProductPage = async (req, res, next) => {
     }
 
 
-
     let product = await Product.findById({ _id: productId, isDeleted: false }).populate("categoryId subcategoryId brandId");
 
     if (!product) throw new Error("Product not found");

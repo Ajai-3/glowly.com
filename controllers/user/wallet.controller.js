@@ -127,7 +127,7 @@ export const addMoneyToWallet = async (req, res, next) => {
       transaction,
     });
   } catch (error) {
-    console.error("Error in addMoneyToWallet", error);
+    console.error("Error in addMoney to wallet", error);
     next({ statusCode: 500, message: error.message });
   }
 };

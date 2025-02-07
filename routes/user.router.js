@@ -39,6 +39,7 @@ import { get } from "mongoose";
 import { addMoneyToWallet, myWallet } from "../controllers/user/wallet.controller.js";
 import { myCoupons } from "../controllers/user/coupon.contoller.js";
 import { getAppPage, helpPage } from "../controllers/user/others.controller.js";
+import { review } from "../controllers/user/review.controller.js";
 // Apply Middleware To All Routes
 // router.use(authMiddleware);
 
@@ -124,6 +125,9 @@ router.post("/add-money-to-wallet", loadUserData, addMoneyToWallet)
 
 // Coupon Management
 router.get("/my-coupons", loadUserData, myCoupons)
+
+// Rewview Mangement
+router.post("/submit-review", loadUserData, review)
 
 // Other Page Mnagement
 router.get("/help", loadUserData, helpPage);

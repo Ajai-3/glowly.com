@@ -1,10 +1,7 @@
-import jwt from "jsonwebtoken";
 import Order from "../../models/order.model.js";
-import Cart from "../../models/cart.model.js";
-import Address from "../../models/address.model.js";
+import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
-import Category from "../../models/category.model.js";
-import Razorpay from 'razorpay';
+
 
 
 
@@ -120,6 +117,7 @@ export const returnOrder = async (req, res, next) => {
       return res.redirect("user/home");
     }
 
+    
     if (!productId || !variantId || !orderId || !quantity) {
       return res.status(400).json({ success: false, message: "Missing data." });
     }
@@ -178,6 +176,9 @@ export const orderDetailsPage = async (req, res) => {
       return res.redirect("/user/home");
     }
 
+    const review = await Review.findOne({ userId: user.userId, productId: productId, variantId: variantId })
+    console.log(review)
+
 
     const order = await Order.findById(orderId)
       .populate({
@@ -210,6 +211,7 @@ export const orderDetailsPage = async (req, res) => {
     return res.render("user/order-details", {
       user,
       categories,
+      review,
       brands,
       order,
       orderId,
