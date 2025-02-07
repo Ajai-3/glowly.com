@@ -140,7 +140,6 @@
 
         <div class="profile-section dropdown">
           <div class="d-flex align-items-center">
-            <!-- <span class="username ms-2"><%= user.name %></span> -->
             <% if (user && user.profilePic) { %>
             <a href="/my-account" class="ms-2"><img src="<%= user.profilePic %>" alt="Profile Picture"></a>
 
@@ -188,95 +187,107 @@
         <!-- <i class="fa fa-times"></i> -->
       </button>
 
-      <div>
-        <div class="coupon-design-div">
-          coupon
-        </div>
-        <div id="shopByCategory" class="category-toggle sidbar-div">
-          <h4>Categories</h4><i class="fa fa-plus"></i>
-        </div>
-
-        <div id="category-list" style="display: none;">
-          <% categories.forEach((category, index) => { %>
-          <div class="category-item">
-            <div class="category-div-sid-bar">
-              <div class="category-btn" data-category-id="<%= category.id %>">
-                <%= category.name %>
-              </div>
-              <div class="category-btn" data-category-id="<%= category.id %>">
-                <i class="fa fa-plus"></i>
-              </div>
-            </div>
-
-            <div class="subcategory-list" id="subcategory-<%= category.id %>" style="display: none; padding-left: 15px;">
-              <% category.subcategories.forEach(subcategory => { %>
-              <div class="sidebar-sub">
-                <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D" class="mb-1">
-                  <%= subcategory.name %>
-                </a>
-              </div>
-              <% }) %>
-            </div>
+      <div class="row coupon-design-div mb-2 ps-3">
+        <div class="col-2 p-0 coupon-design-div1">
+          <p>Enjoy extra <strong>10% off</strong></p>
+          <p2>on first prepaid order above !299</p2>
+          <div class="coupon-code-side-bar">
+            <p>Login & use &nbsp;#NEW10</p>
           </div>
-          <% }) %>
         </div>
-
-        <!-- Shop by Brand Section -->
-        <div id="shopByBrand" class="brand-toggle sidbar-div">
-          <h4>Brands</h4><i class="fa fa-plus"></i>
-        </div>
-
-        <div id="brand-list" style="display: none;">
-          <% brands.forEach(brand => { %>
-          <div class="sidebar-sub">
-            <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
-              <%= brand.brandName %>
-            </a>
-          </div>
-          <% }) %>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
-            <h4>NEW</h4>
-          </a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
-          <i class="fa fa-plus"></i>
-        </div>
-        <div class="sidbar-div">
-          <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/my-wallet" class="active"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
-          <i class="fa fa-plus"></i>
-        </div>
-
-        <div class="sidbar-div">
-          <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
-          <i class="fa fa-plus"></i>
+        <div class="col-1 coupon-design-div2">
+          <strong>LOGIN / SIGHN UP ></strong>
         </div>
       </div>
+      <hr class="mb-2">
+
+      <div id="shopByCategory" class="category-toggle sidbar-div">
+        <h4>Categories</h4><i class="fa fa-plus"></i>
+      </div>
+
+      <div id="category-list" style="display: none;">
+        <% categories.forEach((category, index) => { %>
+        <div class="category-item">
+          <div class="category-div-sid-bar">
+            <div class="category-btn" data-category-id="<%= category.id %>">
+              <%= category.name %>
+            </div>
+            <div class="category-btn" data-category-id="<%= category.id %>">
+              <i class="fa fa-plus"></i>
+            </div>
+          </div>
+
+          <div class="subcategory-list" id="subcategory-<%= category.id %>" style="display: none; padding-left: 15px;">
+            <% category.subcategories.forEach(subcategory => { %>
+            <div class="sidebar-sub">
+              <a href="/shop?filters=%7B%22category%22%3A%5B%22<%= category.id %>%22%5D%2C%22subcategory%22%3A%5B%22<%= subcategory.id %>%22%5D%7D" class="mb-1">
+                <%= subcategory.name %>
+              </a>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+
+      <!-- Shop by Brand Section -->
+      <div id="shopByBrand" class="brand-toggle sidbar-div">
+        <h4>Brands</h4><i class="fa fa-plus"></i>
+      </div>
+
+      <div id="brand-list" style="display: none;">
+        <% brands.forEach(brand => { %>
+        <div class="sidebar-sub">
+          <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D">
+            <%= brand.brandName %>
+          </a>
+        </div>
+        <% }) %>
+      </div>
+
+      <div class="sidbar-div">
+        <a href="/shop?filters=%7B%22new-arrivals%22%3A%5B%22latest%22%5D%7D">
+          <h4>Shop</h4>
+        </a>
+        <i class="fa fa-plus"></i>
+      </div>
+
+      <% if (user) { %>
+      <div class="sidbar-div">
+        <a href="/my-account"><i class="fas fa-user"></i> &nbsp; My Account</a>
+        <i class="fa fa-plus"></i>
+      </div>
+      <div class="sidbar-div">
+        <a href="/manage-address"><i class="fa-solid fa-shop"></i> &nbsp; Manage Address</a>
+        <i class="fa fa-plus"></i>
+      </div>
+      <div class="sidbar-div">
+        <a href="/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
+        <i class="fa fa-plus"></i>
+      </div>
+
+      <div class="sidbar-div">
+        <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
+        <i class="fa fa-plus"></i>
+      </div>
+
+      <div class="sidbar-div">
+        <a href="/my-wallet" class="active"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
+        <i class="fa fa-plus"></i>
+      </div>
+      <div class="sidbar-div">
+        <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
+        <i class="fa fa-plus"></i>
+      </div>
+      <div class="sidbar-div">
+        <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+        <i class="fa fa-plus"></i>
+      </div>
+      <% } %>
+
+
+
+    </div>
 
 
     </div>

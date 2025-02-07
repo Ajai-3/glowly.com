@@ -1078,7 +1078,7 @@ input[type="number"]::-webkit-input-placeholder {
   color:  var(--text-color);
   z-index: 9999;
   transition: left 0.3s ease;
-  /* padding: 20px 30px; */
+  padding-top: 10px;
   overflow-y: auto;
 }
 
@@ -1104,7 +1104,7 @@ input[type="number"]::-webkit-input-placeholder {
 .category-div-sid-bar {
   display: flex;
   justify-content: space-between;
-  padding: 6px 50px;
+  padding: 10px 50px;
 }
 #brand-list {
   border-bottom: 1px solid var(--main-color);
@@ -1152,10 +1152,54 @@ input[type="number"]::-webkit-input-placeholder {
   cursor: pointer;
 }
 
+.coupon-design-div {
+  display: flex;
+  width: 100%;
+}
 
+.coupon-design-div1, .coupon-design-div2 {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-
-
+.coupon-design-div1 {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  margin-right: 2px;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  border-right: 1px dashed var(--text-color);
+  background-color: #3c3c3c;
+}
+.coupon-design-div1 p, .coupon-design-div1 p2 {
+  margin: 0;
+}
+.coupon-design-div1 strong {
+  color: var(--main-color);
+}
+.coupon-design-div2 {
+  flex: 1;
+  margin-left: 1px;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  border-left: 1px dashed var(--text-color);
+  background-color: #504f4f;
+}
+.coupon-design-div2 strong {
+  color: var(--main-color);
+  font-size: var(--font-size-normal);
+  font-weight: 600;
+}
+.coupon-code-side-bar {
+  padding: 2px 5px;
+  margin-top: 2px;
+  border-radius: 2px;
+  font-size: var(--font-size-third);
+  border: 1px dashed var(--text-color-4);
+}
 @media (max-width: 1100px) {
   .nav-offer {
       display: none;
