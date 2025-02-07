@@ -1652,6 +1652,27 @@ border: 1px solid transparent;
   color: var(--text-color-4);
 }
 
+.review-profile-session img {
+  width: 30px; 
+  height: 30px; 
+  border-radius: 50%;
+  object-fit: cover;
+}
+.review-profile-session p {
+  font-size: var(--font-size-third);
+  margin: 0;
+}
+.review-profile-session p2 {
+  color: var(--text-color-2);
+  font-size: var(--font-size-third);
+  margin: 0;
+}
+.review-user-verify i {
+  color: var(--bg-green-color);
+}
+.review-review p {
+  color: var(--text-color-3);
+}
 
 
 /* ===================================================================

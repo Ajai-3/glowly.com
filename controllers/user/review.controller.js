@@ -1,7 +1,6 @@
-import mongoose from 'mongoose';
-import Product from "../../models/product.model.js";
 import Review from "../../models/review.model.js";
-import User from '../../models/user.model.js';
+import Product from "../../models/product.model.js";
+
 
 export const review = async (req, res, next) => {
     try {

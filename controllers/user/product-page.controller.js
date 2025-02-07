@@ -7,13 +7,16 @@ import Subcategory from "../../models/subcategory.model.js";
 export const renderProductPage = async (req, res, next) => {
   try {
     let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
+    let reviews = [];
 
     const productId = req.params.productId;
     const variantId = req.params.variantId;
+    
+    reviews = await Review.find({ 
+      productId: productId
+    })
+    .populate('userId', 'name email profilePic').sort({ createdAt: -1 });;
 
-
-    const review = await Review.find({ productId: productId, variantId: variantId })
-    console.log(review)
 
     const brands = await Brand.find({ isListed: true });
     if (cart && cart.products.length > 0) {
@@ -68,6 +71,7 @@ export const renderProductPage = async (req, res, next) => {
       categories,
       product,
       variant, 
+      reviews,
       brands,
       wishlist,
       cartCount,

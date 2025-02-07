@@ -54,8 +54,24 @@
           </div>
 
           <div class="product-page-product-rating d-flex">
-            <%= product.rating ? ' ★★★★☆' + product.rating : '★★★★☆' %>
-            / 5 &nbsp; <p class="mb-1">| &nbsp;&nbsp;<%= product.ratings_count ? product.ratings_count + ' ratings' : '0 ratings' %> & <%= product.reviews_count ? product.reviews_count + ' reviews' : '0 reviews' %> </p>
+            <% const rating = product.rating || 0; %>
+            <% const fullStars = Math.floor(rating); %>
+            <% const emptyStars = 5 - fullStars; %>
+            <% const fullStarColor = 'color: gold;'; %>
+            <% const emptyStarColor = 'color: gray;'; %>
+
+            <span>
+              <% for (let i = 0; i < fullStars; i++) { %>
+              <i class="fas fa-star" style="<%= fullStarColor %>; margin-right: 2px;"></i>
+              <% } %>
+              <% for (let i = 0; i < emptyStars; i++) { %>
+              <i class="fas fa-star" style="<%= emptyStarColor %>; margin-right: 2px;"></i>
+              <% } %>
+            </span>
+            <span style="margin-left: 5px;"><%= rating %></span>
+
+
+            &nbsp;/ 5 &nbsp; <p class="mb-1">| &nbsp;&nbsp;<%= product.reviewCount ? product.reviewCount + ' ratings' : '0 ratings' %> & <%= product.reviewCount ? product.reviewCount + ' reviews' : '0 reviews' %> </p>
           </div>
 
           <div class="d-flex product-shade mt-2">
@@ -64,13 +80,13 @@
 
           <div class="variant-colors d-flex mt-2">
             <% product.variants.forEach(function (variant) { %>
-              <% if (variant.isDeleted === false) { %>
-                <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
-                  <div class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" title="<%= variant.shade %>" style="background-color: <%= variant.color %>;">
-                  </div>
-                </a>
-              <% } %>
-            <% }); %>            
+            <% if (variant.isDeleted === false) { %>
+            <a href="/product/<%= product._id %>/<%= variant._id %>" class="variant-link">
+              <div class="color-swatch <% if (variant._id.toString() === activeVariantId) { %>active<% } %>" title="<%= variant.shade %>" style="background-color: <%= variant.color %>;">
+              </div>
+            </a>
+            <% } %>
+            <% }); %>
           </div>
 
 
@@ -145,12 +161,40 @@
           <!-- Reviews Section -->
           <div class="tab-pane fade content" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
             <div class="reviews">
-              <% if (product.reviews && product.reviews.length > 0) { %>
-              <% product.reviews.forEach((review) => { %>
+              <% if (reviews && reviews.length > 0) { %>
+              <% reviews.forEach((review) => { %>
               <div class="review mb-3">
-                <h4><%= review.username %></h4>
-                <p><%= review.comment %></p>
-                <p>Rating: <%= review.rating %> / 5</p>
+                <div class="review-profile-session d-flex align-items-center mb-1">
+                  <div class="me-2">
+                    <% if (review.userId.profilePic) { %>
+                      <img src="<%= review.userId.profilePic %>" alt="Profile Picture" class="profile-pic">
+                      <% } else { %>
+                      <i class="fa-solid fa-circle-user"></i>
+                      <% } %>
+                  </div>
+                  <div class="review-user-verify">
+                    <p><%= review.userId.name %></p>
+                    <div class="d-flex">
+                      <p><% if (review.verified) { %>
+                        Verified <i class="fa-solid fa-check"></i>
+                        <% } else { %>
+                        Not Verified
+                        <% } %> &nbsp;&nbsp;
+                        
+                      </p>
+                      <p><%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                      <p2> &nbsp;( <%= review.variantShade %> )</p2>
+                    </div>
+                  </div>
+                  
+
+                </div>
+                <div class="review-review">
+                  <p><%= review.review %></p>
+                  <p>Rating: <%= review.rating %> / 5</p>
+                </div>
+
+
               </div>
               <% }); %>
               <% } else { %>

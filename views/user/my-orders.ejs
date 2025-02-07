@@ -96,61 +96,72 @@
             </div>
             <div id="products-<%= order._id %>" style="display: none;">
               <% order.products.forEach(product => { %>
-              <!-- Product Item -->
-              <div class="card shadow-sm mb-2 order-box" id="order-box" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-address-id="<%= order.address_id %>">
-                <div class="row g-0 align-items-center">
-
-                  <!-- Product Image -->
-                  <div class="col-md-2 text-center p-2">
-                    <% let variant = product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()); %>
-                    <% let imageUrl = variant?.images?.[0]; %>
-                    <% if (imageUrl) { %>
-                    <img src="<%= imageUrl %>" style="max-width: 90px;">
-                    <% } else { %>
-                    <p>No image</p>
-                    <% } %>
-                  </div>
-
-                  <!-- Product Details -->
-                  <div class="col-md-8 p-1">
-                    <div class="product-details">
-                      <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>"><%= product.product_id.title %></h6>
-                      <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">shade: <%= variant.shade %></h6>
-                      <div class="d-flex justify-content-between mt-2">
-                        <p class="m-0">Quantity: <%= product.quantity %></p>
-                        <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant.regularPrice %></span> <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span> </p>
-                        <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span> </p>
+                <!-- Product Item -->
+                <div class="card shadow-sm mb-2 order-box" id="order-box" 
+                     data-order-id="<%= order._id %>" 
+                     data-product-id="<%= product.product_id ? product.product_id._id : '' %>" 
+                     data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
+                  <div class="row g-0 align-items-center">
+            
+                    <!-- Product Image -->
+                    <div class="col-md-2 text-center p-2">
+                      <% let variant = product.product_id ? product.product_id.variants.find(v => v._id.toString() === product.variant_id.toString()) : null; %>
+                      <% let imageUrl = variant?.images?.[0]; %>
+                      <% if (imageUrl) { %>
+                        <img src="<%= imageUrl %>" style="max-width: 90px;">
+                      <% } else { %>
+                        <p>No image</p>
+                      <% } %>
+                    </div>
+            
+                    <!-- Product Details -->
+                    <div class="col-md-8 p-1">
+                      <div class="product-details">
+                        <h6 class="mb-0 product-title" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id ? order.address_id._id : '' %>">
+                          <%= product.product_id ? product.product_id.title : 'No Title' %>
+                        </h6>
+                        <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">
+                          shade: <%= variant ? variant.shade : 'No shade' %>
+                        </h6>
+                        <div class="d-flex justify-content-between mt-2">
+                          <p class="m-0">Quantity: <%= product.quantity %></p>
+                          <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant ? variant.regularPrice : 'N/A' %></span> 
+                            <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span>
+                          </p>
+                          <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span></p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-
-                  <!-- Order Status -->
-                  <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
-                    <!-- Status Display -->
-                    <p2 class="m-0 mb-4 
-                          <% if (product.status === 'pending') { %> yellow-p <% } %>
-                          <% if (product.status === 'processing') { %> blue-p <% } %>
-                          <% if (product.status === 'shipped') { %> pink-p <% } %>
-                          <% if (product.status === 'delivered') { %> green-p <% } %>
-                          <% if (product.status === 'canceled') { %> red-p <% } %>
-                          <% if (product.status === 'return_req') { %> yellow-p <% } %>
-                          <% if (product.status === 'returned') { %> blue-p <% } %>">
-                      <%= product.status %>
-                    </p2>
-
-                    <!-- Buttons -->
-                    <% if (product.status === 'delivered') { %>
-                    <!-- Return Button -->
-                    <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Return</button>
-                    <% } else if (product.status === 'processing' || product.status === 'pending') { %>
-                    <!-- Cancel Button -->
-                    <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Cancel</button>
-                    <% } %>
+            
+                    <!-- Order Status -->
+                    <div class="col-md-2 d-flex flex-column justify-content-between align-items-center">
+                      <!-- Status Display -->
+                      <p2 class="m-0 mb-4 
+                                <% if (product.status === 'pending') { %> yellow-p <% } %>
+                                <% if (product.status === 'processing') { %> blue-p <% } %>
+                                <% if (product.status === 'shipped') { %> pink-p <% } %>
+                                <% if (product.status === 'delivered') { %> green-p <% } %>
+                                <% if (product.status === 'canceled') { %> red-p <% } %>
+                                <% if (product.status === 'return_req') { %> yellow-p <% } %>
+                                <% if (product.status === 'returned') { %> blue-p <% } %>">
+                        <%= product.status %>
+                      </p2>
+            
+                      <!-- Buttons -->
+                      <% if (product.status === 'delivered') { %>
+                        <!-- Return Button -->
+                        <button type="button" class="return-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Return</button>
+                      <% } else if (product.status === 'processing' || product.status === 'pending') { %>
+                        <!-- Cancel Button -->
+                        <button type="button" class="cancel-btn" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-quantity="<%= product.quantity %>">Cancel</button>
+                      <% } %>
+                    </div>
                   </div>
                 </div>
-              </div>
               <% }); %>
             </div>
+            
+
           </div>
           <% }); %>
           <div class="order-pagination-container">
