@@ -3949,7 +3949,7 @@ p2 {
 
 .all-table th,
 .all-table td {
-  padding: 10px;
+  padding: 8px 0px 8px 10px;
   text-align: left;
   font-size: var(--font-size-third);
   border-bottom: 1px solid var(--bg-color-3);
@@ -3986,12 +3986,16 @@ p2 {
   background-color: var(--bg-color-btn-hover);
   cursor: pointer;
 }
+.deleted-row {
+  background-color: #c0bfc5;  
+  color: var(--text-color-3); 
+  text-decoration: line-through;            
+}
 
 .truncate {
-  white-space: nowrap;
+  word-wrap: break-word;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 200px;
+  max-width: 250px;
 }
 
 /* Add Products Page */
@@ -4101,7 +4105,6 @@ p2 {
   justify-content: center;
   align-items: center;
 }
-
 .modal-content {
   padding: 20px;
   max-width: 700px;  
@@ -4217,6 +4220,13 @@ p2 {
   width: 100px;
   font-size: var(--font-size-third);
   color: var(--second-text-color);
+}
+
+
+/* eddit product  */
+.element-with-blur {
+  background-color: rgba(0, 0, 0, 0.5); 
+  backdrop-filter: blur(10px); 
 }
 
 /* Custom style for the label, which will be clicked to upload the image */

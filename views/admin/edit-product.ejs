@@ -25,115 +25,186 @@
     <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit Product</a>
   </div>
 
- <!-- Edit Products Container -->
- <form action="/admin/edit-product/<%= product._id %>" method="POST" enctype="multipart/form-data">
-  <div class="edit-products-container row">
-    <div class="add-products-container1 col-6">
-      <!-- Form To Edit Product -->
-      <h4>Edit Product</h4>
+  <!-- Edit Products Container -->
+  <form id="edit-product" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>" enctype="multipart/form-data">
+    <div class="edit-products-container row">
+      <div class="add-products-container1 col-6">
+        <!-- Form To Edit Product -->
+        <h4>Edit Product</h4>
 
-      <!-- Product Name -->
-      <div>
-        <label for="productName">Product Name</label>
-        <input type="text" name="productName" id="productName" value="<%= product.title %>" placeholder="Type product name">
-      </div>
-
-      <!-- Select Brand -->
-      <div class="add-products-container-center">
+        <!-- Product Name -->
         <div>
-          <label for="brand">Select Brand</label>
-          <select name="brand" id="brand">
-            <option value="">Select Brand</option>
-            <% brands.forEach(brand => { %>
-            <option value="<%= brand._id %>" <%= product.brandId && product.brandId._id.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
-            <% }) %>
-          </select>
+          <label for="productName">Product Name</label>
+          <input type="text" name="productName" id="productName" value="<%= product.title %>" placeholder="Type product name">
         </div>
-      </div>
 
-      <!-- Description -->
-      <label for="description">Description</label><br>
-      <textarea id="description" name="description" placeholder="Enter product description here..."><%= product.description %></textarea>
-
-      <!-- Category And Subcategory -->
-      <div class="add-products-container-center">
-        <div>
-          <label for="category">Category</label><br>
-          <select name="category" id="category" onchange="updateSubCategories()">
-            <option value="">Select Category</option>
-            <% categories.forEach(category => { %>
-            <option value="<%= category._id %>" <%= product.categoryId && product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
-            <% }) %>
-          </select>
-        </div>
-        <div>
-          <label for="subCategory">Sub Category</label><br>
-          <select name="subCategory" id="subCategory">
-            <option value="">Select Sub Category</option>
-          </select>
-        </div>
-      </div>
-    </div>
-    <div class="add-products-container1">
-      <!-- Variants -->
-      <div id="variants-section">
-        <% product.variants.forEach((variant, index) => { %>
-        <div class="variant">
-          <h5>Variant <%= index + 1 %></h5>
-          <div class="add-products-container-center d-flex align-items-end">
-            <div>
-              <label for="variantColor<%= index %>">Color</label>
-              <input type="color" name="variants[<%= index %>][color]" id="variantColor<%= index %>" value="<%= variant.color %>">
-            </div>
-            <div>
-              <label for="variantShade<%= index %>">Shade</label>
-              <input type="text" name="variants[<%= index %>][shade]" id="variantShade<%= index %>" value="<%= variant.shade %>" placeholder="Shade">
-            </div>
-            <div>
-              <button class="btn-primary">Remove Variant</button>
-            </div>
+        <!-- Select Brand -->
+        <div class="add-products-container-center">
+          <div>
+            <label for="brand">Select Brand</label>
+            <select name="brand" id="brand">
+              <option value="">Select Brand</option>
+              <% brands.forEach(brand => { %>
+              <option value="<%= brand._id %>" <%= product.brandId && product.brandId._id.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
+              <% }) %>
+            </select>
           </div>
-          <div class="d-flex justify-content-between">
-            <div>
-              <label for="variantStockQuantity<%= index %>">Stock Quantity</label>
-              <input type="number" name="variants[<%= index %>][stockQuantity]" id="variantStockQuantity<%= index %>" value="<%= variant.stockQuantity %>" min="0">
-            </div>
-            <div>
-              <label for="variantRegularPrice<%= index %>">Regular Price</label>
-              <input type="number" name="variants[<%= index %>][regularPrice]" id="variantRegularPrice<%= index %>" value="<%= variant.regularPrice %>" min="0">
-            </div>
-            <div>
-              <label for="variantSalePrice<%= index %>">Sale Price</label>
-              <input type="number" name="variants[<%= index %>][salePrice]" id="variantSalePrice<%= index %>" value="<%= variant.salePrice %>" min="0">
-            </div>
+        </div>
+
+        <!-- Description -->
+        <label for="description">Description</label><br>
+        <textarea id="description" name="description" placeholder="Enter product description here..."><%= product.description %></textarea>
+
+        <!-- Category And Subcategory -->
+        <div class="add-products-container-center">
+          <div>
+            <label for="category">Category</label><br>
+            <select name="category" id="category" onchange="updateSubCategories()">
+              <option value="">Select Category</option>
+              <% categories.forEach(category => { %>
+              <option value="<%= category._id %>" <%= product.categoryId && product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
+              <% }) %>
+            </select>
           </div>
           <div>
-            <div class="my-2">
-              <% variant.images.forEach(image => { %>
-                <img src="<%= image %>" alt="Variant Image" style="width: 70px; height: 70px;">
-                <% }) %>
-            </div>
-            <label for="variantImages<%= index %>">Images</label>
-            <input type="file" class="mb-2" name="variants[<%= index %>][images][]" id="variantImages<%= index %>" multiple>
+            <label for="subCategory">Sub Category</label><br>
+            <select name="subCategory" id="subCategory">
+              <option value="">Select Sub Category</option>
+            </select>
           </div>
         </div>
-        <% }) %>
-        <button class="my-3">Add Varient</button>
+
+        <button type="submit" class="edit-product-btn2 my-3" style="width: 100%;">Update Product</button>
       </div>
-
-      <button type="submit" class="add-product-btn2 my-3">Update Product</button>
+      <div class="add-products-container1">
+        <!-- Variants -->
+        <div id="variants-section">
+          <div class="variant" data-variant-index="0">
+            <h5>Variant</h5>
+            <div class="add-products-container-center d-flex align-items-end">
+              <div>
+                <label for="variantColor">Color</label>
+                <input type="color" name="variantColor" id="variantColor" value="<%= variant.color %>">
+              </div>
+              <div>
+                <label for="variantShade">Shade</label>
+                <input type="text" name="variantShade" id="variantShade" value="<%= variant.shade %>" placeholder="Shade">
+              </div>
+              <div>
+                <% if (variant.isDeleted) { %>
+                <button type="button" class="restore-btn py-2 px-3" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">Restore Variant</button>
+                <% } else { %>
+                <button type="button" class="delete-btn py-1 px-3" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>" data-is-new="false">Remove Variant</button>
+                <% } %>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div>
+                <label for="variantRegularPrice">Regular Price</label>
+                <input type="number" name="variantRegularPrice" id="variantRegularPrice" value="<%= variant.regularPrice %>" min="0" step="0.01" oninput="validatePrices(this)">
+                <span class="error-message" id="regularPriceError0">Regular price must be non-negative.</span>
+              </div>
+              <div>
+                <label for="variantSalePrice">Sale Price</label>
+                <input type="number" name="variantSalePrice" id="variantSalePrice" value="<%= variant.salePrice %>" min="0" step="0.01" oninput="validatePrices(this)">
+                <span class="error-message" id="salePriceErrorNegative0">Sale price must be non-negative.</span>
+                <span class="error-message" id="salePriceErrorHigh0">Sale price must be <= regular price.</span>
+              </div>
+              <div>
+                <label for="variantStockQuantity">Stock Quantity</label>
+                <input type="number" name="variantStockQuantity" id="variantStockQuantity" value="<%= variant.stockQuantity %>" min="0" oninput="validateStockQuantity(this)">
+                <span class="error-message" id="stockQuantityError0">Stock quantity must be non-negative.</span>
+              </div>
+            </div>
+            <div>
+              <label for="variantImages">Images</label>
+              <input type="file" class="mb-2 variant-image-input" name="variantImages" id="variantImages" multiple>
+              <div class="my-2 image-preview-container d-flex flex-wrap justify-content-start">
+                <% variant.images.forEach((image, imageIndex) => { %>
+                <div class="image-preview">
+                  <img src="<%= image %>" alt="Variant Image" style="width: 70px; height: 70px; margin-left: 3px;">
+                  <button type="button" class="remove-image-btn" onclick="toggleImageRemoval(this, true)">X</button>
+                </div>
+                <% }) %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button type="button" id="add-variant-btn" class="my-3" style="width: 100%;">Add Variant</button>
+      </div>
     </div>
+  </form>
+</div>
+<!-- Cropper Modal -->
+<div id="cropperModal" style="display:none;">
+  <div class="modal-content">
+    <div>
+      <button id="cropButton">Crop</button>
+      <button onclick="closeCropperModal()">Close</button>
+    </div>
+    <img id="imageToCrop" src="" alt="Image to crop">
   </div>
-</form>
+</div>
 
+<!-- JavaScript Section -->
+<%- include('partials/footer') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+<script>
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-  <!-- JavaScript Section -->
-  <script>
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+  let cropper;
+  let currentInput;
 
   function updateSubCategories() {
     const categoryId = document.getElementById('category').value;
     const subCategorySelect = document.getElementById('subCategory');
-    subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>'; 
+    subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
 
     const categories = <%- JSON.stringify(categories) %>;
     const productSubCategoryId = '<%= product.subcategoryId ? product.subcategoryId._id.toString() : '' %>';
@@ -145,7 +216,7 @@
           option.value = subcategory._id;
           option.text = subcategory.name;
           if (subcategory._id.toString() === productSubCategoryId) {
-            option.selected = true; 
+            option.selected = true;
           }
           subCategorySelect.appendChild(option);
         });
@@ -153,10 +224,354 @@
     });
   }
 
+  // Function to handle image previews
+  function handleImagePreviews(input, croppedImageSrc = null) {
+    const previewContainer = input.closest('.variant').querySelector('.image-preview-container');
+    if (croppedImageSrc) {
+      const img = document.createElement('img');
+      img.src = croppedImageSrc;
+      img.alt = 'Variant Image';
+      img.style.width = '70px';
+      img.style.height = '70px';
+      img.style.marginRight = '10px';
 
+      const imageWrapper = document.createElement('div');
+      imageWrapper.classList.add('image-preview');
+      imageWrapper.appendChild(img);
+
+      const removeButton = document.createElement('button');
+      removeButton.type = 'button';
+      removeButton.classList.add('remove-image-btn');
+      removeButton.textContent = 'X';
+      removeButton.onclick = function() {
+        toggleImageRemoval(this);
+      };
+      imageWrapper.appendChild(removeButton);
+
+      previewContainer.appendChild(imageWrapper);
+    } else {
+      const files = Array.from(input.files);
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.alt = 'Variant Image';
+          img.style.width = '70px';
+          img.style.height = '70px';
+          img.style.marginRight = '10px';
+          img.style.marginBottom = '10px';
+
+          const imageWrapper = document.createElement('div');
+          imageWrapper.classList.add('image-preview');
+          imageWrapper.appendChild(img);
+
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.classList.add('remove-image-btn');
+          removeButton.textContent = 'X';
+          removeButton.onclick = function() {
+            toggleImageRemoval(this);
+          };
+          imageWrapper.appendChild(removeButton);
+
+          previewContainer.appendChild(imageWrapper);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  // Function to open the cropper modal
+  function openCropperModal(imageSrc) {
+    const cropperModal = document.getElementById('cropperModal');
+    const imageToCrop = document.getElementById('imageToCrop');
+    imageToCrop.src = imageSrc;
+    cropperModal.style.display = 'block';
+    cropper = new Cropper(imageToCrop, {
+      aspectRatio: 1,
+      viewMode: 1
+    });
+  }
+
+  // Function to close the cropper modal
+  function closeCropperModal() {
+    const cropperModal = document.getElementById('cropperModal');
+    cropperModal.style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
+
+  // Function to crop the image
+  function cropImage() {
+    const croppedCanvas = cropper.getCroppedCanvas();
+    const croppedImageDataURL = croppedCanvas.toDataURL('image/jpeg');
+    closeCropperModal();
+    handleImagePreviews(currentInput, croppedImageDataURL);
+  }
+
+  // Function to toggle image removal
+  function toggleImageRemoval(button, isExisting = false) {
+    const imageWrapper = button.closest('.image-preview');
+    if (isExisting) {
+      if (imageWrapper.classList.contains('removed')) {
+        imageWrapper.classList.remove('removed');
+        button.textContent = 'X';
+      } else {
+        imageWrapper.classList.add('removed');
+        button.textContent = 'Restore';
+      }
+    } else {
+      imageWrapper.remove();
+    }
+  }
+
+  function validatePrices(input) {
+    const variant = input.closest('.variant');
+    const regularPriceInput = variant.querySelector('input[name="variantRegularPrice"]');
+    const salePriceInput = variant.querySelector('input[name="variantSalePrice"]');
+    const regularPriceError = variant.querySelector(`#regularPriceError${variant.dataset.variantIndex}`);
+    const salePriceErrorNegative = variant.querySelector(`#salePriceErrorNegative${variant.dataset.variantIndex}`);
+    const salePriceErrorHigh = variant.querySelector(`#salePriceErrorHigh${variant.dataset.variantIndex}`);
+
+    const regularPrice = parseFloat(regularPriceInput.value);
+    const salePrice = parseFloat(salePriceInput.value);
+
+    regularPriceError.style.display = 'none';
+    salePriceErrorNegative.style.display = 'none';
+    salePriceErrorHigh.style.display = 'none';
+
+    let valid = true;
+
+    if (salePrice > regularPrice) {
+      salePriceErrorHigh.style.display = 'block';
+      valid = false;
+    } else if (salePrice < 0) {
+      salePriceErrorNegative.style.display = 'block';
+      valid = false;
+    }
+
+    if (regularPrice < 0) {
+      regularPriceError.style.display = 'block';
+      valid = false;
+    }
+
+    return valid;
+  }
+
+  // Validate stock quantity
+  function validateStockQuantity(input) {
+    const variant = input.closest('.variant');
+    const stockQuantityError = variant.querySelector(`#stockQuantityError${variant.dataset.variantIndex}`);
+
+    stockQuantityError.style.display = 'none';
+
+    if (parseInt(input.value) < 0) {
+      stockQuantityError.style.display = 'block';
+      return false;
+    }
+
+    return true;
+  }
+
+  // Initialize subcategories
   updateSubCategories();
-  </script>
 
-  <%- include('partials/footer') %>
+  document.addEventListener('DOMContentLoaded', function() {
+    const addVariantBtn = document.getElementById('add-variant-btn');
+    const variantsSection = document.getElementById('variants-section');
+
+    addVariantBtn.addEventListener('click', function() {
+      const variantCount = variantsSection.querySelectorAll('.variant').length;
+      const newVariantIndex = variantCount;
+
+      const newVariantHtml = `
+        <div class="variant" data-variant-index="${newVariantIndex}">
+          <h5>Variant ${newVariantIndex + 1}</h5>
+          <div class="add-products-container-center d-flex align-items-end">
+            <div>
+              <label for="variantColor${newVariantIndex}">Color</label>
+              <input type="color" name="variants[${newVariantIndex}][color]" id="variantColor${newVariantIndex}">
+            </div>
+            <div>
+              <label for="variantShade${newVariantIndex}">Shade</label>
+              <input type="text" name="variants[${newVariantIndex}][shade]" id="variantShade${newVariantIndex}" placeholder="Shade">
+            </div>
+            <div>
+              <button type="button" class="delete-btn" data-is-new="true">Remove Variant</button>
+            </div>
+          </div>
+          <div class="d-flex justify-content-between">
+            <div>
+              <label for="variantRegularPrice${newVariantIndex}">Regular Price</label>
+              <input type="number" name="variants[${newVariantIndex}][regularPrice]" id="variantRegularPrice${newVariantIndex}" min="0" step="0.01" oninput="validatePrices(this)">
+              <span class="error-message" id="regularPriceError${newVariantIndex}" style="color: red; display: none;">Regular price must be non-negative.</span>
+            </div>
+            <div>
+              <label for="variantSalePrice${newVariantIndex}">Sale Price</label>
+              <input type="number" name="variants[${newVariantIndex}][salePrice]" id="variantSalePrice${newVariantIndex}" min="0" step="0.01" oninput="validatePrices(this)">
+              <span class="error-message" id="salePriceErrorNegative${newVariantIndex}" style="color: red; display: none;">Sale price must be non-negative.</span>
+              <span class="error-message" id="salePriceErrorHigh${newVariantIndex}" style="color: red; display: none;">Sale price must be <= regular price.</span>
+            </div>
+            <div>
+              <label for="variantStockQuantity${newVariantIndex}">Stock Quantity</label>
+              <input type="number" name="variants[${newVariantIndex}][stockQuantity]" id="variantStockQuantity${newVariantIndex}" min="0" oninput="validateStockQuantity(this)">
+              <span class="error-message" id="stockQuantityError${newVariantIndex}" style="color: red; display: none;">Stock quantity must be non-negative.</span>
+            </div>
+          </div>
+          <div>
+            <label for="variantImages${newVariantIndex}">Images</label>
+            <input type="file" class="mb-2 variant-image-input" name="variants[${newVariantIndex}][images][]" id="variantImages${newVariantIndex}" multiple>
+            <div class="my-2 me-2 image-preview-container d-flex flex-wrap justify-content-start"></div>
+          </div>
+        </div>
+      `;
+
+      variantsSection.insertAdjacentHTML('beforeend', newVariantHtml);
+    });
+
+    // Event delegation for remove variant button
+    document.addEventListener('click', function(event) {
+      if (event.target.classList.contains('delete-btn')) {
+        const isNew = event.target.getAttribute('data-is-new') === 'true';
+        if (isNew) {
+          const variantElement = event.target.closest('.variant');
+          variantElement.remove();
+        }
+      }
+    });
+
+    // Event delegation for image input previews and cropper modal
+    document.addEventListener('change', function(event) {
+      if (event.target.classList.contains('variant-image-input')) {
+        currentInput = event.target;
+        const files = Array.from(event.target.files);
+        files.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            openCropperModal(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+
+    // Handle crop button click
+    document.getElementById('cropButton').addEventListener('click', cropImage);
+  });
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('edit-product');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
+      const productId = form.getAttribute('data-product-id');
+      const variantId = form.getAttribute('data-variant-id');
+      
+      // Collect valid existing images
+      const existingImages = [];
+      const imagePreviews = document.querySelectorAll('.image-preview');
+      imagePreviews.forEach(preview => {
+        const imgSrc = preview.querySelector('img').src;
+        const isRemoved = preview.querySelector('.remove-image-btn').classList.contains('removed');
+        if (!isRemoved && !preview.classList.contains('removed')) {
+          existingImages.push(imgSrc);
+        }
+      });
+      
+      // Append existing images to formData
+      existingImages.forEach(image => {
+        formData.append('existingImages[]', image);
+      });
+      
+      // Collect new images from input
+      const newImages = form.querySelector('input[type="file"]').files;
+      Array.from(newImages).forEach(file => {
+        formData.append('variantImages[]', file);
+        const croppedFileName = file.name.replace(/\.[^/.]+$/, ".cropped.jpg"); // Example logic to create a cropped file name
+        formData.append('croppedImages[]', croppedFileName);
+      });
+      
+      // Debugging: Log form data
+      for (const [key, value] of formData) {
+        console.log(`${key}: ${value}`);
+      }
+      
+      try {
+        const response = await fetch(`/admin/edit-product/${productId}/${variantId}`, {
+          method: 'PATCH',
+          body: formData
+        });
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success) {
+            toastSuccess(result.message);
+          } else {
+            toastError(result.message);
+          }
+        } else {
+          toastError('Error while updating product.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toastWarning('An error occurred while updating the product.');
+      }
+    });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.delete-btn, .restore-btn');
+
+    buttons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const productId = button.getAttribute('data-product-id');
+        const variantId = button.getAttribute('data-variant-id');
+        const isDeleted = button.classList.contains('restore-btn');
+        const action = isDeleted ? 'restore' : 'delete';
+
+        try {
+          const response = await fetch(`/admin/toggle-variant`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              productId,
+              variantId,
+              action
+            })
+          });
+
+          if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+              if (action === 'delete') {
+                button.textContent = 'Restore Variant';
+                button.classList.remove('delete-btn');
+                button.classList.add('restore-btn');
+              } else {
+                button.textContent = 'Remove Variant';
+                button.classList.remove('restore-btn');
+                button.classList.add('delete-btn');
+              }
+              toastSuccess(result.message);
+            } else {
+              toastError('Failed to update variant status');
+            }
+          } else {
+            toastError('Error toggling variant status');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          toastWarning('An error occurred');
+        }
+      });
+    });
+  });
+</script>
+
+<%- include('partials/footer') %>
 
 </html>

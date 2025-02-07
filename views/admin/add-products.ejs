@@ -128,6 +128,8 @@
     </div>
   </div>
 </div>
+
+
 <%- include('partials/footer') %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
@@ -415,8 +417,6 @@
         });
 
         formData.append('variants', JSON.stringify(variants));
-
-        console.log(formData)
 
         try {
             const response = await fetch('/admin/add-products', {
