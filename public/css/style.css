@@ -2516,11 +2516,10 @@ border: 1px solid transparent;
 
 .user-address-display {
   position: relative;
-  flex: 0 0 calc(50% - 10px);
+  flex: 1 0 calc(50% - 10px);
   padding: 20px 10px 10px 15px;
   border-radius: 5px;
   margin: 5px;
-  width: 400px;
   background-color: var(--bg-color-4);
   border: 1px solid var(--second-text-color);
   transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
@@ -2549,6 +2548,18 @@ border: 1px solid transparent;
   border-radius: 0;
 }
 
+
+@media (max-width: 768px) {
+  .user-address-display {
+    flex: 1 0 50%;
+  }
+}
+
+@media (max-width: 576px) {
+  .user-address-display {
+    flex: 1 0 100%;
+  }
+}
 /* */
 /*  *//* ====================================================================
  /* ===================================================================
