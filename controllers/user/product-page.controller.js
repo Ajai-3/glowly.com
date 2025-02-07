@@ -1,10 +1,7 @@
-import jwt from "jsonwebtoken";
-import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
 import Offer from "../../models/offer.model.js";
+import Review  from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
-import Wishlist from "../../models/wishlist.model.js";
-import Category from "../../models/category.model.js";
 import Subcategory from "../../models/subcategory.model.js";
 
 export const renderProductPage = async (req, res, next) => {
@@ -13,6 +10,10 @@ export const renderProductPage = async (req, res, next) => {
 
     const productId = req.params.productId;
     const variantId = req.params.variantId;
+
+
+    const review = await Review.find({ productId: productId, variantId: variantId })
+    console.log(review)
 
     const brands = await Brand.find({ isListed: true });
     if (cart && cart.products.length > 0) {

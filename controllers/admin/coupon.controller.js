@@ -39,15 +39,6 @@ export const renderCouponsPage = async (req, res) => {
     }
 };
 
-// // Render Add Coupon Page
-// export const renderAddCouponPage = async (req, res) => {
-//     try {
-        
-//         return res.render('admin/add-coupon')
-//     } catch (error) {
-        
-//     }
-// }
 // Add Coupon 
 export const addCoupon = async (req, res) => {
     try {
@@ -88,7 +79,6 @@ cron.schedule('* * * * *', async () => {
             for (const coupon of couponsToActivate) {
                 coupon.isActive = true; 
                 await coupon.save();
-                // console.log(`Coupon ${coupon.code} has been activated.`);
             }
         }
 
@@ -102,7 +92,6 @@ cron.schedule('* * * * *', async () => {
             for (const coupon of expiredCoupons) {
                 coupon.isActive = false;  
                 await coupon.save();
-                // console.log(`Coupon ${coupon.code} has expired and been deactivated.`);
             }
         }
     } catch (error) {

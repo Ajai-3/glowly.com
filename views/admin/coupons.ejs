@@ -177,7 +177,7 @@
                     </td>
 
                     <td>
-                        <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> |
+                        <!-- <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> | -->
                         <% if (coupon.isDelete === false) { %>
                             <button class="delete-btn" onclick="showConfirmationPopup('<%= coupon._id %>', 'delete')">Delete</button>
                           <% } else { %>
@@ -370,9 +370,9 @@ document.addEventListener('DOMContentLoaded', (event) => {
                 return false;
             }
         } else if (discountType === 'flat') {
-            if (discountValue < minPrice || discountValue > maxPrice) {
+            if (discountValue > minPrice || discountValue > maxPrice) {
                 discountValueInput.classList.add('error');
-                errorElement.textContent = `Flat value must be between ${minPrice} and ${maxPrice}`;
+                errorElement.textContent = `Flat value must be between 0 and ${minPrice}`;
                 errorElement.style.display = 'block';
                 return false;
             }
