@@ -6,8 +6,6 @@ const uploads = multer ({ storage:storage })
 import { uploadImages } from "../helpers/cloudinary.js"
 import {
   renderLoginPage,
-  renderSettingsPage,
-  renderBannerManagementPage,
   handleAdminLogin,
   handleAdminLogout,
 } from "../controllers/admin/admin.controller.js";
@@ -20,6 +18,7 @@ import { renderCouponsPage, addCoupon, removeCoupon, restoreCoupon } from "../co
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
 import { renderTopItemsPage } from "../controllers/admin/topitem.controller.js";
+import { renderSettingsPage } from "../controllers/admin/admin-settings.controller.js";
 
 
 // Pages Are Protected With adminAuthMiddleware
@@ -100,8 +99,8 @@ router.patch("/update-order-status", verifyAdminToken, updateOrderStatus)
 
 
 //
-router.get("/banner-management", verifyAdminToken, renderBannerManagementPage);
-//
+
+// Settings Mangement
 router.get("/settings", verifyAdminToken, renderSettingsPage);
 
 

@@ -21,15 +21,6 @@ export const renderLoginPage = (req, res) => {
 
 
 
-// Rendre Banner Management Page
-export const renderBannerManagementPage= (req, res) => {
-    return res.render("admin/banner-management")
-}
-// Rendre Settings Page
-export const renderSettingsPage= (req, res) => {
-    return res.render("admin/settings")
-}
-
 
 
 
