@@ -90,7 +90,8 @@
           <td><%= variant.salePrice %></td>
           <td><%= variant.stockQuantity %></td>
           <td>
-            <a href="/admin/edit-product/<%= variant.productId %>/<%= variant._id %>"><button class="edit-btn">Edit</button></a> |
+            <!-- <a href="/admin/edit-product/<%= variant.productId %>/<%= variant._id %>"><button class="edit-btn">Edit</button></a> | -->
+            <a href="/admin/add-variants/<%= variant.productId %>"><button class="edit-btn">Edit</button></a>
             <% if (!variant.isDeleted) { %>
               <button class="delete-btn" data-id="<%= variant.productId %>" data-deleted="false">Delete</button>
             <% } else { %>

@@ -43,7 +43,6 @@
           <div>
             <label for="brand">Select Brand</label>
             <select name="brand" id="brand">
-              <option value="">Select Brand</option>
               <% brands.forEach(brand => { %>
               <option value="<%= brand._id %>" <%= product.brandId && product.brandId._id.toString() === brand._id.toString() ? 'selected' : '' %>><%= brand.brandName %></option>
               <% }) %>
@@ -60,7 +59,6 @@
           <div>
             <label for="category">Category</label><br>
             <select name="category" id="category" onchange="updateSubCategories()">
-              <option value="">Select Category</option>
               <% categories.forEach(category => { %>
               <option value="<%= category._id %>" <%= product.categoryId && product.categoryId._id.toString() === category._id.toString() ? 'selected' : '' %>><%= category.name %></option>
               <% }) %>
@@ -69,13 +67,15 @@
           <div>
             <label for="subCategory">Sub Category</label><br>
             <select name="subCategory" id="subCategory">
-              <option value="">Select Sub Category</option>
             </select>
           </div>
         </div>
-
+     
         <button type="submit" class="edit-product-btn2 my-3" style="width: 100%;">Update Product</button>
+        <button onclick="window.location.href='/admin/add-variants/<%= product._id %>'">Add new variant</button>
+
       </div>
+     
       <div class="add-products-container1">
         <!-- Variants -->
         <div id="variants-section">
@@ -117,8 +117,14 @@
               </div>
             </div>
             <div>
-              <label for="variantImages_0">Images</label>
-              <input type="file" class="mb-2 variant-image-input" name="variantImages_0" id="variantImages_0" multiple>
+              <label for="variantImages_0">Image 1</label>
+              <input type="file" class="mb-1 variant-image-input" name="variantImages_0" id="variantImages_0" multiple>
+              <label for="variantImages_1">Image 2</label>
+              <input type="file" class="mb-1 variant-image-input" name="variantImages_1" id="variantImages_1" multiple>
+              <label for="variantImages_2">Image 3</label>
+              <input type="file" class="mb-1 variant-image-input" name="variantImages_2" id="variantImages_2" multiple>
+              <label for="variantImages_3">Image 4</label>
+              <input type="file" class="mb-1 variant-image-input" name="variantImages_3" id="variantImages_3" multiple>
               <div id="variantImagesContainer">
                 <!-- Dynamically added variant image inputs will be appended here -->
               </div>
@@ -188,15 +194,15 @@ const toastWarning = (message) => {
     position: 'topRight',
   });
 };
-
-
 function updateSubCategories() {
   const categoryId = document.getElementById('category').value;
   const subCategorySelect = document.getElementById('subCategory');
-  subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+  subCategorySelect.innerHTML = ''; // Empty the options
 
   const categories = JSON.parse('<%- JSON.stringify(categories) %>');
   const productSubCategoryId = '<%= product.subcategoryId ? product.subcategoryId._id.toString() : '' %>';
+
+  let firstSubCategoryId = null;
 
   categories.forEach(category => {
     if (category._id.toString() === categoryId) {
@@ -204,19 +210,23 @@ function updateSubCategories() {
         const option = document.createElement('option');
         option.value = subcategory._id;
         option.text = subcategory.name;
+
+        if (!firstSubCategoryId) {
+          firstSubCategoryId = subcategory._id;
+        }
+
         if (subcategory._id.toString() === productSubCategoryId) {
           option.selected = true;
         }
+
         subCategorySelect.appendChild(option);
       });
+
+      if (!productSubCategoryId && firstSubCategoryId) {
+        subCategorySelect.value = firstSubCategoryId; 
+      }
     }
   });
-
-  // Set the subcategory to the product's subcategory if available
-  const selectedSubCategory = '<%= product.subcategoryId ? product.subcategoryId._id.toString() : '' %>';
-  if (selectedSubCategory) {
-    subCategorySelect.value = selectedSubCategory;
-  }
 }
 
 function validatePrices(input) {
@@ -268,20 +278,8 @@ function validateStockQuantity(input) {
 
 updateSubCategories();
 
-
-
-
-
-
-
-
-
-
 let cropper;
 let currentInput;
-
-
-
 
 function handleImagePreviews(input, croppedImageSrc = null) {
   const previewContainer = input.closest('.variant').querySelector('.image-preview-container');
@@ -303,7 +301,7 @@ function handleImagePreviews(input, croppedImageSrc = null) {
     removeButton.classList.add('remove-image-btn');
     removeButton.textContent = 'X';
     removeButton.onclick = function() {
-      toggleImageRemoval(this);
+      toggleImageRemoval(this, false); 
     };
     imageWrapper.appendChild(removeButton);
 
@@ -330,7 +328,7 @@ function handleImagePreviews(input, croppedImageSrc = null) {
         removeButton.classList.add('remove-image-btn');
         removeButton.textContent = 'X';
         removeButton.onclick = function() {
-          toggleImageRemoval(this);
+          toggleImageRemoval(this, false);
         };
         imageWrapper.appendChild(removeButton);
 
@@ -378,7 +376,7 @@ function cropImage() {
     });
 }
 
-function toggleImageRemoval(button, isExisting = false) {
+function toggleImageRemoval(button, isExisting) {
   const imageWrapper = button.closest('.image-preview');
   if (isExisting) {
     if (imageWrapper.classList.contains('removed')) {
@@ -393,29 +391,55 @@ function toggleImageRemoval(button, isExisting = false) {
   }
 }
 
-
-
 document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('edit-product');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    let valid = true;
+
+    const priceInputs = form.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
+    priceInputs.forEach(input => {
+      if (!validatePrices(input)) {
+        valid = false;
+      }
+    });
+
+    const stockQuantityInputs = form.querySelectorAll('input[name="variantStockQuantity"]');
+    stockQuantityInputs.forEach(input => {
+      if (!validateStockQuantity(input)) {
+        valid = false;
+      }
+    });
+
+    if (!valid) {
+      return;
+    }
+
     const formData = new FormData(form);
     const productId = form.getAttribute('data-product-id');
     const variantId = form.getAttribute('data-variant-id');
 
     const existingImages = [];
+    const removedImages = [];
     const imagePreviews = document.querySelectorAll('.image-preview');
-    imagePreviews.forEach(preview => {
+    imagePreviews.forEach((preview, index) => {
       const imgSrc = preview.querySelector('img').src;
-      const isRemoved = preview.querySelector('.remove-image-btn').classList.contains('removed');
-      if (!isRemoved && !preview.classList.contains('removed')) {
-        existingImages.push(imgSrc);
+      const isRemoved = preview.classList.contains('removed');
+
+      if (!isRemoved) {
+        existingImages.push({ src: imgSrc, index: index });
+      } else {
+        removedImages.push({ src: imgSrc, index: index });
       }
     });
 
     existingImages.forEach(image => {
-      formData.append('existingImages[]', image);
+      formData.append('existingImages[]', JSON.stringify(image));
+    });
+
+    removedImages.forEach(image => {
+      formData.append('removedImages[]', JSON.stringify(image));
     });
 
     const newImages = form.querySelectorAll('input[type="file"]');
@@ -439,11 +463,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const result = await response.json();
         if (result.success) {
           toastSuccess(result.message);
+          setTimeout(() => {
+            window.location.href = "/admin/products"
+          }, 1500)
         } else {
           toastError(result.message);
         }
       } else {
-        toastError('Error while updating product.');
+        toastError('Fields cannot be empty. Error updating product.');
       }
     } catch (error) {
       toastWarning('An error occurred while updating the product.');

@@ -383,7 +383,6 @@ cron.schedule('* * * * *', async () => {
         for (const offer of activeOffers) {
             offer.isActive = true;
             await offer.save();
-            console.log(`Offer ${offer._id} activated.`);
 
             const maxDiscountPercentage = 70;
 
@@ -425,7 +424,6 @@ cron.schedule('* * * * *', async () => {
             offer.isActive = false;
             offer.isDeleted = true; 
             await offer.save();
-            console.log(`Offer ${offer._id} deactivated.`);
 
             const category = await Category.findOne({ offerId: offer._id });
             if (!category) {
@@ -484,7 +482,6 @@ export const removeOffer = async (req, res) => {
         // Deactivate the offer
         offer.isActive = false;
         await offer.save();
-        console.log(`Offer ${offerId} deactivated.`);
 
         const maxDiscountPercentage = 70;
         const products = await Product.find({ categoryId: category._id, isDeleted: false });

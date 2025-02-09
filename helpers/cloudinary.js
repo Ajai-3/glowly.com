@@ -23,6 +23,7 @@ const upload = multer({ storage });
 
 const uploadImages = upload.fields([
   { name: 'sharedImages', maxCount: 10 },
+  { name: 'variantImages', maxCount: 10 },
   { name: 'variantImages_0', maxCount: 10 },
   { name: 'variantImages_1', maxCount: 10 },
   { name: 'variantImages_2', maxCount: 10 },
