@@ -177,7 +177,6 @@
                     </td>
 
                     <td>
-                        <!-- <a href="/admin/edit-coupon/<%= coupon._id %>"><button class="edit-btn">Edit</button></a> | -->
                         <% if (coupon.isDelete === false) { %>
                             <button class="delete-btn" onclick="showConfirmationPopup('<%= coupon._id %>', 'delete')">Delete</button>
                           <% } else { %>

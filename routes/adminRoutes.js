@@ -16,7 +16,7 @@ import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/cu
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer, topCategories, topSubCategories } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct, topProducts, toggleProductVariant, addVariantPage, addNewVariants } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand, topBrands } from "../controllers/admin/brand.controller.js";
-import { renderCouponsPage,  renderEditCouponPage, addCoupon, editCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
+import { renderCouponsPage, addCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
 import { renderTopItemsPage } from "../controllers/admin/topitem.controller.js";
@@ -90,12 +90,10 @@ router.put('/block-user', verifyAdminToken, blockUser);
 router.put('/unblock-user', verifyAdminToken, unBlockUser);
 // Coupon Routes
 router.get("/coupons", verifyAdminToken, renderCouponsPage);
+router.post("/add-coupon", verifyAdminToken, addCoupon);
 router.patch('/remove-coupon', verifyAdminToken, removeCoupon);
 router.patch('/restore-coupon', verifyAdminToken, restoreCoupon);
-// router.get("/add-coupon", renderAddCouponPage);
-router.post("/add-coupon", verifyAdminToken, addCoupon);
-router.get("/edit-coupon", verifyAdminToken, renderEditCouponPage);
-router.post("/edit-coupon", verifyAdminToken, editCoupon);
+
 // Order Routes
 router.get("/orderlists", verifyAdminToken, renderOrderPage);
 router.patch("/update-order-status", verifyAdminToken, updateOrderStatus)
