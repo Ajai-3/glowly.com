@@ -1,22 +1,22 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
+      ref: "User",
       required: true,
     },
     address_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Address',
+      ref: "Address",
       required: true,
     },
     products: [
       {
         product_id: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'Product',
+          ref: "Product",
           required: true,
         },
         variant_id: {
@@ -27,19 +27,27 @@ const OrderSchema = new mongoose.Schema(
           type: Number,
           required: true,
           min: 1,
-        }, 
+        },
         total_amount: {
           type: Number,
           required: true,
         },
         amount_after_coupon: {
           type: Number,
-          required: false
+          required: false,
         },
         status: {
           type: String,
-          enum: ['pending', 'processing', 'shipped', 'delivered', 'canceled', 'return_req', 'returned'],
-          default: 'pending',
+          enum: [
+            "pending",
+            "processing",
+            "shipped",
+            "delivered",
+            "canceled",
+            "return_req",
+            "returned",
+          ],
+          default: "pending",
           required: true,
         },
         order_placed_at: {
@@ -47,7 +55,7 @@ const OrderSchema = new mongoose.Schema(
           default: Date.now,
         },
         processing_at: {
-          type: Date
+          type: Date,
         },
         shipped_at: {
           type: Date,
@@ -56,7 +64,7 @@ const OrderSchema = new mongoose.Schema(
           type: Date,
         },
         canceled_at: {
-          type: Date
+          type: Date,
         },
         returned_at: {
           type: Date,
@@ -72,12 +80,12 @@ const OrderSchema = new mongoose.Schema(
     },
     payment_method: {
       type: String,
-      enum: ['cash', 'razorpay', 'wallet'],
+      enum: ["cash", "razorpay", "wallet"],
       required: true,
     },
     payment_status: {
       type: String,
-      enum: ['Payment pending COD', 'Payment completed', 'Payment failed'],
+      enum: ["Payment pending COD", "Payment completed", "Payment failed"],
       required: true,
     },
     coupon_applied: {
@@ -95,6 +103,6 @@ const OrderSchema = new mongoose.Schema(
   }
 );
 
-const Order = mongoose.model('Order', OrderSchema);
+const Order = mongoose.model("Order", OrderSchema);
 
 export default Order;

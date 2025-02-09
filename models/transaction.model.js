@@ -1,16 +1,16 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const { Schema, model } = mongoose;
 
 const transactionSchema = new Schema({
   wallet_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Wallet', 
+    ref: "Wallet",
     required: true,
   },
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: "User",
     required: true,
   },
   amount: {
@@ -19,20 +19,26 @@ const transactionSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ['Credited', 'Debited', 'Refund', 'Cashback'], 
+    enum: ["Credited", "Debited", "Refund", "Cashback"],
     required: true,
   },
   description: {
     type: String,
-    enum: ['Order placed', 'Order returned', 'Money added', 'Refund', 'Cashback'],
+    enum: [
+      "Order placed",
+      "Order returned",
+      "Money added",
+      "Refund",
+      "Cashback",
+    ],
     required: true,
   },
   date: {
     type: Date,
-    default: Date.now, 
+    default: Date.now,
   },
 });
 
-const Transaction = model('Transaction', transactionSchema);
+const Transaction = model("Transaction", transactionSchema);
 
 export default Transaction;

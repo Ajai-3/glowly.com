@@ -11,20 +11,20 @@ const brandSchema = new mongoose.Schema({
     trim: true,
   },
   brandImage: {
-    type: String, 
+    type: String,
     required: true,
   },
   soldCount: {
     type: Number,
-    defualt: 0
+    defualt: 0,
   },
   isListed: {
     type: Boolean,
-    default: true 
+    default: true,
   },
   deleted_at: {
     type: Date,
-    default: null
+    default: null,
   },
   created_at: {
     type: Date,
@@ -36,6 +36,6 @@ const brandSchema = new mongoose.Schema({
   },
 });
 
-const Brand = mongoose.model('Brand', brandSchema);
+const Brand = mongoose.model("Brand", brandSchema);
 
 export default Brand;

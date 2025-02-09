@@ -1,45 +1,45 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const offerSchema = new mongoose.Schema({
   offerType: {
     type: String,
-    enum: ['percentage', 'flat'],
-    required: true, 
+    enum: ["percentage", "flat"],
+    required: true,
   },
   offerValue: {
     type: Number,
-    required: true, 
+    required: true,
   },
   name: {
     type: String,
-    default: '', 
+    default: "",
   },
   startDate: {
     type: Date,
-    required: true, 
+    required: true,
   },
   endDate: {
     type: Date,
-    required: true, 
+    required: true,
   },
   isActive: {
     type: Boolean,
-    default: false, 
+    default: false,
   },
   isDeleted: {
     type: Boolean,
-    default: false, 
+    default: false,
   },
   category_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category', 
+    ref: "Category",
   },
   product_id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product', 
+    ref: "Product",
   },
 });
 
-const Offer = mongoose.model('Offer', offerSchema);
+const Offer = mongoose.model("Offer", offerSchema);
 
 export default Offer;
