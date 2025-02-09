@@ -134,7 +134,6 @@ export const updateOrderStatus = async (req, res) => {
         item.product_id.toString() === productId &&
         item.variant_id.toString() === variantId
     );
-    console.log(productInOrder.quantity);
 
     if (!productInOrder) {
       return res
