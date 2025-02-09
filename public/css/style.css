@@ -4025,82 +4025,8 @@ p2 {
   background-color: rgba(0, 0, 0, 0.5); 
   z-index: 999; 
 }
-@media (max-width: 1224px) {
-  .sidebar {
-    height: 100%;
-    transform: translateX(-100%);
-  }
-  .sidebar.open {
-    transform: translateX(0); 
-  }
 
-  .overlay.visible {
-    display: block;
-  }
-  .main-content {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50px;
-    margin-left: 0;
-    padding: 20px;
-  }
-  .responsive-logo-admin-side {
-    display: block;
-    margin-bottom: 5px;
-  }
-  .header  {
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    margin: 0px;
-    padding: 0px 20px;
-    z-index: 999;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--second-text-color);
-  }
-}
 
-@media (max-width: 1200px) {
-  .dashboard-summary div {
-    flex: 1 1 calc(33.33% - 12px); 
-  }
-  .table-scroll-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 20px;
-  }
-  
-  .all-table {
-    width: 100%;
-    table-layout: fixed;
-  }
-}
-
-@media (max-width: 768px) {
-
-  .dashboard-summary div {
-    flex: 1 1 calc(50% - 12px); 
-  }
-  .chart-container {
-    margin-top: 10px;
-  }
-}
-
-@media (max-width: 576px) {
-  .search-bar input {
-    display: none;
-  }
-  .dashboard-summary div {
-    margin-right: 0px;
-    flex: 1 1 calc(100% - 12px); /
-  }
-  .main-content {
-    padding: 10px 10px;
-  }
-
-}
 .chart-wrapper {
   display: flex;
   padding: 0;
@@ -4288,16 +4214,8 @@ p2 {
 }
 
 
-.table-scroll-wrapper {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-bottom: 20px;
-}
-
-.all-table {
-  width: 100%;
-  min-width: 1200px;
-  table-layout: auto;
+.filter-dashboard {
+  display: none;
 }
 
 .deleted-row {
@@ -4959,3 +4877,157 @@ input.quantity-input {
   color: var(--text-color);
   white-space: nowrap;
 }
+
+.chart-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.chart-container {
+  width: 100%;
+}
+
+#salesChart {
+  width: 100%;
+  height: 400px; 
+}
+
+#paymentMethodsChart {
+  width: 80%;
+  height: 250px;
+}
+
+@media (max-width: 1224px) {
+  .sidebar {
+    height: 100%;
+    transform: translateX(-100%);
+  }
+  .sidebar.open {
+    transform: translateX(0); 
+  }
+
+  .overlay.visible {
+    display: block;
+  }
+  .main-content {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50px;
+    margin-left: 0;
+    padding: 20px;
+  }
+  .responsive-logo-admin-side {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .header  {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: 0px;
+    padding: 0px 20px;
+    z-index: 999;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--second-text-color);
+  }
+}
+
+
+@media (max-width: 1200px) {
+  .dashboard-summary div {
+    flex: 1 1 calc(33.33% - 12px); 
+  }
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+  }
+  
+  .all-table {
+    width: 100%;
+    min-width: 1200px;
+    table-layout: auto;
+  }
+  .filter-container{
+    display: none;
+  }
+  .filter-dashboard {
+    display: block;
+  }
+
+}
+
+@media (max-width: 768px) {
+
+  .dashboard-summary div {
+    flex: 1 1 calc(50% - 12px); 
+  }
+  .chart-container {
+    margin-top: 10px;
+  }
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+  }
+  
+  .all-table {
+    width: 100%;
+    min-width: 1200px;
+    table-layout: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-bar input {
+    display: none;
+  }
+  .dashboard-summary div {
+    margin-right: 5px;
+    flex: 1 1 calc(50% - 12px); /
+  }
+  .main-content {
+    padding: 10px 10px;
+  }
+  .table-scroll-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 20px;
+  }
+  
+  .all-table {
+    width: 100%;
+    min-width: 1200px;
+    table-layout: auto;
+  }
+  .chart-container-scrollable {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .chart-container {
+    overflow-x: auto;
+  }
+
+  #salesChart {
+    height: 320px !important;  
+    width: 100%; 
+    min-width: 450px;  
+    
+  }
+
+  #paymentMethodsChart {
+    height: 200px;  
+    width: 80%;
+    margin: 0 auto;
+  }
+  
+  
+}
+
+
+
