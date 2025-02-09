@@ -46,12 +46,6 @@
                 
             </div>
 
-            <% if (msg) { %>
-                <div class="alert <%= msg.type === 'success' ? 'alert-success' : 'alert-error' %>">
-                    <%= msg.text %>
-                </div>
-            <% } %>
-
             <div>
               <button type="button" class="top-items-btn add-new-brand-btn" data-toggle="modal" data-target="#topItemsModal">
                 <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Products
@@ -70,7 +64,6 @@
                     <th>Logo</th>
                     <th>Brand Name</th>
                     <th>Created At</th>
-                    <!-- <th>List / Unlist</th> -->
                     <th>Action</th>
                 </tr>
             </thead>
@@ -82,19 +75,9 @@
 
                         <td><%= brand.brandName %></td>
                         <td><%= brand.created_at.toLocaleDateString() %></td>
-                        <!-- <td>
-                            <button
-                            class="<%= brand.isListed ? 'unlist-btn' : 'list-btn' %>"
-                            data-id="<%= brand._id %>"
-                            onclick="toggleBrand(this)"
-                          >
-                            <%= brand.isListed ? 'Unlist' : 'List' %>
-                          </button>
-                        </td> -->
                         
                         <td>
                             <a href="/admin/edit-brand/<%= brand._id %>"><button class="edit-btn">Edit</button></a> |
-                            <!-- <a href="/delete-brand/<%= brand._id %>" onclick="return confirm('Are you sure?')"><button class="delete-btn" >Delete</button></a> -->
                             <button
                             class="<%= brand.isListed ? 'unlist-btn' : 'list-btn' %>"
                             data-id="<%= brand._id %>"

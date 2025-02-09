@@ -15,7 +15,7 @@ import { redirectIfLoggedIn, verifyAdminToken, pageMiddlware } from "../middlewa
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
 import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer, topCategories, topSubCategories } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct, topProducts, toggleProductVariant, addVariantPage, addNewVariants } from "../controllers/admin/product.controller.js";
-import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand, topBrands } from "../controllers/admin/brand.controller.js";
+import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, topBrands } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage, addCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
@@ -64,7 +64,6 @@ router.get("/add-new-brand", verifyAdminToken, renderAddBrandPage);
 router.post("/add-new-brand", verifyAdminToken, uploads.single("image"), addBrand);
 router.get("/edit-brand/:brandId", verifyAdminToken, renderEditBrandPage);
 router.patch('/edit-brand/:brandId', verifyAdminToken, uploads.single('image'), editBrand);
-router.get("/delete-brand/:brandId", verifyAdminToken, deleteBrand);
 router.get("/top-brands", verifyAdminToken, topBrands)
 
 // Category & Subcategory Routes
