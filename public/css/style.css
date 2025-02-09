@@ -4950,7 +4950,7 @@ input.quantity-input {
     min-width: 1200px;
     table-layout: auto;
   }
-  .filter-container{
+  .filter-container-dashboard {
     display: none;
   }
   .filter-dashboard {

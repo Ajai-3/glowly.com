@@ -148,64 +148,75 @@
         <button type="button" class="large-button-pink px-4" data-toggle="modal" data-target="#couponModal">Add Coupon</button>
     </div>
 
-    <table class="all-table">
-        <thead>
-            <tr>
-                <th>S.No</th>
-                <th>Coupon Code</th>
-                <th>Type</th>
-                <th>Discount Value</th>
-                <th>Price Range</th>
-                <th>Start Date</th>
-                <th>Expiry Date</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody id="couponTableBody">
-            <% coupons.forEach((coupon, index) => { %>
+    <div class="table-scroll-wrapper">
+        <table class="all-table">
+            <thead>
                 <tr>
-                    <td><%= (currentPage - 1) * 4 + index + 1 %></td>
-                    <td><%= coupon.code %></td>
-                    <td><%= coupon.type %></td>
-                    <td><%= coupon.type === 'percentage' ? coupon.discountValue + '%' : coupon.discountValue %></td>
-                    <td><%= coupon.minPrice %> - <%= coupon.maxPrice %></td>
-                    <td><%= coupon.startDate.toISOString().split('T')[0] %></td>
-                    <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
-                    <td class="<%= coupon.isActive ? 'copupon-active' : 'coupon-inactive' %>">
-                        <%= coupon.isActive ? 'Active' : 'Inactive' %>
-                    </td>
-
-                    <td>
-                        <% if (coupon.isDelete === false) { %>
-                            <button class="delete-btn" onclick="showConfirmationPopup('<%= coupon._id %>', 'delete')">Delete</button>
-                          <% } else { %>
-                            <button class="restore-btn" onclick="toggleCouponStatus('<%= coupon._id %>', 'restore')">Restore</button>
-                          <% } %>
-                    </td>
+                    <th>S.No</th>
+                    <th>Coupon Code</th>
+                    <th>Type</th>
+                    <th>Discount Value</th>
+                    <th>Price Range</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
                 </tr>
-            <% }) %>
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="couponTableBody">
+                <% coupons.forEach((coupon, index) => { %>
+                    <tr>
+                        <td><%= (currentPage - 1) * 4 + index + 1 %></td>
+                        <td><%= coupon.code %></td>
+                        <td><%= coupon.type %></td>
+                        <td><%= coupon.type === 'percentage' ? coupon.discountValue + '%' : coupon.discountValue %></td>
+                        <td><%= coupon.minPrice %> - <%= coupon.maxPrice %></td>
+                        <td><%= coupon.startDate.toISOString().split('T')[0] %></td>
+                        <td><%= coupon.expiryDate.toISOString().split('T')[0] %></td>
+                        <td class="<%= coupon.isActive ? 'copupon-active' : 'coupon-inactive' %>">
+                            <%= coupon.isActive ? 'Active' : 'Inactive' %>
+                        </td>
+    
+                        <td>
+                            <% if (coupon.isDelete === false) { %>
+                                <button class="delete-btn" onclick="showConfirmationPopup('<%= coupon._id %>', 'delete')">Delete</button>
+                              <% } else { %>
+                                <button class="restore-btn" onclick="toggleCouponStatus('<%= coupon._id %>', 'restore')">Restore</button>
+                              <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+    
     <div class="pagination m-2">
-        <!-- Previous Page Link -->
         <% if (currentPage > 1) { %>
             <a href="/admin/coupons?page=<%= currentPage - 1 %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>">Previous</a>
         <% } %>
+        
+        <% 
+            const rangeSize = 5; 
+            let startPage = Math.max(1, currentPage - Math.floor(rangeSize / 2));
+            let endPage = Math.min(totalPages, startPage + rangeSize - 1);
     
-        <!-- Page Numbers Links -->
-        <% for (let i = 1; i <= totalPages; i++) { %>
+            if (endPage - startPage < rangeSize - 1) {
+                startPage = Math.max(1, endPage - rangeSize + 1);
+            }
+        %>
+   
+        <% for (let i = startPage; i <= endPage; i++) { %>
             <a href="/admin/coupons?page=<%= i %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>" 
                class="<%= currentPage === i ? 'active' : '' %>">
                 <%= i %>
             </a>
         <% } %>
-    
-        <!-- Next Page Link -->
+
         <% if (currentPage < totalPages) { %>
             <a href="/admin/coupons?page=<%= currentPage + 1 %>&type=<%= selectedType %>&isActive=<%= selectedStatus %>">Next</a>
         <% } %>
     </div>
+    
 
 </div>
 

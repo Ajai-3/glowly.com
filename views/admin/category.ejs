@@ -18,33 +18,7 @@
   </div>
   <div class="brudcrumbs"><a href="/admin/category">Category</a></div>
   <div class="filter-container">
-    <!-- <div class="filter-div1">
-      <div class="filter-box">
-        <i class="fa-solid fa-filter"></i>
-      </div>
-
-      <form action="/admin/users" method="GET">
-        <div class="filter-box">
-          <label for="filter">Filter By
-            <select name="filter" id="filter">
-              <option value="date">14 feb 2014</option>
-            </select>
-          </label>
-        </div>
-      </form>
-      <form action="/admin/users" method="GET">
-        <div class="filter-box">
-          <label for="status">Status
-            <select name="status" id="status" onchange="this.form.submit()">
-              <option value="all">All</option>
-              <option value="block">Blocked</option>
-              <option value="unblock">Active</option>
-            </select>
-          </label>
-        </div>
-      </form>
-    </div> -->
-
+    
     <div>
       <button type="button" class="top-items-btn add-btn" data-toggle="modal" data-target="#topItemsModal">
         <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Categories
@@ -63,68 +37,71 @@
     </div>
 
   </div>
+  <div class="table-scroll-wrapper">
+    <table class="all-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Category name</th>
+          <th>Sub categories</th>
+          <th>Created At</th>
+          <th>Offer</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (category && category.length > 0) { %>
+        <% category.forEach((cat, index) => { %>
+        <tr>
+          <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
+          <td> <%= cat.name %> </td>
+          <td>
+            <ul>
+              <% cat.subcategories.forEach((sub) => { %>
+              <li class="<%= sub.isListed ? '' : 'unlisted' %>">
+                <form id="subcategoryForm-<%= sub._id %>">
+                  <input type="checkbox" name="isListed" value="true" <%= sub.isListed ? 'checked' : '' %> onchange="toggleSubcategory('<%= sub._id %>', this.checked)">
+                  <%= sub.name %>
+                </form>
+              </li>
+              <% }) %>
+            </ul>
+          </td>
+          <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
+          <td>
+            <% if (cat.offerId && cat.offerId.isActive) { %>
+            <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
+              (<%= cat.offerId.offerValue %>%)</p>
+            <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
+            <% } else { %>
+            <a href="/admin/add-offer/<%= cat._id %>">
+              <button class="add-offer-btn">Add Offer</button>
+            </a>
+            <% } %>
+          </td>
+  
+  
+          <td>
+            <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
+            <% if (!cat.isListed) { %>
+            <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
+            <% } else { %>
+            <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
+            <% } %>
+          </td>
+        </tr>
+        <% }) %>
+        <% } else { %>
+        <tr>
+          <td colspan="6">No categories found.</td>
+        </tr>
+        <% } %>
+      </tbody>
+  
+    </table>
+  </div>
 
-  <table class="all-table">
-    <thead>
-      <tr>
-        <th>S.No</th>
-        <th>Category name</th>
-        <th>Sub categories</th>
-        <th>Created At</th>
-        <th>Offer</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if (category && category.length > 0) { %>
-      <% category.forEach((cat, index) => { %>
-      <tr>
-        <td> <%= (currentPage - 1) * 4 + index + 1 %> </td>
-        <td> <%= cat.name %> </td>
-        <td>
-          <ul>
-            <% cat.subcategories.forEach((sub) => { %>
-            <li class="<%= sub.isListed ? '' : 'unlisted' %>">
-              <form id="subcategoryForm-<%= sub._id %>">
-                <input type="checkbox" name="isListed" value="true" <%= sub.isListed ? 'checked' : '' %> onchange="toggleSubcategory('<%= sub._id %>', this.checked)">
-                <%= sub.name %>
-              </form>
-            </li>
-            <% }) %>
-          </ul>
-        </td>
-        <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
-        <td>
-          <% if (cat.offerId && cat.offerId.isActive) { %>
-          <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
-            (<%= cat.offerId.offerValue %>%)</p>
-          <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
-          <% } else { %>
-          <a href="/admin/add-offer/<%= cat._id %>">
-            <button class="add-offer-btn">Add Offer</button>
-          </a>
-          <% } %>
-        </td>
-
-
-        <td>
-          <a href="/admin/category/edit/<%= cat._id %>"><button class="edit-btn">Edit</button></a> |
-          <% if (!cat.isListed) { %>
-          <button class="list-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', true)">List</button>
-          <% } else { %>
-          <button class="unlist-btn" data-id="<%= cat._id %>" onclick="toggleCategory('<%= cat._id %>', false)">Unlist</button>
-          <% } %>
-        </td>
-      </tr>
-      <% }) %>
-      <% } else { %>
-      <tr>
-        <td colspan="6">No categories found.</td>
-      </tr>
-      <% } %>
-    </tbody>
-
-  </table>
+  
   <div class="pagination">
     <!-- Example for the previous page -->
     <% if (currentPage > 1) { %>

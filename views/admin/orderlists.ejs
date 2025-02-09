@@ -33,46 +33,46 @@
       </form>
       <form action="/admin/orderlists" method="GET">
         <div class="filter-box">
-            <label for="status">Status
-                <select name="status" id="status" onchange="this.form.submit()">
-                    <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
-                    <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
-                    <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
-                    <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
-                    <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                    <option value="canceled" <%= status === 'canceled' ? 'selected' : '' %>>Canceled</option>
-                    <option value="return_req" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
-                    <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
-                </select>
-            </label>
+          <label for="status">Status
+            <select name="status" id="status" onchange="this.form.submit()">
+              <option value="all" <%= status === 'all' ? 'selected' : '' %>>All</option>
+              <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+              <option value="processing" <%= status === 'processing' ? 'selected' : '' %>>Processing</option>
+              <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+              <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+              <option value="canceled" <%= status === 'canceled' ? 'selected' : '' %>>Canceled</option>
+              <option value="return_req" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
+              <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
+            </select>
+          </label>
         </div>
-    </form>
-    
-    
-    
+      </form>
+
+
+
     </div>
 
 
   </div>
-
-  <table class="all-table">
-    <thead>
-      <tr>
-        <th>S.No</th>
-        <th>Order ID</th>
-        <th>User Name</th>
-        <th>Address</th>
-        <th>Product Name</th>
-        <th>Quantity</th>
-        <th>Total Amount</th>
-        <th>Payment Method</th>
-        <th>Order Status</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% let serialNumber = (currentPage - 1) * 10; %>
-      <% orders.forEach((order) => { %>
+  <div class="table-scroll-wrapper">
+    <table class="all-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Order ID</th>
+          <th>User Name</th>
+          <th>Address</th>
+          <th>Product Name</th>
+          <th>Quantity</th>
+          <th>Total Amount</th>
+          <th>Payment Method</th>
+          <th>Order Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% let serialNumber = (currentPage - 1) * 10; %>
+        <% orders.forEach((order) => { %>
         <tr class="order-row" id="order-<%= order.orderId %>-product-<%= order.product._id %>">
           <td><%= ++serialNumber %></td>
           <td><%= order.orderId %></td>
@@ -80,9 +80,9 @@
           <td><%= order.addressId ? order.addressId.city + ', ' + order.addressId.state : 'Address not available' %></td>
           <td>
             <% if (order.variant && order.variant.images && order.variant.images.length > 0) { %>
-              <img src="<%= order.variant.images[0] %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <img src="<%= order.variant.images[0] %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
             <% } else { %>
-              <img src="/path/to/default-image.jpg" alt="No Image Available" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <img src="/path/to/default-image.jpg" alt="No Image Available" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
             <% } %>
             <%= order.product.title.slice(0, 20) %>...
           </td>
@@ -90,28 +90,21 @@
           <td>₹<%= order.totalAmount %></td>
           <td>
             <p2 class="m-0 mb-4 
-                <% if (order.payment_method === 'wallet') { %> green-p <% } %>
-                <% if (order.payment_method === 'razorpay') { %> blue-p <% } %>
-                <% if (order.payment_method === 'cash') { %> yellow-p <% } %>">
+                  <% if (order.payment_method === 'wallet') { %> green-p <% } %>
+                  <% if (order.payment_method === 'razorpay') { %> blue-p <% } %>
+                  <% if (order.payment_method === 'cash') { %> yellow-p <% } %>">
               <%= order.payment_method %>
             </p2>
-            <!-- <br>
-            <p2 class="m-0 mb-4 
-                <% if (order.payment_status === 'Payment completed') { %> green-p <% } %>
-                <% if (order.payment_status === 'Payment failed') { %> red-p <% } %>
-                <% if (order.payment_status === 'Payment pending COD') { %> yellow-p <% } %>">
-              <%= order.payment_status %>
-            </p2> -->
           </td>
           <td class="status-cell">
             <p2 class="m-0 mb-4 
-                <% if (order.status === 'pending') { %> yellow-p <% } %>
-                <% if (order.status === 'processing') { %> blue-p <% } %>
-                <% if (order.status === 'shipped') { %> pink-p <% } %>
-                <% if (order.status === 'delivered') { %> green-p <% } %>
-                <% if (order.status === 'canceled') { %> red-p <% } %>
-                <% if (order.status === 'return_req') { %> yellow-p <% } %>
-                <% if (order.status === 'returned') { %> blue-p <% } %>">
+                  <% if (order.status === 'pending') { %> yellow-p <% } %>
+                  <% if (order.status === 'processing') { %> blue-p <% } %>
+                  <% if (order.status === 'shipped') { %> pink-p <% } %>
+                  <% if (order.status === 'delivered') { %> green-p <% } %>
+                  <% if (order.status === 'canceled') { %> red-p <% } %>
+                  <% if (order.status === 'return_req') { %> yellow-p <% } %>
+                  <% if (order.status === 'returned') { %> blue-p <% } %>">
               <%= order.status %>
             </p2>
           </td>
@@ -125,18 +118,22 @@
               <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' && order.status !== 'canceled' ? 'disabled' : '' %>>canceled</option>
               <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_req' ? 'disabled' : '' %>>returned</option>
             </select>
-                   
+  
           </td>
         </tr>
-      <% }) %>
-    </tbody>
-</table>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  
 
-</div>
+
+
+
 <div class="pagination">
   <% if (currentPage > 1) { %>
-      <a href="/admin/orderlists?page=1&status=<%= status %>">First</a>
-      <!-- <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a> -->
+  <a href="/admin/orderlists?page=1&status=<%= status %>">First</a>
+  <!-- <a href="/admin/orderlists?page=<%= currentPage - 1 %>&status=<%= status %>">Previous</a> -->
   <% } %>
 
   <% 
@@ -146,72 +143,72 @@
 
       for (let i = startPage; i <= endPage; i++) { 
   %>
-      <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+  <a href="/admin/orderlists?page=<%= i %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
   <% } %>
 
   <% if (currentPage < totalPages) { %>
-      <!-- <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a> -->
-      <a href="/admin/orderlists?page=<%= totalPages %>&status=<%= status %>">Last</a>
+  <!-- <a href="/admin/orderlists?page=<%= currentPage + 1 %>&status=<%= status %>">Next</a> -->
+  <a href="/admin/orderlists?page=<%= totalPages %>&status=<%= status %>">Last</a>
   <% } %>
 </div>
 
 
 
-
+</div> <!-- <div class="main-content"></div> -->
 
 </body>
 <%- include('partials/footer') %>
 <script>
-       const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-const dropdowns = document.querySelectorAll(".order-action");
-  dropdowns.forEach(function (dropdown) {
-    dropdown.addEventListener("change", function () {
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+  const dropdowns = document.querySelectorAll(".order-action");
+  dropdowns.forEach(function(dropdown) {
+    dropdown.addEventListener("change", function() {
       const selectedValue = this.value;
       const productId = this.getAttribute("data-product-id");
       const variantId = this.getAttribute("data-variant-id");
@@ -226,12 +223,12 @@ const dropdowns = document.querySelectorAll(".order-action");
       };
 
       fetch("/admin/update-order-status", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      })
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
         .then((response) => response.json())
         .then((data) => {
           if (data.success) {
@@ -251,19 +248,18 @@ const dropdowns = document.querySelectorAll(".order-action");
   });
 
 
-function getStatusClass(status) {
-  const statusClasses = {
-    pending: "yellow-p",
-    processing: "blue-p",
-    shipped: "pink-p",
-    delivered: "green-p",
-    canceled: "red-p",
-    return_requested: "yellow-p",
-    returned: "blue-p",
-  };
-  return statusClasses[status] || "";
-}
-
-
+  function getStatusClass(status) {
+    const statusClasses = {
+      pending: "yellow-p",
+      processing: "blue-p",
+      shipped: "pink-p",
+      delivered: "green-p",
+      canceled: "red-p",
+      return_requested: "yellow-p",
+      returned: "blue-p",
+    };
+    return statusClasses[status] || "";
+  }
 </script>
+
 </html>

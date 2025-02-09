@@ -57,7 +57,8 @@
             
         </div>
 
-        <table class="all-table">
+        <div class="table-scroll-wrapper">
+          <table class="all-table">
             <thead>
                 <tr>
                     <th>S.No</th>
@@ -90,22 +91,32 @@
                 <% }) %>
             </tbody>
         </table>
+        </div>
+        
         <div class="pagination">
-            <% if (currentPage > 1) { %>
-                <a href="/admin/brands?page=<%= currentPage - 1 %>&search=<%= search %>&isListed=<%= isListed %>">Previous</a>
-            <% } %>
-        
-            <% for (let i = 1; i <= totalPages; i++) { %>
-                <a href="/admin/brands?page=<%= i %>&search=<%= search %>&isListed=<%= isListed %>"
-                   class="<%= currentPage === i ? 'active' : '' %>">
-                    <%= i %>
-                </a>
-            <% } %>
-        
-            <% if (currentPage < totalPages) { %>
-                <a href="/admin/brands?page=<%= currentPage + 1 %>&search=<%= search %>&isListed=<%= isListed %>">Next</a>
-            <% } %>
-        </div>        
+          <% if (currentPage > 1) { %>
+              <a href="/admin/brands?page=<%= currentPage - 1 %>">Previous</a>
+          <% } %>
+      
+          <% 
+              const rangeSize = 5;
+              let startPage = Math.max(1, currentPage - Math.floor(rangeSize / 2));
+              let endPage = Math.min(totalPages, startPage + rangeSize - 1);
+      
+              if (endPage - startPage < rangeSize - 1) {
+                  startPage = Math.max(1, endPage - rangeSize + 1);
+              }
+          %>
+      
+          <% for (let i = startPage; i <= endPage; i++) { %>
+              <a href="/admin/brands?page=<%= i %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+      
+          <% if (currentPage < totalPages) { %>
+              <a href="/admin/brands?page=<%= currentPage + 1 %>">Next</a>
+          <% } %>
+      </div>
+             
     </div>
 </div>
 

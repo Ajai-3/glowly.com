@@ -97,7 +97,7 @@
         <div class="col-12 col-md-8 col-lg-8">
           <div class="chart-wrapper">
             <div class="chart-container">
-               <div class="filter-container">
+               <div class="filter-container-dashboard filter-container">
           <div class="download">
             <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
             <button id="download-excel" class="download-excel">Download Excel</button>
@@ -161,40 +161,29 @@
                 </tbody>
             </table>
         </div>
-        <div class="d-flex justify-content-center align-items-center">
-            <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
-                <ul class="pagination mb-0">
-                    <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                        </a>
-                    </li>
-                    <% } %>
-                    <% 
-                        const currentPage = typeof page !== 'undefined' ? page : 1;
-                        const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
-                        let startPage = Math.max(1, currentPage - 2);
-                        let endPage = Math.min(totalPagesCount, startPage + 4);
-                        if (endPage - startPage < 4) {
-                            startPage = Math.max(1, endPage - 4);
-                        }
-                    %>
-                    <% for(let i = startPage; i <= endPage; i++) { %>
-                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                        <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
-                    </li>
-                    <% } %>
-                    <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
-                    <li class="page-item">
-                        <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
-                            <span aria-hidden="true">&raquo;</span>
-                        </a>
-                    </li>
-                    <% } %>
-                </ul>
-            </nav>
-        </div>
+        <div class="pagination">
+          <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
+              <a href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">Previous</a>
+          <% } %>
+      
+          <% 
+              const currentPage = typeof page !== 'undefined' ? page : 1;
+              const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
+              let startPage = Math.max(1, currentPage - 2);
+              let endPage = Math.min(totalPagesCount, startPage + 4);
+              if (endPage - startPage < 4) {
+                  startPage = Math.max(1, endPage - 4);
+              }
+          %>
+          <% for(let i = startPage; i <= endPage; i++) { %>
+              <a href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+      
+          <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
+              <a href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">Next</a>
+          <% } %>
+      </div>
+      
     </div>
     
       

@@ -5,8 +5,15 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
 </head>
 <body>
-<div class="main-content">
-  <div class="header">
+  
+<div class="header">
+  <div class="responsive-logo-admin-side">
+    <div class="d-flex align-items-center">
+      <i class="fa fa-bars" id="sidebar-toggle"></i>
+    <h2 class="m-0 mx-2"> Glowly</h2>
+    </div>
+  </div>
+  <div class="d-flex align-items-center">
     <div class="search-bar">
       <form action="/admin/products" method="GET">
         <input type="text" name="search" placeholder="Search Products" value="<%= search %>">
@@ -19,6 +26,12 @@
       </a>
     </div>
   </div>
+</div>
+<div id="background-overlay" class="overlay"></div>
+
+
+<div class="main-content">
+
   <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
 
   <div>
@@ -54,69 +67,81 @@
     </div>
   </div>
 
-  <table class="all-table">
-    <thead>
-      <tr>
-        <th>S.No</th>
-        <th>Image</th>
-        <th>Product Name</th>
-        <th>Brand</th>
-        <th>Category</th>
-        <th>Sub category</th>
-        <th>Price</th>
-        <th>Sale Price</th>
-        <th>Stock</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% variants.forEach((variant, index) => { %>
-        <tr class="<%= variant.varientIsDeleted ? 'deleted-row' : '' %>" data-product-id="<%= variant.productId %>" data-product-deleted="<%= variant.isDeleted ? 'true' : 'false' %>">
-          <td><%= (currentPage - 1) * perPage + index + 1 %></td>
-          <td>
-            <% if (variant.images && variant.images.length > 0) { %>
-              <img src="<%= variant.images[0] %>" alt="<%= variant.productTitle %> Image" width="50" height="50">
-            <% } else { %>
-              <img src="/path/to/placeholder/image.jpg" alt="Placeholder Image" width="50" height="50">
-            <% } %>
-          </td>
-          <td class="truncate">
-            <%= variant.productTitle %> - <%= variant.shade %>
-          </td>
-          <td><%= variant.brandName %></td>
-          <td><%= variant.categoryName %></td>
-          <td><%= variant.subcategoryName %></td>
-          <td><%= variant.regularPrice %></td>
-          <td><%= variant.salePrice %></td>
-          <td><%= variant.stockQuantity %></td>
-          <td>
-            <!-- <a href="/admin/edit-product/<%= variant.productId %>/<%= variant._id %>"><button class="edit-btn">Edit</button></a> | -->
-            <a href="/admin/add-variants/<%= variant.productId %>"><button class="edit-btn">Edit</button></a>
-            <% if (!variant.isDeleted) { %>
-              <button class="delete-btn" data-id="<%= variant.productId %>" data-deleted="false">Delete</button>
-            <% } else { %>
-              <button class="restore-btn" data-id="<%= variant.productId %>" data-deleted="true">Restore</button>
-            <% } %>
-          </td>
+  <div class="table-scroll-wrapper">
+    <table class="all-table">
+      <thead>
+        <tr>
+          <th>S.No</th>
+          <th>Image</th>
+          <th>Product Name</th>
+          <th>Brand</th>
+          <th>Category</th>
+          <th>Sub category</th>
+          <th>Price</th>
+          <th>Sale Price</th>
+          <th>Stock</th>
+          <th>Action</th>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% variants.forEach((variant, index) => { %>
+          <tr class="<%= variant.varientIsDeleted ? 'deleted-row' : '' %>" data-product-id="<%= variant.productId %>" data-product-deleted="<%= variant.isDeleted ? 'true' : 'false' %>">
+            <td><%= (currentPage - 1) * perPage + index + 1 %></td>
+            <td>
+              <% if (variant.images && variant.images.length > 0) { %>
+                <img src="<%= variant.images[0] %>" alt="<%= variant.productTitle %> Image" width="50" height="50">
+              <% } else { %>
+                <img src="/path/to/placeholder/image.jpg" alt="Placeholder Image" width="50" height="50">
+              <% } %>
+            </td>
+            <td class="truncate">
+              <%= variant.productTitle %> - <%= variant.shade %>
+            </td>
+            <td><%= variant.brandName %></td>
+            <td><%= variant.categoryName %></td>
+            <td><%= variant.subcategoryName %></td>
+            <td><%= variant.regularPrice %></td>
+            <td><%= variant.salePrice %></td>
+            <td><%= variant.stockQuantity %></td>
+            <td>
+              <a href="/admin/add-variants/<%= variant.productId %>"><button class="edit-btn">Edit</button></a>
+              <% if (!variant.isDeleted) { %>
+                <button class="delete-btn" data-id="<%= variant.productId %>" data-deleted="false">Delete</button>
+              <% } else { %>
+                <button class="restore-btn" data-id="<%= variant.productId %>" data-deleted="true">Restore</button>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+ 
 
   <div class="pagination">
+    <% 
+      const pageLimit = 5;  
+      let startPage = Math.max(1, currentPage - Math.floor(pageLimit / 2));
+      let endPage = Math.min(totalPages, startPage + pageLimit - 1);
+  
+      if (endPage - startPage < pageLimit - 1) {
+        startPage = Math.max(1, endPage - pageLimit + 1);
+      }
+    %>
+  
     <% if (currentPage > 1) { %>
       <a href="/admin/products?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
     <% } %>
-    
-    <% for (let i = 1; i <= totalPages; i++) { %>
+  
+    <% for (let i = startPage; i <= endPage; i++) { %>
       <a href="/admin/products?page=<%= i %>&search=<%= search %>&status=<%= status %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
     <% } %>
-    
+  
     <% if (currentPage < totalPages) { %>
       <a href="/admin/products?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
     <% } %>
   </div>
-</div> <!-- <div class="main-content"></div> -->
+  
 
 
 
