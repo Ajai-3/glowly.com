@@ -13,7 +13,7 @@ import {
 } from "../controllers/admin/admin.controller.js";
 import { redirectIfLoggedIn, verifyAdminToken, pageMiddlware } from "../middlewares/admin.midleware.js";
 import { renderUsersPage, blockUser, unBlockUser } from '../controllers/admin/customer.controller.js'
-import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, deleteCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer, topCategories, topSubCategories } from "../controllers/admin/category.controller.js";
+import { renderCategoryPage, renderAddCategoryPage, addSubcategoryToExistingCategory, updateCategory, renderEditCategoryPage, toggleCategory, addCategory, toggleSubcategory, renderAddOfferPage, addOffer, removeOffer, topCategories, topSubCategories } from "../controllers/admin/category.controller.js";
 import { renderProductsPage, renderAddProductsPage,  addProduct, renderEditProductPage, editProduct, toggleProduct, topProducts, toggleProductVariant, addVariantPage, addNewVariants } from "../controllers/admin/product.controller.js";
 import { renderBrandPage, renderAddBrandPage, addBrand,  renderEditBrandPage, editBrand, toggleBrand, deleteBrand, topBrands } from "../controllers/admin/brand.controller.js";
 import { renderCouponsPage, addCoupon, removeCoupon, restoreCoupon } from "../controllers/admin/coupon.controller.js";
@@ -76,7 +76,6 @@ router.post('/add-subcategory', verifyAdminToken, addSubcategoryToExistingCatego
 router.post("/add-category", verifyAdminToken, addCategory);
 router.get('/category/edit/:id', verifyAdminToken, renderEditCategoryPage);
 router.patch('/category/edit/:id', verifyAdminToken, updateCategory);
-router.get('/category/delete/:id', verifyAdminToken, deleteCategory);
 router.get("/add-offer/:id", verifyAdminToken, renderAddOfferPage);
 router.get("/top-categories", verifyAdminToken, topCategories)
 router.get("/top-subcategories", verifyAdminToken, topSubCategories)
