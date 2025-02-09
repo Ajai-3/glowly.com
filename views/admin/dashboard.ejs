@@ -3,8 +3,14 @@
 <%- include('partials/head') %>
 
 <body>
-  <div class="main-content">
-    <div class="header">
+  <div class="header">
+    <div class="responsive-logo-admin-side">
+      <div class="d-flex align-items-center">
+        <i class="fa fa-bars" id="sidebar-toggle"></i>
+      <h2 class="m-0 mx-2"> Glowly</h2>
+      </div>
+    </div>
+    <div class="d-flex align-items-center">
       <div class="search-bar">
         <form action="/search" method="GET">
           <input type="text" name="search" placeholder="Search" readonly>
@@ -16,12 +22,17 @@
         </a>
       </div>
     </div>
+  </div>
+  <div id="background-overlay" class="overlay"></div>
+
+
+  <div class="main-content">
+    
     <div class="breadcrumbs">Dashboard</div>
 
     <div class="dashboard-summary-container">
-      <div class="row">
-        <div class="col-12 pe-3 dashboard-summary">
-          <div class="dashboard-summary1">
+        <div class="col-12 dashboard-summary">
+          <div>
             <h3>Total Users</h3>
             <p><%= userCount %></p>
             <p1>
@@ -29,7 +40,7 @@
               <p2>Active Users</p2>
             </p1>
           </div>
-          <div class="dashboard-summary2">
+          <div>
             <h3>Total Sales Count</h3>
             <p id="total-orders"><%= totalSalesCount %></p>
             <p1>
@@ -37,21 +48,21 @@
               <p2>Delivered Orders</p2>
             </p1>
           </div>
-          <div class="dashboard-summary3">
+          <div>
             <h3>Total Revenue</h3>
             <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
             <p2>
               <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
             </p2>
           </div>
-          <div class="dashboard-summary3">
+          <div>
             <h3>Total Discount</h3>
             <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
             <p2>
               <i class="fa-solid fa-chart-simple"></i> Applied Discounts
             </p2>
           </div>
-          <div class="dashboard-summary3">
+          <div>
             <h3>Net Revenue</h3>
             <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
             <p2>
@@ -59,10 +70,9 @@
             </p2>
           </div>
         </div>
-      </div>
 
       <div class="row">
-        <div class="col-8">
+        <div class="col-12 col-md-8 col-lg-8">
           <div class="chart-wrapper">
             <div class="chart-container">
               <div class="filter-container">
@@ -89,7 +99,7 @@
             </div>
           </div>
         </div>
-        <div class="col-4">
+        <div class="col-12 col-md-4 col-lg-4">
           <div class="chart-wrapper">
             <div class="chart-container">
               <h6>Payment Methods</h6>
@@ -101,74 +111,78 @@
 
       <div class="table-container">
         <h2>Sales Data (Delivered Orders)</h2>
-        <table class="all-table">
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>Customer</th>
-              <th>Product</th>
-              <th>Quantity</th>
-              <th>Amount</th>
-              <th>Discount</th>
-              <th>Date</th>
-            </tr>
-          </thead>
-          <tbody id="sales-table-body">
-            <% salesData.forEach(order => { %>
-            <tr>
-              <td><%= order._id %></td>
-              <td><%= order.user_name %></td>
-              <td><%= order.product.title %></td>
-              <td><%= order.quantity || 0 %></td>
-              <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
-              <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
-              <td><%= new Date(order.createdAt).toLocaleString() %></td>
-            </tr>
-            <% }); %>
-          </tbody>
-        </table>
-        <div class="d-flex justify-content-center align-items-center">
-          <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
-
-            <ul class="pagination mb-0">
-              <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
-              <li class="page-item">
-                <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <% } %>
-
-              <% 
-                            const currentPage = typeof page !== 'undefined' ? page : 1;
-                            const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
-                            let startPage = Math.max(1, currentPage - 2);
-                            let endPage = Math.min(totalPagesCount, startPage + 4);
-                            if (endPage - startPage < 4) {
-                                startPage = Math.max(1, endPage - 4);
-                            }
-                            %>
-
-              <% for(let i = startPage; i <= endPage; i++) { %>
-              <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
-              </li>
-              <% } %>
-
-              <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
-              <li class="page-item">
-                <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-              <% } %>
-            </ul>
-          </nav>
+        <div class="table-scroll-wrapper">
+            <table class="all-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Amount</th>
+                        <th>Discount</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-table-body">
+                    <% salesData.forEach(order => { %>
+                    <tr>
+                        <td><%= order._id %></td>
+                        <td><%= order.user_name %></td>
+                        <td><%= order.product.title %></td>
+                        <td><%= order.quantity || 0 %></td>
+                        <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
+                        <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
+                        <td><%= new Date(order.createdAt).toLocaleString() %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
         </div>
-      </div>
+        <div class="d-flex justify-content-center align-items-center">
+            <nav aria-label="Page navigation" class="d-flex justify-content-between align-items-center mb-4">
+                <ul class="pagination mb-0">
+                    <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <% } %>
+                    <% 
+                        const currentPage = typeof page !== 'undefined' ? page : 1;
+                        const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
+                        let startPage = Math.max(1, currentPage - 2);
+                        let endPage = Math.min(totalPagesCount, startPage + 4);
+                        if (endPage - startPage < 4) {
+                            startPage = Math.max(1, endPage - 4);
+                        }
+                    %>
+                    <% for(let i = startPage; i <= endPage; i++) { %>
+                    <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                        <a class="page-link" href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>"><%= i %></a>
+                    </li>
+                    <% } %>
+                    <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
+                    <li class="page-item">
+                        <a class="page-link" href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <% } %>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    
+      
     </div>
   </div>
 
+
+
+  
+<%- include('partials/footer') %> 
   <script>
     function applyFilter(filter) {
       const url = new URL(window.location.href);

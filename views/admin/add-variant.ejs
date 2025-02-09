@@ -50,9 +50,9 @@
         <form id="addVariantForm" data-product-id="<%= product._id %>" enctype="multipart/form-data">
           <h4 class="mt-4">Add New Variants</h4>
           <div class="d-flex align-items-center mt-3">
-            <button type="button" class="add-variant-btn me-4" onclick="addVariant()">+</button>
-            <input type="checkbox" id="shareImagesCheckbox" onclick="toggleSharedImages()" style="width: auto; height: auto;">
-            <label for="shareImagesCheckbox" class="form-label mb-0 ms-3">Share images among all variants</label>
+            <button type="button" class="add-variant-btn me-4" onclick="addVariant()">Add Variant</button>
+            <input type="checkbox" id="shareImagesCheckbox" onclick="toggleSharedImages()" style="width: auto; height: auto;" hidden>
+            <label for="shareImagesCheckbox" class="form-label mb-0 ms-3" hidden>Share images among all variants</label>
            
           </div>
           <div></div>
@@ -100,7 +100,7 @@
         
       </div>
     </div>
-    <button type="submit" class="add-product-btn2 my-1">ADD VARIANT</button>
+    <button type="submit" class="add-product-btn2 my-1">UPDATE PRODUCT</button>
   </div>
 </form>
   <div class="add-products-container1 ps-3">

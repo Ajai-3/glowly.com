@@ -38,3 +38,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 });
+
+
+// Get the sidebar, the overlay, and the hamburger button
+const sidebarToggle = document.getElementById('sidebar-toggle');
+const sidebar = document.querySelector('.sidebar');
+const overlay = document.getElementById('background-overlay');
+
+sidebarToggle.addEventListener('click', function() {
+  sidebar.classList.toggle('open');  
+  overlay.classList.toggle('visible');  
+  document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : 'auto'; 
+});
+
+overlay.addEventListener('click', function() {
+  sidebar.classList.remove('open');  
+  overlay.classList.remove('visible');  
+  document.body.style.overflow = 'auto'; 
+});
+
