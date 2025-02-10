@@ -82,7 +82,7 @@
               </div>
 
               <div>
-                <a href="/user/manage-address "><button class="checkout-page-btn"><i class="fa-solid fa-plus"></i> Add address</button></a>
+                <button id="add-address-btn" class="checkout-page-btn"><i class="fa-solid fa-plus"></i> Add address</button>
               </div>
             </div>
             <hr>
@@ -99,7 +99,7 @@
               </label>
               <button class="checkout-btn address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
               <div class="checkout-edit-remove">
-                <a href="/user/edit-address/<%= address._id %>">Edit</a> | <a href="/user/manage-address">Remove</a>
+                <a href="/edit-address/<%= address._id %>">Edit</a> | <a href="/user/manage-address">Remove</a>
               </div>
             </div>
             <% }) %>
@@ -504,7 +504,73 @@
     </div>
   </div>
 
-
+  <div id="add-address" class="card shadow-sm user-menu-account" style="display: none;">
+    <form id="addAddressForm" action="/add-address" method="POST" onsubmit="return addressFormValidation()">
+      <div class="d-flex flex-column align-items-center">
+        <h5 class="mb-4 mt-2">Add a New Address</h5>
+        <div class="d-flex justify-content-between mb-2 address-gap-div">
+          <div>
+            <label for="city">City</label><br>
+            <input type="text" name="city" id="city" placeholder="City">
+            <div id="cityError" class="error-message"></div>
+          </div>
+          <div>
+            <label for="district">District</label><br>
+            <input type="text" name="district" id="district" placeholder="District">
+            <div id="districtError" class="error-message"></div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mb-2 address-gap-div">
+          <div>
+            <label for="state">State</label><br>
+            <input type="text" name="state" id="state" placeholder="State">
+            <div id="stateError" class="error-message"></div>
+          </div>
+          <div>
+            <label for="country">Country</label><br>
+            <input type="text" name="country" id="country" placeholder="Country">
+            <div id="countryError" class="error-message"></div>
+          </div>
+        </div>
+        <div>
+          <label for="address">Address</label><br>
+          <textarea name="address" id="address" placeholder="Address"></textarea>
+          <div id="addressError" class="error-message"></div>
+        </div>
+        <div class="d-flex address-center-div mb-2">
+          <div class="center-div">
+            <label for="pin_code">Pincode</label><br>
+            <input type="number" name="pin_code" id="pincode" placeholder="682311">
+            <div id="pincodeError" class="error-message"></div>
+          </div>
+          <div class="center-div-checkbox mx-4">
+            <label for="address_type">Address Type</label><br>
+            <input type="radio" class="checkbox-user" id="address_type_home" name="address_type" value="home"> Home
+            <input type="radio" class="checkbox-user" id="address_type_work" name="address_type" value="work"> Work
+            <div id="checkboxError" class="error-message"></div>
+          </div>
+          <div class="center-div ms-">
+            <label for="land_mark">LandMark</label><br>
+            <input type="text" name="land_mark" id="land_mark" placeholder="LandMark">
+            <div id="LandMarkError" class="error-message"></div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between mb-1 address-gap-div">
+          <div>
+            <label for="alternative_phone_no">Alternate Number (optional)</label><br>
+            <input type="number" name="alternative_phone_no" id="alternative_phone_no" placeholder="+91 9834274898">
+            <div id="phoneError" class="error-message"></div>
+          </div>
+          <div>
+            <label for="alternative_email">Alternate Email (optional)</label><br>
+            <input type="email" name="alternative_email" id="alternative_email" placeholder="annadearmas@gmail.com">
+            <div id="email" class="error-message"></div>
+          </div>
+        </div>
+        <button type="submit" class="main-btn px-5 my-2"><i class="fa-solid fa-pencil"></i>&nbsp;&nbsp;ADD ADDRESS</button>
+      </div>
+    </form>
+  </div>
 
 
 
@@ -513,6 +579,7 @@
 
 
 </body>
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <!-- Notyf JS -->
@@ -617,7 +684,6 @@
     let discountType;
     let discountAmount;
 
-    console.log("initialc", couponId)
 
     showStep(step1);
 
@@ -788,7 +854,6 @@
       try {
         if (selectedPaymentMethod === "razorpay") {
           try {
-            console.log("Creating Razorpay order on the server...");
             const response = await fetch("/place-order", {
               method: "POST",
               headers: {
@@ -806,7 +871,6 @@
               key,
               order
             } = await response.json();
-            console.log("Razorpay order created:", order);
 
             const options = {
               key: key,
@@ -816,7 +880,6 @@
               name: "Glowly.com",
               description: "Payment for order",
               handler: async function(response) {
-                console.log("Razorpay Payment Success:", response);
 
                 const verifyResponse = await fetch("/verify-razorpay-payment", {
                   method: "POST",
@@ -844,7 +907,6 @@
               modal: {
                 escape: false,
                 ondismiss: async function() {
-                  console.log("Razorpay modal dismissed (without payment)");
                   toastInfo("Payment cancelled. You can try again later.");
                   handleOrderSuccess();
                 },
@@ -854,7 +916,6 @@
             const rzp1 = new Razorpay(options);
 
             rzp1.on("payment.failed", async function(response) {
-              console.log("Payment failed:", response.error);
               toastInfo("Payment cancelled. You can try again later.");
               handleOrderSuccess();
             });
@@ -863,7 +924,6 @@
             rzp1.open();
 
           } catch (error) {
-            console.error("Error in Razorpay flow:", error);
             toastError("An error occurred while processing your payment. Please try again.");
           }
         } else if (selectedPaymentMethod === "wallet") {
@@ -901,7 +961,6 @@
           }
         }
       } catch (error) {
-        console.error(error);
         toastWarning("There was an error processing your payment. Please try again.");
       }
     });
@@ -920,16 +979,13 @@
         keyboard: false
       });
 
-      console.log("Order placed successfully!");
       orderConfirmationModal.show();
 
       document.getElementById("goToOrders").addEventListener("click", () => {
-        console.log("Redirecting to My Orders");
         window.location.href = "/my-orders";
       });
 
       document.getElementById("continueShopping").addEventListener("click", () => {
-        console.log("Redirecting to Home");
         window.location.href = "/home";
       });
     }
@@ -961,7 +1017,6 @@
         };
       });
       grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
-      // console.log("Grand Total: ₹" + grandTotal);
 
       return cartProducts;
     }
@@ -1011,6 +1066,9 @@
 
     setInterval(checkPrice, 1000);
   });
+
+
+  
 </script>
 
 </html>

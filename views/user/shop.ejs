@@ -13,7 +13,7 @@
       <div id="breadcrumbs"></div>
       <div class="container mt-4">
         <div class="row">
-          <div class="col-md-2 product-filter-div p-0">
+          <div class="col-md-2 product-filter-div">
             <form id="filter-form">
               <div class="search-bar shop-page-search-bar">
                 <input type="text" id="search-input" placeholder="Search by title or shade name" style="width: 170px; margin-bottom: 5px;">
@@ -274,7 +274,10 @@
     </div>
 
 
-
+     <button class="filter-toggle-btn">
+           <i class="fas fa-filter"></i> Filters
+        </button>
+        <div class="filter-overlay"></div>
     
     <%- include('partials/footerforhome') %>
 <script>
@@ -599,6 +602,26 @@
 
 });
 
+    document.addEventListener('DOMContentLoaded', function() {
+      const filterDiv = document.querySelector('.product-filter-div');
+      const filterToggleBtn = document.querySelector('.filter-toggle-btn');
+      const filterOverlay = document.querySelector('.filter-overlay');
+      const filterCloseBtn = document.createElement('button');
+      
+      filterCloseBtn.classList.add('filter-close-btn');
+      filterCloseBtn.innerHTML = '<i class="fas fa-times"></i>';
+      filterDiv.insertBefore(filterCloseBtn, filterDiv.firstChild);
+
+      function toggleFilter() {
+        filterDiv.classList.toggle('active');
+        filterOverlay.classList.toggle('active');
+        document.body.style.overflow = filterDiv.classList.contains('active') ? 'hidden' : '';
+      }
+
+      filterToggleBtn.addEventListener('click', toggleFilter);
+      filterCloseBtn.addEventListener('click', toggleFilter);
+      filterOverlay.addEventListener('click', toggleFilter);
+    });
 
 </script>
   </body>
