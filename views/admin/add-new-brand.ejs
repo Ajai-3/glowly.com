@@ -1,21 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include('partials/head') %>
-
-  <div class="main-content">
-    <div class="header">
-      <div class="search-bar">
-        <form action="/admin/search-brands" method="GET">
-            <input type="text" name="search" placeholder="Search Brand"  readonly>
-            <button class="admin-search-button"><i class="fas fa-search"></i></button>
-        </form>
-    </div>
-      <div class="admin-profile mx-3">
-        <a href="/admin/settings">
-          <i class="fa-solid fa-circle-user"></i>
-        </a>
+  <div class="header">
+    <div class="responsive-logo-admin-side">
+      <div class="d-flex align-items-center">
+        <i class="fa fa-bars" id="sidebar-toggle"></i>
+      <h2 class="m-0 mx-2"> Glowly</h2>
       </div>
     </div>
+    <div class="search-bar">
+      <form action="/admin/search-brands" method="GET">
+          <input type="text" name="search" placeholder="Search Brand" disabled>
+          <button class="admin-search-button"><i class="fas fa-search"></i></button>
+      </form>
+  </div>
+    <div class="admin-profile mx-3">
+      <a href="/admin/settings">
+        <i class="fa-solid fa-circle-user"></i>
+      </a>
+    </div>
+  </div>
+  <div id="background-overlay" class="overlay"></div>
+  <div class="main-content">
+    
 
     <div class="breadcrumbs">
       <a href="/admin/brands">Brands</a> > <a href="/admin/add-new-brand">Add New Brand</a>
@@ -54,6 +61,7 @@
         </div>
       </form>
     </div>
+
   </div>
 
   <%- include('partials/footer') %>

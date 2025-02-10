@@ -4214,9 +4214,7 @@ p2 {
 }
 
 
-.filter-dashboard {
-  display: none;
-}
+
 
 .deleted-row {
   background-color: #c0bfc5;  
@@ -4395,7 +4393,8 @@ p2 {
 .form-sections {
   display: flex;
   gap: 30px;
-  width: 150%;
+  flex-wrap: wrap;
+  /* width: 150%; */
 }
 
 .brand-page-add-box {
@@ -4861,7 +4860,7 @@ input.quantity-input {
   flex: 1;
   text-align: left;
   word-wrap: break-word;
-  min-width: 290px; 
+  min-width: 290px;
   overflow: hidden;
   text-overflow: ellipsis; 
 }
@@ -4869,7 +4868,7 @@ input.quantity-input {
 .top-items-sold-count {
   flex: 0 0 50px;
   margin-left: 10px;
-  text-align: right;
+  text-align: left;
   font-weight: normal;
   padding: 2px 8px;
   border-radius: 4px;
@@ -4906,7 +4905,15 @@ input.quantity-input {
   margin: 0;
   right: 5px;
 }
-
+.filter-dashboard {
+  display: none;
+}
+.add-product-btn2, .add-variant-btn {
+  width: 100%; 
+}
+.add-products-container button {
+  width: 100%;
+}
 @media (max-width: 1224px) {
   .sidebar {
     height: 100%;
@@ -4969,7 +4976,7 @@ input.quantity-input {
 
 }
 
-@media (max-width: 768px) {
+@media (max-width: 788px) {
 
   .dashboard-summary div {
     flex: 1 1 calc(50% - 12px); 
@@ -4988,10 +4995,37 @@ input.quantity-input {
     min-width: 1200px;
     table-layout: auto;
   }
+  .filter-container-dashboard {
+    display: none;
+  }
+  .filter-dashboard {
+    display: block;
+  }
+  .add-product-container4 {
+    width: 100%;
+  }
+  .add-products-container {
+    flex-direction: column;
+    align-items: center;
+  }
+  .add-products-container1 {
+    width: 100%;  
+    padding: 0 !important;
+    font-size: var(--font-size-third);
+    margin-bottom: 20px;
+  }
+  .add-products-container1 label {
+    font-size: var(--font-size-third);
+  }
+
+
 }
 
 @media (max-width: 576px) {
   .search-bar {
+    display: none;
+  }
+  .filter-container-dashboard {
     display: none;
   }
 
@@ -5062,7 +5096,21 @@ input.quantity-input {
     margin: 0 auto;
   }
   
-  
+  .filter-container-dashboard {
+    display: none;
+  }
+  .filter-dashboard {
+    display: block;
+  }
+  .top-items-name {
+    min-width: 180px;
+  }
+  .brand-page-add, .brand-page-edit, .add-product-container4, .add-offer-box {
+    width: 100%;
+  }
+  .add-category-container3 {
+    margin-top: 20px;
+  }
 }
 
 

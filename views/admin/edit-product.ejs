@@ -2,27 +2,33 @@
 <html lang="en">
 
 <%- include('partials/head') %>
-
-<!-- Main Content Section -->
-<div class="main-content">
-  <!-- Header Section -->
-  <div class="header">
-    <div class="search-bar m-0">
-      <form action="/admin/search" method="GET">
-        <input type="text" name="search" placeholder="Search">
-        <button class="admin-search-button"><i class="fas fa-search"></i></button>
-      </form>
-    </div>
-    <div class="admin-profile mx-3">
-      <a href="/admin/settings">
-        <i class="fa-solid fa-circle-user"></i>
-      </a>
+<div class="header">
+  <div class="responsive-logo-admin-side">
+    <div class="d-flex align-items-center">
+      <i class="fa fa-bars" id="sidebar-toggle"></i>
+    <h2 class="m-0 mx-2"> Glowly</h2>
     </div>
   </div>
+  <div class="search-bar">
+    <form action="/admin/search" method="GET">
+      <input type="text" name="search" placeholder="Search" readonly>
+      <button class="admin-search-button"><i class="fas fa-search"></i></button>
+    </form>
+  </div>
+  <div class="admin-profile mx-3">
+    <a href="/admin/settings">
+      <i class="fa-solid fa-circle-user"></i>
+    </a>
+  </div>
+</div>
+<div id="background-overlay" class="overlay"></div>
+<!-- Main Content Section -->
+<div class="main-content">
+
 
   <!-- Breadcrumbs Section -->
   <div class="breadcrumbs">
-    <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit Product</a>
+    <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit product</a>
   </div>
 
   <!-- Edit Products Container -->
@@ -72,7 +78,7 @@
         </div>
      
         <button type="submit" class="edit-product-btn2 my-3" style="width: 100%;">Update Product</button>
-        <button onclick="window.location.href='/admin/add-variants/<%= product._id %>'">Add new variant</button>
+        <button onclick="window.location.href='/admin/add-variants/<%= product._id %>'" class="mb-3">Add new variant</button>
 
       </div>
      
