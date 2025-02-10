@@ -337,25 +337,12 @@ $(document).ready(function () {
     }
 });
 
-// function checkUserStatus() {
-//     fetch('/check-user-status', {
-//         method: 'GET',
-//         credentials: 'include'  // Ensure cookies are sent with the request
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.status === 'blocked') {
-//             // Clear the token (log out)
-//             document.cookie = "token=; path=/";  // Clear JWT token cookie
+window.onload = function() {
+    clearTimeout(preloaderTimeout);
+    document.getElementById("preloader").style.display = "none";
+    window.scrollTo(0, 0);
+  };
 
-//             // Redirect to the login page
-//             window.location.href = '/login';
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Error checking user status:', error);
-//     });
-// }
-
-// // Call the check function periodically (every 5 seconds)
-// setInterval(checkUserStatus, 5000);
+  preloaderTimeout = setTimeout(function() {
+    document.getElementById("preloader").style.display = "flex";
+  }, 100);

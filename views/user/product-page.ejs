@@ -271,10 +271,6 @@
 </div>
 
 
-<div id="preloader" style="display: none;">
-  <div class="loader"></div>
-</div>
-
 
 <%- include('partials/footerforhome') %>
 
@@ -337,17 +333,6 @@
       position: 'topRight',
     });
   };
-  let preloaderTimeout;
-
-  window.onload = function() {
-    clearTimeout(preloaderTimeout);
-    document.getElementById("preloader").style.display = "none";
-    window.scrollTo(0, 0);
-  };
-
-  preloaderTimeout = setTimeout(function() {
-    document.getElementById("preloader").style.display = "flex";
-  }, 100);
 
 
   document.addEventListener('DOMContentLoaded', function() {

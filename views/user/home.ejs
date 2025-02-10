@@ -1,9 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/headforhome', { user: user, categories: categories }) %>
-<div id="preloader" style="display: none;">
-  <div class="loader"></div>
-</div>
+
 
 
 <div class="user-contents">
@@ -118,15 +116,7 @@
 </body>
 <%- include('partials/footerforhome') %>
 <script>
- window.onload = function() {
-      clearTimeout(preloaderTimeout);
-      document.getElementById("preloader").style.display = "none";
-      window.scrollTo(0, 0);
-    };
 
-    preloaderTimeout = setTimeout(function() {
-      document.getElementById("preloader").style.display = "flex";
-    }, 100);
 
 
   $(document).ready(function () {

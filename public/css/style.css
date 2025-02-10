@@ -1919,7 +1919,9 @@ border: 1px solid transparent;
   background-color: var(--main-color);
 }
 
-
+.shop-div {
+  padding: 30px 0px 0px 30px;
+}
 
 @media screen and (max-width: 1024px) {
   .product-grid {
@@ -1966,6 +1968,9 @@ border: 1px solid transparent;
   .product-display-image {
     height: 260px;
     width: 260px;
+  }
+  .shop-div {
+    padding: 0;
   }
 }
 
@@ -5111,6 +5116,7 @@ input.quantity-input {
   .add-category-container3 {
     margin-top: 20px;
   }
+
 }
 
 
