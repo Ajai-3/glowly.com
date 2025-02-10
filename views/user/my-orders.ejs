@@ -129,7 +129,7 @@
                           <h6 class="product-title mb-1" data-order-id="<%= order._id %>" data-product-id="<%= product.product_id ? product.product_id._id : '' %>" data-variant-id="<%= product.variant_id %>" data-address-id="<%= order.address_id %>">
                             shade: <%= variant ? variant.shade : 'No shade' %>
                           </h6>
-                          <div class="d-flex justify-content-between mt-2">
+                          <div class="d-flex justify-content-between mt-2 flex-wrap">
                             <p class="m-0">Quantity: <%= product.quantity %></p>
                             <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant ? variant.regularPrice : 'N/A' %></span> 
                               <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span>

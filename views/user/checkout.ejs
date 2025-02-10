@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,7 @@
   <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-  
+
   <!-- Custom CSS -->
   <link rel="stylesheet" href="/css/style.css">
   <!-- Favicon -->
@@ -31,17 +32,17 @@
 
 
 
-<div class="user-contents">
-  <!-- STEP 1 ----------------------------------------------------------------------------------------------------------->
-  <div class="container my-2 px-4 checkout-page-main-div" id="step1">
-    <div class="row g-5">
-      <nav>
-        <div class="nav-bar-checkout-page1">
-          <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
-        </div>
-        
-        <div class="nav-bar-checkout-page">
-          
+  <div class="user-contents">
+    <!-- STEP 1 ----------------------------------------------------------------------------------------------------------->
+    <div class="container my-2 px-4 checkout-page-main-div" id="step1">
+      <div class="row g-5">
+        <nav>
+          <div class="nav-bar-checkout-page1">
+            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+          </div>
+
+          <div class="nav-bar-checkout-page">
+
             <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
             <div class="">
               <div class="circle-container d-flex justify-content-between align-items-center">
@@ -54,291 +55,296 @@
                   <div class="circle circle-in-step1">2</div>
                 </div>
                 <div class="label label-in-step1 mx-2 my-0">Order Summary</div>
-                
-                <div class="line line-in-step1"></div>                  
+
+                <div class="line line-in-step1"></div>
                 <div class="d-flex flex-column align-items-center">
                   <div class="circle circle-in-step1">3</div>
                 </div>
                 <div class="label label-in-step1 mx-2 my-0">Payment</div>
               </div>
             </div>
-        </div>
-        <div class="horizontal-line-checkout-page"><hr></div>
-  
-    </nav>
-      
-      <div class="left-box-checkout-page col-md-7 m-0 pb-0">
-        <div class="div1 mb-1">
-          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
-            <div class="d-flex">
-              <div class="checked-page-numbers">1</div>
-              <div class="ms-2">
-                <h5>Delivery Address</h5>
-                <p>Enter your delivery address or search for the specific area</p>
-              </div>
-            </div>
-            
-            <div>
-              <a href="/user/manage-address "><button class="checkout-page-btn"><i class="fa-solid fa-plus"></i> Add address</button></a>
-            </div>
           </div>
-          <hr>
-          <% if (addresses.length > 0) { %>
-          <% addresses.forEach((address, index) => { %>
-          <div class="address-card-checkout-page">
-            <input type="radio" name="address" id="address<%= index + 1 %>" value="<%= address._id %>">
-            <label for="address<%= index + 1 %>">
-              <div class="address-content">
-                <p><strong>Address <%= index + 1 %></strong> (<%= address.address_type %>)</p>
-                <p><%= address.pin_code %> <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %></p>
-                <p>Phone: <%= userDetails.phone_no %>, <%= address.alternative_phone_no ?  `Alternative: ${address.alternative_phone_no}` : '' %></p>
-              </div>
-            </label>
-            <button class="checkout-btn address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
-            <div class="checkout-edit-remove">
-              <a href="/user/edit-address/<%= address._id %>">Edit</a> | <a href="/user/manage-address">Remove</a>
-            </div>
-          </div>
-          <% }) %>
-          <% } else { %>
-          <p>No addresses found. Please add a new address.</p>
-          <% } %>
-        </div>
-        <div class="div2 mb-2">
-          <div class="checked-page-step1 d-flex align-items-center">
-            <div class="checked-page-numbers">2</div>
-            <div class="ms-4 ps-3">
-              <h5 class="m-0">Order Summary</h5>
-            </div>
-          </div>
-        </div>
-        <div class="div2">
-          <div class="checked-page-step1 d-flex align-items-center">
-            <div class="checked-page-numbers">3</div>
-            <div class="ms-4 ps-3">
-              <h5 class="m-0">Payment Method</h5>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="col-md-5 m-0">
-        <div class="card shadow-sm price-summary">
-          <div class="card-body">
-            <h5 class="card-title">ORDER SUMMARY</h5>
+          <div class="horizontal-line-checkout-page">
             <hr>
-            <p class="d-flex justify-content-between mt-2">
-              <span>Price (<%= cartProducts.length %> ITEMS)</span>
-              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>Discount</span>
-              <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>Delivery Charges</span> 
-              <span>
-                <span class="original-price">₹ 60</span>
-                <span class="discount-percentage">free</span>
-              </span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>GST (18%)</span>
-              <span>
-                ₹<%= cartProducts
+          </div>
+
+        </nav>
+
+        <div class="left-box-checkout-page col-md-7 m-0 pb-0">
+          <div class="div1 mb-1">
+            <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+              <div class="d-flex">
+                <div class="checked-page-numbers">1</div>
+                <div class="ms-2">
+                  <h5>Delivery Address</h5>
+                  <p>Enter your delivery address or search for the specific area</p>
+                </div>
+              </div>
+
+              <div>
+                <a href="/user/manage-address "><button class="checkout-page-btn"><i class="fa-solid fa-plus"></i> Add address</button></a>
+              </div>
+            </div>
+            <hr>
+            <% if (addresses.length > 0) { %>
+            <% addresses.forEach((address, index) => { %>
+            <div class="address-card-checkout-page">
+              <input type="radio" name="address" id="address<%= index + 1 %>" value="<%= address._id %>">
+              <label for="address<%= index + 1 %>">
+                <div class="address-content">
+                  <p><strong>Address <%= index + 1 %></strong> (<%= address.address_type %>)</p>
+                  <p><%= address.pin_code %> <%= address.city %>, <%= address.district %>, <%= address.state %>, <%= address.country %></p>
+                  <p>Phone: <%= userDetails.phone_no %>, <%= address.alternative_phone_no ?  `Alternative: ${address.alternative_phone_no}` : '' %></p>
+                </div>
+              </label>
+              <button class="checkout-btn address-select w-100" data-id="<%= address._id %>">DELIVER TO THIS ADDRESS</button>
+              <div class="checkout-edit-remove">
+                <a href="/user/edit-address/<%= address._id %>">Edit</a> | <a href="/user/manage-address">Remove</a>
+              </div>
+            </div>
+            <% }) %>
+            <% } else { %>
+            <p>No addresses found. Please add a new address.</p>
+            <% } %>
+          </div>
+          <div class="div2 mb-2">
+            <div class="checked-page-step1 d-flex align-items-center">
+              <div class="checked-page-numbers">2</div>
+              <div class="ms-4 ps-3">
+                <h5 class="m-0">Order Summary</h5>
+              </div>
+            </div>
+          </div>
+          <div class="div2">
+            <div class="checked-page-step1 d-flex align-items-center">
+              <div class="checked-page-numbers">3</div>
+              <div class="ms-4 ps-3">
+                <h5 class="m-0">Payment Method</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-12 col-md-5 m-0 p-0 px-md-3">
+          <div class="card shadow-sm price-summary">
+            <div class="card-body">
+              <h5 class="card-title">ORDER SUMMARY</h5>
+              <hr>
+              <p class="d-flex justify-content-between mt-2">
+                <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Discount</span>
+                <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Delivery Charges</span>
+                <span>
+                  <span class="original-price">₹ 60</span>
+                  <span class="discount-percentage">free</span>
+                </span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>GST (18%)</span>
+                <span>
+                  ₹<%= cartProducts
                   .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
                   .toFixed(2)
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
-              </span>
-            </p>
-            <hr>
-            <p class="d-flex justify-content-between mt-2 mb-1">
-              <strong>Total</strong>
-              <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
-            </p>
+                </span>
+              </p>
+              <hr>
+              <p class="d-flex justify-content-between mt-2 mb-1">
+                <strong>Total</strong>
+                <strong class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- STEP 2 ----------------------------------------------------------------------------------------------------------->
-  <div class="container my-2 px-4 checkout-page-main-div" id="step2" style="display: none;">
-    <div class="row g-5">
-    <nav>
-      <div class="nav-bar-checkout-page1">
-        <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
-      </div>
-      <div class="nav-bar-checkout-page">
-          <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
-          <div class="">
-            <div class="circle-container d-flex justify-content-between align-items-center">
-              <div class="d-flex flex-column align-items-center">
-                <div class="circle">1</div>
+    <!-- STEP 2 ----------------------------------------------------------------------------------------------------------->
+    <div class="container my-2 px-4 checkout-page-main-div" id="step2" style="display: none;">
+      <div class="row g-5">
+        <nav>
+          <div class="nav-bar-checkout-page1">
+            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+          </div>
+          <div class="nav-bar-checkout-page">
+            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+            <div class="">
+              <div class="circle-container d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-column align-items-center">
+                  <div class="circle">1</div>
+                </div>
+                <div class="label mx-2 my-0">Address</div>
+                <div class="line"></div>
+                <div class="d-flex flex-column align-items-center">
+                  <div class="circle">2</div>
+                </div>
+                <div class="label mx-2 my-0">Order Summary</div>
+                <div class="line line-in-step2"></div>
+                <div class="d-flex flex-column align-items-center">
+                  <div class="circle circle-in-step2">3</div>
+                </div>
+                <div class="label label-in-step2 mx-2 my-0">Payment</div>
               </div>
-              <div class="label mx-2 my-0">Address</div>
-              <div class="line"></div>
-              <div class="d-flex flex-column align-items-center">
-                <div class="circle">2</div>
-              </div>
-              <div class="label mx-2 my-0">Order Summary</div>
-              <div class="line line-in-step2"></div>
-              <div class="d-flex flex-column align-items-center">
-                <div class="circle circle-in-step2">3</div>
-              </div>
-              <div class="label label-in-step2 mx-2 my-0">Payment</div>
             </div>
           </div>
-      </div>
-      <div class="horizontal-line-checkout-page"><hr></div>
-  </nav>
+          <div class="horizontal-line-checkout-page">
+            <hr>
+          </div>
+        </nav>
 
 
-      <div class="left-box-checkout-page col-md-7 m-0 p-0">
-        <div class="div1 mb-2">
-          <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+        <div class="col-12 col-md-7 left-box-checkout-page m-0 p-0">
+          <div class="div1 mb-2">
+            <div class="checked-page-step1 d-flex align-items-center justify-content-between">
 
-            <div class="d-flex align-items-center">
-              <div class="checked-page-numbers me-3">1</div>
+              <div class="d-flex align-items-center">
+                <div class="checked-page-numbers me-3">1</div>
+                <div>
+                  <h5 class="m-0">Delivery Address</h5>
+                  <div id="step2-content"></div>
+                </div>
+
+              </div>
               <div>
-                <h5 class="m-0">Delivery Address</h5>
-                <div id="step2-content"></div>
+                <button class="go-to-step1 checkout-page-btn px-3">Edit</button>
               </div>
-
-            </div>
-            <div>
-              <button class="go-to-step1 checkout-page-btn px-3">Edit</button>
             </div>
           </div>
-        </div>
-        <div class="div1 mb-1 pb-2">
-          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <div class="checked-page-numbers mb-2 me-3">2</div>
-              <h5>Order Summary</h5>
+          <div class="div1 mb-1 pb-2">
+            <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <div class="checked-page-numbers mb-2 me-3">2</div>
+                <h5>Order Summary</h5>
+              </div>
+              <div>
+                <a href="/my-cart">
+                  <button class="checkout-page-btn">Go To Cart</button>
+                </a>
+              </div>
             </div>
-            <div>
-              <a href="/my-cart">
-                <button class="checkout-page-btn">Go To Cart</button>
-              </a>
-            </div>
-          </div>
-          <hr class="mb-2">
-          <div style="max-height: 270px; overflow-y: auto;" id="cart-container">
-            <% if (cartProducts.length > 0) { %>
+            <hr class="mb-2">
+            <div style="max-height: 270px; overflow-y: auto;" id="cart-container">
+              <% if (cartProducts.length > 0) { %>
               <% cartProducts.forEach(({ product_details, variant, quantity }) => { %>
-                <!-- Cart Item -->
-                <div class="cart-item card cart-box-in-checkout mb-1 shadow-sm" 
-                     data-product-id="<%= product_details._id %>" 
-                     data-variant-id="<%= variant._id %>">
-                  <div class="row g-0">
-                    <div class="col-md-2 text-center">
-                      <img src="<%= variant.images[0] %>" class="img-fluid rounded" alt="<%= product_details.title %>">
-                    </div>
-                    <div class="col-md-10">
-                      <div class="card-body px-2 py-0">
-                        <h6 class="card-title"><%= product_details.title %></h6>
-                        <div class="cart-box-quantity-selector d-flex my-1">
-                          <p class="product-quantity qty m-0">QTY: <%= quantity %>&nbsp;&nbsp;&nbsp; shade:&nbsp; <%= variant.shade %></p>
-                        </div>
-                        <div class="d-flex justify-content-between cart-price">
-                          <p class="card-text">
-                            Unit Price: 
-                            <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
-                            <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
-                            <span class="discount-percentage">| 
-                              <% if (variant.regularPrice > variant.salePrice) { %>
-                                <span class="discount-percentage">
-                                  <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
-                                </span>
-                              <% } %>
+              <!-- Cart Item -->
+              <div class="cart-item card cart-box-in-checkout mb-1 shadow-sm" data-product-id="<%= product_details._id %>" data-variant-id="<%= variant._id %>">
+                <div class="row g-0 d-flex align-items-center">
+                  <!-- Product Image -->
+                  <div class="col-3 col-sm-2 text-center">
+                    <img src="<%= variant.images[0] %>" class="img-fluid rounded" alt="<%= product_details.title %>">
+                  </div>
+
+                  <!-- Product Info -->
+                  <div class="col-9 col-sm-10">
+                    <div class="card-body px-2 py-0">
+                      <h6 class="card-title mb-0"><%= product_details.title %></h6>
+                      <div class="cart-box-quantity-selector d-flex my-1">
+                        <p class="product-quantity qty m-0">QTY: <%= quantity %>&nbsp;&nbsp;&nbsp; shade:&nbsp; <%= variant.shade %></p>
+                      </div>
+                      <div class="d-flex justify-content-between cart-price flex-wrap">
+                        <p class="card-text">
+                          Unit Price:
+                          <span class="original-price price-inr">₹<%= variant.regularPrice %></span>
+                          <span class="sales-price price-inr">₹<%= variant.salePrice %></span>
+                          <span class="discount-percentage">|
+                            <% if (variant.regularPrice > variant.salePrice) { %>
+                            <span class="discount-percentage">
+                              <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
                             </span>
-                          </p>
-                          <p class="card-text">
-                            Total: 
-                            <span class="sales-price price-inr">₹<%= variant.salePrice * quantity %></span>
-                          </p>
-                        </div>
+                            <% } %>
+                          </span>
+                        </p>
+                        <p class="card-text">
+                          Total:
+                          <span class="sales-price price-inr">₹<%= variant.salePrice * quantity %></span>
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
+
+
+              </div>
               <% }); %>
-            <% } else { %>
+              <% } else { %>
               <p>No Products.</p>
-            <% } %>
+              <% } %>
+            </div>
+
           </div>
-          
-          
-          <!-- <button id="proceed-to-pay" class="large-button-green w-100 my-3">PROCEED TO PAY</button>             -->
-        </div>
-        <div class="div2">
-          <div class="checked-page-step1 d-flex align-items-center">
-            <div class="checked-page-numbers">3</div>
-            <div class="ms-4 ps-3">
-              <h5 class="m-0">Payment Method</h5>
+          <div class="div2">
+            <div class="checked-page-step1 d-flex align-items-center">
+              <div class="checked-page-numbers">3</div>
+              <div class="ms-4 ps-3">
+                <h5 class="m-0">Payment Method</h5>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Order Summary -->
+        <!-- Order Summary -->
 
-<div class="col-md-5 m-0">
-  <div class="card shadow-sm price-summary">
-    <div class="card-body">
-      <h5 class="card-title">ORDER SUMMARY</h5>
-      <hr>
-      <p class="d-flex justify-content-between mt-2">
-        <span>Price (<%= cartProducts.length %> ITEMS)</span>
-        <span class="price-inr">
-          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %>
-        </span>
-      </p>
-      <p class="d-flex justify-content-between">
-        <span>Discount</span>
-        <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
-      </p>
-      <p class="d-flex justify-content-between">
-        <span>Delivery Charges</span> 
-        <span>
-          <span class="original-price">₹ 60</span>
-          <span class="discount-percentage">free</span>
-        </span>
-        
-      </p>
-      <p class="d-flex justify-content-between">
-        <span>GST (18%)</span>
-        <span>
-          ₹<%= cartProducts
+        <div class="col-12 col-md-5 m-0 p-0 px-md-3">
+          <div class="card shadow-sm price-summary">
+            <div class="card-body">
+              <h5 class="card-title">ORDER SUMMARY</h5>
+              <hr>
+              <p class="d-flex justify-content-between mt-2">
+                <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                <span class="price-inr">
+                  ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %>
+                </span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Discount</span>
+                <span class="discount-percentage">- <span class="discount-percentage price-inr">-₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Delivery Charges</span>
+                <span>
+                  <span class="original-price">₹ 60</span>
+                  <span class="discount-percentage">free</span>
+                </span>
+
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>GST (18%)</span>
+                <span>
+                  ₹<%= cartProducts
             .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
             .toFixed(2)
             .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
-        </span>
-      </p>
-      <hr>
-      <p class="d-flex justify-content-between mt-2 mb-1">
-        <strong>Total</strong>
-        <strong class="price-inr">
-          ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %>
-        </strong>
-      </p>
-    </div>
-  </div>
-  <button id="proceed-to-pay" class="checkout-btn w-100 my-3">PROCEED TO PAY</button>
-</div>
-    </div>
-  </div>
-
-  <!-- STEP 3 ------------------------------------------------------------------------------------------------------------->
-  <div class="container my-2 px-4 checkout-page-main-div" id="step3" style="display: none;">
-    <div class="row g-5">
-      <nav>
-        <div class="nav-bar-checkout-page1">
-          <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+                </span>
+              </p>
+              <hr>
+              <p class="d-flex justify-content-between mt-2 mb-1">
+                <strong>Total</strong>
+                <strong class="price-inr">
+                  ₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %>
+                </strong>
+              </p>
+            </div>
+          </div>
+          <button id="proceed-to-pay" class="checkout-btn w-100 my-3">PROCEED TO PAY</button>
         </div>
-        <div class="nav-bar-checkout-page">
+      </div>
+    </div>
+
+    <!-- STEP 3 ------------------------------------------------------------------------------------------------------------->
+    <div class="container my-2 px-4 checkout-page-main-div" id="step3" style="display: none;">
+      <div class="row g-5">
+        <nav>
+          <div class="nav-bar-checkout-page1">
+            <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
+          </div>
+          <div class="nav-bar-checkout-page">
             <div class="nav-bar-logo"><a href="/home">Glowly</a></div>
             <div class="order-satus-indicator-checkout-page">
               <div class="circle-container d-flex justify-content-between align-items-center">
@@ -358,150 +364,149 @@
                 <div class="label mx-2 my-0">Payment</div>
               </div>
             </div>
-        </div>
-        <div class="horizontal-line-checkout-page"><hr></div>
-    </nav>
-
-      <div class="left-box-checkout-page col-md-7 m-0">
-        <div class="div1 mb-1">
-          <div class="checked-page-step1 d-flex align-items-center justify-content-between">
-
-            <div class="d-flex align-items-center">
-              <div class="checked-page-numbers me-3">1</div>
-              <div>
-                <h5 class="m-0">Delivery Address</h5>
-                <div id="step3-content"></div>
-              </div>
-
-            </div>
-            <div>
-              <button class="go-to-step1 checkout-page-btn px-3">Edit</button>
-            </div>
           </div>
-        </div>
-        <div class="div1 mb-1">
-          <div class="checked-page-step1 d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center">
-              <div class="checked-page-numbers mb-2 me-3">2</div>
-              <div>
-                <h5>Order Summary</h5>
-                <p><%= cartProducts.length %> Shipments</p>
-              </div>
-            </div>
-            <div>
-              <button class="go-to-step2 checkout-page-btn px-3">Edit</button>
-            </div>
-          </div>
-        </div>
-        <div class="div1">
-          <div class="checked-page-step1 d-flex align-items-center">
-            <div class="checked-page-numbers">3</div>
-            <div class="ms-4 ps-3">
-              <h5 class="m-0">Payment Method</h5>
-            </div>
-          </div>
-          <hr class="mb-2">
-          <!-- <div class="payment-div ms-2">
-                      <h5 class=" mt-3">Payment Methods</h5>
-                      <hr class="my-1"> -->
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay" >
-            <label class="form-check-label" for="razorpay">Razorpay</label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="wallet">
-            <label class="form-check-label" for="wallet">Wallet</label>
-          </div>
-          <!-- <div class="form-check">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
-            <label class="form-check-label" for="paypal">PayPal</label>
-          </div> -->
-          <div class="form-check mb-3">
-            <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
-            <label class="form-check-label" for="cash">Cash on Delivery</label>
-            <div id="error" class="error-message"></div>
-          </div>
-          <button id="payBtn" class="checkout-btn pay-btn-checkoutpage w-100 my-3">
-            PAY <span id="total-price" class="price-inr"><%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span>
-        </button>
-        </div>
-      </div>
-
-      <!-- Order Summary -->
-      <div class="col-md-5 m-0">
-        <div class="card shadow-sm price-summary">
-          <div class="card-body">
-            <h5 class="card-title">ORDER SUMMARY</h5>
+          <div class="horizontal-line-checkout-page">
             <hr>
-            <p class="d-flex justify-content-between mt-2">
-              <span>Price (<%= cartProducts.length %> ITEMS)</span>
-              <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>Discount</span>
-              <span class="discount-percentage">-<span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
-              
-            </p>
-            <p class="d-flex justify-content-between m-0 hidden" id="coupon-discound-show">
-              <span id="coupon-dicount-title"></span>
-              <span id="coupon-discount" class="discount-percentage"></span>
-          </p>
-            <p class="d-flex justify-content-between">
-              <span>Delivery Charges</span> 
-              <span>
-                <span class="original-price">₹ 60</span>
-                <span class="discount-percentage">free</span>
-              </span>
-            </p>
-            <p class="d-flex justify-content-between">
-              <span>GST (18%)</span>
-              <span>
-                ₹<%= cartProducts
+          </div>
+        </nav>
+
+        <div class="left-box-checkout-page col-md-7 m-0">
+          <div class="div1 mb-1">
+            <div class="checked-page-step1 d-flex align-items-center justify-content-between">
+
+              <div class="d-flex align-items-center">
+                <div class="checked-page-numbers me-3">1</div>
+                <div>
+                  <h5 class="m-0">Delivery Address</h5>
+                  <div id="step3-content"></div>
+                </div>
+
+              </div>
+              <div>
+                <button class="go-to-step1 checkout-page-btn px-3">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="div1 mb-1">
+            <div class="checked-page-step1 d-flex justify-content-between align-items-center">
+              <div class="d-flex align-items-center">
+                <div class="checked-page-numbers mb-2 me-3">2</div>
+                <div>
+                  <h5>Order Summary</h5>
+                  <p><%= cartProducts.length %> Shipments</p>
+                </div>
+              </div>
+              <div>
+                <button class="go-to-step2 checkout-page-btn px-3">Edit</button>
+              </div>
+            </div>
+          </div>
+          <div class="div1">
+            <div class="checked-page-step1 d-flex align-items-center">
+              <div class="checked-page-numbers">3</div>
+              <div class="ms-4 ps-3">
+                <h5 class="m-0">Payment Method</h5>
+              </div>
+            </div>
+            <hr class="mb-2">
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="razorpay">
+              <label class="form-check-label" for="razorpay">Razorpay</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="wallet">
+              <label class="form-check-label" for="wallet">Wallet</label>
+            </div>
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="cash">
+              <label class="form-check-label" for="cash">Cash on Delivery</label>
+              <div id="error" class="error-message"></div>
+            </div>
+            <button id="payBtn" class="checkout-btn pay-btn-checkoutpage w-100 my-3">
+              PAY <span id="total-price" class="price-inr"><%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div class="col-12 col-md-5 m-0 p-0 px-md-3">
+          <div class="card shadow-sm price-summary">
+            <div class="card-body">
+              <h5 class="card-title">ORDER SUMMARY</h5>
+              <hr>
+              <p class="d-flex justify-content-between mt-2">
+                <span>Price (<%= cartProducts.length %> ITEMS)</span>
+                <span class="price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.regularPrice * quantity), 0) %></span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Discount</span>
+                <span class="discount-percentage">-<span class="discount-percentage price-inr">₹<%= cartProducts.reduce((total, { variant, quantity }) => total + ((variant.regularPrice - variant.salePrice) * quantity), 0) %></span></span>
+
+              </p>
+              <p class="d-flex justify-content-between m-0 hidden" id="coupon-discound-show">
+                <span id="coupon-dicount-title"></span>
+                <span id="coupon-discount" class="discount-percentage"></span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>Delivery Charges</span>
+                <span>
+                  <span class="original-price">₹ 60</span>
+                  <span class="discount-percentage">free</span>
+                </span>
+              </p>
+              <p class="d-flex justify-content-between">
+                <span>GST (18%)</span>
+                <span>
+                  ₹<%= cartProducts
                   .reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity * 0.18), 0)
                   .toFixed(2)
                   .replace(/\B(?=(\d{3})+(?!\d))/g, ",") %>
-              </span>
+                </span>
 
-            </p>
-            <hr>
-            <p class="d-flex justify-content-between mt-2 mb-1">
-              <strong>Total</strong>
-              <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
-            </p>
+              </p>
+              <hr>
+              <p class="d-flex justify-content-between mt-2 mb-1">
+                <strong>Total</strong>
+                <strong id="grandTotal" class="price-inr">₹ <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) + 60 %></strong>
+              </p>
+            </div>
           </div>
-        </div>
-        <!-- Coupon -->
-        <div class="check-coupon m-2">
+          <!-- Coupon -->
+          <div class="check-coupon m-2">
             <label for="coupon">Do you have any Coupon</label><br>
             <input type="text" name="coupon" id="coupon" placeholder="Enter code">
             <button type="submit" id="verify-coupon" class="large-button-green p-1 px-3">Apply</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
-<div class="modal fade check-out-modal-fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="text-center">
-        <div class="mb-3">
-          <i class="fas fa-check-circle" style="font-size: 50px;color: rgb(2, 149, 2);"></i>
+  <div class="modal fade check-out-modal-fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="text-center">
+          <div class="mb-3">
+            <i class="fas fa-check-circle" style="font-size: 50px;color: rgb(2, 149, 2);"></i>
+          </div>
+          <div>
+            <h5 class="modal-title" id="orderConfirmationModalLabel">Your order is Completed</h5>
+          </div>
         </div>
-        <div>
-          <h5 class="modal-title" id="orderConfirmationModalLabel">Your order is Completed</h5>
+        <div class="modal-body text-center">
+          <p>Thank You for your order, Sit tight we are processing your order
+            we will update you with your order in email
+          </p>
+          <button id="goToOrders" class="main-btn px-4"><i class="fas fa-truck me-2"></i>Go to Orders</button>
+          <button id="continueShopping" class="pastel-btn-blue px-4">Continue Shopping<i class="fa-solid fa-bag-shopping ms-2"></i></button>
         </div>
-      </div>
-      <div class="modal-body text-center">
-        <p>Thank You for your order, Sit tight we are processing your order
-          we will update you with your order in email
-        </p>
-        <button id="goToOrders" class="pastel-btn-red px-4"><i class="fas fa-truck me-2"></i>Go to Orders</button>
-        <button id="continueShopping" class="pastel-btn-blue px-4">Continue Shopping<i class="fa-solid fa-bag-shopping ms-2"></i></button>
       </div>
     </div>
   </div>
-</div>
+
+
+
+
 
 
 
@@ -512,94 +517,94 @@
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <!-- Notyf JS -->
 <script src="https://cdn.jsdelivr.net/npm/notyf@3.5.0/notyf.min.js"></script>
- <!-- React Toastify JS -->
- <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
- <!-- jQuery -->
- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
- <!-- SweetAlert2 -->
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <!-- Bootstrap -->
- <script
-   src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-   integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-   crossorigin="anonymous"
- ></script>
+<!-- React Toastify JS -->
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
- const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
 
-      });
-    };
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
+    });
+  };
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
 
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        size: 'small',
-        position: 'topRight',
-      });
-    };
-    document.addEventListener('DOMContentLoaded', function () {
-    const priceElements = document.querySelectorAll('.price-inr'); 
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      size: 'small',
+      position: 'topRight',
+    });
+  };
+  document.addEventListener('DOMContentLoaded', function() {
+    const priceElements = document.querySelectorAll('.price-inr');
 
     priceElements.forEach(element => {
-        const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10); 
-        element.textContent = '₹ ' + price.toLocaleString('en-IN');  
+      const price = parseInt(element.textContent.replace(/[^0-9]/g, ''), 10);
+      element.textContent = '₹ ' + price.toLocaleString('en-IN');
     });
-});
+  });
 
-document.addEventListener("DOMContentLoaded", () => {
-  const container = document.getElementById("cart-container");
-  const hiddenItems = Array.from(document.querySelectorAll(".cart-item.hidden"));
+  document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("cart-container");
+    const hiddenItems = Array.from(document.querySelectorAll(".cart-item.hidden"));
 
-  container.addEventListener("scroll", () => {
-    const { scrollTop, scrollHeight, clientHeight } = container;
+    container.addEventListener("scroll", () => {
+      const {
+        scrollTop,
+        scrollHeight,
+        clientHeight
+      } = container;
 
-    if (scrollTop + clientHeight >= scrollHeight - 5) {
-      for (let i = 0; i < 3; i++) {
-        if (hiddenItems.length > 0) {
-          hiddenItems.shift().classList.remove("hidden");
+      if (scrollTop + clientHeight >= scrollHeight - 5) {
+        for (let i = 0; i < 3; i++) {
+          if (hiddenItems.length > 0) {
+            hiddenItems.shift().classList.remove("hidden");
+          }
         }
       }
-    }
+    });
   });
-});
 
-    document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const step1 = document.getElementById("step1");
     const step2 = document.getElementById("step2");
     const step3 = document.getElementById("step3");
@@ -617,45 +622,45 @@ document.addEventListener("DOMContentLoaded", () => {
     showStep(step1);
 
     step1.addEventListener("click", (event) => {
-        if (event.target && event.target.classList.contains("address-select")) {
-            selectedAddressId = event.target.getAttribute("data-id");
-            const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
+      if (event.target && event.target.classList.contains("address-select")) {
+        selectedAddressId = event.target.getAttribute("data-id");
+        const selectedAddressDetails = event.target.closest('.address-card-checkout-page').querySelector('.address-content').innerText;
 
-            selectedAddress = {
-                id: selectedAddressId,
-                details: selectedAddressDetails,
-            };
-            renderStep2(selectedAddress);
-            showStep(step2);
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
+        selectedAddress = {
+          id: selectedAddressId,
+          details: selectedAddressDetails,
+        };
+        renderStep2(selectedAddress);
+        showStep(step2);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
     });
 
     function renderStep2(address) {
-        const step2Content = document.getElementById("step2-content");
-        step2Content.innerHTML = `<p>${address.details}</p>`;
+      const step2Content = document.getElementById("step2-content");
+      step2Content.innerHTML = `<p>${address.details}</p>`;
     }
 
     document.getElementById("proceed-to-pay").addEventListener("click", () => {
-        renderStep3(selectedAddress);
-        showStep(step3);
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+      renderStep3(selectedAddress);
+      showStep(step3);
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     });
 
     function renderStep3(address) {
-        const step3Content = document.getElementById("step3-content");
-        step3Content.innerHTML = `<p>${address.details}</p>`;
+      const step3Content = document.getElementById("step3-content");
+      step3Content.innerHTML = `<p>${address.details}</p>`;
     }
 
     function getSelectedPaymentMethod() {
-        const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
-        return paymentMethodElement ? paymentMethodElement.id : null;
+      const paymentMethodElement = document.querySelector('input[name="paymentMethod"]:checked');
+      return paymentMethodElement ? paymentMethodElement.id : null;
     }
 
 
@@ -665,341 +670,347 @@ document.addEventListener("DOMContentLoaded", () => {
     const couponInput = document.getElementById("coupon");
 
     const applyCoupon = async () => {
-        const cartProducts = getCartProducts();
-        const coupon = couponInput.value.trim();
+      const cartProducts = getCartProducts();
+      const coupon = couponInput.value.trim();
 
-        const grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+      const grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
 
-        const response = await fetch("/verify-coupon", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ coupon, grandTotal }),
-        });
+      const response = await fetch("/verify-coupon", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          coupon,
+          grandTotal
+        }),
+      });
 
-        const result = await response.json();
+      const result = await response.json();
 
-        if (result.success) {
+      if (result.success) {
 
-          couponId = result.coupon_id
+        couponId = result.coupon_id
 
-          if (result.discountType && result.discountType === "percentage"){
-            discountType = `(${result.discountValue} %)`;
-            discountAmount = ( result.discountValue / 100 ) * grandTotal;
-            
-            productAfterCoupon = Math.round(discountAmount / cartProducts.length); 
-          } else if (result.discountType === "flat") {
-            discountType = `(flat)`
-            discountAmount = result.discountValue
-            productAfterCoupon = Math.round(discountAmount / cartProducts.length);
-          }
-          let formattedDiscountAmount = '₹ ' + discountAmount.toLocaleString('en-IN');
-        
+        if (result.discountType && result.discountType === "percentage") {
+          discountType = `(${result.discountValue} %)`;
+          discountAmount = (result.discountValue / 100) * grandTotal;
 
-            toastSuccess(result.message);
-            couponButton.textContent = "Remove";
-            couponButton.className = "large-button-red p-1 px-3";
-            couponButton.setAttribute("id", "remove-coupon");
-
-            couponButton.removeEventListener("click", applyCoupon);
-            couponButton.addEventListener("click", removeCoupon);
-
-            couponInput.readOnly = true;
-            const couponDiscountShow = document.getElementById("coupon-discound-show");
-            couponDiscountShow.classList.remove("hidden");
-            couponDiscountShow.style.display = "flex";
-
-            const grandTotalAfterDiscount = '₹ ' + (grandTotal - discountAmount).toLocaleString('en-IN')
-
-            document.getElementById("grandTotal").textContent = `${grandTotalAfterDiscount}`
-            document.getElementById("payBtn").textContent = `PAY ${grandTotalAfterDiscount}`
-            document.getElementById("coupon-dicount-title").textContent = `Coupon Savings ${discountType}`;
-            document.getElementById("coupon-dicount-title").style.marginBottom = "16px";
-            document.getElementById("coupon-discount").textContent = `- ${formattedDiscountAmount}`;
-        } else {
-            toastError(result.message || "Something went wrong with coupon verification.");
+          productAfterCoupon = Math.round(discountAmount / cartProducts.length);
+        } else if (result.discountType === "flat") {
+          discountType = `(flat)`
+          discountAmount = result.discountValue
+          productAfterCoupon = Math.round(discountAmount / cartProducts.length);
         }
+        let formattedDiscountAmount = '₹ ' + discountAmount.toLocaleString('en-IN');
+
+
+        toastSuccess(result.message);
+        couponButton.textContent = "Remove";
+        couponButton.className = "large-button-red p-1 px-3";
+        couponButton.setAttribute("id", "remove-coupon");
+
+        couponButton.removeEventListener("click", applyCoupon);
+        couponButton.addEventListener("click", removeCoupon);
+
+        couponInput.readOnly = true;
+        const couponDiscountShow = document.getElementById("coupon-discound-show");
+        couponDiscountShow.classList.remove("hidden");
+        couponDiscountShow.style.display = "flex";
+
+        const grandTotalAfterDiscount = '₹ ' + (grandTotal - discountAmount).toLocaleString('en-IN')
+
+        document.getElementById("grandTotal").textContent = `${grandTotalAfterDiscount}`
+        document.getElementById("payBtn").textContent = `PAY ${grandTotalAfterDiscount}`
+        document.getElementById("coupon-dicount-title").textContent = `Coupon Savings ${discountType}`;
+        document.getElementById("coupon-dicount-title").style.marginBottom = "16px";
+        document.getElementById("coupon-discount").textContent = `- ${formattedDiscountAmount}`;
+      } else {
+        toastError(result.message || "Something went wrong with coupon verification.");
+      }
     };
 
-// Function to handle removing the coupon
-const removeCoupon = () => {
-    couponId = null;
+    // Function to handle removing the coupon
+    const removeCoupon = () => {
+      couponId = null;
 
-    couponInput.readOnly = false;
-    couponInput.value = "";
+      couponInput.readOnly = false;
+      couponInput.value = "";
 
 
-    couponButton.textContent = "Apply";
-    couponButton.className = "large-button-green p-1 px-3";
-    couponButton.setAttribute("id", "verify-coupon");
+      couponButton.textContent = "Apply";
+      couponButton.className = "large-button-green p-1 px-3";
+      couponButton.setAttribute("id", "verify-coupon");
 
-    couponButton.removeEventListener("click", removeCoupon);
+      couponButton.removeEventListener("click", removeCoupon);
+      couponButton.addEventListener("click", applyCoupon);
+
+      couponInput.value = "";
+
+      productAfterCoupon = 0
+      const couponDiscountShow = document.getElementById("coupon-discound-show");
+      couponDiscountShow.classList.add("hidden");
+      couponDiscountShow.style.display = "none";
+
+      const grandTotalOld = '₹ ' + grandTotal.toLocaleString('en-IN')
+
+      document.getElementById("grandTotal").textContent = `${grandTotalOld}`
+      document.getElementById("payBtn").textContent = `PAY ${grandTotalOld}`
+      document.getElementById("coupon-dicount-title").textContent = "";
+      document.getElementById("coupon-dicount-title").style.marginBottom = "";
+      document.getElementById("coupon-discount").textContent = "";
+    };
+
     couponButton.addEventListener("click", applyCoupon);
 
-    couponInput.value = "";
-
-    productAfterCoupon = 0
-    const couponDiscountShow = document.getElementById("coupon-discound-show");
-    couponDiscountShow.classList.add("hidden");
-    couponDiscountShow.style.display = "none";
-
-    const grandTotalOld = '₹ ' + grandTotal.toLocaleString('en-IN')
-
-    document.getElementById("grandTotal").textContent = `${grandTotalOld}`
-    document.getElementById("payBtn").textContent = `PAY ${grandTotalOld}`
-    document.getElementById("coupon-dicount-title").textContent = "";
-    document.getElementById("coupon-dicount-title").style.marginBottom = "";
-    document.getElementById("coupon-discount").textContent = "";
-};
-
-couponButton.addEventListener("click", applyCoupon);
 
 
+    const payButton = document.querySelector(".pay-btn-checkoutpage");
+    payButton.addEventListener("click", async () => {
 
-const payButton = document.querySelector(".pay-btn-checkoutpage");
-payButton.addEventListener("click", async () => {
 
-  
-    const cartProducts = getCartProducts();
-    const selectedPaymentMethod = getSelectedPaymentMethod();
+      const cartProducts = getCartProducts();
+      const selectedPaymentMethod = getSelectedPaymentMethod();
 
-    if (!selectedPaymentMethod) {
+      if (!selectedPaymentMethod) {
         toastError("Please select a payment method.");
         return;
-    }
+      }
 
-    const orderData = {
+      const orderData = {
         address_id: selectedAddressId,
         cart: cartProducts,
         grandTotal: couponId ? (grandTotal - discountAmount) : grandTotal,
         coupon: couponId || null,
         payment_method: selectedPaymentMethod,
-    };
+      };
 
-    try {
+      try {
         if (selectedPaymentMethod === "razorpay") {
-            try {
-                console.log("Creating Razorpay order on the server...");
-                const response = await fetch("/place-order", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(orderData),
-                });
+          try {
+            console.log("Creating Razorpay order on the server...");
+            const response = await fetch("/place-order", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(orderData),
+            });
 
-                if (!response.ok) {
-                    toastError("Failed to create Razorpay order. Please try again.");
-                    return;
-                }
-
-                const { key, order } = await response.json();
-                console.log("Razorpay order created:", order);
-
-                const options = {
-                    key: key,
-                    amount: order.amount,
-                    currency: "INR",
-                    order_id: order.id,
-                    name: "Glowly.com",
-                    description: "Payment for order",
-                    handler: async function (response) {
-                        console.log("Razorpay Payment Success:", response);
-
-                        const verifyResponse = await fetch("/verify-razorpay-payment", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                razorpay_payment_id: response.razorpay_payment_id,
-                                razorpay_order_id: response.razorpay_order_id,
-                                razorpay_signature: response.razorpay_signature,
-                                order_id: order.id 
-                            }),
-                        });
-
-                        const verifyData = await verifyResponse.json();
-                        if (verifyData.success) {
-                            handleOrderSuccess();
-                        } else {
-                            toastError(verifyData.message || "Razorpay payment verification failed.");
-                        }
-                    },
-                    theme: {
-                       color: "#ff00b3"
-                    },
-                    modal: {
-                        escape: false,
-                        ondismiss: async function () {
-                            console.log("Razorpay modal dismissed (without payment)");
-                            toastInfo("Payment cancelled. You can try again later.");
-                            handleOrderSuccess();
-                        },
-                    },
-                };
-
-                const rzp1 = new Razorpay(options);
-
-                rzp1.on("payment.failed", async function (response) {
-                    console.log("Payment failed:", response.error);
-                    toastInfo("Payment cancelled. You can try again later.");
-                    handleOrderSuccess(); 
-                });
-
-                console.log("Opening Razorpay modal...");
-                rzp1.open();
-
-            } catch (error) {
-                console.error("Error in Razorpay flow:", error);
-                toastError("An error occurred while processing your payment. Please try again.");
+            if (!response.ok) {
+              toastError("Failed to create Razorpay order. Please try again.");
+              return;
             }
+
+            const {
+              key,
+              order
+            } = await response.json();
+            console.log("Razorpay order created:", order);
+
+            const options = {
+              key: key,
+              amount: order.amount,
+              currency: "INR",
+              order_id: order.id,
+              name: "Glowly.com",
+              description: "Payment for order",
+              handler: async function(response) {
+                console.log("Razorpay Payment Success:", response);
+
+                const verifyResponse = await fetch("/verify-razorpay-payment", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature,
+                    order_id: order.id
+                  }),
+                });
+
+                const verifyData = await verifyResponse.json();
+                if (verifyData.success) {
+                  handleOrderSuccess();
+                } else {
+                  toastError(verifyData.message || "Razorpay payment verification failed.");
+                }
+              },
+              theme: {
+                color: "#ff00b3"
+              },
+              modal: {
+                escape: false,
+                ondismiss: async function() {
+                  console.log("Razorpay modal dismissed (without payment)");
+                  toastInfo("Payment cancelled. You can try again later.");
+                  handleOrderSuccess();
+                },
+              },
+            };
+
+            const rzp1 = new Razorpay(options);
+
+            rzp1.on("payment.failed", async function(response) {
+              console.log("Payment failed:", response.error);
+              toastInfo("Payment cancelled. You can try again later.");
+              handleOrderSuccess();
+            });
+
+            console.log("Opening Razorpay modal...");
+            rzp1.open();
+
+          } catch (error) {
+            console.error("Error in Razorpay flow:", error);
+            toastError("An error occurred while processing your payment. Please try again.");
+          }
         } else if (selectedPaymentMethod === "wallet") {
 
-            const response = await fetch("/place-order", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(orderData),
-            });
+          const response = await fetch("/place-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          });
 
-            const result = await response.json();
+          const result = await response.json();
 
-            if (response.ok) {
-                handleOrderSuccess();
-            } else {
-                toastError(result.message || "Something went wrong with wallet payment.");
-            }
+          if (response.ok) {
+            handleOrderSuccess();
+          } else {
+            toastError(result.message || "Something went wrong with wallet payment.");
+          }
         } else if (selectedPaymentMethod === "cash") {
-            const response = await fetch("/place-order", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(orderData),
-            });
+          const response = await fetch("/place-order", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(orderData),
+          });
 
-            const result = await response.json();
+          const result = await response.json();
 
-            if (response.ok) {
-                handleOrderSuccess();
-            } else {
-                toastError(result.message || "Something went wrong. Please try again.");
-            }
+          if (response.ok) {
+            handleOrderSuccess();
+          } else {
+            toastError(result.message || "Something went wrong. Please try again.");
+          }
         }
-    } catch (error) {
+      } catch (error) {
         console.error(error);
         toastWarning("There was an error processing your payment. Please try again.");
-    }
-});
+      }
+    });
 
 
-function handleOrderSuccess() {
-    showStep(step1);
-    const modalElement = document.getElementById("orderConfirmationModal");
-    if (!modalElement) {
+    function handleOrderSuccess() {
+      showStep(step1);
+      const modalElement = document.getElementById("orderConfirmationModal");
+      if (!modalElement) {
         console.error("Modal element not found");
         return;
-    }
+      }
 
-    const orderConfirmationModal = new bootstrap.Modal(modalElement, {
-        backdrop: 'static', 
-        keyboard: false 
-    });
+      const orderConfirmationModal = new bootstrap.Modal(modalElement, {
+        backdrop: 'static',
+        keyboard: false
+      });
 
-    console.log("Order placed successfully!");
-    orderConfirmationModal.show();
+      console.log("Order placed successfully!");
+      orderConfirmationModal.show();
 
-    document.getElementById("goToOrders").addEventListener("click", () => {
+      document.getElementById("goToOrders").addEventListener("click", () => {
         console.log("Redirecting to My Orders");
         window.location.href = "/my-orders";
-    });
+      });
 
-    document.getElementById("continueShopping").addEventListener("click", () => {
+      document.getElementById("continueShopping").addEventListener("click", () => {
         console.log("Redirecting to Home");
         window.location.href = "/home";
-    });
-}
+      });
+    }
 
     function getCartProducts() {
-        const productElements = document.querySelectorAll(".cart-box-in-checkout");
-        const cartProducts = Array.from(productElements).map((productElement) => {
-            const productId = productElement.getAttribute("data-product-id");
-            const variantId = productElement.getAttribute("data-variant-id");
+      const productElements = document.querySelectorAll(".cart-box-in-checkout");
+      const cartProducts = Array.from(productElements).map((productElement) => {
+        const productId = productElement.getAttribute("data-product-id");
+        const variantId = productElement.getAttribute("data-variant-id");
 
-            const quantityElement = productElement.querySelector(".product-quantity");
-            const quantityText = quantityElement?.textContent.trim().match(/QTY:\s*(\d+)/i);
-            const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
+        const quantityElement = productElement.querySelector(".product-quantity");
+        const quantityText = quantityElement?.textContent.trim().match(/QTY:\s*(\d+)/i);
+        const quantity = quantityText ? parseInt(quantityText[1], 10) : 0;
 
-            const salesPriceElement = productElement.querySelector(".sales-price");
-            const salesPriceText = salesPriceElement?.textContent.trim();
+        const salesPriceElement = productElement.querySelector(".sales-price");
+        const salesPriceText = salesPriceElement?.textContent.trim();
 
-            const salesPrice = salesPriceText ? parseFloat(salesPriceText.replace(/[^\d.-]/g, '')) : 0;
+        const salesPrice = salesPriceText ? parseFloat(salesPriceText.replace(/[^\d.-]/g, '')) : 0;
 
-            const totalAmount = quantity * salesPrice;
+        const totalAmount = quantity * salesPrice;
 
-            return {
-                product_id: productId,
-                variant_id: variantId,
-                quantity,
-                salesPrice,
-                totalAmount,
-                productAfterCoupon
-            };
-        });
-        grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
-        // console.log("Grand Total: ₹" + grandTotal);
+        return {
+          product_id: productId,
+          variant_id: variantId,
+          quantity,
+          salesPrice,
+          totalAmount,
+          productAfterCoupon
+        };
+      });
+      grandTotal = cartProducts.reduce((sum, product) => sum + product.totalAmount, 0);
+      // console.log("Grand Total: ₹" + grandTotal);
 
-        return cartProducts;
+      return cartProducts;
     }
 
     function showStep(stepToShow) {
-        step1.style.display = "none";
-        step2.style.display = "none";
-        step3.style.display = "none";
+      step1.style.display = "none";
+      step2.style.display = "none";
+      step3.style.display = "none";
 
-        stepToShow.style.display = "block";
+      stepToShow.style.display = "block";
     }
 
     document.addEventListener("click", (event) => {
-        if (event.target.classList.contains("go-to-step1")) {
-            showStep(step1);
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
+      if (event.target.classList.contains("go-to-step1")) {
+        showStep(step1);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
 
-        if (event.target.classList.contains("go-to-step2")) {
-            showStep(step2);
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
+      if (event.target.classList.contains("go-to-step2")) {
+        showStep(step2);
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+      }
     });
 
     function checkPrice() {
-        var totalPrice = <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>;
+      var totalPrice = <%= cartProducts.reduce((total, { variant, quantity }) => total + (variant.salePrice * quantity), 0) %>;
 
-        document.getElementById('total-price').innerText = `₹${totalPrice}`;
-        const error = document.getElementById('error');
+      document.getElementById('total-price').innerText = `₹${totalPrice}`;
+      const error = document.getElementById('error');
 
-        if (totalPrice > 1000) {
-            document.getElementById('cash').disabled = true;
-              error.style.display = "block";
-            error.textContent = "Cash on Delivery is not available for orders above ₹1000.";
-        } else {
-            document.getElementById('cash').disabled = false;
-            error.style.display = "none";
-            error.textContent = "";
-        }
+      if (totalPrice > 1000) {
+        document.getElementById('cash').disabled = true;
+        error.style.display = "block";
+        error.textContent = "Cash on Delivery is not available for orders above ₹1000.";
+      } else {
+        document.getElementById('cash').disabled = false;
+        error.style.display = "none";
+        error.textContent = "";
+      }
     }
 
     setInterval(checkPrice, 1000);
-});
+  });
 </script>
 
 </html>

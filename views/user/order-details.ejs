@@ -29,7 +29,7 @@
       </div>
 
       <!-- Right Side Box -->
-      <div class="col-md-9">
+      <div class="col-md-9 p-0">
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <div class="my-order-datailpage">
             <!-- Timeline Chart -->
@@ -71,7 +71,6 @@
                           let itemClass = '';
                           let dotClass = '';
 
-                          // If we have a later status, mark this as completed
                           const statusDate = product[status.key] ? new Date(product[status.key]) : null;
                           const isCompleted = statusDate || (latestDate && statuses.findIndex(s => s.key === latestStatus) > index);
 
@@ -128,14 +127,17 @@
             <!-- Product Details -->
             <div>
               <div class="card my-order-datailpage-product px-2 pt-2 shadow-sm" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
-                <div class="row p-2">
+                <div class="d-flex flex-nowrap align-items-center">
                   <!-- Product Image -->
-                  <div class="col-md-2 text-center">
-                    <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" class="img-fluid rounded" alt="<%= product.title || 'Product Image' %>" style="max-width: 100px; object-fit: cover;">
+                  <div class="product-image">
+                    <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
+                         class="img-fluid rounded" 
+                         alt="<%= product.title || 'Product Image' %>" 
+                         style="max-width: 100px; object-fit: cover;">
                   </div>
-
+                
                   <!-- Product Info -->
-                  <div class="col-md-10 p-0">
+                  <div class="product-info ms-3">
                     <div class="card-body p-0">
                       <h6 class="card-title"><%= product.product_id.title %></h6>
                       <div class="product-shade my-1">
@@ -144,7 +146,9 @@
                       <a href="/product/<%= product.product_id._id %>/<%= variant._id %>">View Product</a>
                     </div>
                   </div>
-
+                </div>
+                
+                <div class="row p-2">
                   <!-- Pricing Details -->
                   <div class="col-12 mt-2">
                     <div class="row">

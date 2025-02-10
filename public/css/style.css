@@ -1293,6 +1293,9 @@ input[type="number"]::-webkit-input-placeholder {
   }
 }
 
+@media (max-width: 888px) {
+
+}
 /* Show full navigation on larger screens */
 @media (max-width: 769px) {
   .nav-bar-left {
@@ -1312,7 +1315,10 @@ input[type="number"]::-webkit-input-placeholder {
   .sidebar-user-side {
     width: 85%;
   }
-
+  .price-summary {
+    margin-top: 20px;
+    padding: 0;
+   }
 }
 @media (max-width: 559px) {
   .nav-bar {
