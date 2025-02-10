@@ -31,9 +31,46 @@
       <div class="col-md-9 p-0">
         <div class="card shadow-sm p-4 user-menu-wishlist">
             
-            <% if (coupons && coupons.length > 0) { %>
-              <h5 class="card-title m-0">My Coupons</h5>
-                coupons
+          <% if (coupons && coupons.length > 0) { %>
+            <h5 class="card-title mb-4">My Coupons</h5>
+            <div class="row g-3">
+              <% coupons.forEach(coupon => { %>
+                <% if (coupon.isActive && !coupon.isDelete) { %> <!-- Filter active and non-deleted coupons -->
+                  <div class="col-md-6">
+                    <div class="coupon-design-div" onclick="copyCouponCode('<%= coupon.code %>')">
+                      <div class="coupon-design-div1">
+                        <p><strong><%= coupon.description %></strong></p>
+                        <p2>Min Purchase: ₹ <%= coupon.minPrice %></p2>
+                        <div class="coupon-code-side-bar">
+                          Code: <span class="coupon-code" >&nbsp;<%= coupon.code %></span>
+                          <button class="copy-btn" title="Copy Code">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="coupon-design-div2">
+                        <strong>
+                          <% if (coupon.discountType === 'percentage') { %>
+                            <%= coupon.discountValue %> % OFF
+                          <% } else { %>
+                            ₹ <%= coupon.discountValue %> OFF
+                          <% } %>
+                        </strong>
+                      </div>
+                    </div>
+                    <% if (coupon.expiryDate) { %>
+                      <small class="d-block mt-1" style="font-size: 11px; color: red;">
+                        Expires: <%= new Date(coupon.expiryDate).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        }) %>
+                      </small>
+                    <% } %>
+                  </div>
+                <% } %>
+              <% }) %>
+            </div>
             <% } else { %>
               <div
               class="empty-cart-section d-flex flex-column justify-content-center align-items-center"
@@ -126,8 +163,15 @@
       });
     };
 
-
-
+    function copyCouponCode(code) {
+      navigator.clipboard.writeText(code)
+        .then(() => {
+          toastSuccess('Coupon code copied to clipboard!');
+        })
+        .catch(() => {
+          toastError('Failed to copy coupon code');
+        });
+    }
 
 
 </script>
