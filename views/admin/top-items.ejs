@@ -4,36 +4,6 @@
     <title>Top Selling Items</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <%- include('partials/head') %>
-    <style>
-        .chart-container {
-            position: relative;
-            height: 400px;
-            width: 400px; 
-        }
-        .table-container {
-            width: 100%;
-        }
-        .all-table {
-            width: 100%;
-            table-layout: auto;
-        }
-        .legend-container {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-right: 15px;
-            margin-bottom: 10px;
-        }
-        .legend-color {
-            width: 20px;
-            height: 20px;
-            margin-right: 5px;
-        }
-    </style>
 </head>
 <div class="header">
     <div class="responsive-logo-admin-side">
@@ -58,235 +28,205 @@
         
     
         <div class="breadcrumbs"><a href="/admin/top-items">Top Items</a></div>
-
+       <div class="d-flex justify-content-between align-items-center mb-3 px-4 flex-wrap: wrap;">
+        <h2 id="main-heading">Top 10 Best Selling Products</h2>
         <div class="nav-buttons">
             <button onclick="showView('products')">Products</button>
-            <!-- <button onclick="showView('productVariants')">Product Variants</button> -->
             <button onclick="showView('categories')">Categories</button>
             <button onclick="showView('subcategories')">Subcategories</button>
             <button onclick="showView('brands')">Brands</button>
         </div>
+       </div>
+      
         
-        <!-- Single Heading -->
-        <h2 id="main-heading">Top 10 Best Selling Products</h2>
-        
-        <div id="products" class="content-container" style="display: flex; gap: 20px; justify-content: space-between;">
-            <div class="table-container" style="flex: 1;">
-                <table class="all-table" style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background-color: #f4f4f4; font-weight: bold;">
-                            <th style="padding: 10px; text-align: left;">Rank</th>
-                            <th style="padding: 10px; text-align: left;">Product Name</th>
-                            <th style="padding: 10px; text-align: left;">Total Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productsTableBody">
-                        <% topItems.products.forEach((item, index) => { %>
-                        <tr>
-                            <td style="padding: 8px; text-align: left;"><%= index + 1 %></td>
-                            <td style="padding: 8px; text-align: left;" title="<%= item.name %>"><%= item.name %></td>
-                            <td style="padding: 8px; text-align: left;"><%= item.totalSold %></td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-            <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
-                <canvas id="productsChart" style="max-width: 100%; height: auto;"></canvas>
-                <div id="productsLegend" class="legend-container" style="margin-top: 15px; text-align: center;"></div>
-            </div>
+       <div id="products" class="content-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+        <div class="table-scroll-wrapper">
+            <table class="all-table m-0">
+                <thead>
+                    <tr>
+                        <th style="padding: 5px; text-align: left;">Rank</th>
+                        <th style="padding: 5px; text-align: left;">Product Name</th>
+                        <th style="padding: 5px; text-align: left;">Total Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="productsTableBody">
+                    <% topItems.products.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td class="chart-legend-cell"></td>
+                        <td><%= item.totalSold %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
         </div>
-        
-
-        <div id="productVariants" class="content-container" style="display:none;">
-            <div class="table-container">
-                <div class="table-scroll-wrapper">
-                    <table class="all-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Variant Name</th>
-                                <th>Total Sold</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productVariantsTableBody">
-                            <% topItems.productVariants.forEach((item, index) => { %>
-                            <tr>
-                                <td><%= index + 1 %></td>
-                                <td title="<%= item.title %>"><%= item.title %></td>
-                                <td><%= item.soldCount %></td>
-                            </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                </div>
-               
-            </div>
-            <div class="chart-container">
-                <canvas id="productVariantsChart"></canvas>
-                <div id="productVariantsLegend" class="legend-container"></div>
-            </div>
-        </div>
-
-        <div id="categories" class="content-container" style="display:none;">
-            <div class="table-container">
-                <table class="all-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Category Name</th>
-                            <th>Total Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="categoriesTableBody">
-                        <% topItems.categories.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td title="<%= item.name %>"><%= item.name %></td>
-                            <td><%= item.totalSold %></td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-            <div class="chart-container">
-                <canvas id="categoriesChart"></canvas>
-                <div id="categoriesLegend" class="legend-container"></div>
-            </div>
-        </div>
-
-        <div id="subcategories" class="content-container" style="display:none;">
-            <div class="table-container">
-                <table class="all-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Subcategory Name</th>
-                            <th>Total Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="subcategoriesTableBody">
-                        <% topItems.subcategories.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td title="<%= item.name %>"><%= item.name %></td>
-                            <td><%= item.totalSold %></td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-            <div class="chart-container">
-                <canvas id="subcategoriesChart"></canvas>
-                <div id="subcategoriesLegend" class="legend-container"></div>
-            </div>
-        </div>
-
-        <div id="brands" class="content-container" style="display:none;">
-            <div class="table-container">
-                <table class="all-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Brand Name</th>
-                            <th>Total Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="brandsTableBody">
-                        <% topItems.brands.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td title="<%= item.name %>"><%= item.name %></td>
-                            <td><%= item.totalSold %></td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
-            </div>
-            <div class="chart-container">
-                <canvas id="brandsChart"></canvas>
-                <div id="brandsLegend" class="legend-container"></div>
-            </div>
+        <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <canvas id="productsChart" style="max-width: 100%; height: auto;"></canvas>
         </div>
     </div>
+    
+    <div id="categories" class="content-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+        <div class="table-scroll-wrapper">
+            <table class="all-table m-0">
+                <thead>
+                    <tr>
+                        <th style="padding: 5px; text-align: left;">Rank</th>
+                        <th style="padding: 5px; text-align: left;">Category Name</th>
+                        <th style="padding: 5px; text-align: left;">Total Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesTableBody">
+                    <% topItems.categories.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td class="chart-legend-cell"></td>
+                        <td><%= item.totalSold %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <canvas id="categoriesChart" style="max-width: 100%; height: auto;"></canvas>
+        </div>
+    </div>
+    
+    <div id="subcategories" class="content-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+        <div class="table-scroll-wrapper">
+            <table class="all-table m-0">
+                <thead>
+                    <tr>
+                        <th style="padding: 5px; text-align: left;">Rank</th>
+                        <th style="padding: 5px; text-align: left;">Subcategory Name</th>
+                        <th style="padding: 5px; text-align: left;">Total Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="subcategoriesTableBody">
+                    <% topItems.subcategories.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td class="chart-legend-cell"></td>
+                        <td><%= item.totalSold %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <canvas id="subcategoriesChart" style="max-width: 100%; height: auto;"></canvas>
+        </div>
+    </div>
+    
+    <div id="brands" class="content-container" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: space-between;">
+        <div class="table-scroll-wrapper">
+            <table class="all-table m-0">
+                <thead>
+                    <tr>
+                        <th style="padding: 5px; text-align: left;">Rank</th>
+                        <th style="padding: 5px; text-align: left;">Brand Name</th>
+                        <th style="padding: 5px; text-align: left;">Total Sold</th>
+                    </tr>
+                </thead>
+                <tbody id="brandsTableBody">
+                    <% topItems.brands.forEach((item, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td class="chart-legend-cell"></td>
+                        <td><%= item.totalSold %></td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+        <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+            <canvas id="brandsChart" style="max-width: 100%; height: auto;"></canvas>
+        </div>
+    </div>
+    
+        
 
     <script>
-        // Embed the data directly into the script
-        const topItems = <%- JSON.stringify(topItems) %>;
+/// Embed the data directly into the script
+const topItems = <%- JSON.stringify(topItems) %>;
 
-        function renderChart(chartId, title, data, labelKey = 'name') {
-            const ctx = document.getElementById(chartId).getContext('2d');
-            const chart = new Chart(ctx, {
-                type: 'doughnut', // Changed to doughnut for all charts
-                data: {
-                    labels: data.map(item => item[labelKey]),
-                    datasets: [{
-                        label: title,
-                        data: data.map(item => item.totalSold),
-                        backgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-                        ],
-                        hoverBackgroundColor: [
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
-                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false 
-                        }
-                    }
+function renderChart(chartId, title, data, labelKey = 'name') {
+    const ctx = document.getElementById(chartId).getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.map(item => item[labelKey]),
+            datasets: [{
+                label: title,
+                data: data.map(item => item.totalSold),
+
+                backgroundColor: [
+                    '#FF6F61', '#6B8E23', '#8A2BE2', '#FFD700', '#DC143C', '#20B2AA', 
+                    '#FF8C00', '#9ACD32', '#FF1493', '#1E90FF', '#D2691E', '#A52A2A'
+                ],
+                hoverBackgroundColor: [
+                    '#FF6F61', '#6B8E23', '#8A2BE2', '#FFD700', '#DC143C', '#20B2AA', 
+                    '#FF8C00', '#9ACD32', '#FF1493', '#1E90FF', '#D2691E', '#A52A2A'
+                ],
+
+                borderColor: 'transparent',
+
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
                 }
-            });
-
-            // Create custom legend
-            const legendContainer = document.getElementById(chartId.replace('Chart', 'Legend'));
-            legendContainer.innerHTML = chart.data.labels.map((label, index) => `
-                <div class="legend-item">
-                    <div class="legend-color" style="background-color: ${chart.data.datasets[0].backgroundColor[index]}"></div>
-                    <span>${label}</span>
-                </div>
-            `).join('');
-
-            // Color the table rows
-            const tableBody = document.getElementById(chartId.replace('Chart', 'TableBody'));
-            const rows = tableBody.querySelectorAll('tr');
-            rows.forEach((row, index) => {
-                row.style.backgroundColor = chart.data.datasets[0].backgroundColor[index];
-            });
+            }
         }
+    });
 
-        function showView(viewId) {
-            const contentContainers = document.querySelectorAll('.content-container');
-            const mainHeading = document.getElementById('main-heading');
-            const viewNames = {
-                'products': 'Top 10 Best Selling Products',
-                'productVariants': 'Top 10 Best Selling Product Variants',
-                'categories': 'Top 10 Best Selling Categories',
-                'subcategories': 'Top 10 Best Selling Subcategories',
-                'brands': 'Top 10 Best Selling Brands'
-            };
 
-            mainHeading.textContent = viewNames[viewId];
-
-            contentContainers.forEach(container => {
-                if (container.id === viewId) {
-                    container.style.display = 'flex';
-                } else {
-                    container.style.display = 'none';
-                }
-            });
-
-            renderChart(viewId + "Chart", viewNames[viewId], topItems[viewId], viewId === 'productVariants' ? 'title' : 'name');
+    const tableBody = document.getElementById(chartId.replace('Chart', 'TableBody'));
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach((row, index) => {
+        const color = chart.data.datasets[0].backgroundColor[index];
+        row.style.backgroundColor = color;  
+        const chartLegendCell = row.querySelector('.chart-legend-cell');
+        if (chartLegendCell) {
+            chartLegendCell.innerHTML = `
+                <span style="display: inline-block; width: 20px; height: 20px; background-color: ${color}; margin-right: 10px;"></span>
+                ${chart.data.labels[index]}
+            `;
         }
+    });
+}
 
-        // Show the first view by default
-        showView('products');
+function showView(viewId) {
+    const contentContainers = document.querySelectorAll('.content-container');
+    const mainHeading = document.getElementById('main-heading');
+    const viewNames = {
+        'products': 'Top 10 Best Selling Products',
+        'productVariants': 'Top 10 Best Selling Product Variants',
+        'categories': 'Top 10 Best Selling Categories',
+        'subcategories': 'Top 10 Best Selling Subcategories',
+        'brands': 'Top 10 Best Selling Brands'
+    };
+
+    mainHeading.textContent = viewNames[viewId];
+
+    contentContainers.forEach(container => {
+        if (container.id === viewId) {
+            container.style.display = 'flex';
+        } else {
+            container.style.display = 'none';
+        }
+    });
+
+    renderChart(viewId + "Chart", viewNames[viewId], topItems[viewId], viewId === 'productVariants' ? 'title' : 'name');
+}
+
+
+showView('products');
+
+
     </script>
     
     <%- include('partials/footer') %>
