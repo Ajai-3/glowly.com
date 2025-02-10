@@ -2517,7 +2517,9 @@ border: 1px solid transparent;
 
 .user-menu-account #alternative_phone_no,
 .user-menu-account #phone_no,
-.user-menu-account #pincode {
+.user-menu-account #pincode,
+.user-menu-account #edit_alternative_phone_no,
+.user-menu-account #edit_pincode {
   background-color: var(--bg-color-7) !important;
 }
 
@@ -2585,11 +2587,43 @@ border: 1px solid transparent;
   object-fit: cover;
   border-radius: 0;
 }
-
+.address-gap-div {
+  gap: 48px;
+}
 
 @media (max-width: 768px) {
   .user-address-display {
     flex: 1 0 50%;
+  }
+  #add-address {
+    width: 100%;
+    padding: 15px; 
+    padding-top: 0px;
+  }
+  .user-menu-account textarea {
+    width: 300px;
+  }
+  .user-menu-account input {
+    width: 300px;
+    gap: 0 !important;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column; 
+  }
+
+  .d-flex.justify-content-between > div {
+    width: 100%; 
+    margin-bottom: 10px;
+  }
+  .address-center-div {
+    flex-direction: column; 
+  }
+  .user-menu-account .center-div input {
+    width: 300px;
+  }
+  .address-gap-div {
+    gap: 0;
   }
 }
 
@@ -2598,6 +2632,7 @@ border: 1px solid transparent;
     flex: 1 0 100%;
   }
 }
+
 /* */
 /*  *//* ====================================================================
  /* ===================================================================
@@ -3862,6 +3897,10 @@ border: 1px solid transparent;
   .footer-div-4 {
       padding: 15px;
       text-align: center;
+  }
+  .footer ul {
+    margin: 10px;
+    margin-top: 0px;
   }
 }
 

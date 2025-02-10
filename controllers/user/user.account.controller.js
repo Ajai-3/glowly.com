@@ -228,7 +228,7 @@ export const removeAddress = async (req, res) => {
 
 export const editAddressPage = async (req, res) => {
     try {
-        const { user, token, cartCount, categories } = req;
+        const { user, token, brands, cartCount, categories } = req;
         if (!token) {
             return res.redirect('/home')
         }
@@ -244,7 +244,8 @@ export const editAddressPage = async (req, res) => {
             cartCount, 
             categories,
             address,
-            user
+            user,
+            brands
         });
     } catch (error) {
         console.error("Error in edit address Page", error);
