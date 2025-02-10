@@ -35,20 +35,27 @@
         }
     </style>
 </head>
+<div class="header">
+    <div class="responsive-logo-admin-side">
+        <div class="d-flex align-items-center">
+          <i class="fa fa-bars" id="sidebar-toggle"></i>
+        <h2 class="m-0 mx-2"> Glowly</h2>
+        </div>
+      </div>
+    <div class="search-bar">
+        <form action="/admin/search-user" method="GET">
+            <input type="text" name="search" placeholder="Search" readonly>
+        </form>
+    </div>
+    <div class="admin-profile mx-3 mt-2">
+        <a href="/admin/settings">
+            <i class="fa-solid fa-circle-user"></i>
+        </a>
+    </div>
+</div>
 <body>
     <div class="main-content">
-        <div class="header">
-            <div class="search-bar">
-                <form action="/admin/search-user" method="GET">
-                    <input type="text" name="search" placeholder="Search" readonly>
-                </form>
-            </div>
-            <div class="admin-profile mx-3 mt-2">
-                <a href="/admin/settings">
-                    <i class="fa-solid fa-circle-user"></i>
-                </a>
-            </div>
-        </div>
+        
     
         <div class="breadcrumbs"><a href="/admin/top-items">Top Items</a></div>
 
@@ -63,53 +70,57 @@
         <!-- Single Heading -->
         <h2 id="main-heading">Top 10 Best Selling Products</h2>
         
-        <div id="products" class="content-container" style="display: flex;">
-            <div class="table-container">
-                <table class="all-table">
+        <div id="products" class="content-container" style="display: flex; gap: 20px; justify-content: space-between;">
+            <div class="table-container" style="flex: 1;">
+                <table class="all-table" style="width: 100%; border-collapse: collapse;">
                     <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Product Name</th>
-                            <th>Total Sold</th>
+                        <tr style="background-color: #f4f4f4; font-weight: bold;">
+                            <th style="padding: 10px; text-align: left;">Rank</th>
+                            <th style="padding: 10px; text-align: left;">Product Name</th>
+                            <th style="padding: 10px; text-align: left;">Total Sold</th>
                         </tr>
                     </thead>
                     <tbody id="productsTableBody">
                         <% topItems.products.forEach((item, index) => { %>
                         <tr>
-                            <td><%= index + 1 %></td>
-                            <td title="<%= item.name %>"><%= item.name %></td>
-                            <td><%= item.totalSold %></td>
+                            <td style="padding: 8px; text-align: left;"><%= index + 1 %></td>
+                            <td style="padding: 8px; text-align: left;" title="<%= item.name %>"><%= item.name %></td>
+                            <td style="padding: 8px; text-align: left;"><%= item.totalSold %></td>
                         </tr>
                         <% }); %>
                     </tbody>
                 </table>
             </div>
-            <div class="chart-container">
-                <canvas id="productsChart"></canvas>
-                <div id="productsLegend" class="legend-container"></div>
+            <div class="chart-container" style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <canvas id="productsChart" style="max-width: 100%; height: auto;"></canvas>
+                <div id="productsLegend" class="legend-container" style="margin-top: 15px; text-align: center;"></div>
             </div>
         </div>
+        
 
         <div id="productVariants" class="content-container" style="display:none;">
             <div class="table-container">
-                <table class="all-table">
-                    <thead>
-                        <tr>
-                            <th>Rank</th>
-                            <th>Variant Name</th>
-                            <th>Total Sold</th>
-                        </tr>
-                    </thead>
-                    <tbody id="productVariantsTableBody">
-                        <% topItems.productVariants.forEach((item, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td title="<%= item.title %>"><%= item.title %></td>
-                            <td><%= item.soldCount %></td>
-                        </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
+                <div class="table-scroll-wrapper">
+                    <table class="all-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Variant Name</th>
+                                <th>Total Sold</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productVariantsTableBody">
+                            <% topItems.productVariants.forEach((item, index) => { %>
+                            <tr>
+                                <td><%= index + 1 %></td>
+                                <td title="<%= item.title %>"><%= item.title %></td>
+                                <td><%= item.soldCount %></td>
+                            </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+               
             </div>
             <div class="chart-container">
                 <canvas id="productVariantsChart"></canvas>
@@ -227,7 +238,7 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            display: false // Disable default legend
+                            display: false 
                         }
                     }
                 }
