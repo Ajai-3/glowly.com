@@ -29,21 +29,12 @@
 
   <div class="brudcrumbs"><a href="/admin/users">Users</a></div>
 
+  
   <div class="filter-container">
     <div class="filter-div1">
       <div class="filter-box">
         <i class="fa-solid fa-filter"></i>
       </div>
-
-      <form action="/admin/users" method="GET">
-        <div class="filter-box">
-          <label for="filter">Filter By
-            <select name="filter" id="filter">
-              <option value="date">14 feb 2014</option>
-            </select>
-          </label>
-        </div>
-      </form>
       <form action="/admin/users" method="GET">
         <div class="filter-box">
           <label for="status">Status
@@ -56,7 +47,14 @@
         </div>
       </form>
     </div>
+    <div class="resposive-search-admin-side search-bar">
+      <form action="/admin/search-user" method="GET">
+        <input type="text" name="search" placeholder="Search User">
+        <button class="admin-search-button"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
   </div>
+
   <div class="table-scroll-wrapper">
     <table class="all-table">
       <thead>

@@ -4896,7 +4896,19 @@ input.quantity-input {
   width: 80%;
   height: 250px;
 }
-
+.resposive-search-admin-side {
+  display: none;
+  position: relative;
+}
+.resposive-search-admin-side button {
+  position: absolute;
+  top: 0px;
+  margin: 0;
+  right: 5px;
+}
+.admin-side-add-buttons-responsive {
+  display: none;
+}
 @media (max-width: 1224px) {
   .sidebar {
     height: 100%;
@@ -4981,8 +4993,27 @@ input.quantity-input {
 }
 
 @media (max-width: 576px) {
-  .search-bar input {
+  .search-bar {
     display: none;
+  }
+  .admin-side-add-buttons{
+    display: none;
+  }
+  .resposive-search-admin-side {
+    display: block;
+  }
+  .resposive-search-admin-side input {
+    width: 160px;
+  }
+  .admin-side-add-buttons-responsive {
+    display: block;
+  }
+  .admin-side-add-buttons-responsive button {
+    padding: 10px;
+    font-size: var(--font-size-third);
+  }
+  .header {
+    padding: 0px 0px 0px 10px;
   }
   .dashboard-summary div {
     margin-right: 5px;

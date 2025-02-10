@@ -34,7 +34,10 @@
 
   <div class="brudcrumbs"><a href="/admin/products">Products</a></div>
 
-  <div>
+  
+
+
+
     <div class="filter-container">
       <div class="filter-div1">
         <div class="filter-box">
@@ -53,7 +56,13 @@
         </form>
       </div>
 
-      <div>
+      <div class="resposive-search-admin-side search-bar">
+        <form action="/admin/products" method="GET">
+          <input type="text" name="search" placeholder="Search Products" value="<%= search %>">
+          <button class="admin-search-button"><i class="fas fa-search"></i></button>
+        </form>
+      </div>
+      <div class="admin-side-add-buttons">
         <button type="button" class="top-items-btn add-product-btn" data-toggle="modal" data-target="#topItemsModal">
           <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Products
         </button>
@@ -65,7 +74,16 @@
       </div>
      
     </div>
-  </div>
+    <div class="admin-side-add-buttons-responsive">
+      <button type="button" class="top-items-btn add-product-btn" data-toggle="modal" data-target="#topItemsModal">
+        <i class="fa-solid fa-crown"></i>&nbsp;&nbsp;Show Top Products
+      </button>
+      <a href="/admin/add-products">
+        <button class="add-product-btn">
+          <i class="fa-solid fa-plus"></i>&nbsp;&nbsp;Add New Products
+        </button>
+      </a>
+    </div>
 
   <div class="table-scroll-wrapper">
     <table class="all-table">

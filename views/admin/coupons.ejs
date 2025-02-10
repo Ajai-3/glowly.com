@@ -10,20 +10,27 @@
         display: none;
     }
 </style>
-<div class="main-content">
-    <div class="header">
-        <div class="search-bar">
-            <form action="/admin/search-user" method="GET">
-                <input type="text" name="search" placeholder="Search " readonly>
-                <button class="admin-search-button"><i class="fas fa-search"></i></button>
-            </form>
+<div class="header">
+    <div class="responsive-logo-admin-side">
+        <div class="d-flex align-items-center">
+          <i class="fa fa-bars" id="sidebar-toggle"></i>
+        <h2 class="m-0 mx-2"> Glowly</h2>
         </div>
-        <div class="admin-profile mx-3">
-            <a href="/admin/settings">
-                <i class="fa-solid fa-circle-user"></i>
-            </a>
-        </div>
+      </div>
+    <div class="search-bar">
+        <form action="/admin/search-user" method="GET">
+            <input type="text" name="search" placeholder="Search " readonly>
+            <button class="admin-search-button"><i class="fas fa-search"></i></button>
+        </form>
     </div>
+    <div class="admin-profile mx-3">
+        <a href="/admin/settings">
+            <i class="fa-solid fa-circle-user"></i>
+        </a>
+    </div>
+</div>
+<div class="main-content">
+    
 
     <div class="breadcrumbs"><a href="/admin/coupons">Coupons</a></div>
 
@@ -112,13 +119,6 @@
             <div class="filter-box">
                 <i class="fa-solid fa-filter"></i>
             </div>
-            <div class="filter-box">
-                <label for="filter">Filter By
-                    <select name="filter" id="filter">
-                        <option value="date">14 Feb 2014</option>
-                    </select>
-                </label>
-            </div>
             <form action="/admin/coupons" method="GET">
                 <div class="filter-box">
                     <label for="type">Type:
@@ -129,8 +129,6 @@
                             <% }) %>
                         </select>
                     </label>
-                <!-- </div> -->
-                <!-- <div class="filter-box"> -->
                     <label for="isActive">Status:
                         <select name="isActive" id="isActive" onchange="this.form.submit()">
                             <option value="all" <%= selectedStatus === "all" ? "selected" : "" %>>All</option>
@@ -141,10 +139,13 @@
                 </div>
                 <input type="hidden" name="page" value="<%= currentPage %>">
             </form>
-
-            
-            
         </div>
+        <div class="admin-side-add-buttons">
+            <button type="button" class="large-button-pink px-4" data-toggle="modal" data-target="#couponModal">Add Coupon</button>
+        </div>
+        
+    </div>
+    <div class="admin-side-add-buttons-responsive">
         <button type="button" class="large-button-pink px-4" data-toggle="modal" data-target="#couponModal">Add Coupon</button>
     </div>
 

@@ -15,8 +15,6 @@ export const renderTopItemsPage = async (req, res) => {
             { $limit: 10 }
         ]);
 
-
-
         const productVariants = await Product.aggregate([
             { $unwind: "$variants" },  
             { 
@@ -30,9 +28,6 @@ export const renderTopItemsPage = async (req, res) => {
             { $sort: { soldCount: -1 } },  
             { $limit: 10 } 
         ]);
-
-        console.log(products);
-        console.log(productVariants)
 
         const categories = await Category.aggregate([
             { $group: { _id: "$_id", name: { $first: "$name" }, totalSold: { $sum: "$soldCount" } } },
