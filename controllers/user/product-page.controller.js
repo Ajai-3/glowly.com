@@ -1,6 +1,6 @@
 import Brand from "../../models/brand.model.js";
 import Offer from "../../models/offer.model.js";
-import Review  from "../../models/review.model.js";
+import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
 import Subcategory from "../../models/subcategory.model.js";
 
@@ -11,11 +11,11 @@ export const renderProductPage = async (req, res, next) => {
 
     const productId = req.params.productId;
     const variantId = req.params.variantId;
-    
-    reviews = await Review.find({ 
+
+    reviews = await Review.find({
       productId: productId
     })
-    .populate('userId', 'name email profilePic').sort({ createdAt: -1 });;
+      .populate('userId', 'name email profilePic').sort({ createdAt: -1 });;
 
 
     const brands = await Brand.find({ isListed: true });
@@ -30,7 +30,7 @@ export const renderProductPage = async (req, res, next) => {
 
     if (!product) throw new Error("Product not found");
     let variant = product.variants.find((item) => item._id.toString() === variantId && item.isDeleted === false);
-    
+
     if (!variant) {
       product = await Product.findOne({ "variants._id": variantId, isDeleted: false }).populate(
         "categoryId subcategoryId brandId"
@@ -38,39 +38,39 @@ export const renderProductPage = async (req, res, next) => {
       if (!product) throw new Error("Variant not found in any product");
       variant = product.variants.find((item) => item._id.toString() === variantId && item.isDeleted === false);
     }
-    
+
     let relatedVariants = product.variants.filter(item => item._id.toString() !== variantId && item.isDeleted === false)
-        .map(v => ({ ...v.toObject(), productId: product._id, productTitle: product.title }));
-    
+      .map(v => ({ ...v.toObject(), productId: product._id, productTitle: product.title }));
+
     if (relatedVariants.length < 10) {
       const additionalProducts = await Product.find({
         subcategoryId: product.subcategoryId,
         _id: { $ne: product._id },
         isDeleted: false,
       }).limit(10 - relatedVariants.length);
-    
-      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.filter(v => v.isDeleted === false).map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title })))); 
+
+      relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.filter(v => v.isDeleted === false).map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
     }
-    
+
     if (relatedVariants.length < 10) {
       const additionalProducts = await Product.find({
         categoryId: product.categoryId,
         _id: { $ne: product._id },
         isDeleted: false,
       }).limit(10 - relatedVariants.length);
-    
+
       relatedVariants = relatedVariants.concat(additionalProducts.flatMap(p => p.variants.filter(v => v.isDeleted === false).map(v => ({ ...v.toObject(), productId: p._id, productTitle: p.title }))));
     }
-    
+
     relatedVariants = relatedVariants.slice(0, 10);
-    
+
 
     return res.render("user/product-page", {
       name: user ? user.name : "",
       user,
       categories,
       product,
-      variant, 
+      variant,
       reviews,
       brands,
       wishlist,
@@ -102,13 +102,14 @@ export const renderShopPage = async (req, res, next) => {
     if (filters.popularity) {
       switch (filters.popularity[0]) {
         case 'trending':
-          filterConditions.trending = true;
+          sortOptions['variants.soldCount'] = -1;
           break;
         case 'most-reviewed':
-          filterConditions.mostReviewed = true;
+          sortOptions.reviewCount = -1;
           break;
         case 'top-rated':
-          filterConditions.topRated = true;
+          sortOptions.rating = -1;
+          sortOptions.reviewCount = -1;
           break;
       }
     }
@@ -148,12 +149,12 @@ export const renderShopPage = async (req, res, next) => {
 
     // Fetch all products and flatten the variants
     const allProducts = await Product.find(filterConditions)
-    .populate('variants')
-    .sort(sortOptions);
-  
+      .populate('variants')
+      .sort(sortOptions);
+
     allProducts.forEach(product => {
       product.variants = product.variants.filter(variant => !variant.isDeleted);
-    
+
       product.variants.sort((a, b) => {
         if (sortOptions['variants.salePrice'] === 1) {
           return a.salePrice - b.salePrice;
@@ -163,9 +164,9 @@ export const renderShopPage = async (req, res, next) => {
         return 0;
       });
     });
-    
+
     const allVariants = [];
-    
+
     allProducts.forEach(product => {
       product.variants.forEach(variant => {
         allVariants.push({
@@ -174,7 +175,7 @@ export const renderShopPage = async (req, res, next) => {
         });
       });
     });
-  
+
 
     const totalVariants = allVariants.length;
     const totalPages = Math.ceil(totalVariants / limit);
