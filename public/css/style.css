@@ -1960,6 +1960,7 @@ border: 1px solid transparent;
   top: 90px;
   z-index: 10;
   height: 100vh;
+  padding: 0px;
   overflow-y: hidden;
 }
 
@@ -2014,7 +2015,7 @@ border: 1px solid transparent;
 }
 
 .shop-div {
-  padding: 30px 0px 0px 30px;
+  padding: 30px 0px 0px 10px;
 }
 
 @media screen and (max-width: 1024px) {

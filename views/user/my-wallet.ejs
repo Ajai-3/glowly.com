@@ -256,7 +256,7 @@
               <button id="wallet-add-money" class="common-main-btn px-3 ms-0">Add Money</button>
             </div>
             <% if (transactions && transactions.length > 0) { %>
-            <div class="table-container">
+            <div class="table-container mt-2">
               <!-- Simple Filter Section -->
               <div class="filter-section">
                 <div class="filter-buttons">
@@ -290,13 +290,21 @@
                       </td>
                       <td><%= transaction.description %></td>
                       <td>
-                        <span class="transaction-badge <%= transaction.type %>">
-                          <%= transaction.type %>
-                        </span>
+                        <% let typeColor = ''; %>
+                        <% if (transaction.type === 'Credited') { %>
+                          <% typeColor = 'green'; %>
+                        <% } else if (transaction.type === 'Debited') { %>
+                          <% typeColor = 'red'; %>
+                        <% } else { %>
+                          <% typeColor = 'blue'; %> 
+                        <% } %>
+                        
+                        <span style="color: <%= typeColor %>;"><%= transaction.type %></span>
+                        
                       </td>
                       <td class="amount-<%= transaction.type %>">
                         <%= transaction.type === 'Credited' ? '+' : (transaction.type === 'Refund' ? '↺' : '-') %>
-                        ₹<%= transaction.amount.toFixed(2) %>
+                        ₹<%= transaction.amount.toLocaleString('en-IN') %>.00
                       </td>
                     </tr>
                     <% }); %>

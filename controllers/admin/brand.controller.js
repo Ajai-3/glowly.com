@@ -109,7 +109,6 @@ export const renderAddBrandPage = async (req, res) => {
 // This function allows admins to add a new brand to the system by providing the necessary
 // details such as the brand name, description, and other relevant information.
 // ========================================================================================
-
 export const addBrand = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -134,6 +133,7 @@ export const addBrand = async (req, res) => {
       brandName: name,
       brandDescription: description || "",
       brandImage: image,
+      soldCount: 0,
     });
 
     await newBrand.save();

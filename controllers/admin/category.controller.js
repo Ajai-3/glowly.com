@@ -155,6 +155,7 @@ export const addCategory = async (req, res) => {
     const newCategory = new Category({
       name: categoryName,
       description: description,
+      soldCount: 0,
       subcategories: [],
     });
 
@@ -162,6 +163,7 @@ export const addCategory = async (req, res) => {
       name: subcategoryName,
       description: subcategoryDescription,
       categoryId: newCategory._id,
+      soldCount: 0,
     });
 
     newCategory.subcategories.push(newSubcategory._id);

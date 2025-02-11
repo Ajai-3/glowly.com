@@ -182,6 +182,10 @@ export const updateOrderStatus = async (req, res) => {
         productInOrder.delivered_at = new Date();
         variant.soldCount += productInOrder.quantity;
 
+        brand.soldCount = brand.soldCount || 0;
+        category.soldCount = category.soldCount || 0;
+        subcategory.soldCount = subcategory.soldCount || 0;
+
         brand.soldCount += 1;
         category.soldCount += 1;
         subcategory.soldCount += 1;
