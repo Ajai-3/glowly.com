@@ -8,8 +8,7 @@ import Address from "../../models/address.model.js";
 // Renders the user's account page, displaying personal details, order history, and
 // account settings.
 // ========================================================================================
-
-export const renderMyAccountPage = async (req, res, next) => {
+export const renderMyAccountPage = async (req, res) => {
   try {
     const { user, token, brands, cartCount, categories } = req;
 
@@ -29,7 +28,7 @@ export const renderMyAccountPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in rendering my account", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -39,7 +38,7 @@ export const renderMyAccountPage = async (req, res, next) => {
 // Processes the update of the user's profile, including updating personal details like
 // name, email, and date of birth.
 // ========================================================================================
-export const handleProfileUpdate = async (req, res, next) => {
+export const handleProfileUpdate = async (req, res) => {
   try {
     const { user } = req;
 
@@ -73,7 +72,7 @@ export const handleProfileUpdate = async (req, res, next) => {
     res.redirect("/my-account");
   } catch (error) {
     console.log("Error in update profile", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -82,7 +81,7 @@ export const handleProfileUpdate = async (req, res, next) => {
 // ========================================================================================
 // Renders the page where users can view, add, update, or delete their shipping addresses.
 // ========================================================================================
-export const renderManageAddressPage = async (req, res, next) => {
+export const renderManageAddressPage = async (req, res) => {
   try {
     const { user, token, brands, cartCount, categories } = req;
 
@@ -106,7 +105,7 @@ export const renderManageAddressPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in rendering my account", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -206,7 +205,7 @@ export const handleAddAddress = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in adding new address", error);
-    return res.status(500).send("Error in adding new address");
+    return res.redirect("user/page-404");
   }
 };
 
@@ -272,7 +271,7 @@ export const editAddressPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in edit address Page", error);
-    return res.status(500).send("Internal Server Error");
+    return res.redirect("user/page-404");
   }
 };
 

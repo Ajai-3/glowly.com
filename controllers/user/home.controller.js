@@ -8,7 +8,7 @@ import Product from "../../models/product.model.js";
 // ========================================================================================
 // Renders the homepage, displaying featured products, categories, and promotional content.
 // ========================================================================================
-export const renderHomePage = async (req, res, next) => {
+export const renderHomePage = async (req, res) => {
   try {
     const { user, wishlist, cart, cartCount, cartVariants, categories } = req;
 
@@ -89,6 +89,6 @@ export const renderHomePage = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Home page is not loading: ", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };

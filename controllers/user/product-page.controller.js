@@ -9,7 +9,7 @@ import Subcategory from "../../models/subcategory.model.js";
 // Renders the product page, displaying detailed information about a specific product,
 // including its description, price, and availability.
 // ========================================================================================
-export const renderProductPage = async (req, res, next) => {
+export const renderProductPage = async (req, res) => {
   try {
     let { user, wishlist, cart, cartCount, cartVariants, categories } = req;
     let reviews = [];
@@ -119,7 +119,7 @@ export const renderProductPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error rendering product page:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -129,7 +129,7 @@ export const renderProductPage = async (req, res, next) => {
 // Renders the shop page, displaying a list of available products, categories, and filters
 // for the user to browse.
 // ========================================================================================
-export const renderShopPage = async (req, res, next) => {
+export const renderShopPage = async (req, res) => {
   try {
     let { user, wishlist, cartCount, cartVariants, categories } = req;
 
@@ -252,6 +252,6 @@ export const renderShopPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error(error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };

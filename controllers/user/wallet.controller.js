@@ -10,7 +10,7 @@ import Transaction from "../../models/transaction.model.js";
 // ========================================================================================
 // Displays the user's wallet with account balance, transaction history, and payment options.
 // ========================================================================================
-export const myWallet = async (req, res, next) => {
+export const myWallet = async (req, res) => {
   try {
     const { user, brands, token, wallet, cartCount, categories } = req;
 
@@ -49,7 +49,7 @@ export const myWallet = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Error in myWallet:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -58,7 +58,7 @@ export const myWallet = async (req, res, next) => {
 // ========================================================================================
 // Manages the process of adding funds to the user's wallet via Razorpay, updating the balance.
 // ========================================================================================
-export const addMoneyToWallet = async (req, res, next) => {
+export const addMoneyToWallet = async (req, res) => {
   try {
     const { user, token, wallet } = req;
 
@@ -133,6 +133,6 @@ export const addMoneyToWallet = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in addMoney to wallet", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };

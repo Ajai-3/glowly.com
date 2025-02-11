@@ -354,7 +354,7 @@ export const googleCallbackHandler = async (req, res) => {
     }
   } catch (error) {
     console.error("Error in Google callback handler:", error);
-    res.status(500).send("An error occurred during authentication");
+    return res.redirect("user/page-404");
   }
 };
 
@@ -403,6 +403,7 @@ export const handleForgotPassword = async (req, res) => {
     return res.redirect("user/forgot-password");
   } catch (error) {
     console.error("Error in forgot password", error);
+    return res.redirect("user/page-404");
   }
 };
 
@@ -441,7 +442,7 @@ export const handleResetPassword = async (req, res) => {
     return res.redirect("/user/login");
   } catch (error) {
     console.error("Error resetting password", error);
-    return res.redirect("/page-not-found");
+    return res.redirect("user/page-404");
   }
 };
 // ========================================================================================
@@ -454,7 +455,7 @@ export const pageNotFound = async (req, res) => {
     return res.render("user/page-404");
   } catch (error) {
     console.error("Error in rendering page-not-found", error);
-    res.redirect("user/page-not-found");
+    return res.redirect("user/page-404");
   }
 };
 

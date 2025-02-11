@@ -10,7 +10,7 @@ import Wishlist from "../../models/wishlist.model.js";
 // ========================================================================================
 // Renders the user's wishlist, displaying saved items they might want to purchase later.
 // ========================================================================================
-export const renderWishlistPage = async (req, res, next) => {
+export const renderWishlistPage = async (req, res) => {
   try {
     let { user, wishlist, token, brands, cartCount, cartVariants, categories } =
       req;
@@ -73,7 +73,7 @@ export const renderWishlistPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error rendering wishlist page", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -82,7 +82,7 @@ export const renderWishlistPage = async (req, res, next) => {
 // ========================================================================================
 // Adds a product to the user's wishlist, allowing them to save items for future reference.
 // ========================================================================================
-export const addToWishlist = async (req, res, next) => {
+export const addToWishlist = async (req, res) => {
   try {
     let { user, wishlist, token } = req;
     const { product_id, variant_id } = req.body;
@@ -143,6 +143,6 @@ export const addToWishlist = async (req, res, next) => {
     }
   } catch (error) {
     console.error("Error adding/removing product in wishlist:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };

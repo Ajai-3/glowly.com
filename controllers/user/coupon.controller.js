@@ -5,7 +5,7 @@ import Coupon from "../../models/coupon.model.js";
 // ========================================================================================
 // Renders the page displaying all available and redeemed coupons for the user.
 // ========================================================================================
-export const myCoupons = async (req, res, next) => {
+export const myCoupons = async (req, res) => {
   try {
     let { user, cart, brands, cartCount, token, categories } = req;
 
@@ -27,6 +27,6 @@ export const myCoupons = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Error in my coupons:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };

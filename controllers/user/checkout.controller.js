@@ -90,7 +90,7 @@ export const renderCheckoutPage = async (req, res, next) => {
 // Processes the order for a single product purchased through the "Buy Now" option,
 // including payment and order confirmation.
 // ========================================================================================
-export const placeOrderWithBuyNow = async (req, res, next) => {
+export const placeOrderWithBuyNow = async (req, res) => {
   try {
     let { user, cart, cartCount, token, categories } = req;
     const { quantity, productId, variantId } = req.query;
@@ -171,7 +171,7 @@ export const placeOrderWithBuyNow = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error rendering checkout page:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 

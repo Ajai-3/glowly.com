@@ -2,18 +2,15 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
-import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js";
-import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
-import Category from "../../models/category.model.js";
 
 // ========================================================================================
 // RENDER CART PAGE
 // ========================================================================================
 // Renders the shopping cart page, displaying items in the cart and the total price.
 // ========================================================================================
-export const renderCartPage = async (req, res, next) => {
+export const renderCartPage = async (req, res) => {
   try {
     const { user, brands, cart, categories } = req;
     let cartProducts = [];
@@ -67,7 +64,7 @@ export const renderCartPage = async (req, res, next) => {
     });
   } catch (error) {
     console.log("Error occurred while rendering the cart page:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 

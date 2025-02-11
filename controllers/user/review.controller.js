@@ -7,7 +7,7 @@ import Product from "../../models/product.model.js";
 // Allows users to add a review for a product, including rating and comment, which is
 // stored and displayed on the product page.
 // ========================================================================================
-export const review = async (req, res, next) => {
+export const review = async (req, res) => {
   try {
     const { user } = req;
     const { productId, variantId, orderId, rating, review } = req.body;
@@ -67,7 +67,7 @@ export const review = async (req, res, next) => {
       .json({ message: "Review submitted successfully!", review: savedReview });
   } catch (error) {
     console.error("Error in submitting review", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 

@@ -7,7 +7,7 @@ import Product from "../../models/product.model.js";
 // ========================================================================================
 // Renders the page displaying the user's past orders, including order details and status.
 // ========================================================================================
-export const renderOrderListPage = async (req, res, next) => {
+export const renderOrderListPage = async (req, res) => {
   try {
     const { user, token, brands, cartCount, categories } = req;
     const PAGE_SIZE = 6;
@@ -47,7 +47,7 @@ export const renderOrderListPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error in rendering order list:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -56,7 +56,7 @@ export const renderOrderListPage = async (req, res, next) => {
 // ========================================================================================
 // Cancels a user's order, updating the order status and processing any necessary refunds.
 // ========================================================================================
-export const cancelOrder = async (req, res, next) => {
+export const cancelOrder = async (req, res) => {
   try {
     const { token } = req;
     const { orderId, productId, variantId, quantity } = req.body;
@@ -117,7 +117,7 @@ export const cancelOrder = async (req, res, next) => {
       .json({ success: true, message: "Order canceled successfully" });
   } catch (error) {
     console.error("Error canceling order:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -126,7 +126,7 @@ export const cancelOrder = async (req, res, next) => {
 // ========================================================================================
 // Processes the return of a user's order, including updating the order status and initiating the return process.
 // ========================================================================================
-export const returnOrder = async (req, res, next) => {
+export const returnOrder = async (req, res) => {
   try {
     const { token } = req;
     const { orderId, productId, variantId, quantity } = req.body;
@@ -180,7 +180,7 @@ export const returnOrder = async (req, res, next) => {
       .json({ success: true, message: "Order returned successfully" });
   } catch (error) {
     console.error("Error canceling order:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
 
@@ -253,6 +253,6 @@ export const orderDetailsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in product detail page:", error);
-    next({ statusCode: 500, message: error.message });
+    return res.redirect("user/page-404");
   }
 };
