@@ -2808,9 +2808,9 @@ border: 1px solid transparent;
     gap: 0 !important;
   }
 
-  .d-flex.justify-content-between {
+  /* .d-flex.justify-content-between {
     flex-direction: column; 
-  }
+  } */
 
   .d-flex.justify-content-between > div {
     width: 100%; 
