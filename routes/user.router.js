@@ -70,8 +70,6 @@ import { review } from "../controllers/user/review.controller.js";
 import { myCoupons } from "../controllers/user/coupon.controller.js";
 import { helpPage, getAppPage } from "../controllers/user/others.controller.js";
 
-
-
 router.get("/", loadUserData, renderHomePage);
 router.get("/home", loadUserData, renderHomePage);
 router.get("/login", verifyToken, renderLoginPage);
@@ -90,15 +88,12 @@ router.get(
   passport.authenticate("google", { failureRedirect: "/signup" }),
   googleCallbackHandler
 );
-
 router.post("/resend-otp", handleResendOTP);
 router.post("/reset-password", handleResetPassword);
 router.post("/login", verifyToken, handleUserLogin);
 router.post("/signup", verifyToken, handleUserSignup);
 router.post("/forgot-password", verifyToken, handleForgotPassword);
 router.post("/otp-verification", verifyToken, handleOTPVerification);
-
-
 
 // Product, Category & Sub Category Management
 router.get("/shop", loadUserData, renderShopPage);
@@ -159,7 +154,7 @@ router.get("/my-coupons", loadUserData, myCoupons);
 // Rewview Mangement
 router.post("/submit-review", loadUserData, review);
 
-// Other Page Mnagement
+// Other Page Management
 router.get("/help", loadUserData, helpPage);
 router.get("/get-app", loadUserData, getAppPage);
 

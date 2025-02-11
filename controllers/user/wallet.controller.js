@@ -1,19 +1,18 @@
-import jwt from "jsonwebtoken";
-import crypto from "crypto"
-import dotenv from "dotenv";dotenv.config()
-import razorpay from "../../config/razorpay.js"
-import Cart from "../../models/cart.model.js";
-import User from "../../models/user.model.js";
+import crypto from "crypto";
+import dotenv from "dotenv";
+dotenv.config();
+import razorpay from "../../config/razorpay.js";
 import Wallet from "../../models/wallet.model.js";
-import Category from "../../models/category.model.js";
 import Transaction from "../../models/transaction.model.js";
 
-
-
-
+// ========================================================================================
+// RENDER MY WALLET PAGE
+// ========================================================================================
+// Displays the user's wallet with account balance, transaction history, and payment options.
+// ========================================================================================
 export const myWallet = async (req, res, next) => {
   try {
-    const { user, wishlist, brands, token, wallet, cart, cartCount, categories } = req;
+    const { user, brands, token, wallet, cartCount, categories } = req;
 
     const { page = 1, limit = 10 } = req.query;
     const skip = (page - 1) * limit;
@@ -30,9 +29,10 @@ export const myWallet = async (req, res, next) => {
         .limit(Number(limit))
         .sort({ date: -1 });
 
-      totalTransactions = await Transaction.countDocuments({ wallet_id: wallet._id });
+      totalTransactions = await Transaction.countDocuments({
+        wallet_id: wallet._id,
+      });
     }
-    
 
     return res.render("user/my-wallet", {
       user,
@@ -53,7 +53,11 @@ export const myWallet = async (req, res, next) => {
   }
 };
 
-
+// ========================================================================================
+// ADD MONEY TO WALLET USING RAZORPAY
+// ========================================================================================
+// Manages the process of adding funds to the user's wallet via Razorpay, updating the balance.
+// ========================================================================================
 export const addMoneyToWallet = async (req, res, next) => {
   try {
     const { user, token, wallet } = req;
@@ -62,7 +66,12 @@ export const addMoneyToWallet = async (req, res, next) => {
       return res.redirect("/home");
     }
 
-    const { amount, razorpay_payment_id, razorpay_order_id, razorpay_signature } = req.body;
+    const {
+      amount,
+      razorpay_payment_id,
+      razorpay_order_id,
+      razorpay_signature,
+    } = req.body;
 
     if (!amount || amount <= 0 || amount > 25000) {
       return res.status(400).json({ error: "Invalid amount" });
@@ -78,12 +87,11 @@ export const addMoneyToWallet = async (req, res, next) => {
       });
 
       await userWallet.save();
-      console.log("New wallet created for user:", user.userId);
     }
 
     if (!razorpay_payment_id || !razorpay_order_id || !razorpay_signature) {
       const options = {
-        amount: amount * 100, 
+        amount: amount * 100,
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
       };
@@ -116,10 +124,7 @@ export const addMoneyToWallet = async (req, res, next) => {
       type: "Credited",
     });
 
-    await Promise.all([
-      userWallet.save(),
-      transaction.save()
-    ]);
+    await Promise.all([userWallet.save(), transaction.save()]);
 
     return res.json({
       message: "Payment verified and wallet updated",
@@ -131,4 +136,3 @@ export const addMoneyToWallet = async (req, res, next) => {
     next({ statusCode: 500, message: error.message });
   }
 };
-

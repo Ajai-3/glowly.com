@@ -1,19 +1,21 @@
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-import dotenv from "dotenv";dotenv.config();
+import dotenv from "dotenv";
+dotenv.config();
 import User from "../../models/user.model.js";
 import Cart from "../../models/cart.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
 
-
-
-
-
+// ========================================================================================
+// RENDER CART PAGE
+// ========================================================================================
+// Renders the shopping cart page, displaying items in the cart and the total price.
+// ========================================================================================
 export const renderCartPage = async (req, res, next) => {
   try {
-    const { user, wishlist, brands, cart, cartVariants, categories } = req;
+    const { user, brands, cart, categories } = req;
     let cartProducts = [];
 
     const products = await Product.find({ isDeleted: false });
@@ -23,7 +25,6 @@ export const renderCartPage = async (req, res, next) => {
         (a, b) => new Date(b.added_at) - new Date(a.added_at)
       );
 
-      // Fetch product and variant details for all cart items (no pagination in backend)
       cartProducts = await Promise.all(
         sortedCartProducts.map(async (item) => {
           const productDetails = await Product.findById(item.product_id);
@@ -50,7 +51,6 @@ export const renderCartPage = async (req, res, next) => {
         })
       );
 
-      // Filter out null items if there are any
       cartProducts = cartProducts.filter((item) => item !== null);
     }
 
@@ -71,9 +71,12 @@ export const renderCartPage = async (req, res, next) => {
   }
 };
 
-
-
-// Add Product To Cart
+// ========================================================================================
+// ADD TO CART
+// ========================================================================================
+// Adds an item to the user's shopping cart. It updates the cart with the selected item
+// and quantity.
+// ========================================================================================
 export const addToCart = async (req, res) => {
   try {
     let { quantity, productId, variantId } = req.body;
@@ -160,9 +163,9 @@ export const addToCart = async (req, res) => {
         await cart.save();
       }
     }
-  
+
     const totalProducts = cart?.products?.length || 0;
-    
+
     return res.json({
       success: true,
       message: "Product added to cart",
@@ -175,10 +178,12 @@ export const addToCart = async (req, res) => {
       .json({ success: false, message: "Error adding product to cart" });
   }
 };
-    
-    
 
-// Remove Product From Cart
+// ========================================================================================
+// REMOVE PRODUCT FROM CART
+// ========================================================================================
+// Removes a product from the user's shopping cart based on the product's ID.
+// ========================================================================================
 export const removeCartProduct = async (req, res) => {
   try {
     const { user } = req;
@@ -209,12 +214,16 @@ export const removeCartProduct = async (req, res) => {
   }
 };
 
-// Update Product Quantity In Cart Page
+// ========================================================================================
+// UPDATE PRODUCT IN CART
+// ========================================================================================
+// Updates the quantity or details of a product in the user's shopping cart.
+// ========================================================================================
 export const updateCartPageProduct = async (req, res) => {
   try {
     const { newQuantity, productId, variantId } = req.body;
-    let { user, cart, cartCount } = req;
-   
+    let { cart } = req;
+
     const productInCart = cart.products.find(
       (item) =>
         item.product_id.toString() === productId.toString() &&
@@ -258,7 +267,12 @@ export const updateCartPageProduct = async (req, res) => {
   }
 };
 
-// Buy Now Button in product page
+// ========================================================================================
+// BUY NOW (SINGLE PRODUCT PURCHASE)
+// ========================================================================================
+// Processes the purchase of a single product directly, bypassing the cart and checkout
+// process.
+// ========================================================================================
 export const buyNow = async (req, res) => {
   try {
     const { quantity, productId, variantId } = req.body;
@@ -273,9 +287,9 @@ export const buyNow = async (req, res) => {
     if (!cart) {
       console.log("No cart found for the user, creating a new one.");
       cart = new Cart({
-          user_id: user.userId,
-          products: [] 
-      }); 
+        user_id: user.userId,
+        products: [],
+      });
     }
 
     const product = await Product.findById(productId);
@@ -303,7 +317,6 @@ export const buyNow = async (req, res) => {
       });
     }
 
-
     if (cart.products.length === 16) {
       return res.json({
         success: false,
@@ -324,8 +337,13 @@ export const buyNow = async (req, res) => {
         ],
       });
       await cart.save();
-      const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-      return res.json({ success: true, message: "Product added to cart", cartCount: totalQuantity });
+      const totalQuantity =
+        cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+      return res.json({
+        success: true,
+        message: "Product added to cart",
+        cartCount: totalQuantity,
+      });
     } else {
       const existingItem = cart.products.find(
         (item) => item.variant_id.toString() === variantId.toString()
@@ -343,11 +361,12 @@ export const buyNow = async (req, res) => {
         existingItem.added_at = new Date();
 
         await cart.save();
-        const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+        const totalQuantity =
+          cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
         return res.json({
           success: true,
           message: "Cart updated successfully",
-          cartCount: totalQuantity
+          cartCount: totalQuantity,
         });
       } else {
         cart.products.push({
@@ -357,8 +376,13 @@ export const buyNow = async (req, res) => {
           added_at: new Date(),
         });
         await cart.save();
-        const totalQuantity = cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
-        return res.json({ success: true, message: "Product added to cart", cartCount: totalQuantity });
+        const totalQuantity =
+          cart?.products?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+        return res.json({
+          success: true,
+          message: "Product added to cart",
+          cartCount: totalQuantity,
+        });
       }
     }
   } catch (error) {
