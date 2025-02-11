@@ -369,41 +369,26 @@ export const handleForgotPassword = async (req, res) => {
 
     const existUser = await User.findOne({ email, role: "user" });
     if (!existUser) {
-      const msg = { type: "error", msg: "No user found with this email." };
-      return res.render("user/forgot-password", { msg });
+      return res.json({ type: "error", msg: "No user found with this email." });
     }
 
     const resetCode = generateResetCode();
     const expiryTime = Date.now() + 6 * 60 * 1000;
-
     existUser.resetPasswordCode = resetCode;
     existUser.resetPasswordExpires = expiryTime;
     await existUser.save();
 
-    const resetPasswordUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/reset-password/${resetCode}`;
+    const resetPasswordUrl = `${req.protocol}://${req.get("host")}/reset-password/${resetCode}`;
+    const sendResetEmail = await sendResetPasswordEmail(email, resetPasswordUrl);
 
-    const sendResetEmail = await sendResetPasswordEmail(
-      email,
-      resetPasswordUrl
-    );
     if (!sendResetEmail) {
-      const msg = {
-        type: "error",
-        msg: "Error sending reset link to your email.",
-      };
-      return res.render("user/forgot-password", { msg });
+      return res.json({ type: "error", msg: "Error sending reset link to your email." });
     }
 
-    req.session.msg = {
-      type: "success",
-      msg: "Password reset link sent to your email.",
-    };
-    return res.redirect("user/forgot-password");
+    return res.json({ type: "success", msg: "Password reset link sent to your email." });
   } catch (error) {
     console.error("Error in forgot password", error);
-    return res.redirect("user/page-404");
+    return res.json({ type: "error", msg: "An error occurred. Please try again later." });
   }
 };
 

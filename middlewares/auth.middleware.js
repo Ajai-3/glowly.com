@@ -28,7 +28,7 @@ export const verifyToken = async (req, res, next) => {
                 return res.redirect("/home"); 
             }
         } catch (error) {
-            console.error("JWT Verification Error:", error);
+            // console.error("JWT Verification Error:", error);
             return next(); 
         }
     }
@@ -43,7 +43,7 @@ export const verifyToken = async (req, res, next) => {
                 return res.redirect("/home");
             }
         } catch (error) {
-            console.error("JWT Verification Error:", error);
+            // console.error("JWT Verification Error:", error);
             return next();
         }
     }
@@ -56,7 +56,7 @@ export const verifyToken = async (req, res, next) => {
                     return res.redirect("/home");
                 }
             } catch (error) {
-                console.error("JWT Verification Error:", error);
+                // console.error("JWT Verification Error:", error);
                 return next();
             }
         }
@@ -70,7 +70,7 @@ export const verifyToken = async (req, res, next) => {
                 return next(); 
             }
         } catch (error) {
-            console.error("JWT Verification Error:", error.message);
+            // console.error("JWT Verification Error:", error.message);
             return res.redirect("/login"); 
         }
     } else {
