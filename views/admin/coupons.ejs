@@ -24,13 +24,13 @@
         </form>
     </div>
     <div class="admin-profile mx-3">
-        <% if (admin && admin.profilePic) { %>
-            <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
-            <% } else {%>
-              <a href="/admin/settings">
-                <i class="fa-solid fa-circle-user"></i>
-              </a>
-            <% }  %>
+       <% if (admin && admin.profilePic) { %>
+          <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
+          <% } else {%>
+            <a href="/admin/settings">
+              <i class="fa-solid fa-circle-user"></i>
+            </a>
+          <% }  %>
     </div>
 </div>
 <div id="background-overlay" class="overlay"></div>
@@ -376,6 +376,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
         discountValueInput.classList.remove('error');
         errorElement.style.display = 'none';
 
+        if (discountValue <= 0) {
+            discountValueInput.classList.add('error');
+            errorElement.textContent = 'Discount value must be greater than 0';
+            errorElement.style.display = 'block';
+            return false;
+        }
+
         if (discountType === 'percentage') {
             if (discountValue > 60) {
                 discountValueInput.classList.add('error');
@@ -523,6 +530,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
         }
     });
 });
+
 
 </script>
 </html>
