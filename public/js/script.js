@@ -1,3 +1,13 @@
+window.onload = function() {
+    clearTimeout(preloaderTimeout);
+    document.getElementById("preloader").style.display = "none";
+    window.scrollTo(0, 0);
+};
+
+let preloaderTimeout = setTimeout(function() {
+    document.getElementById("preloader").style.display = "flex"; 
+}, 100);
+
 // Sign-Up Form Elements
 const nameInput = document.getElementById('name');
 const emailInput = document.getElementById('email');
@@ -94,12 +104,14 @@ function validatePassword() {
 // Event Listener for Form Submission
 document.addEventListener('DOMContentLoaded', function () {
     signupForm.addEventListener('submit', function (e) {
+        document.getElementById("preloader").style.display = "flex";
         validateName();
         validatePhone();
         validateEmail();
         validatePassword();
         if (!validateName() || !validatePhone() || !validateEmail() || !validatePassword()) {
             e.preventDefault();
+            document.getElementById("preloader").style.display = "none";
         }
     });
 });
@@ -119,17 +131,22 @@ togglePassword.forEach((toggle, index) => {
     });
 });
 
+
+
+
+
+
+
 // OTP Timer
 let timerInterval; 
 let timeLeft = 120; 
 const displayTimer = document.getElementById('timer');
+const resendButton = document.getElementById('resend-otp-btn');
 
 function startTimer() {
-    // Clear Any Existing Timer Before Starting A New One
     clearInterval(timerInterval);
-    timeLeft = 120; // Reset TimeLeft
+    timeLeft = 60;
 
-    // Enable The OTP Input And Reset Styles
     const otpInput = document.getElementById("otp");
     const timerValue = document.getElementById("timervalue");
 
@@ -138,7 +155,9 @@ function startTimer() {
         timerValue.classList.remove("expired");
     }
 
-    // Start The Coundown
+    // Disable the Resend OTP button initially
+    resendButton.disabled = true;
+
     timerInterval = setInterval(() => {
         if (timeLeft >= 0) {
             const minutes = Math.floor(timeLeft / 60);
@@ -148,27 +167,30 @@ function startTimer() {
         } else {
             clearInterval(timerInterval);
             displayTimer.textContent = "Expired";
-
-            // Disable OTP Input And Mark As Expired
             if (otpInput && timerValue) {
                 otpInput.disabled = true;
                 timerValue.classList.add("expired");
             }
+            enableResendOTP();
         }
     }, 1000);
 }
+
+function enableResendOTP() {
+    // Enable the Resend OTP button when the timer expires
+    resendButton.disabled = false;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const otpForm = document.getElementById('otp_form'); 
     if (otpForm) {
-        startTimer(); // Start The Timer When The Form Is Loaded
+        startTimer(); 
     }
 });
 
-// OTP Verification Form
 function validateOTPForm() {
     const otpInput = document.getElementById('otp').value;
 
-    // Check The OTP Is 6 Digits
     if (!/^\d{6}$/.test(otpInput)) {
         Swal.fire({
             icon: "error",
@@ -183,7 +205,6 @@ function validateOTPForm() {
         return false;
     }
 
-    // AJAX Request
     $.ajax({
         type: "POST",
         url: "/otp-verification",
@@ -193,7 +214,7 @@ function validateOTPForm() {
                 if (response.msg) {
                     $('.alert').text(response.msg).addClass('alert-success');
                 }
-    
+
                 Swal.fire({
                     position: "center",
                     icon: "success",
@@ -206,7 +227,6 @@ function validateOTPForm() {
                         content: "swal-dark-content",
                     },
                 }).then(() => {
-                    // Redirect to the Login Page After Clicking "OK"
                     window.location.href = response.redirectUrl;
                 });
             } else {
@@ -235,16 +255,14 @@ function validateOTPForm() {
             });
         },
     });
-    
+
     return false;
-}  
+}
 
-
-// Resend OTP
 function resendOTP() {
     clearInterval(timerInterval);
     startTimer();
-   
+
     $.ajax({
         type: "POST",
         url: "/resend-otp",
@@ -273,7 +291,6 @@ function resendOTP() {
                         content: "swal-dark-content",
                     },
                 }).then(() => {
-                    // Redirect to the Create Account page if session is not found
                     if (response.message.includes("User session not found")) {
                         window.location.href = '/signup';
                     }

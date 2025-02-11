@@ -135,24 +135,12 @@
 
 
 
-    <div id="preloader">
-      <div class="loader"></div>
-    </div>
 
 
 
     <script src="/js/script.js"></script>
   <%- include('partials/footer') %>
   
-  <script>
-    window.onload = function() {
-      document.getElementById("preloader").style.display = "none";
-  };
-  document.getElementById("signup_form").addEventListener("submit", function(event) {
-        document.getElementById("preloader").style.display = "flex";
-        document.querySelector('button[type="submit"]').disabled = true;
-      });
-</script>
   </body>
 
 

@@ -28,12 +28,11 @@
             <span class="label-char" style="--index: 6">T</span>
             <span class="label-char" style="--index: 7">P</span>
           </label>
-          <!-- <div id="timer" class="timer">01:00</div> -->
           <div id="timervalue">
-            <div id="timer" >2:00</div>
+            <div id="timer" >1:00</div>
           </div>
           <div class="d-flex justify-content-end">
-            <button type="button" class="resend-btn" onclick="resendOTP()">Resend OTP</button>
+            <button type="button" class="resend-btn" id="resend-otp-btn" onclick="resendOTP()" disabled>Resend OTP</button>
           </div>
         
         </div>
@@ -42,9 +41,6 @@
       </form>
       <p>Back to <a href="/login">Login ?</a></p>
     </div>
-    <!-- <div class="resend-otp m-1">
-      <button type="button" class="resend-btn">Resend OTP</button>
-  </div> -->
   </body>
   <script src="/js/script.js"></script>
   <%- include('partials/footer') %>
