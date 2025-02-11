@@ -575,6 +575,236 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 });
+
+function validatePrices(input) {
+  const variant = input.closest('.variant');
+  const regularPriceInput = variant.querySelector('input[name="variantRegularPrice"]');
+  const salePriceInput = variant.querySelector('input[name="variantSalePrice"]');
+  let isValid = true;
+
+  // Remove old error styles
+  regularPriceInput.style.borderColor = '';
+  salePriceInput.style.borderColor = '';
+
+  // Validate regular price
+  if (!regularPriceInput.value.trim()) {
+    toastError('Regular price is required');
+    regularPriceInput.style.borderColor = 'red';
+    isValid = false;
+  } else if (parseFloat(regularPriceInput.value) <= 0) {
+    toastError('Regular price must be greater than 0');
+    regularPriceInput.style.borderColor = 'red';
+    isValid = false;
+  }
+
+  // Validate sale price
+  if (!salePriceInput.value.trim()) {
+    toastError('Sale price is required');
+    salePriceInput.style.borderColor = 'red';
+    isValid = false;
+  } else if (parseFloat(salePriceInput.value) <= 0) {
+    toastError('Sale price must be greater than 0');
+    salePriceInput.style.borderColor = 'red';
+    isValid = false;
+  }
+
+  // Compare prices
+  if (parseFloat(salePriceInput.value) >= parseFloat(regularPriceInput.value)) {
+    toastError('Sale price must be less than regular price');
+    salePriceInput.style.borderColor = 'red';
+    regularPriceInput.style.borderColor = 'red';
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+function validateStockQuantity(input) {
+  input.style.borderColor = '';
+  
+  if (!input.value.trim()) {
+    toastError('Stock quantity is required');
+    input.style.borderColor = 'red';
+    return false;
+  }
+
+  const stock = parseInt(input.value);
+  if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) {
+    toastError('Stock quantity must be a positive whole number');
+    input.style.borderColor = 'red';
+    return false;
+  }
+
+  return true;
+}
+
+// Add real-time validation
+document.addEventListener('DOMContentLoaded', function() {
+  // Price input validation
+  const priceInputs = document.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
+  priceInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      // Remove non-numeric characters except decimal point
+      this.value = this.value.replace(/[^\d.]/g, '');
+      // Ensure only one decimal point
+      this.value = this.value.replace(/(\..*)\./g, '$1');
+      // Remove leading zeros
+      this.value = this.value.replace(/^0+(?=\d)/, '');
+    });
+  });
+
+  // Stock input validation
+  const stockInputs = document.querySelectorAll('input[name="variantStockQuantity"]');
+  stockInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      // Only allow positive integers
+      this.value = this.value.replace(/[^\d]/g, '');
+      // Remove leading zeros
+      this.value = this.value.replace(/^0+(?=\d)/, '');
+    });
+  });
+
+  // Form submission validation
+  const form = document.getElementById('edit-product');
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    let isValid = true;
+
+    // Validate all prices
+    priceInputs.forEach(input => {
+      if (!validatePrices(input)) {
+        isValid = false;
+      }
+    });
+
+    // Validate all stock quantities
+    stockInputs.forEach(input => {
+      if (!validateStockQuantity(input)) {
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      return false;
+    }
+
+    // Continue with form submission if validation passes
+    // ...rest of your existing form submission code...
+  });
+});
+
+function validateForm() {
+  let isValid = true;
+  const requiredFields = {
+    productName: 'Product name',
+    brand: 'Brand',
+    description: 'Description',
+    category: 'Category',
+    subCategory: 'Sub category',
+    variantShade: 'Shade name',
+    variantRegularPrice: 'Regular price',
+    variantSalePrice: 'Sale price',
+    variantStockQuantity: 'Stock quantity'
+  };
+
+  // Check all required fields
+  for (const [fieldName, label] of Object.entries(requiredFields)) {
+    const input = document.querySelector(`[name="${fieldName}"]`);
+    if (input && !input.value.trim()) {
+      toastError(`${label} is required`);
+      input.style.borderColor = 'red';
+      isValid = false;
+    }
+  }
+
+  // Validate prices and stock
+  const regularPrice = document.getElementById('variantRegularPrice');
+  const salePrice = document.getElementById('variantSalePrice');
+  const stockQuantity = document.getElementById('variantStockQuantity');
+
+  // Price validation
+  if (regularPrice && salePrice) {
+    const regPrice = parseFloat(regularPrice.value);
+    const saleP = parseFloat(salePrice.value);
+
+    if (regPrice <= 0) {
+      toastError('Regular price must be greater than 0');
+      regularPrice.style.borderColor = 'red';
+      isValid = false;
+    }
+    if (saleP <= 0) {
+      toastError('Sale price must be greater than 0');
+      salePrice.style.borderColor = 'red';
+      isValid = false;
+    }
+    if (saleP >= regPrice) {
+      toastError('Sale price must be less than regular price');
+      salePrice.style.borderColor = 'red';
+      regularPrice.style.borderColor = 'red';
+      isValid = false;
+    }
+  }
+
+  // Stock validation
+  if (stockQuantity) {
+    const stock = parseInt(stockQuantity.value);
+    if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) {
+      toastError('Stock quantity must be a positive whole number');
+      stockQuantity.style.borderColor = 'red';
+      isValid = false;
+    }
+  }
+
+  return isValid;
+}
+
+// Update your form submission event listener
+document.getElementById('edit-product').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // Clear any previous error styles
+  document.querySelectorAll('input').forEach(input => {
+    input.style.borderColor = '';
+  });
+
+  // Run validation before submitting
+  if (!validateForm()) {
+    return false;
+  }
+
+  const formData = new FormData(this);
+  const productId = this.getAttribute('data-product-id');
+  const variantId = this.getAttribute('data-variant-id');
+
+  try {
+    // ...rest of your existing form submission code...
+  } catch (error) {
+    console.error('Error:', error);
+    toastWarning('An error occurred while updating the product');
+  }
+});
+
+// Add real-time input cleaning
+document.addEventListener('DOMContentLoaded', function() {
+  // Price input cleaning
+  const priceInputs = document.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
+  priceInputs.forEach(input => {
+    input.addEventListener('input', function() {
+      this.value = this.value.replace(/[^\d.]/g, '');
+      this.value = this.value.replace(/(\..*)\./g, '$1');
+      this.value = this.value.replace(/^0+(?=\d)/, '');
+    });
+  });
+
+  // Stock quantity input cleaning
+  const stockInput = document.querySelector('input[name="variantStockQuantity"]');
+  if (stockInput) {
+    stockInput.addEventListener('input', function() {
+      this.value = this.value.replace(/[^\d]/g, '');
+      this.value = this.value.replace(/^0+(?=\d)/, '');
+    });
+  }
+});
 </script>
 
 <%- include('partials/footer') %>
