@@ -94,14 +94,17 @@
                 <div>
                   <label for="variantRegularPrice">Regular Price</label>
                   <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+                  <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
                 </div>
                 <div>
                   <label for="variantSalePrice">Sale Price</label>
                   <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+                  <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
                 </div>
                 <div>
                   <label for="variantStockQuantity">Stock Quantity</label>
                   <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+                  <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
                 </div>
               </div>
               <div class="variant-image-section mb-2">
@@ -270,14 +273,17 @@
               <div>
                 <label for="variantRegularPrice">Regular Price</label>
                 <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+                <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
               </div>
               <div>
                 <label for="variantSalePrice">Sale Price</label>
                 <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+                <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
               </div>
               <div>
                 <label for="variantStockQuantity">Stock Quantity</label>
                 <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+                <span class="error-message" style="color: red; font-size: 10px; display: block; margin-top: 2px;"></span>
               </div>
             </div>
             <div class="variant-image-section" style="display: ${document.getElementById('shareImagesCheckbox').checked ? 'none' : 'block'};">
@@ -383,6 +389,31 @@
     document.getElementById('addVariantForm').addEventListener('submit', async (e) => {
       e.preventDefault();
 
+      let isValid = true;
+  
+      // Validate all inputs before submission
+      document.querySelectorAll('.variant.new-variant').forEach(variant => {
+        const regularPrice = variant.querySelector('input[name="variantRegularPrice[]"]');
+        const salePrice = variant.querySelector('input[name="variantSalePrice[]"]');
+        const stockQuantity = variant.querySelector('input[name="variantStockQuantity[]"]');
+        const shade = variant.querySelector('input[name="variantShade[]"]');
+
+        if (!shade.value.trim()) {
+          shade.nextElementSibling.textContent = 'Shade name is required';
+          shade.style.borderColor = 'red';
+          isValid = false;
+        }
+
+        if (!validatePrice(regularPrice)) isValid = false;
+        if (!validateSalePrice(salePrice, regularPrice)) isValid = false;
+        if (!validateStock(stockQuantity)) isValid = false;
+      });
+
+      if (!isValid) {
+        toastError('Please fix all validation errors before submitting');
+        return;
+      }
+
       const formData = new FormData();
 
       const productId = document.getElementById('addVariantForm').dataset.productId;
@@ -456,6 +487,138 @@
         toastError('An error occurred while adding the variants');
       }
     });
+
+    // Real-time validation functions
+    function validatePrice(input) {
+      const errorSpan = input.nextElementSibling;
+      const value = parseFloat(input.value);
+      
+      // Clear previous error
+      errorSpan.textContent = '';
+      input.style.borderColor = '';
+
+      // Check if empty
+      if (!input.value.trim()) {
+        errorSpan.textContent = 'This field is required';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+      // Check if negative or zero
+      if (value <= 0) {
+        errorSpan.textContent = 'Price must be greater than 0';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+      // Check if it's a valid number
+      if (isNaN(value)) {
+        errorSpan.textContent = 'Please enter a valid number';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+      return true;
+    }
+
+    function validateSalePrice(saleInput, regularInput) {
+      const errorSpan = saleInput.nextElementSibling;
+      const salePrice = parseFloat(saleInput.value);
+      const regularPrice = parseFloat(regularInput.value);
+
+      // Clear previous error
+      errorSpan.textContent = '';
+      saleInput.style.borderColor = '';
+
+      if (!saleInput.value.trim()) {
+        errorSpan.textContent = 'Sale price is required';
+        saleInput.style.borderColor = 'red';
+        return false;
+      }
+
+      if (salePrice <= 0) {
+        errorSpan.textContent = 'Sale price must be greater than 0';
+        saleInput.style.borderColor = 'red';
+        return false;
+      }
+
+      if (salePrice >= regularPrice) {
+        errorSpan.textContent = 'Sale price must be less than regular price';
+        saleInput.style.borderColor = 'red';
+        return false;
+      }
+
+      return true;
+    }
+
+    function validateStock(input) {
+      const errorSpan = input.nextElementSibling;
+      const value = parseInt(input.value);
+
+      // Clear previous error
+      errorSpan.textContent = '';
+      input.style.borderColor = '';
+
+      if (!input.value.trim()) {
+        errorSpan.textContent = 'Stock quantity is required';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+      if (value <= 0 || !Number.isInteger(value)) {
+        errorSpan.textContent = 'Stock must be a positive whole number';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+      return true;
+    }
+
+    // Add event listeners for real-time validation
+    document.addEventListener('input', function(e) {
+      const target = e.target;
+      
+      if (target.matches('input[name="variantRegularPrice[]"]')) {
+        validatePrice(target);
+        // Also validate sale price when regular price changes
+        const saleInput = target.closest('.add-products-container-center')
+          .querySelector('input[name="variantSalePrice[]"]');
+        if (saleInput.value) {
+          validateSalePrice(saleInput, target);
+        }
+      }
+      
+      if (target.matches('input[name="variantSalePrice[]"]')) {
+        const regularInput = target.closest('.add-products-container-center')
+          .querySelector('input[name="variantRegularPrice[]"]');
+        validateSalePrice(target, regularInput);
+      }
+      
+      if (target.matches('input[name="variantStockQuantity[]"]')) {
+        validateStock(target);
+      }
+    });
+
+    // Add this to your addVariant function
+    const originalAddVariant = window.addVariant;
+    window.addVariant = function() {
+      originalAddVariant();
+      // Add validation to new variant's inputs
+      const newVariant = document.querySelector('.variant.new-variant:last-child');
+      if (newVariant) {
+        newVariant.querySelectorAll('input').forEach(input => {
+          input.addEventListener('input', function() {
+            if (this.name === 'variantRegularPrice[]') validatePrice(this);
+            if (this.name === 'variantSalePrice[]') {
+              const regularInput = this.closest('.add-products-container-center')
+                .querySelector('input[name="variantRegularPrice[]"]');
+              validateSalePrice(this, regularInput);
+            }
+            if (this.name === 'variantStockQuantity[]') validateStock(this);
+          });
+        });
+      }
+    };
   </script>
 </body>
 
