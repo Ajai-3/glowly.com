@@ -1,456 +1,650 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <%- include('partials/head') %>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css">
-</head>
-<body>
-  <div class="header">
-    <div class="responsive-logo-admin-side">
-      <div class="d-flex align-items-center">
-        <i class="fa fa-bars" id="sidebar-toggle"></i>
-      <h2 class="m-0 mx-2"> Glowly</h2>
+  <head>
+    <%- include('partials/head') %>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css"
+    />
+  </head>
+  <body>
+    <div class="header">
+      <div class="responsive-logo-admin-side">
+        <div class="d-flex align-items-center">
+          <i class="fa fa-bars" id="sidebar-toggle"></i>
+          <h2 class="m-0 mx-2">Glowly</h2>
+        </div>
+      </div>
+      <div class="search-bar">
+        <form action="/admin/search" method="GET">
+          <input type="text" name="search" placeholder="Search" readonly />
+          <button class="admin-search-button">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+      </div>
+      <div class="admin-profile mx-3">
+        <% if (admin && admin.profilePic) { %>
+        <a href="/admin/settings" class="ms-2"
+          ><img
+            src="<%= admin.profilePic %>"
+            alt="Profile Picture"
+            style="
+              width: 35px;
+              height: 35px;
+              border-radius: 50%;
+              object-fit: cover;
+            "
+        /></a>
+        <% } else {%>
+        <a href="/admin/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+        <% } %>
       </div>
     </div>
-    <div class="search-bar">
-      <form action="/admin/search" method="GET">
-        <input type="text" name="search" placeholder="Search" readonly>
-        <button class="admin-search-button"><i class="fas fa-search"></i></button>
+    <div id="background-overlay" class="overlay"></div>
+    <div class="main-content">
+      <div class="breadcrumb">
+        <a href="/admin/products">Products</a> > <a href="">Add Product</a>
+      </div>
+      <form id="productForm" enctype="multipart/form-data">
+        <div class="d-flex add-products-container">
+          <div class="add-products-container1 pe-3">
+            <h4>Add New Product</h4>
+            <div class="add-products-container-center">
+              <div>
+                <label for="productName">Product Name</label>
+                <input
+                  type="text"
+                  name="productName"
+                  id="productName"
+                  placeholder="Type product name"
+                />
+              </div>
+              <div>
+                <label for="brand">Select Brand</label> <br />
+                <select name="brand" id="brand">
+                  <option value="">Select Brand</option>
+                  <% brands.forEach(brand => { %>
+                  <option value="<%= brand._id %>">
+                    <%= brand.brandName %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <label for="description">Description</label><br />
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Enter product description here..."
+            ></textarea>
+            <div class="add-products-container-center">
+              <div>
+                <label for="category">Category</label> <br />
+                <select
+                  name="category"
+                  id="category"
+                  onchange="updateSubCategories()"
+                >
+                  <option value="">Select Category</option>
+                  <% categories.forEach(category => { %>
+                  <option value="<%= category._id %>">
+                    <%= category.name %>
+                  </option>
+                  <% }) %>
+                </select>
+              </div>
+              <div>
+                <label for="subCategory">Sub Category</label> <br />
+                <select name="subCategory" id="subCategory">
+                  <option value="">Select Sub Category</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <button type="submit" class="add-product-btn2 my-1">
+                Add Product
+              </button>
+            </div>
+          </div>
+          <div class="add-products-container1 ps-3">
+            <h4>Product Variants</h4>
+            <div class="d-flex align-items-center mt-3">
+              <input
+                type="checkbox"
+                id="shareImagesCheckbox"
+                onclick="toggleSharedImages()"
+                style="width: auto; height: auto"
+              />
+              <label for="shareImagesCheckbox" class="form-label mb-0 ms-3"
+                >Share images among all variants</label
+              >
+            </div>
+
+            <div
+              id="sharedImageSection"
+              class="add-products-container-center mt-3"
+              style="display: none"
+            >
+              <label for="sharedImages">Shared Images</label>
+              <input
+                type="file"
+                id="sharedImages"
+                name="sharedImages"
+                accept="image/*"
+                multiple
+                onchange="prepareImagesForCropping(event, 'shared-image-previews')"
+              />
+              <div id="shared-image-previews" class="image-preview"></div>
+            </div>
+            <div id="variants-container">
+              <div class="variant">
+                <div class="add-products-container-center">
+                  <div>
+                    <label for="variantColor">Color</label>
+                    <input
+                      type="color"
+                      name="variantColor[]"
+                      class="variantColor"
+                    />
+                  </div>
+                  <div>
+                    <label for="variantShade">Shade</label>
+                    <input
+                      type="text"
+                      name="variantShade[]"
+                      placeholder="Shade"
+                    />
+                  </div>
+                  <div class="mt-4">
+                    <button
+                      type="button"
+                      class="remove-variant-btn"
+                      onclick="removeVariant(this)"
+                    >
+                      <i class="fa-solid fa-x"></i>&nbsp;&nbsp;&nbsp; Variant
+                    </button>
+                  </div>
+                </div>
+                <div class="add-products-container-center">
+                  <div>
+                    <label for="variantRegularPrice">Regular Price</label>
+                    <input
+                      type="number"
+                      name="variantRegularPrice[]"
+                      placeholder="Regular Price"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label for="variantSalePrice">Sale Price</label>
+                    <input
+                      type="number"
+                      name="variantSalePrice[]"
+                      placeholder="Sale Price"
+                      min="0"
+                      step="0.01"
+                    />
+                  </div>
+                  <div>
+                    <label for="variantStockQuantity">Stock Quantity</label>
+                    <input
+                      type="number"
+                      name="variantStockQuantity[]"
+                      placeholder="Stock Quantity"
+                      min="0"
+                    />
+                  </div>
+                </div>
+                <div class="variant-image-section mb-2">
+                  <label for="variantImages">Variant Images</label>
+                  <input
+                    type="file"
+                    name="variantImages_0"
+                    accept="image/*"
+                    multiple
+                    onchange="prepareImagesForCropping(event, 'variant-image-previews-0')"
+                  />
+                  <div
+                    id="variant-image-previews-0"
+                    class="image-preview mt-2"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="add-variant-btn"
+              onclick="addVariant()"
+            >
+              Add Another Variant
+            </button>
+          </div>
+        </div>
       </form>
     </div>
-    <div class="admin-profile mx-3">
-      <% if (admin && admin.profilePic) { %>
-        <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
-        <% } else {%>
-          <a href="/admin/settings">
-            <i class="fa-solid fa-circle-user"></i>
-          </a>
-        <% }  %>
-    </div>
-  </div>
-  <div id="background-overlay" class="overlay"></div>
-<div class="main-content">
 
-  <div class="breadcrumb"><a href="/admin/products">Products</a> > <a href="">Add Product</a></div>
-  <form id="productForm" enctype="multipart/form-data">
-    <div class="d-flex add-products-container">
-      <div class="add-products-container1 pe-3">
-        <h4>Add New Product</h4>
-        <div class="add-products-container-center">
-          <div>
-            <label for="productName">Product Name</label>
-            <input type="text" name="productName" id="productName" placeholder="Type product name">
-          </div>
-          <div>
-            <label for="brand">Select Brand</label> <br>
-            <select name="brand" id="brand">
-              <option value="">Select Brand</option>
-              <% brands.forEach(brand => { %>
-              <option value="<%= brand._id %>"><%= brand.brandName %></option>
-              <% }) %>
-            </select>
-          </div>
-        </div>
-        <label for="description">Description</label><br>
-        <textarea id="description" name="description" placeholder="Enter product description here..."></textarea>
-        <div class="add-products-container-center">
-          <div>
-            <label for="category">Category</label> <br>
-            <select name="category" id="category" onchange="updateSubCategories()">
-              <option value="">Select Category</option>
-              <% categories.forEach(category => { %>
-              <option value="<%= category._id %>"><%= category.name %></option>
-              <% }) %>
-            </select>
-          </div>
-          <div>
-            <label for="subCategory">Sub Category</label> <br>
-            <select name="subCategory" id="subCategory">
-              <option value="">Select Sub Category</option>
-            </select>
-          </div>
-        </div>
-        <div class="d-flex justify-content-between">
-          <button type="submit" class="add-product-btn2 my-1">Add Product</button>
+    <!-- Modal for cropping -->
+    <div id="cropperModal" style="display: none">
+      <div class="modal-content">
+        <img id="imageToCrop" src="" alt="Image to crop" />
+        <div>
+          <button id="cropButton" onclick="cropImage()">Crop</button>
+          <button onclick="closeCropperModal()">Close</button>
         </div>
       </div>
-      <div class="add-products-container1 ps-3">
-        <h4>Product Variants</h4>
-          <div class="d-flex align-items-center mt-3">
-            <input type="checkbox" id="shareImagesCheckbox" onclick="toggleSharedImages()" style="width: auto; height: auto;">
-            <label for="shareImagesCheckbox" class="form-label mb-0 ms-3">Share images among all variants</label>
-          </div>
-        
-        <div id="sharedImageSection" class="add-products-container-center mt-3" style="display: none;">
-          <label for="sharedImages">Shared Images</label>
-          <input type="file" id="sharedImages" name="sharedImages" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'shared-image-previews')">
-          <div id="shared-image-previews" class="image-preview"></div>
-        </div>
-        <div id="variants-container">
-          <div class="variant">
-            <div class="add-products-container-center">
-              <div>
-                <label for="variantColor">Color</label>
-                <input type="color" name="variantColor[]" class="variantColor">
-              </div>
-              <div>
-                <label for="variantShade">Shade</label>
-                <input type="text" name="variantShade[]" placeholder="Shade">
-              </div>
-              <div class="mt-4">
-                <button type="button" class="remove-variant-btn" onclick="removeVariant(this)"><i class="fa-solid fa-x"></i>&nbsp;&nbsp;&nbsp; Variant</button>
-              </div>
-              
-            </div>
-            <div class="add-products-container-center">
-              <div>
-                <label for="variantRegularPrice">Regular Price</label>
-                <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
-              </div>
-              <div>
-                <label for="variantSalePrice">Sale Price</label>
-                <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
-              </div>
-              <div>
-                <label for="variantStockQuantity">Stock Quantity</label>
-                <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
-              </div>
-            </div>
-            <div class="variant-image-section mb-2">
-              <label for="variantImages">Variant Images</label>
-              <input type="file" name="variantImages_0" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'variant-image-previews-0')">
-              <div id="variant-image-previews-0" class="image-preview mt-2"></div>
-            </div>
-          </div>
-        </div>
-        <button type="button" class="add-variant-btn" onclick="addVariant()">Add Another Variant</button>
-      </div>
     </div>
-  </form>
-</div>
 
-<!-- Modal for cropping -->
-<div id="cropperModal" style="display:none;">
-  <div class="modal-content">
-    <img id="imageToCrop" src="" alt="Image to crop">
-    <div>
-      <button id="cropButton" onclick="cropImage()">Crop</button>
-      <button onclick="closeCropperModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-
-<%- include('partials/footer') %>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
-<script>
-    const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const categories = [
-      <% categories.forEach(category => { %> {
-        _id: "<%= category._id %>",
-        name: "<%= category.name %>",
-        subcategories: [
-          <% category.subcategories.forEach(subcategory => { %> {
-            _id: "<%= subcategory._id %>",
-            name: "<%= subcategory.name %>"
-          },
-          <% }) %>
-        ]
-      },
-      <% }) %>
-    ];
-
-    function updateSubCategories() {
-      const categorySelect = document.getElementById('category');
-      const subCategorySelect = document.getElementById('subCategory');
-      const selectedCategoryId = categorySelect.value;
-
-      subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
-
-      const selectedCategory = categories.find(category => category._id === selectedCategoryId);
-
-      if (selectedCategory && selectedCategory.subcategories) {
-        selectedCategory.subcategories.forEach(subcategory => {
-          const option = document.createElement('option');
-          option.value = subcategory._id;
-          option.textContent = subcategory.name;
-          subCategorySelect.appendChild(option);
+    <%- include('partials/footer') %>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
+    <script>
+      const toastSuccess = (message) => {
+        iziToast.success({
+          message: message,
+          backgroundColor: '#0e932d',
+          messageColor: '#FFFFFF',
+          icon: 'fa fa-check',
+          iconColor: '#FFFFFF',
+          timeout: 1500,
+          position: 'topRight',
         });
+      };
+
+      const toastError = (message) => {
+        iziToast.error({
+          message: message,
+          backgroundColor: '#e51e1e',
+          messageColor: '#FFFFFF',
+          icon: 'fa fa-times',
+          iconColor: '#FFFFFF',
+          timeout: 1500,
+          position: 'topRight',
+        });
+      };
+
+      const toastInfo = (message) => {
+        iziToast.info({
+          message: message,
+          backgroundColor: '#2160de',
+          messageColor: '#FFFFFF',
+          icon: 'fa fa-info-circle',
+          iconColor: '#FFFFFF',
+          timeout: 1500,
+          position: 'topRight',
+        });
+      };
+
+      const toastWarning = (message) => {
+        iziToast.warning({
+          message: message,
+          backgroundColor: '#e5811e',
+          messageColor: '#212529',
+          icon: 'fa fa-exclamation-triangle',
+          iconColor: '#212529',
+          timeout: 1500,
+          position: 'topRight',
+        });
+      };
+
+      const categories = [
+        <% categories.forEach(category => { %> {
+          _id: "<%= category._id %>",
+          name: "<%= category.name %>",
+          subcategories: [
+            <% category.subcategories.forEach(subcategory => { %> {
+              _id: "<%= subcategory._id %>",
+              name: "<%= subcategory.name %>"
+            },
+            <% }) %>
+          ]
+        },
+        <% }) %>
+      ];
+
+      function updateSubCategories() {
+        const categorySelect = document.getElementById('category');
+        const subCategorySelect = document.getElementById('subCategory');
+        const selectedCategoryId = categorySelect.value;
+
+        subCategorySelect.innerHTML = '<option value="">Select Sub Category</option>';
+
+        const selectedCategory = categories.find(category => category._id === selectedCategoryId);
+
+        if (selectedCategory && selectedCategory.subcategories) {
+          selectedCategory.subcategories.forEach(subcategory => {
+            const option = document.createElement('option');
+            option.value = subcategory._id;
+            option.textContent = subcategory.name;
+            subCategorySelect.appendChild(option);
+          });
+        }
       }
-    }
 
-    function toggleSharedImages() {
-      const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
-      const sharedImageSection = document.getElementById('sharedImageSection');
-      const variantImageSections = document.querySelectorAll('.variant-image-section');
-
-      if (shareImagesCheckbox.checked) {
-        sharedImageSection.style.display = 'block';
-        variantImageSections.forEach(section => section.style.display = 'none');
-      } else {
-        sharedImageSection.style.display = 'none';
-        variantImageSections.forEach(section => section.style.display = 'block');
-      }
-    }
-
-    function addVariant() {
-        const variantsContainer = document.getElementById('variants-container');
-        const variantCount = variantsContainer.children.length;
-        const newVariant = document.createElement('div');
-        newVariant.className = 'variant';
-        
-        newVariant.innerHTML = `
-            <div class="add-products-container-center">
-              <div>
-                <label for="variantColor">Color</label>
-                <input type="color" name="variantColor[]" class="variantColor">
-              </div>
-              <div>
-                <label for="variantShade">Shade</label>
-                <input type="text" name="variantShade[]" placeholder="Shade">
-              </div>
-              
-              <div class="mt-4">
-                <button type="button" class="remove-variant-btn" onclick="removeVariant(this)">Remove Variant</button>
-              </div>
-            </div>
-            <div class="add-products-container-center">
-              <div>
-                <label for="variantRegularPrice">Regular Price</label>
-                <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
-              </div>
-              <div>
-                <label for="variantSalePrice">Sale Price</label>
-                <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
-              </div>
-              <div>
-                <label for="variantStockQuantity">Stock Quantity</label>
-                <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
-              </div>
-            </div>
-            <div class="variant-image-section" style="display: ${document.getElementById('shareImagesCheckbox').checked ? 'none' : 'block'};">
-              <label for="variantImages">Variant Images</label>
-              <input type="file" name="variantImages_${variantCount}" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'variant-image-previews-${variantCount}')">
-              <div id="variant-image-previews-${variantCount}" class="image-preview mt-2"></div>
-            </div>
-        `;
-        
-        variantsContainer.appendChild(newVariant);
-    }
-
-    function removeVariant(button) {
-        const variant = button.closest('.variant');
-        variant.remove();
-    }
-
-    let cropper;
-    let currentImageInput;
-    let previewContainerId;
-    const croppedImages = {};
-
-    function prepareImagesForCropping(event, previewId) {
-        const input = event.target;
-        previewContainerId = previewId;
-        if (input.files && input.files.length > 0) {
-            const file = input.files[0];
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                openCropperModal(e.target.result, input);
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function openCropperModal(imageSrc, input) {
-        currentImageInput = input;
-        const modal = document.getElementById('cropperModal');
-        const imageToCrop = document.getElementById('imageToCrop');
-        imageToCrop.src = imageSrc;
-        modal.style.display = "flex";
-
-        cropper = new Cropper(imageToCrop, {
-            aspectRatio: 1,
-            viewMode: 1,
-        });
-    }
-
-    function closeCropperModal() {
-        const modal = document.getElementById('cropperModal');
-        modal.style.display = "none";
-        if (cropper) {
-            cropper.destroy();
-        }
-    }
-
-    function cropImage() {
-        const canvas = cropper.getCroppedCanvas();
-        canvas.toBlob((blob) => {
-            const croppedImage = new File([blob], `cropped_${Date.now()}.png`, { type: "image/png" });
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(croppedImage);
-            currentImageInput.files = dataTransfer.files;
-
-            if (!croppedImages[previewContainerId]) {
-                croppedImages[previewContainerId] = [];
-            }
-            croppedImages[previewContainerId].push(croppedImage);
-
-            displayCroppedImage(croppedImage, previewContainerId);
-            closeCropperModal();
-        });
-    }
-
-    function displayCroppedImage(file, previewContainerId) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.createElement('img');
-            img.src = e.target.result;
-            img.style.maxWidth = '100px';  
-            img.style.maxHeight = '100px';  
-            img.style.marginRight = '10px';  
-            img.style.marginBottom = '10px';  
-            document.getElementById(previewContainerId).appendChild(img);
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function previewImages(event, previewContainerId) {
-        const input = event.target;
-        const previewContainer = document.getElementById(previewContainerId);
-        previewContainer.innerHTML = '';
-
-        if (input.files) {
-            Array.from(input.files).forEach(file => {
-                displayCroppedImage(file, previewContainerId);
-            });
-        }
-    }
-
-    document.getElementById('productForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const formData = new FormData();
-        formData.append('productName', document.getElementById('productName').value);
-        formData.append('brand', document.getElementById('brand').value);
-        formData.append('description', document.getElementById('description').value);
-        formData.append('category', document.getElementById('category').value);
-        formData.append('subCategory', document.getElementById('subCategory').value);
-
-        // Handle shared images
+      function toggleSharedImages() {
         const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
-        formData.append('shareImages', shareImagesCheckbox.checked);
-        
+        const sharedImageSection = document.getElementById('sharedImageSection');
+        const variantImageSections = document.querySelectorAll('.variant-image-section');
+
         if (shareImagesCheckbox.checked) {
-            const sharedImagesInput = document.getElementById('sharedImages');
-            Array.from(sharedImagesInput.files).forEach(file => {
-                formData.append('sharedImages', file);
-            });
-
-            // Use shared images for each variant
-            document.querySelectorAll('.variant').forEach((variantElement, index) => {
-                if (croppedImages['shared-image-previews']) {
-                    croppedImages['shared-image-previews'].forEach((file, idx) => {
-                        formData.append(`variantImages_${index}`, file);
-                    });
-                }
-            });
+          sharedImageSection.style.display = 'block';
+          variantImageSections.forEach(section => section.style.display = 'none');
         } else {
-            // Handle variant images
-            document.querySelectorAll('.variant').forEach((variantElement, index) => {
-                const variantImagesInput = variantElement.querySelector(`input[name="variantImages_${index}"]`);
-                if (croppedImages[`variant-image-previews-${index}`]) {
-                    croppedImages[`variant-image-previews-${index}`].forEach((file, idx) => {
-                        formData.append(`variantImages_${index}`, file);
-                    });
-                }
-            });
+          sharedImageSection.style.display = 'none';
+          variantImageSections.forEach(section => section.style.display = 'block');
         }
+      }
 
-        // Handle variants
-        const variants = [];
-        document.querySelectorAll('.variant').forEach((variantElement, index) => {
-            const variant = {
-                color: variantElement.querySelector('.variantColor').value,
-                shade: variantElement.querySelector('input[name="variantShade[]"]').value,
-                stockQuantity: variantElement.querySelector('input[name="variantStockQuantity[]"]').value,
-                regularPrice: variantElement.querySelector('input[name="variantRegularPrice[]"]').value,
-                salePrice: variantElement.querySelector('input[name="variantSalePrice[]"]').value
-            };
-            variants.push(variant);
+      function addVariant() {
+          const variantsContainer = document.getElementById('variants-container');
+          const variantCount = variantsContainer.children.length;
+          const newVariant = document.createElement('div');
+          newVariant.className = 'variant';
+
+          newVariant.innerHTML = `
+              <div class="add-products-container-center">
+                <div>
+                  <label for="variantColor">Color</label>
+                  <input type="color" name="variantColor[]" class="variantColor">
+                </div>
+                <div>
+                  <label for="variantShade">Shade</label>
+                  <input type="text" name="variantShade[]" placeholder="Shade">
+                </div>
+
+                <div class="mt-4">
+                  <button type="button" class="remove-variant-btn" onclick="removeVariant(this)">Remove Variant</button>
+                </div>
+              </div>
+              <div class="add-products-container-center">
+                <div>
+                  <label for="variantRegularPrice">Regular Price</label>
+                  <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+                </div>
+                <div>
+                  <label for="variantSalePrice">Sale Price</label>
+                  <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+                </div>
+                <div>
+                  <label for="variantStockQuantity">Stock Quantity</label>
+                  <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+                </div>
+              </div>
+              <div class="variant-image-section" style="display: ${document.getElementById('shareImagesCheckbox').checked ? 'none' : 'block'};">
+                <label for="variantImages">Variant Images</label>
+                <input type="file" name="variantImages_${variantCount}" accept="image/*" multiple onchange="prepareImagesForCropping(event, 'variant-image-previews-${variantCount}')">
+                <div id="variant-image-previews-${variantCount}" class="image-preview mt-2"></div>
+              </div>
+          `;
+
+          variantsContainer.appendChild(newVariant);
+      }
+
+      function removeVariant(button) {
+          const variant = button.closest('.variant');
+          variant.remove();
+      }
+
+      let cropper;
+      let currentImageInput;
+      let previewContainerId;
+      const croppedImages = {};
+
+      function prepareImagesForCropping(event, previewId) {
+          const input = event.target;
+          previewContainerId = previewId;
+          if (input.files && input.files.length > 0) {
+              const file = input.files[0];
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                  openCropperModal(e.target.result, input);
+              };
+              reader.readAsDataURL(file);
+          }
+      }
+
+      function openCropperModal(imageSrc, input) {
+          currentImageInput = input;
+          const modal = document.getElementById('cropperModal');
+          const imageToCrop = document.getElementById('imageToCrop');
+          imageToCrop.src = imageSrc;
+          modal.style.display = "flex";
+
+          cropper = new Cropper(imageToCrop, {
+              aspectRatio: 1,
+              viewMode: 1,
+          });
+      }
+
+      function closeCropperModal() {
+          const modal = document.getElementById('cropperModal');
+          modal.style.display = "none";
+          if (cropper) {
+              cropper.destroy();
+          }
+      }
+
+      function cropImage() {
+          const canvas = cropper.getCroppedCanvas();
+          canvas.toBlob((blob) => {
+              const croppedImage = new File([blob], `cropped_${Date.now()}.png`, { type: "image/png" });
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(croppedImage);
+              currentImageInput.files = dataTransfer.files;
+
+              if (!croppedImages[previewContainerId]) {
+                  croppedImages[previewContainerId] = [];
+              }
+              croppedImages[previewContainerId].push(croppedImage);
+
+              displayCroppedImage(croppedImage, previewContainerId);
+              closeCropperModal();
+          });
+      }
+
+      function displayCroppedImage(file, previewContainerId) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.style.maxWidth = '100px';
+              img.style.maxHeight = '100px';
+              img.style.marginRight = '10px';
+              img.style.marginBottom = '10px';
+              document.getElementById(previewContainerId).appendChild(img);
+          };
+          reader.readAsDataURL(file);
+      }
+
+      function previewImages(event, previewContainerId) {
+          const input = event.target;
+          const previewContainer = document.getElementById(previewContainerId);
+          previewContainer.innerHTML = '';
+
+          if (input.files) {
+              Array.from(input.files).forEach(file => {
+                  displayCroppedImage(file, previewContainerId);
+              });
+          }
+      }
+
+      // Add this validation function before the form submission code
+      function validateForm() {
+        const variants = document.querySelectorAll('.variant');
+        let isValid = true;
+
+        variants.forEach((variant, index) => {
+          const regularPrice = variant.querySelector('input[name="variantRegularPrice[]"]');
+          const salePrice = variant.querySelector('input[name="variantSalePrice[]"]');
+          const stockQuantity = variant.querySelector('input[name="variantStockQuantity[]"]');
+          const shade = variant.querySelector('input[name="variantShade[]"]');
+
+          // Check empty fields
+          if (!regularPrice.value.trim()) {
+            toastError(`Regular price is required for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          if (!salePrice.value.trim()) {
+            toastError(`Sale price is required for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          if (!stockQuantity.value.trim()) {
+            toastError(`Stock quantity is required for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          if (!shade.value.trim()) {
+            toastError(`Shade name is required for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          // Validate positive numbers
+          if (parseFloat(regularPrice.value) <= 0) {
+            toastError(`Regular price must be greater than 0 for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          if (parseFloat(salePrice.value) <= 0) {
+            toastError(`Sale price must be greater than 0 for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          // Validate sale price is less than regular price
+          if (parseFloat(salePrice.value) >= parseFloat(regularPrice.value)) {
+            toastError(`Sale price must be less than regular price for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
+
+          // Validate stock is a positive integer
+          if (parseInt(stockQuantity.value) <= 0 || !Number.isInteger(parseFloat(stockQuantity.value))) {
+            toastError(`Stock quantity must be a positive whole number for variant ${index + 1}`);
+            isValid = false;
+            return;
+          }
         });
 
-        formData.append('variants', JSON.stringify(variants));
+        return isValid;
+      }
 
-        try {
-            const response = await fetch('/admin/add-products', {
-                method: 'POST',
-                body: formData
-            });
+      // Add real-time validation for number inputs
+      document.addEventListener('DOMContentLoaded', () => {
+        document.body.addEventListener('input', (e) => {
+          if (e.target.matches('input[name="variantRegularPrice[]"], input[name="variantSalePrice[]"]')) {
+            // Remove any non-numeric characters except decimal point
+            e.target.value = e.target.value.replace(/[^\d.]/g, '');
+            // Ensure only one decimal point
+            e.target.value = e.target.value.replace(/(\..*)\./g, '$1');
+            // Remove leading zeros
+            e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
+          }
 
-            const data = await response.json();
-            
-            if (data.success) {
-                toastSuccess(data.message);
-                setTimeout(() => {
-                    window.location.href = '/admin/products';
-                }, 2000);
-            } else {
-                toastError(data.message);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            toastError('An error occurred while adding the product');
-        }
-    });
-</script>
-</body>
+          if (e.target.matches('input[name="variantStockQuantity[]"]')) {
+            // Only allow positive integers
+            e.target.value = e.target.value.replace(/[^\d]/g, '');
+            // Remove leading zeros
+            e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
+          }
+        });
+      });
+
+      // Update the form submission code to include validation
+      document.getElementById('productForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+
+          // Run validation before submitting
+          if (!validateForm()) {
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('productName', document.getElementById('productName').value);
+          formData.append('brand', document.getElementById('brand').value);
+          formData.append('description', document.getElementById('description').value);
+          formData.append('category', document.getElementById('category').value);
+          formData.append('subCategory', document.getElementById('subCategory').value);
+
+          // Handle shared images
+          const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
+          formData.append('shareImages', shareImagesCheckbox.checked);
+
+          if (shareImagesCheckbox.checked) {
+              const sharedImagesInput = document.getElementById('sharedImages');
+              Array.from(sharedImagesInput.files).forEach(file => {
+                  formData.append('sharedImages', file);
+              });
+
+              // Use shared images for each variant
+              document.querySelectorAll('.variant').forEach((variantElement, index) => {
+                  if (croppedImages['shared-image-previews']) {
+                      croppedImages['shared-image-previews'].forEach((file, idx) => {
+                          formData.append(`variantImages_${index}`, file);
+                      });
+                  }
+              });
+          } else {
+              // Handle variant images
+              document.querySelectorAll('.variant').forEach((variantElement, index) => {
+                  const variantImagesInput = variantElement.querySelector(`input[name="variantImages_${index}"]`);
+                  if (croppedImages[`variant-image-previews-${index}`]) {
+                      croppedImages[`variant-image-previews-${index}`].forEach((file, idx) => {
+                          formData.append(`variantImages_${index}`, file);
+                      });
+                  }
+              });
+          }
+
+          // Handle variants
+          const variants = [];
+          document.querySelectorAll('.variant').forEach((variantElement, index) => {
+              const variant = {
+                  color: variantElement.querySelector('.variantColor').value,
+                  shade: variantElement.querySelector('input[name="variantShade[]"]').value,
+                  stockQuantity: variantElement.querySelector('input[name="variantStockQuantity[]"]').value,
+                  regularPrice: variantElement.querySelector('input[name="variantRegularPrice[]"]').value,
+                  salePrice: variantElement.querySelector('input[name="variantSalePrice[]"]').value
+              };
+              variants.push(variant);
+          });
+
+          formData.append('variants', JSON.stringify(variants));
+
+          try {
+              const response = await fetch('/admin/add-products', {
+                  method: 'POST',
+                  body: formData
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                  toastSuccess(data.message);
+                  setTimeout(() => {
+                      window.location.href = '/admin/products';
+                  }, 2000);
+              } else {
+                  toastError(data.message);
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              toastError('An error occurred while adding the product');
+          }
+      });
+    </script>
+  </body>
 </html>
