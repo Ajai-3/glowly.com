@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "../../models/user.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
@@ -88,6 +89,8 @@ export const renderProductsPage = async (req, res) => {
 
     const totalPages = Math.ceil(allVariants.length / perPage);
 
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
+
     return res.render("admin/products", {
       variants: paginatedVariants,
       currentPage: page,
@@ -95,6 +98,7 @@ export const renderProductsPage = async (req, res) => {
       perPage,
       search,
       status,
+      admin,
       queryParams: req.query,
       msg: req.query.msg ? { text: req.query.msg, type: req.query.type } : null,
     });
@@ -139,6 +143,7 @@ export const topProducts = async (req, res) => {
 // ========================================================================================
 export const renderAddProductsPage = async (req, res) => {
   try {
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const brands = await Brand.find({ isListed: true });
     const categories = await Category.find({ isListed: true }).populate({
       path: "subcategories",
@@ -153,6 +158,7 @@ export const renderAddProductsPage = async (req, res) => {
       brands,
       categories,
       msg,
+      admin,
     });
   } catch (error) {
     console.error(
@@ -268,6 +274,7 @@ export const addProduct = async (req, res) => {
 export const renderEditProductPage = async (req, res) => {
   try {
     const { productId, variantId } = req.params;
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     const msg = req.query.msg
       ? { text: req.query.msg, type: req.query.type }
@@ -290,6 +297,7 @@ export const renderEditProductPage = async (req, res) => {
       brands,
       categories,
       msg,
+      admin,
     });
   } catch (err) {
     console.error(err);
@@ -387,12 +395,10 @@ export const editProduct = async (req, res) => {
 
     await product.save();
     console.log("Product and variant saved successfully");
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message: "Product and variant updated successfully",
-      });
+    return res.status(200).json({
+      success: true,
+      message: "Product and variant updated successfully",
+    });
   } catch (err) {
     console.log("Error:", err);
     res.status(500).send("Internal server error");
@@ -453,7 +459,7 @@ function updateVariantImages(existingImages, removedImages, newImages) {
 export const addVariantPage = async (req, res) => {
   try {
     const { productId } = req.params;
-
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const product = await Product.findById(productId)
       .populate("brandId")
       .populate("categoryId")
@@ -468,6 +474,7 @@ export const addVariantPage = async (req, res) => {
 
     return res.render("admin/add-variant", {
       product,
+      admin,
       brands: await Brand.find(),
       categories: await Category.find(),
     });

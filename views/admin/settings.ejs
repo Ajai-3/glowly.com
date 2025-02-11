@@ -1,10 +1,336 @@
 <!DOCTYPE html>
 <html lang="en">
-<%- include('partials/head') %> 
+  <%- include('partials/head') %>
+  <body>
+    <div class="header">
+        <div class="responsive-logo-admin-side">
+          <div class="d-flex align-items-center">
+            <i class="fa fa-bars" id="sidebar-toggle"></i>
+            <h2 class="m-0 mx-2"> Glowly</h2>
+          </div>
+        </div>
+        <div class="admin-profile mx-3">
+            <% if (admin && admin.profilePic) { %>
+                <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
+                <% } else {%>
+                  <a href="/admin/settings">
+                    <i class="fa-solid fa-circle-user"></i>
+                  </a>
+                <% }  %>
+        </div>
+      </div>
+      <div id="background-overlay" class="overlay"></div>
+    <div class="main-content">
+      <div class="container mt-4">
+        <div class="row">
+          <div class="col-md-8 mx-auto">
+            <div class="admin-profile-box">
+              <h4 class="mb-4">Admin Profile Settings</h4>
+
+              <form id="adminProfileForm" class="admin-settings-form">
+                <div class="profile-pic-section text-center mb-4">
+                  <div class="profile-pic-wrapper">
+                    <% if (admin.profilePic) { %>
+                    <img
+                      src="<%= admin.profilePic %>"
+                      alt="Admin Profile"
+                      id="profilePreview"
+                      class="admin-profile-pic"
+                    />
+                    <% } else { %>
+                    <i
+                      class="fa-solid fa-circle-user"
+                      id="defaultIcon"
+                      style="font-size: 100px"
+                    ></i>
+                    <% } %>
+                    <div class="pic-overlay">
+                      <i class="fas fa-camera"></i>
+                      <input
+                        type="file"
+                        id="profilePicInput"
+                        name="profile-pic"
+                        accept="image/*"
+                        class="profile-pic-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label>Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value="<%= admin.name %>"
+                    class="form-control"
+                  />
+                  <div class="error-message" data-error="name"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value="<%= admin.email %>"
+                    class="form-control"
+                  />
+                  <div class="error-message" data-error="email"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label>Phone</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value="<%= admin.phone_no %>"
+                    class="form-control"
+                    pattern="[0-9]{10}"
+                  />
+                  <div class="error-message" data-error="phone"></div>
+                </div>
+
+                <div class="form-group mb-3">
+                  <label>Role</label>
+                  <input
+                    type="text"
+                    value="Admin"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+
+                <div class="d-flex justify-content-center">
+                  <button type="submit" class="main-btn">Update Profile</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%- include('partials/footer') %>
+
+    <script>
+      const toastSuccess = (message) => {
+        iziToast.success({
+          message: message,
+          backgroundColor: "#0e932d",
+          messageColor: "#FFFFFF",
+          icon: "fa fa-check",
+          iconColor: "#FFFFFF",
+          timeout: 1500,
+          position: "topRight",
+        });
+      };
+
+      const toastError = (message) => {
+        iziToast.error({
+          message: message,
+          backgroundColor: "#e51e1e",
+          messageColor: "#FFFFFF",
+          icon: "fa fa-times",
+          iconColor: "#FFFFFF",
+          timeout: 1500,
+          position: "topRight",
+        });
+      };
+
+      const toastInfo = (message) => {
+        iziToast.info({
+          message: message,
+          backgroundColor: "#2160de",
+          messageColor: "#FFFFFF",
+          icon: "fa fa-info-circle",
+          iconColor: "#FFFFFF",
+          timeout: 1500,
+          position: "topRight",
+        });
+      };
+
+      const toastWarning = (message) => {
+        iziToast.warning({
+          message: message,
+          backgroundColor: "#e5811e",
+          messageColor: "#212529",
+          icon: "fa fa-exclamation-triangle",
+          iconColor: "#212529",
+          timeout: 1500,
+          size: "small",
+          position: "topRight",
+        });
+      };
+
+      // Show error message under specific input
+      function showError(inputName, message) {
+        const errorDiv = document.querySelector(`[data-error="${inputName}"]`);
+        if (errorDiv) {
+          errorDiv.textContent = message;
+          errorDiv.style.display = message ? "block" : "none";
+          errorDiv.style.color = "var(--red-text-color)";
+          errorDiv.style.fontSize = "var(--font-size-err1)";
+          errorDiv.style.marginTop = "4px";
+        }
+      }
+
+      // Clear all error messages
+      function clearErrors() {
+        const errorDivs = document.querySelectorAll(".error-message");
+        errorDivs.forEach((div) => {
+          div.textContent = "";
+          div.style.display = "none";
+        });
+      }
+
+      // Validate each field individually
+      function validateField(name, value) {
+        switch (name) {
+          case "name":
+            if (!value.trim()) {
+              showError("name", "Name is required");
+              return false;
+            }
+            if (value.length < 3) {
+              showError("name", "Name must be at least 3 characters");
+              return false;
+            }
+            if (!/^[a-zA-Z\s]+$/.test(value)) {
+              showError("name", "Name should only contain letters");
+              return false;
+            }
+            showError("name", "");
+            return true;
+
+          case "email":
+            if (!value.trim()) {
+              showError("email", "Email is required");
+              return false;
+            }
+            // Email validation - allows admin@glowly.com format
+            if (!/^[a-zA-Z0-9._%+-]+@glowly\.com$/.test(value)) {
+              showError(
+                "email",
+                "Please enter a valid @glowly.com email address"
+              );
+              return false;
+            }
+            showError("email", "");
+            return true;
+
+          case "phone":
+            if (!value.trim()) {
+              showError("phone", "Phone number is required");
+              return false;
+            }
+            if (!/^\d{10}$/.test(value)) {
+              showError("phone", "Phone number must be 10 digits");
+              return false;
+            }
+            showError("phone", "");
+            return true;
+
+          default:
+            return true;
+        }
+      }
+
+      // Real-time validation
+      const inputs = document.querySelectorAll("input[name]");
+      inputs.forEach((input) => {
+        input.addEventListener("input", function () {
+          validateField(this.name, this.value);
+        });
+
+        input.addEventListener("blur", function () {
+          validateField(this.name, this.value);
+        });
+      });
+
+      document
+  .getElementById("profilePicInput")
+  .addEventListener("change", function (e) {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+      const maxSize = 5 * 1024 * 1024; 
+
+      if (!validTypes.includes(file.type)) {
+        showError("profilePic", "Please upload a valid image file (JPG or PNG)");
+        this.value = "";
+        return;
+      }
+
+      if (file.size > maxSize) {
+        showError("profilePic", "Image size should be less than 5MB");
+        this.value = "";
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function () {
+        const defaultIcon = document.getElementById("defaultIcon");
+        let preview = document.getElementById("profilePreview");
+
+        if (!preview) {
+          preview = document.createElement("img");
+          preview.id = "profilePreview";
+          preview.className = "admin-profile-pic";
+          if (defaultIcon) {
+            defaultIcon.style.display = "none";
+            defaultIcon.parentNode.insertBefore(preview, defaultIcon);
+          }
+        }
+        preview.src = reader.result;
+        preview.style.display = "block";
+      };
+      reader.readAsDataURL(file);
+    }
+  });
 
 
-    </div> <!-- <div class="main-content"></div> -->
+      // Form submission
+      document
+        .getElementById("adminProfileForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          clearErrors();
 
-</body>
-<%- include('partials/footer') %> 
+          const name = this.querySelector('input[name="name"]').value;
+          const email = this.querySelector('input[name="email"]').value;
+          const phone = this.querySelector('input[name="phone"]').value;
+
+          // Validate all fields
+          const isNameValid = validateField("name", name);
+          const isEmailValid = validateField("email", email);
+          const isPhoneValid = validateField("phone", phone);
+
+          if (!isNameValid || !isEmailValid || !isPhoneValid) {
+            return;
+          }
+
+          const formData = new FormData(this);
+
+          try {
+            const response = await fetch("/admin/settings/update", {
+              method: "PATCH",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              toastSuccess(data.message);
+              setTimeout(() => window.location.reload(), 1500);
+            } else {
+              toastError(data.message || "Update failed");
+            }
+          } catch (error) {
+            // console.error("Error:", error);
+            toastError("Error updating profile");
+          }
+        });
+    </script>
+  </body>
 </html>

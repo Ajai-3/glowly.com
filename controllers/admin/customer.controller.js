@@ -8,6 +8,7 @@ import User from "../../models/user.model.js";
 // ========================================================================================
 export const renderUsersPage = async (req, res) => {
   try {
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const msg = req.query.msg
       ? { text: req.query.msg, type: req.query.type }
       : null;
@@ -58,6 +59,7 @@ export const renderUsersPage = async (req, res) => {
       search,
       status,
       msg,
+      admin,
       queryParams: `search=${search}&status=${status}`,
     });
   } catch (error) {

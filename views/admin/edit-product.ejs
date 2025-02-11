@@ -16,9 +16,13 @@
     </form>
   </div>
   <div class="admin-profile mx-3">
-    <a href="/admin/settings">
-      <i class="fa-solid fa-circle-user"></i>
-    </a>
+    <% if (admin && admin.profilePic) { %>
+      <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
+      <% } else {%>
+        <a href="/admin/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+      <% }  %>
   </div>
 </div>
 <div id="background-overlay" class="overlay"></div>

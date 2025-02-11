@@ -1182,7 +1182,7 @@ input[type="number"]::-webkit-input-placeholder {
 .coupon-design-div {
   display: flex;
   width: 100%;
-  position: relative;
+position: relative;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
@@ -1198,7 +1198,7 @@ input[type="number"]::-webkit-input-placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+position: relative;
 }
 
 .coupon-design-div1 {
@@ -1206,7 +1206,7 @@ input[type="number"]::-webkit-input-placeholder {
   display: flex;
   flex-direction: column;
   margin-right: 2px;
-  padding: 10px 15px;
+padding: 10px 15px;
   border-top-left-radius: 8px;
   border-bottom-left-radius: 8px;
   border-right: 2px dashed var(--text-color-3);
@@ -1222,7 +1222,7 @@ input[type="number"]::-webkit-input-placeholder {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+  background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.179) 50%, transparent 100%);
   animation: shimmer 2s infinite;
 }
 
@@ -1260,19 +1260,19 @@ input[type="number"]::-webkit-input-placeholder {
 
 .coupon-design-div1 p, .coupon-design-div1 p2 {
   margin: 0;
-  z-index: 1;
+z-index: 1;
 }
 
 .coupon-design-div1 strong {
   color: var(--main-color);
-  text-shadow: 0 0 10px rgba(252, 39, 121, 0.3);
+text-shadow: 0 0 10px rgba(252, 39, 121, 0.3);
 }
 
 .coupon-design-div2 strong {
   color: var(--main-color);
   font-size: var(--font-size-normal);
   font-weight: 600;
-  text-shadow: 0 0 10px rgba(252, 39, 121, 0.3);
+text-shadow: 0 0 10px rgba(252, 39, 121, 0.3);
   z-index: 1;
 }
 
@@ -1281,7 +1281,7 @@ input[type="number"]::-webkit-input-placeholder {
   margin-top: 4px;
   border-radius: 4px;
   font-size: var(--font-size-third);
-  background: rgba(60, 60, 60, 0.3);
+background: rgba(60, 60, 60, 0.3);
   border: 1px dashed var(--main-color);
   display: flex;
   align-items: center;
@@ -1959,7 +1959,6 @@ border: 1px solid transparent;
   position: sticky;
   top: 90px;
   z-index: 10;
-  padding: 0;
   height: 100vh;
   overflow-y: hidden;
 }
@@ -2485,7 +2484,7 @@ border: 1px solid transparent;
   color: var(--text-color-4);
 }
 .user-menu a:hover {
-  color: var (--main-color);
+  color: var(--main-color);
   border-right: 2px solid var(--main-color);
 }
 .user-menu a.active {
@@ -2808,6 +2807,9 @@ border: 1px solid transparent;
     gap: 0 !important;
   }
 
+  .d-flex.justify-content-between {
+    flex-direction: column; 
+  }
 
   .d-flex.justify-content-between > div {
     width: 100%; 
@@ -2821,7 +2823,6 @@ border: 1px solid transparent;
   }
   .address-gap-div {
     gap: 0;
-    flex-direction: column; 
   }
 }
 
@@ -2888,7 +2889,7 @@ border: 1px solid transparent;
   background-color: var(--red-text-color-5);
 }
 .green-p {
-  color: var (--green-text-color-2);
+  color: var(--green-text-color-2);
   background-color: var(--green-text-color-5);
 }
 .yellow-p {
@@ -5162,6 +5163,80 @@ input.quantity-input {
 .add-products-container button {
   width: 100%;
 }
+
+
+
+
+.admin-profile-box {
+  background: var(--bg-color-2);
+  padding: 15px;
+  border-radius: 8px;
+  font-size: var(--font-size-second);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.profile-pic-wrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.admin-profile-pic {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pic-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.profile-pic-wrapper:hover .pic-overlay {
+  opacity: 1;
+}
+
+.profile-pic-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.admin-settings-form input {
+  background: var(--bg-color-4);
+  border: 1px solid var(--bg-color-3);
+  color: var(--text-color);
+  font-size: var(--font-size-third);
+}
+
+.admin-settings-form input:focus {
+  background: var(--bg-color-4);
+  border-color: var(--main-color);
+  color: var(--text-color);
+  box-shadow: none;
+}
+
+.admin-settings-form label {
+  color: var(--text-color-3);
+  margin-bottom: 5px;
+}
+
+
 @media (max-width: 1224px) {
   .sidebar {
     height: 100%;

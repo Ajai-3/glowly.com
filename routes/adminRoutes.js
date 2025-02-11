@@ -3,6 +3,7 @@ const router = express.Router();
 import multer from "multer";
 import storage from "../helpers/multer.js"
 const uploads = multer ({ storage:storage })
+const upload = multer({ storage: storage });
 import { uploadImages } from "../helpers/cloudinary.js"
 import {
   renderLoginPage,
@@ -18,7 +19,7 @@ import { renderCouponsPage, addCoupon, removeCoupon, restoreCoupon } from "../co
 import { renderOrderPage, updateOrderStatus } from "../controllers/admin/order.controller.js";
 import { renderDashboardPage, salesData } from "../controllers/admin/dashboard.controller.js";
 import { renderTopItemsPage } from "../controllers/admin/topitem.controller.js";
-import { renderSettingsPage } from "../controllers/admin/admin-settings.controller.js";
+import { renderSettingsPage, updateAdminProfile } from "../controllers/admin/admin-settings.controller.js";
 
 
 // Pages Are Protected With adminAuthMiddleware
@@ -34,7 +35,7 @@ router.use(pageMiddlware);
 
 // Dashboard Controller
 router.get("/dashboard", verifyAdminToken, renderDashboardPage);
-router.get("/all-sales-data", verifyAdminToken, salesData)
+router.get("/all-sales-data", verifyAdminToken,  salesData)
 
 // Top items 
 router.get("/top-items", verifyAdminToken, renderTopItemsPage);
@@ -102,6 +103,7 @@ router.patch("/update-order-status", verifyAdminToken, updateOrderStatus)
 
 // Settings Mangement
 router.get("/settings", verifyAdminToken, renderSettingsPage);
+router.patch("/settings/update", verifyAdminToken, upload.single("profile-pic"), updateAdminProfile);
 
 
 

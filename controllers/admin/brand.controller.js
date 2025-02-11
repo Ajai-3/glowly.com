@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import Brand from "../../models/brand.model.js";
+import User from "../../models/user.model.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -40,6 +41,7 @@ export const renderBrandPage = async (req, res) => {
 
     const totalBrands = await Brand.countDocuments(query);
     const totalPages = Math.ceil(totalBrands / limit);
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     return res.render("admin/brands", {
       brands,
@@ -47,6 +49,7 @@ export const renderBrandPage = async (req, res) => {
       totalPages: totalPages,
       search: search,
       isListed,
+      admin,
     });
   } catch (error) {
     console.error("Error rendering brands page:", error);
@@ -88,7 +91,10 @@ export const topBrands = async (req, res) => {
 
 export const renderAddBrandPage = async (req, res) => {
   try {
-    return res.render("admin/add-new-brand");
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
+    return res.render("admin/add-new-brand", {
+      admin,
+    });
   } catch (error) {
     console.error("Error rendering add brand page:", error);
     return res
@@ -151,12 +157,13 @@ export const renderEditBrandPage = async (req, res) => {
   try {
     const { brandId } = req.params;
     const brand = await Brand.findById(brandId);
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     if (!brand) {
       return res.status(404).send("Brand not found");
     }
 
-    res.render("admin/edit-brand", { brand });
+    res.render("admin/edit-brand", { brand, admin });
   } catch (error) {
     console.error(error);
     res.status(500).send("Server Error");

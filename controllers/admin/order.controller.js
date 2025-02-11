@@ -1,3 +1,4 @@
+import User from "../../models/user.model.js";
 import Order from "../../models/order.model.js";
 import Wallet from "../../models/wallet.model.js";
 import Product from "../../models/product.model.js";
@@ -17,6 +18,7 @@ export const renderOrderPage = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const status = req.query.status || "all";
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     let query = {
       payment_status: { $in: ["Payment pending COD", "Payment completed"] },
@@ -79,6 +81,7 @@ export const renderOrderPage = async (req, res) => {
       totalPages: totalPages,
       queryParams: queryParams,
       status: status,
+      admin,
     });
   } catch (error) {
     res.status(500).send("Internal Server Error");

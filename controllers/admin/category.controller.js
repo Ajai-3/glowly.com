@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import User from "../../models/user.model.js";
 import Offer from "../../models/offer.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
@@ -17,6 +18,7 @@ export const renderCategoryPage = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 4;
     const skip = (page - 1) * limit;
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     const CategoryData = await Category.find({})
       .sort({ created_at: -1 })
@@ -38,6 +40,7 @@ export const renderCategoryPage = async (req, res) => {
       totalPages: totalPages,
       totalCategories: totalCategories,
       queryParams: req.query,
+      admin,
     });
   } catch (error) {
     console.error("Error in fetching Category page:", error);
@@ -105,8 +108,9 @@ export const topSubCategories = async (req, res) => {
 // ========================================================================================
 export const renderAddCategoryPage = async (req, res) => {
   try {
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const categories = await Category.find();
-    res.render("admin/add-category", { categories });
+    res.render("admin/add-category", { categories, admin });
   } catch (error) {
     console.error("Error fetching categories:", error);
     res.status(500).send("Error fetching categories");
@@ -228,12 +232,13 @@ export const renderEditCategoryPage = async (req, res) => {
   try {
     const categoryId = req.params.id;
     const category = await Category.findById(categoryId);
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     if (!category) {
       return res.status(404).send("Category not found");
     }
 
-    res.render("admin/edit-category", { category });
+    res.render("admin/edit-category", { category, admin });
   } catch (error) {
     console.error("Error fetching category for editing:", error);
     res.status(500).send("Error fetching category for editing");
@@ -356,6 +361,7 @@ export const toggleSubcategory = async (req, res) => {
 export const renderAddOfferPage = async (req, res) => {
   try {
     const categoryId = req.params.id;
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     const category = await Category.findById(categoryId).populate(
       "subcategories"
@@ -369,6 +375,7 @@ export const renderAddOfferPage = async (req, res) => {
       category: category,
       categoryId: categoryId,
       subCategories: category.subcategories,
+      admin,
     });
   } catch (error) {
     console.error("Error in adding offer in category page", error);
@@ -480,13 +487,13 @@ cron.schedule("* * * * *", async () => {
               offer.offerValue,
               maxDiscountValue
             );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0); // Ensure price is not negative
+            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
           } else if (offer.offerType === "percentage") {
             const appliedDiscount = Math.min(
               variant.regularPrice * (offer.offerValue / 100),
               maxDiscountValue
             );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0); // Ensure price is not negative
+            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
           }
 
           variant.salePrice = Math.round(newSalePrice);

@@ -46,6 +46,7 @@ export const verifyAdminToken = (req, res, next) => {
 };
 
 
+
 export const pageMiddlware = (req, res, next) => {
     res.locals.currentPath = req.path;
     next();

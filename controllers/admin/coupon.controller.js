@@ -1,4 +1,5 @@
 import cron from "node-cron";
+import User from "../../models/user.model.js";
 import Coupon from "../../models/coupon.model.js";
 
 // ========================================================================================
@@ -15,6 +16,7 @@ export const renderCouponsPage = async (req, res) => {
     const totalCouponsQuery = {};
     if (type !== "all") totalCouponsQuery.type = type;
     if (isActive !== "all") totalCouponsQuery.isActive = isActive === "true";
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
 
     const totalCoupons = await Coupon.countDocuments(totalCouponsQuery);
 
@@ -33,6 +35,7 @@ export const renderCouponsPage = async (req, res) => {
       totalPages,
       selectedType: type,
       selectedStatus: isActive,
+      admin,
     });
   } catch (error) {
     console.error(error);

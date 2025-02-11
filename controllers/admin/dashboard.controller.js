@@ -10,6 +10,7 @@ import Order from "../../models/order.model.js";
 // ========================================================================================
 export const renderDashboardPage = async (req, res) => {
   try {
+    const admin = await User.findOne({ _id: req.admin.id, role: "admin" });
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
@@ -228,6 +229,7 @@ export const renderDashboardPage = async (req, res) => {
       filter,
       startDate: req.query.startDate || "",
       endDate: req.query.endDate || "",
+      admin,
     });
   } catch (error) {
     console.error("Error fetching sales data:", error);
