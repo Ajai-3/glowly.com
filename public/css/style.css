@@ -606,7 +606,29 @@ input[type="number"]::-webkit-input-placeholder {
   left: 0;
   right: 0;
   backdrop-filter: blur(5px);
+  overflow: hidden; 
 }
+
+.nav-offer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(188, 5, 103, 0.549), transparent);
+  animation: colorMove 2s linear infinite;
+}
+
+@keyframes colorMove {
+  0% {
+    left: -100%; 
+  }
+  100% {
+    left: 100%; 
+  }
+}
+
 /* Nav Offer Session 1 */
 .nav-offer1 {
   width: 60%;
@@ -1222,7 +1244,7 @@ padding: 10px 15px;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent 0%, rgba(255, 255, 255, 0.179) 50%, transparent 100%);
+  background: linear-gradient(45deg, transparent 0%, rgba(139, 4, 87, 0.45) 50%, transparent 100%);
   animation: shimmer 2s infinite;
 }
 
@@ -1245,7 +1267,7 @@ padding: 10px 15px;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.05) 50%, transparent 100%);
+  background: linear-gradient(45deg, transparent 0%, rgba(139, 4, 87, 0.45) 50%, transparent 100%);
   animation: shimmer 2s infinite;
 }
 
@@ -3670,6 +3692,53 @@ border: 1px solid transparent;
   display: none;
 }
 
+.coupon-div-checkout {
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: linear-gradient(135deg, var(--bg-color-4) 0%, var(--bg-color-2) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.coupon-div-checkout::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent 0%, rgba(139, 4, 87, 0.45) 50%, transparent 100%);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 6px; 
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: var(--second-text-color);
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: var(--text-color-2);
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: var(--text-color-4);
+}
 @media screen and (max-width: 1175px) {
   .nav-bar-checkout-page {
     padding: 0px 100px 0 50px;

@@ -30,6 +30,10 @@ export const renderCheckoutPage = async (req, res, next) => {
       isActive: true,
     }).limit(3);
 
+    let coupons = await Coupon.find({ isDelete: false, isActive: true }).sort({
+      created_at: -1,
+    });
+
     const cartProducts = await Promise.all(
       cart.products
         .sort((a, b) => new Date(b.added_at) - new Date(a.added_at))
@@ -76,6 +80,7 @@ export const renderCheckoutPage = async (req, res, next) => {
       userDetails: user,
       products,
       cartCount,
+      coupons,
       cartProducts: validCartProducts,
     });
   } catch (error) {

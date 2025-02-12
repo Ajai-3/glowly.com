@@ -430,6 +430,9 @@
 
         <!-- Order Summary -->
         <div class="col-12 col-md-5 m-0 p-0 px-md-3">
+          <div class="coupon-div-checkout">
+            GET COUPONS
+          </div>
           <div class="card shadow-sm price-summary">
             <div class="card-body">
               <h5 class="card-title">ORDER SUMMARY</h5>
@@ -494,8 +497,7 @@
           </div>
         </div>
         <div class="modal-body text-center">
-          <p>Thank You for your order, Sit tight we are processing your order
-            we will update you with your order in email
+          <p>Thank You for your order, Sit tight we are processing your order.
           </p>
           <button id="goToOrders" class="main-btn px-4"><i class="fas fa-truck me-2"></i>Go to Orders</button>
           <button id="continueShopping" class="pastel-btn-blue px-4">Continue Shopping<i class="fa-solid fa-bag-shopping ms-2"></i></button>
@@ -505,7 +507,66 @@
   </div>
 
 
-
+  <div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header m-1">
+          <h5 class="modal-title" id="couponModalLabel">Available Coupons</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+  
+        <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+          <div class="row">
+            <% if (coupons && coupons.length > 0) { %>
+              <% coupons.forEach(coupon => { %>
+                <% if (coupon.isActive && !coupon.isDelete) { %> 
+                  <div class="col-12 mb-3">
+                    <div class="coupon-design-div" onclick="copyCouponCode('<%= coupon.code %>')">
+                      <div class="coupon-design-div1">
+                        <p><strong><%= coupon.description %></strong></p>
+                        <p>Min Purchase: ₹ <%= coupon.minPrice %></p>
+                        <div class="coupon-code-side-bar">
+                          <span class="coupon-code" style="font-weight: bold;">&nbsp;<%= coupon.code %></span>
+                          <button class="copy-btn" title="Copy Code">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+                      <div class="coupon-design-div2 text-end m-0">
+                        <strong>
+                          <% if (coupon.type === 'percentage') { %>
+                            <%= coupon.discountValue %>% OFF
+                          <% } else { %>
+                            ₹ <%= coupon.discountValue %> OFF
+                          <% } %>
+                        </strong>
+                      </div>
+                    </div>
+                    <% if (coupon.expiryDate) { %>
+                      <small class="d-block mt-1 text-danger" style="font-size: 11px;">
+                        Expires: <%= new Date(coupon.expiryDate).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'short', 
+                          day: 'numeric' 
+                        }) %>
+                      </small>
+                    <% } %>
+                  </div>
+                <% } %>
+              <% }) %>
+            <% } else { %>
+              <p class="text-center">No coupons available</p>
+            <% } %>
+          </div>
+        </div>
+  
+        <div class="modal-footer">
+          <button type="button" class="main-btn" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 
 
 
@@ -513,7 +574,7 @@
 
 
 </body>
-<script src="/js/user.js"></script>
+<!-- <script src="/js/user.js"></script> -->
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/izitoast/dist/js/iziToast.min.js"></script>
 <!-- Notyf JS -->
@@ -575,6 +636,19 @@
       position: 'topRight',
     });
   };
+  document.querySelector('.coupon-div-checkout').addEventListener('click', function() {
+    var modal = new bootstrap.Modal(document.getElementById('couponModal'));
+    modal.show();
+  });
+  function copyCouponCode(code) {
+      navigator.clipboard.writeText(code)
+        .then(() => {
+          toastSuccess('Coupon code copied to clipboard!');
+        })
+        .catch(() => {
+          toastError('Failed to copy coupon code');
+        });
+    }
   document.addEventListener('DOMContentLoaded', function() {
     const priceElements = document.querySelectorAll('.price-inr');
 

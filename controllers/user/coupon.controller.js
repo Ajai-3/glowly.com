@@ -9,7 +9,7 @@ export const myCoupons = async (req, res) => {
   try {
     let { user, cart, brands, cartCount, token, categories } = req;
 
-    let coupons = await Coupon.find({ isDelete: false }).sort({
+    let coupons = await Coupon.find({ isDelete: false, isActive: true }).sort({
       created_at: -1,
     });
 

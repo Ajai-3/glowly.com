@@ -35,7 +35,7 @@
             <h5 class="card-title mb-4">My Coupons</h5>
             <div class="row g-3">
               <% coupons.forEach(coupon => { %>
-                <% if (coupon.isActive && !coupon.isDelete) { %> <!-- Filter active and non-deleted coupons -->
+                <% if (coupon.isActive && !coupon.isDelete) { %> 
                   <div class="col-md-6">
                     <div class="coupon-design-div" onclick="copyCouponCode('<%= coupon.code %>')">
                       <div class="coupon-design-div1">

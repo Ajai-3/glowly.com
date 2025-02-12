@@ -134,7 +134,7 @@
                             <p class="m-0">Unit Price: <span class="original-price price-inr"> <%= variant ? variant.regularPrice : 'N/A' %></span> 
                               <span class="price-inr">₹<%= (product.total_amount / product.quantity) %></span>
                             </p>
-                            <p class="m-0">Total: <span class="price-inr">₹<%= product.total_amount %></span></p>
+                            <p class="m-0">Total: <span class="price-inr">₹<%= product.amount_after_coupon %></span></p>
                           </div>
                         </div>
                       </div>

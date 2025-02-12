@@ -148,7 +148,7 @@
                 <div class="row p-2">
                   <!-- Pricing Details -->
                   <div class="col-12 mt-2">
-                    <div class="row">
+                    <div class="row mb-1">
                       <div class="col-6 text-start px-4">
                         <p class="product-quantity qty m-0">Quantity:</p>
                       </div>
@@ -157,7 +157,7 @@
                       </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-1">
                       <div class="col-6 text-start px-4">
                         <p class="card-text m-0">Unit Price:</p>
                       </div>
@@ -170,7 +170,16 @@
                       </div>
                     </div>
 
-                    <div class="row">
+                    <div class="row mb-1">
+                      <div class="col-6 text-start px-4">
+                        <p class="card-text m-0">You saved:</p>
+                      </div>
+                      <div class="col-6 text-end px-4">
+                        <p class="card-text m-0 discount-percentage price-inr">₹ <%= (product.total_amount - product.amount_after_coupon) %></p>
+                      </div>
+                    </div>
+
+                    <div class="row mb-1">
                       <div class="col-6 text-start px-4">
                         <p class="card-text m-0">Total:</p>
                       </div>

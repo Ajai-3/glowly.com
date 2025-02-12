@@ -172,9 +172,11 @@ export const renderShopPage = async (req, res) => {
         sortOptions = { "variants.salePrice": -1 };
       }
     }
+
     if (filters.rating) {
-      filterConditions.rating = { $gte: parseInt(filters.rating[0]) };
+      filterConditions.rating = { $eq: parseInt(filters.rating[0]) };
     }
+
     if (filters.alphabetical) {
       sortOptions =
         filters.alphabetical[0] === "a-z" ? { title: 1 } : { title: -1 };
