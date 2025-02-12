@@ -32,3 +32,39 @@ export const getAppPage = async (req, res) => {
     return res.redirect("user/page-404");
   }
 };
+// ========================================================================================
+// GET PRIVACY POLICY PAGE
+// ========================================================================================
+// Retrieves and renders the Privacy Policy page
+// ========================================================================================
+export const privacyPolicy = async (req, res) => {
+  try {
+    res.render("user/privacy", {
+      user: req.user,
+      categories: req.categories,
+      brands: req.brands,
+      cartCount: req.cartCount,
+    });
+  } catch (error) {
+    console.error("Error loading get app page:", error);
+    return res.redirect("user/page-404");
+  }
+};
+// ========================================================================================
+// GET TERMS AND CONDITIONS PAGE
+// ========================================================================================
+// Retrieves and renders the terms and conditions page
+// ========================================================================================
+export const termsAndCOnditions = async (req, res) => {
+  try {
+    res.render("user/terms&conditions", {
+      user: req.user,
+      categories: req.categories,
+      brands: req.brands,
+      cartCount: req.cartCount,
+    });
+  } catch (error) {
+    console.error("Error loading get app page:", error);
+    return res.redirect("user/page-404");
+  }
+};

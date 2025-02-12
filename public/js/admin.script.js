@@ -60,3 +60,17 @@ overlay.addEventListener('click', function() {
 
 
 
+document.addEventListener("DOMContentLoaded", function () {
+  const preloader = document.getElementById("preloader");
+  if (preloader) {
+      preloader.style.display = "block";
+      setTimeout(() => {
+          preloader.style.display = "none";
+          window.scrollTo(0, 0);
+      }, 1000);
+  }
+});
+
+
+
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('partials/headforhome', { user, categories }) %>
+  <body>
+    <div class="user-contents">
+      <div class="privacy-hero">
+        <h1>Privacy Policy</h1>
+        <p>Your privacy matters to us at Glowly</p>
+      </div>
+
+      <div class="privacy-grid">
+        <div class="privacy-card">
+          <i class="fas fa-shield-alt"></i>
+          <h2>Data Protection</h2>
+          <ul>
+            <li>SSL encrypted transactions</li>
+            <li>Secure data storage</li>
+            <li>Regular security updates</li>
+          </ul>
+        </div>
+
+        <div class="privacy-card">
+          <i class="fas fa-user-shield"></i>
+          <h2>Your Information</h2>
+          <ul>
+            <li>Personal details</li>
+            <li>Beauty preferences</li>
+            <li>Shopping history</li>
+          </ul>
+        </div>
+
+        <div class="privacy-card">
+          <i class="fas fa-lock"></i>
+          <h2>Your Rights</h2>
+          <ul>
+            <li>Data access control</li>
+            <li>Request modifications</li>
+            <li>Privacy options</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="privacy-contact">
+        <p>Questions about your privacy? Contact us at:</p>
+        <a href="mailto:privacy@glowly.com">privacy@glowly.com</a>
+      </div>
+    </div>
+
+    <%- include('partials/footerforhome') %>
+  </body>
+</html>

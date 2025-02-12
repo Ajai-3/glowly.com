@@ -38,15 +38,6 @@ $(document).ready(function () {
     }
 });
 
-// document.addEventListener("DOMContentLoaded", function() {
-//     document.getElementById("preloader").style.display = "flex";
-//   });
-  
-//   window.addEventListener("load", function() {
-//     setTimeout(function() {
-//       document.getElementById("preloader").style.display = "none";
-//     }, 1000);
-//   });
   
 let preloaderTimeout;
 

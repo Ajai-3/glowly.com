@@ -153,16 +153,6 @@
 <%- include('partials/footerforhome') %>
 
 <script>
-  let preloaderTimeout;
-
-  window.onload = function() {
-    clearTimeout(preloaderTimeout);
-    document.getElementById("preloader").style.display = "none";
-  };
-
-  preloaderTimeout = setTimeout(function() {
-    document.getElementById("preloader").style.display = "flex";
-  }, 100);
 
 
 

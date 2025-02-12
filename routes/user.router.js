@@ -68,7 +68,7 @@ import {
 } from "../controllers/user/wallet.controller.js";
 import { review, editReview } from "../controllers/user/review.controller.js";
 import { myCoupons } from "../controllers/user/coupon.controller.js";
-import { helpPage, getAppPage } from "../controllers/user/others.controller.js";
+import { helpPage, getAppPage, privacyPolicy, termsAndCOnditions } from "../controllers/user/others.controller.js";
 
 router.get("/", loadUserData, renderHomePage);
 router.get("/home", loadUserData, renderHomePage);
@@ -158,6 +158,8 @@ router.patch("/edit-review/:reviewId", loadUserData, editReview);
 // Other Page Management
 router.get("/help", loadUserData, helpPage);
 router.get("/get-app", loadUserData, getAppPage);
+router.get("/privacy", loadUserData, privacyPolicy)
+router.get("/terms", loadUserData, termsAndCOnditions)
 
 router.get("/logout", loadUserData, handleUserLogout);
 

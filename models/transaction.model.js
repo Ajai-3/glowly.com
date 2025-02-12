@@ -27,6 +27,7 @@ const transactionSchema = new Schema({
     enum: [
       "Order placed",
       "Order returned",
+      "Order canceled",
       "Money added",
       "Refund",
       "Cashback",

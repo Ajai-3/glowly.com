@@ -149,7 +149,6 @@ export const updateOrderStatus = async (req, res) => {
       .populate("subcategoryId")
       .populate("brandId");
 
-
     const brand = product.brandId;
     const category = product.categoryId;
     const subcategory = product.subcategoryId;
@@ -199,6 +198,30 @@ export const updateOrderStatus = async (req, res) => {
       case "canceled":
         productInOrder.canceled_at = new Date();
         variant.stockQuantity += productInOrder.quantity;
+
+        if (
+          order.payment_method === "wallet" ||
+          order.payment_method === "razorpay"
+        ) {
+          const wallet = await Wallet.findOneAndUpdate(
+            { user_id: userId },
+            {
+              $inc: { balance: refundAmount },
+              $setOnInsert: { createdAt: new Date(), updatedAt: new Date() },
+            },
+            { new: true, upsert: true }
+          );
+          const transaction = new Transaction({
+            wallet_id: wallet._id,
+            user_id: userId,
+            transaction_type: "wallet",
+            description: "Order canceled",
+            amount: refundAmount,
+            type: "Refund",
+          });
+          await transaction.save();
+        }
+
         await product.save();
         break;
       case "returned":
