@@ -75,29 +75,6 @@
             </p2>
           </div>
         </div>
-
-
-        <div class="filter-dashboard filter-container">
-          <div class="download">
-            <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
-            <button id="download-excel" class="download-excel">Download Excel</button>
-          </div>
-          <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
-            <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
-            <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
-            <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
-            <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
-            <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
-            <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
-          </select>
-          <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
-            <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
-            <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
-            <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
-          </div>
-          <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
-        </div>
-
       <div class="row">
         <div class="col-12 col-md-8 col-lg-8">
           <div class="chart-wrapper">
