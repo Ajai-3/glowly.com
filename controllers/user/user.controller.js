@@ -314,37 +314,38 @@ export const googleCallbackHandler = async (req, res) => {
           console.error("Logout error:", err);
           return res.status(500).send("An error occurred during logout");
         }
-        const msg = { type: "error", msg: "Account blocked by admin...!" };
-        return res.render("user/login", { msg });
+        return res.render("user/login", { msg: { type: "error", msg: "Account blocked by admin...!" } });
       });
       return;
     }
 
-    let existingUser = await User.findOneAndUpdate(
-      { email: req.user.email },
-      { $set: { googleId: req.user.googleId } },
-      { new: true }
-    );
+    const existingUser = await User.findOne({ email: req.user.email });
 
-    if (!existingUser) {
-      existingUser = new User({
+    if (existingUser) {
+      if (!existingUser.googleId) {
+        existingUser.googleId = req.user.googleId;
+        await existingUser.save();
+      }
+    } else {
+      await User.create({
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
       });
-      await existingUser.save();
     }
 
+    const user = await User.findOne({ email: req.user.email });
+
     req.session.user = {
-      _id: existingUser._id,
-      name: existingUser.name,
+      _id: user._id,
+      name: user.name,
     };
 
     const token = jwt.sign(
       {
-        userId: existingUser._id,
-        name: existingUser.name,
-        profilePic: existingUser.profilePic || null,
+        userId: user._id,
+        name: user.name,
+        profilePic: user.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: "1h" }
@@ -357,6 +358,7 @@ export const googleCallbackHandler = async (req, res) => {
     return res.redirect("/user/page-404");
   }
 };
+
 
 
 // ========================================================================================
