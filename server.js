@@ -1,6 +1,6 @@
+import cors from "cors"
 import express from 'express';
 import nocache from 'nocache';
-import jwt from "jsonwebtoken"
 import session from 'express-session';
 import cookieParser from "cookie-parser";
 import passport from './config/passport.js';
@@ -22,6 +22,7 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use(cors());
 
 app.use(express.static('public'))
 app.use('/uploads', express.static('uploads'));
@@ -41,8 +42,8 @@ app.use(session({
 app.set("view engine", "ejs");
 app.use(nocache());
 app.use(cookieParser()); 
-app.use(express.json()); // Parse incoming requests
-app.use(express.urlencoded({ extended: true })); // Parse form data
+app.use(express.json()); 
+app.use(express.urlencoded({ extended: true })); 
 
 
 app.use(express.json({ limit: '50mb' }));
