@@ -322,11 +322,19 @@ export const googleCallbackHandler = async (req, res) => {
     let user = await User.findOne({ email: req.user.email });
 
     if (!user) {
-      user = await User.create({
-        email: req.user.email,
-        name: req.user.displayName,
-        googleId: req.user.googleId,
-      });
+      try {
+        user = await User.create({
+          email: req.user.email,
+          name: req.user.displayName,
+          googleId: req.user.googleId,
+        });
+      } catch (err) {
+        if (err.code === 11000) {
+          user = await User.findOne({ email: req.user.email })
+        } else {
+          throw err;
+        }
+      }
     } else if (!user.googleId) {
       user.googleId = req.user.googleId;
       await user.save();
