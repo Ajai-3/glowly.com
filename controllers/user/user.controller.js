@@ -319,22 +319,18 @@ export const googleCallbackHandler = async (req, res) => {
       return;
     }
 
-    const existingUser = await User.findOne({ email: req.user.email });
+    let user = await User.findOne({ email: req.user.email });
 
-    if (existingUser) {
-      if (!existingUser.googleId) {
-        existingUser.googleId = req.user.googleId;
-        await existingUser.save();
-      }
-    } else {
-      await User.create({
+    if (!user) {
+      user = await User.create({
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
       });
+    } else if (!user.googleId) {
+      user.googleId = req.user.googleId;
+      await user.save();
     }
-
-    const user = await User.findOne({ email: req.user.email });
 
     req.session.user = {
       _id: user._id,
@@ -354,11 +350,10 @@ export const googleCallbackHandler = async (req, res) => {
     res.cookie("token", token, { httpOnly: true, secure: true });
     return res.redirect("/home");
   } catch (error) {
-    console.error("Error in Google callback handler:", error);
+    console.error("Error in Google OAuth callback:", error);
     return res.redirect("/user/page-404");
   }
 };
-
 
 
 // ========================================================================================
