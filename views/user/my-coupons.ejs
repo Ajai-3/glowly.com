@@ -50,7 +50,7 @@
                       </div>
                       <div class="coupon-design-div2">
                         <strong>
-                          <% if (coupon.discountType === 'percentage') { %>
+                          <% if (coupon.type === 'percentage') { %>
                             <%= coupon.discountValue %> % OFF
                           <% } else { %>
                             ₹ <%= coupon.discountValue %> OFF

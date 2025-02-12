@@ -515,7 +515,7 @@
           }
       }
 
-      // Add this validation function before the form submission code
+  
       function validateForm() {
         const variants = document.querySelectorAll('.variant');
         let isValid = true;
@@ -526,7 +526,7 @@
           const stockQuantity = variant.querySelector('input[name="variantStockQuantity[]"]');
           const shade = variant.querySelector('input[name="variantShade[]"]');
 
-          // Check empty fields
+      
           if (!regularPrice.value.trim()) {
             toastError(`Regular price is required for variant ${index + 1}`);
             isValid = false;
@@ -551,7 +551,7 @@
             return;
           }
 
-          // Validate positive numbers
+         
           if (parseFloat(regularPrice.value) <= 0) {
             toastError(`Regular price must be greater than 0 for variant ${index + 1}`);
             isValid = false;
@@ -564,14 +564,13 @@
             return;
           }
 
-          // Validate sale price is less than regular price
+        
           if (parseFloat(salePrice.value) >= parseFloat(regularPrice.value)) {
             toastError(`Sale price must be less than regular price for variant ${index + 1}`);
             isValid = false;
             return;
           }
 
-          // Validate stock is a positive integer
           if (parseInt(stockQuantity.value) <= 0 || !Number.isInteger(parseFloat(stockQuantity.value))) {
             toastError(`Stock quantity must be a positive whole number for variant ${index + 1}`);
             isValid = false;
@@ -582,37 +581,32 @@
         return isValid;
       }
 
-      // Add real-time validation for number inputs
       document.addEventListener('DOMContentLoaded', () => {
         document.body.addEventListener('input', (e) => {
           if (e.target.matches('input[name="variantRegularPrice[]"], input[name="variantSalePrice[]"]')) {
-            // Remove any non-numeric characters except decimal point
+          
             e.target.value = e.target.value.replace(/[^\d.]/g, '');
-            // Ensure only one decimal point
+      
             e.target.value = e.target.value.replace(/(\..*)\./g, '$1');
-            // Remove leading zeros
+
             e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
           }
 
           if (e.target.matches('input[name="variantStockQuantity[]"]')) {
-            // Only allow positive integers
             e.target.value = e.target.value.replace(/[^\d]/g, '');
-            // Remove leading zeros
             e.target.value = e.target.value.replace(/^0+(?=\d)/, '');
           }
         });
       });
 
-      // Update the form submission code with preloader handling
+
       document.getElementById('productForm').addEventListener('submit', async (e) => {
           e.preventDefault();
 
-          // Run validation before submitting
           if (!validateForm()) {
             return;
           }
 
-          // Show preloader before form submission
           document.querySelector("#preloader").style.display = "flex";
 
           const formData = new FormData();
@@ -622,7 +616,7 @@
           formData.append('category', document.getElementById('category').value);
           formData.append('subCategory', document.getElementById('subCategory').value);
 
-          // Handle shared images
+    
           const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
           formData.append('shareImages', shareImagesCheckbox.checked);
 
@@ -632,7 +626,7 @@
                   formData.append('sharedImages', file);
               });
 
-              // Use shared images for each variant
+      
               document.querySelectorAll('.variant').forEach((variantElement, index) => {
                   if (croppedImages['shared-image-previews']) {
                       croppedImages['shared-image-previews'].forEach((file, idx) => {
@@ -641,7 +635,7 @@
                   }
               });
           } else {
-              // Handle variant images
+    
               document.querySelectorAll('.variant').forEach((variantElement, index) => {
                   const variantImagesInput = variantElement.querySelector(`input[name="variantImages_${index}"]`);
                   if (croppedImages[`variant-image-previews-${index}`]) {
@@ -652,7 +646,7 @@
               });
           }
 
-          // Handle variants
+      
           const variants = [];
           document.querySelectorAll('.variant').forEach((variantElement, index) => {
               const variant = {
@@ -675,7 +669,7 @@
 
               const data = await response.json();
 
-              // Hide preloader after getting response
+
               document.querySelector("#preloader").style.display = "none";
 
               if (data.success) {
@@ -687,14 +681,14 @@
                   toastError(data.message);
               }
           } catch (error) {
-              // Hide preloader if there's an error
+ 
               document.querySelector("#preloader").style.display = "none";
               console.error('Error:', error);
               toastError('An error occurred while adding the product');
           }
       });
 
-      // Add this after your existing script
+
       document.addEventListener('DOMContentLoaded', () => {
         function validateInput(input) {
           const variant = input.closest('.variant');
@@ -704,7 +698,6 @@
 
           let isValid = true;
 
-          // Remove any previous validation styles
           input.classList.remove('error-border', 'valid-border');
 
           if (input.name.includes('RegularPrice')) {
@@ -751,20 +744,20 @@
           return isValid;
         }
 
-        // Add live validation to the form
+      
         document.body.addEventListener('input', (e) => {
           if (e.target.matches('.price-input, .stock-input')) {
             validateInput(e.target);
           }
         });
 
-        // Modify addVariant function to include error message divs
+
         const originalAddVariant = window.addVariant;
         window.addVariant = function() {
           originalAddVariant();
           const newVariant = document.querySelector('.variant:last-child');
 
-          // Add error message divs to the new variant
+
           newVariant.querySelectorAll('input[type="number"]').forEach(input => {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-message';

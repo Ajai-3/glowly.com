@@ -118,6 +118,12 @@
     <button type="submit" class="add-product-btn2 my-1">UPDATE PRODUCT</button>
   </div>
 </form>
+
+<!-- Add this after your form -->
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
+
   <div class="add-products-container1 ps-3">
     <h4>Product Variants</h4>
     <div id="variants-container">
@@ -391,7 +397,6 @@
 
       let isValid = true;
   
-      // Validate all inputs before submission
       document.querySelectorAll('.variant.new-variant').forEach(variant => {
         const regularPrice = variant.querySelector('input[name="variantRegularPrice[]"]');
         const salePrice = variant.querySelector('input[name="variantSalePrice[]"]');
@@ -414,6 +419,8 @@
         return;
       }
 
+      document.querySelector("#preloader").style.display = "flex";
+
       const formData = new FormData();
 
       const productId = document.getElementById('addVariantForm').dataset.productId;
@@ -421,7 +428,6 @@
      formData.append('productId', productId);
 
 
-      // Handle shared images
       const shareImagesCheckbox = document.getElementById('shareImagesCheckbox');
       formData.append('shareImages', shareImagesCheckbox.checked);
 
@@ -431,7 +437,6 @@
           formData.append('sharedImages', file);
         });
 
-        // Use shared images for each variant
         document.querySelectorAll('.variant.new-variant').forEach((variantElement, index) => {
           if (croppedImages['shared-image-previews']) {
             croppedImages['shared-image-previews'].forEach((file, idx) => {
@@ -440,7 +445,6 @@
           }
         });
       } else {
-        // Handle variant images
         document.querySelectorAll('.variant.new-variant').forEach((variantElement, index) => {
           const variantImagesInput = variantElement.querySelector(`input[name="variantImages_${index}"]`);
           if (croppedImages[`variant-image-previews-${index}`]) {
@@ -451,7 +455,6 @@
         });
       }
 
-      // Handle new variants
       const variants = [];
       document.querySelectorAll('.variant.new-variant').forEach((variantElement, index) => {
         const variant = {
@@ -472,6 +475,8 @@
           body: formData
         });
 
+        document.querySelector("#preloader").style.display = "none";
+
         const data = await response.json();
 
         if (data.success) {
@@ -483,35 +488,32 @@
           toastError(data.message);
         }
       } catch (error) {
+
+        document.querySelector("#preloader").style.display = "none";
         console.error('Error:', error);
         toastError('An error occurred while adding the variants');
       }
     });
 
-    // Real-time validation functions
     function validatePrice(input) {
       const errorSpan = input.nextElementSibling;
       const value = parseFloat(input.value);
-      
-      // Clear previous error
+ 
       errorSpan.textContent = '';
       input.style.borderColor = '';
 
-      // Check if empty
       if (!input.value.trim()) {
         errorSpan.textContent = 'This field is required';
         input.style.borderColor = 'red';
         return false;
       }
 
-      // Check if negative or zero
       if (value <= 0) {
         errorSpan.textContent = 'Price must be greater than 0';
         input.style.borderColor = 'red';
         return false;
       }
 
-      // Check if it's a valid number
       if (isNaN(value)) {
         errorSpan.textContent = 'Please enter a valid number';
         input.style.borderColor = 'red';
@@ -526,7 +528,6 @@
       const salePrice = parseFloat(saleInput.value);
       const regularPrice = parseFloat(regularInput.value);
 
-      // Clear previous error
       errorSpan.textContent = '';
       saleInput.style.borderColor = '';
 
@@ -574,13 +575,13 @@
       return true;
     }
 
-    // Add event listeners for real-time validation
+    
     document.addEventListener('input', function(e) {
       const target = e.target;
       
       if (target.matches('input[name="variantRegularPrice[]"]')) {
         validatePrice(target);
-        // Also validate sale price when regular price changes
+  
         const saleInput = target.closest('.add-products-container-center')
           .querySelector('input[name="variantSalePrice[]"]');
         if (saleInput.value) {
@@ -599,11 +600,11 @@
       }
     });
 
-    // Add this to your addVariant function
+  
     const originalAddVariant = window.addVariant;
     window.addVariant = function() {
       originalAddVariant();
-      // Add validation to new variant's inputs
+
       const newVariant = document.querySelector('.variant.new-variant:last-child');
       if (newVariant) {
         newVariant.querySelectorAll('input').forEach(input => {
@@ -619,6 +620,109 @@
         });
       }
     };
+
+
+    function validateField(input, fieldName) {
+      const errorSpan = input.nextElementSibling || document.createElement('span');
+      errorSpan.className = 'error-message';
+      if (!input.nextElementSibling) {
+        input.parentNode.appendChild(errorSpan);
+      }
+      
+  
+      errorSpan.textContent = '';
+      input.style.borderColor = '';
+
+
+      if (!input.value.trim()) {
+        errorSpan.textContent = `${fieldName} is required`;
+        errorSpan.style.color = 'red';
+        errorSpan.style.fontSize = '10px';
+        errorSpan.style.display = 'block';
+        input.style.borderColor = 'red';
+        return false;
+      }
+
+
+      switch(input.name.replace('[]', '')) {
+        case 'variantShade':
+          if (input.value.length < 2) {
+            errorSpan.textContent = 'Shade name must be at least 2 characters';
+            input.style.borderColor = 'red';
+            return false;
+          }
+          break;
+        
+        case 'variantRegularPrice':
+          if (parseFloat(input.value) <= 0) {
+            errorSpan.textContent = 'Regular price must be greater than 0';
+            input.style.borderColor = 'red';
+            return false;
+          }
+          break;
+        
+        case 'variantSalePrice':
+          const regularPrice = input.closest('.add-products-container-center')
+            .querySelector('input[name="variantRegularPrice[]"]');
+          if (parseFloat(input.value) >= parseFloat(regularPrice.value)) {
+            errorSpan.textContent = 'Sale price must be less than regular price';
+            input.style.borderColor = 'red';
+            return false;
+          }
+          break;
+        
+        case 'variantStockQuantity':
+          if (!Number.isInteger(parseFloat(input.value)) || parseFloat(input.value) < 0) {
+            errorSpan.textContent = 'Stock must be a positive whole number';
+            input.style.borderColor = 'red';
+            return false;
+          }
+          break;
+      }
+
+      return true;
+    }
+
+
+    document.addEventListener('DOMContentLoaded', function() {
+
+      function addValidationListeners(variant) {
+        const inputs = variant.querySelectorAll('input[type="text"], input[type="number"]');
+        inputs.forEach(input => {
+          const fieldName = input.name.replace('[]', '').replace('variant', '');
+          input.addEventListener('input', () => validateField(input, fieldName));
+        });
+      }
+
+      document.querySelectorAll('.variant').forEach(addValidationListeners);
+
+      const originalAddVariant = window.addVariant;
+      window.addVariant = function() {
+        originalAddVariant();
+        const newVariant = document.querySelector('.variant:last-child');
+        addValidationListeners(newVariant);
+      };
+
+      const form = document.getElementById('addVariantForm');
+      form.addEventListener('submit', function(e) {
+        let isValid = true;
+        
+        form.querySelectorAll('.variant input[type="text"], .variant input[type="number"]').forEach(input => {
+          const fieldName = input.name.replace('[]', '').replace('variant', '');
+          if (!validateField(input, fieldName)) {
+            isValid = false;
+          }
+        });
+
+        if (!isValid) {
+          e.preventDefault();
+          toastError('Please fill all required fields correctly');
+          return false;
+        }
+        
+        document.querySelector("#preloader").style.display = "flex";
+      });
+    });
   </script>
 </body>
 

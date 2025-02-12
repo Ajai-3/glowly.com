@@ -32,7 +32,7 @@
 
   <!-- Breadcrumbs Section -->
   <div class="breadcrumbs">
-    <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit product</a>
+    <a href="/admin/products">Products</a> > <a href="/admin/edit-product/<%= product._id %>"> Edit product Variant</a>
   </div>
 
   <!-- Edit Products Container -->
@@ -153,6 +153,12 @@
     </div>
   </form>
 </div>
+
+<!-- Add preloader div after form -->
+<div id="preloader" style="display: none;">
+  <div class="loader"></div>
+</div>
+
 <!-- Cropper Modal -->
 <div id="cropperModal" style="display:none;">
   <div class="modal-content">
@@ -207,7 +213,7 @@ const toastWarning = (message) => {
 function updateSubCategories() {
   const categoryId = document.getElementById('category').value;
   const subCategorySelect = document.getElementById('subCategory');
-  subCategorySelect.innerHTML = ''; // Empty the options
+  subCategorySelect.innerHTML = '';
 
   const categories = JSON.parse('<%- JSON.stringify(categories) %>');
   const productSubCategoryId = '<%= product.subcategoryId ? product.subcategoryId._id.toString() : '' %>';
@@ -406,8 +412,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    let valid = true;
 
+    // First check if all required fields are filled
+    if (!validateRequiredFields()) {
+      return;
+    }
+
+    // Rest of your existing validation
+    let valid = true;
     const priceInputs = form.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
     priceInputs.forEach(input => {
       if (!validatePrices(input)) {
@@ -425,6 +437,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!valid) {
       return;
     }
+
+    // Show preloader before submit
+    document.querySelector("#preloader").style.display = "flex";
 
     const formData = new FormData(form);
     const productId = form.getAttribute('data-product-id');
@@ -469,6 +484,9 @@ document.addEventListener('DOMContentLoaded', function() {
         body: formData
       });
 
+      // Hide preloader after response
+      document.querySelector("#preloader").style.display = "none";
+
       if (response.ok) {
         const result = await response.json();
         if (result.success) {
@@ -483,6 +501,8 @@ document.addEventListener('DOMContentLoaded', function() {
         toastError('Fields cannot be empty. Error updating product.');
       }
     } catch (error) {
+      // Hide preloader on error
+      document.querySelector("#preloader").style.display = "none";
       toastWarning('An error occurred while updating the product.');
     }
   });
@@ -506,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
           toastError('Please select a valid image file.');
           return;
         }
-        if (file.size > 5 * 1024 * 1024) {
+        if (file.size > 10 * 1024 * 1024) {
           toastError('File size exceeds 5MB.');
           return;
         }
@@ -523,6 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   document.getElementById('cropButton').addEventListener('click', cropImage);
+  validateInputs();
 });
 
 
@@ -576,235 +597,68 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-function validatePrices(input) {
-  const variant = input.closest('.variant');
-  const regularPriceInput = variant.querySelector('input[name="variantRegularPrice"]');
-  const salePriceInput = variant.querySelector('input[name="variantSalePrice"]');
-  let isValid = true;
-
-  // Remove old error styles
-  regularPriceInput.style.borderColor = '';
-  salePriceInput.style.borderColor = '';
-
-  // Validate regular price
-  if (!regularPriceInput.value.trim()) {
-    toastError('Regular price is required');
-    regularPriceInput.style.borderColor = 'red';
-    isValid = false;
-  } else if (parseFloat(regularPriceInput.value) <= 0) {
-    toastError('Regular price must be greater than 0');
-    regularPriceInput.style.borderColor = 'red';
-    isValid = false;
-  }
-
-  // Validate sale price
-  if (!salePriceInput.value.trim()) {
-    toastError('Sale price is required');
-    salePriceInput.style.borderColor = 'red';
-    isValid = false;
-  } else if (parseFloat(salePriceInput.value) <= 0) {
-    toastError('Sale price must be greater than 0');
-    salePriceInput.style.borderColor = 'red';
-    isValid = false;
-  }
-
-  // Compare prices
-  if (parseFloat(salePriceInput.value) >= parseFloat(regularPriceInput.value)) {
-    toastError('Sale price must be less than regular price');
-    salePriceInput.style.borderColor = 'red';
-    regularPriceInput.style.borderColor = 'red';
-    isValid = false;
-  }
-
-  return isValid;
-}
-
-function validateStockQuantity(input) {
-  input.style.borderColor = '';
-  
-  if (!input.value.trim()) {
-    toastError('Stock quantity is required');
-    input.style.borderColor = 'red';
-    return false;
-  }
-
-  const stock = parseInt(input.value);
-  if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) {
-    toastError('Stock quantity must be a positive whole number');
-    input.style.borderColor = 'red';
-    return false;
-  }
-
-  return true;
-}
-
-// Add real-time validation
-document.addEventListener('DOMContentLoaded', function() {
-  // Price input validation
+// Add this function for live validation
+function validateInputs() {
+  // Price inputs - no negative values and no decimals
   const priceInputs = document.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
   priceInputs.forEach(input => {
     input.addEventListener('input', function() {
-      // Remove non-numeric characters except decimal point
-      this.value = this.value.replace(/[^\d.]/g, '');
-      // Ensure only one decimal point
-      this.value = this.value.replace(/(\..*)\./g, '$1');
-      // Remove leading zeros
-      this.value = this.value.replace(/^0+(?=\d)/, '');
-    });
-  });
-
-  // Stock input validation
-  const stockInputs = document.querySelectorAll('input[name="variantStockQuantity"]');
-  stockInputs.forEach(input => {
-    input.addEventListener('input', function() {
-      // Only allow positive integers
-      this.value = this.value.replace(/[^\d]/g, '');
-      // Remove leading zeros
-      this.value = this.value.replace(/^0+(?=\d)/, '');
-    });
-  });
-
-  // Form submission validation
-  const form = document.getElementById('edit-product');
-  form.addEventListener('submit', function(e) {
-    e.preventDefault();
-    let isValid = true;
-
-    // Validate all prices
-    priceInputs.forEach(input => {
-      if (!validatePrices(input)) {
-        isValid = false;
+      // Remove negative signs and decimals
+      this.value = this.value.replace(/[^0-9]/g, '');
+      
+      // Prevent negative values
+      if (parseInt(this.value) < 0) {
+        this.value = '0';
       }
     });
-
-    // Validate all stock quantities
-    stockInputs.forEach(input => {
-      if (!validateStockQuantity(input)) {
-        isValid = false;
-      }
-    });
-
-    if (!isValid) {
-      return false;
-    }
-
-    // Continue with form submission if validation passes
-    // ...rest of your existing form submission code...
   });
-});
 
-function validateForm() {
-  let isValid = true;
-  const requiredFields = {
-    productName: 'Product name',
-    brand: 'Brand',
-    description: 'Description',
-    category: 'Category',
-    subCategory: 'Sub category',
-    variantShade: 'Shade name',
-    variantRegularPrice: 'Regular price',
-    variantSalePrice: 'Sale price',
-    variantStockQuantity: 'Stock quantity'
-  };
-
-  // Check all required fields
-  for (const [fieldName, label] of Object.entries(requiredFields)) {
-    const input = document.querySelector(`[name="${fieldName}"]`);
-    if (input && !input.value.trim()) {
-      toastError(`${label} is required`);
-      input.style.borderColor = 'red';
-      isValid = false;
+  // Stock quantity - no negative values and no decimals
+  const stockInput = document.querySelector('input[name="variantStockQuantity"]');
+  stockInput.addEventListener('input', function() {
+    // Remove negative signs and decimals
+    this.value = this.value.replace(/[^0-9]/g, '');
+    
+    // Prevent negative values
+    if (parseInt(this.value) < 0) {
+      this.value = '0';
     }
-  }
-
-  // Validate prices and stock
-  const regularPrice = document.getElementById('variantRegularPrice');
-  const salePrice = document.getElementById('variantSalePrice');
-  const stockQuantity = document.getElementById('variantStockQuantity');
-
-  // Price validation
-  if (regularPrice && salePrice) {
-    const regPrice = parseFloat(regularPrice.value);
-    const saleP = parseFloat(salePrice.value);
-
-    if (regPrice <= 0) {
-      toastError('Regular price must be greater than 0');
-      regularPrice.style.borderColor = 'red';
-      isValid = false;
-    }
-    if (saleP <= 0) {
-      toastError('Sale price must be greater than 0');
-      salePrice.style.borderColor = 'red';
-      isValid = false;
-    }
-    if (saleP >= regPrice) {
-      toastError('Sale price must be less than regular price');
-      salePrice.style.borderColor = 'red';
-      regularPrice.style.borderColor = 'red';
-      isValid = false;
-    }
-  }
-
-  // Stock validation
-  if (stockQuantity) {
-    const stock = parseInt(stockQuantity.value);
-    if (isNaN(stock) || stock < 0 || !Number.isInteger(stock)) {
-      toastError('Stock quantity must be a positive whole number');
-      stockQuantity.style.borderColor = 'red';
-      isValid = false;
-    }
-  }
-
-  return isValid;
+  });
 }
 
-// Update your form submission event listener
-document.getElementById('edit-product').addEventListener('submit', async function(e) {
-  e.preventDefault();
+// Add this new validation function
+function validateRequiredFields() {
+  const requiredFields = {
+    'productName': 'Product name',
+    'brand': 'Brand',
+    'description': 'Description',
+    'category': 'Category',
+    'subCategory': 'Sub category',
+    'variantShade': 'Shade name',
+    'variantRegularPrice': 'Regular price',
+    'variantSalePrice': 'Sale price', 
+    'variantStockQuantity': 'Stock quantity'
+  };
 
-  // Clear any previous error styles
-  document.querySelectorAll('input').forEach(input => {
+  let isValid = true;
+
+  // Reset all input borders
+  document.querySelectorAll('input, select, textarea').forEach(input => {
     input.style.borderColor = '';
   });
 
-  // Run validation before submitting
-  if (!validateForm()) {
-    return false;
+  // Check each required field
+  for (const [fieldName, label] of Object.entries(requiredFields)) {
+    const input = document.querySelector(`[name="${fieldName}"]`);
+    if (!input || !input.value.trim()) {
+      input.style.borderColor = 'red';
+      toastError(`${label} is required`);
+      isValid = false;
+    }
   }
 
-  const formData = new FormData(this);
-  const productId = this.getAttribute('data-product-id');
-  const variantId = this.getAttribute('data-variant-id');
-
-  try {
-    // ...rest of your existing form submission code...
-  } catch (error) {
-    console.error('Error:', error);
-    toastWarning('An error occurred while updating the product');
-  }
-});
-
-// Add real-time input cleaning
-document.addEventListener('DOMContentLoaded', function() {
-  // Price input cleaning
-  const priceInputs = document.querySelectorAll('input[name="variantRegularPrice"], input[name="variantSalePrice"]');
-  priceInputs.forEach(input => {
-    input.addEventListener('input', function() {
-      this.value = this.value.replace(/[^\d.]/g, '');
-      this.value = this.value.replace(/(\..*)\./g, '$1');
-      this.value = this.value.replace(/^0+(?=\d)/, '');
-    });
-  });
-
-  // Stock quantity input cleaning
-  const stockInput = document.querySelector('input[name="variantStockQuantity"]');
-  if (stockInput) {
-    stockInput.addEventListener('input', function() {
-      this.value = this.value.replace(/[^\d]/g, '');
-      this.value = this.value.replace(/^0+(?=\d)/, '');
-    });
-  }
-});
+  return isValid;
+}
 </script>
 
 <%- include('partials/footer') %>
