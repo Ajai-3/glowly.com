@@ -22,25 +22,15 @@ export const renderHomePage = async (req, res) => {
     const categorizedProducts = categories.reduce((acc, category) => {
       const categoryProducts = products.filter((product) => {
         if (!product.categoryId) {
-          console.log(`Product ${product.title} does not have a categoryId`);
           return false;
         }
         if (product.categoryId._id.toString() === category._id.toString()) {
           return true;
         } else {
-          console.log(
-            `Category mismatch for product ${
-              product.title
-            }: ${product.categoryId._id.toString()} !== ${category._id.toString()}`
-          );
           return false;
         }
       });
 
-      console.log(
-        `Category: ${category.name}, Category Products:`,
-        categoryProducts
-      );
 
       if (categoryProducts.length > 0) {
         const allVariants = categoryProducts.reduce((acc, product) => {

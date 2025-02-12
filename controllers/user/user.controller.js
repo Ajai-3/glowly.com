@@ -360,7 +360,6 @@ export const googleCallbackHandler = async (req, res) => {
     res.cookie("token", token, { httpOnly: true, secure: true });
     return res.redirect("/home");
   } catch (error) {
-    console.error("Error in Google OAuth callback:", error);
     return res.redirect("/user/page-404");
   }
 };
