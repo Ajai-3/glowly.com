@@ -320,58 +320,38 @@ export const googleCallbackHandler = async (req, res) => {
       return;
     }
 
-    let existingUser = await User.findOne({ email: req.user.email });
+    let existingUser = await User.findOneAndUpdate(
+      { email: req.user.email },
+      { $set: { googleId: req.user.googleId } },
+      { new: true }
+    );
 
-    if (existingUser) {
-      if (!existingUser.googleId) {
-        existingUser.googleId = req.user.googleId;
-        await existingUser.save();
-      }
-
-      req.session.user = {
-        _id: existingUser._id,
-        name: existingUser.name,
-      };
-
-      const token = jwt.sign(
-        {
-          userId: existingUser._id,
-          name: existingUser.name,
-          profilePic: existingUser.profilePic || null,
-        },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: "1h" }
-      );
-
-      res.cookie("token", token, { httpOnly: true, secure: true });
-      return res.redirect("/home");
-    } else {
-      const newUser = new User({
+    if (!existingUser) {
+      existingUser = new User({
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
       });
-
-      await newUser.save();
-
-      req.session.user = {
-        _id: newUser._id,
-        name: newUser.name,
-      };
-
-      const token = jwt.sign(
-        {
-          userId: newUser._id,
-          name: newUser.name,
-          profilePic: newUser.profilePic || null,
-        },
-        process.env.JWT_SECRET_KEY,
-        { expiresIn: "1h" }
-      );
-
-      res.cookie("token", token, { httpOnly: true, secure: true });
-      return res.redirect("/home");
+      await existingUser.save();
     }
+
+    req.session.user = {
+      _id: existingUser._id,
+      name: existingUser.name,
+    };
+
+    const token = jwt.sign(
+      {
+        userId: existingUser._id,
+        name: existingUser.name,
+        profilePic: existingUser.profilePic || null,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1h" }
+    );
+
+    res.cookie("token", token, { httpOnly: true, secure: true });
+    return res.redirect("/home");
   } catch (error) {
     console.error("Error in Google callback handler:", error);
     return res.redirect("/user/page-404");
