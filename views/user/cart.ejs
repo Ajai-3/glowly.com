@@ -322,8 +322,6 @@
 
     confirmButton.addEventListener('click', () => {
       if (currentProductId && currentVariantId) {
-        console.log("variantId", currentVariantId)
-        console.log("productId", currentProductId)
         fetch("/remove-cart-product", {
             method: 'POST',
             headers: {

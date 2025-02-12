@@ -149,7 +149,7 @@ export const updateOrderStatus = async (req, res) => {
       .populate("subcategoryId")
       .populate("brandId");
 
-    console.log(product);
+
     const brand = product.brandId;
     const category = product.categoryId;
     const subcategory = product.subcategoryId;

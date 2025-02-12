@@ -348,7 +348,7 @@
               statusElement.textContent = statusText;
               statusElement.className = `${statusClass} m-0 mb-4`;
               buttonElement.remove();
-              toastSuccess(`Order successfully ${actionType}ed`)
+              toastSuccess(data.message)
             } else {
               toastError(data.message || `Failed to ${actionType} the order.`)
             }
@@ -387,7 +387,6 @@
       button.addEventListener("click", async (e) => {
         e.preventDefault();
         const orderId = button.getAttribute("data-order-id");
-        console.log("orderId", orderId);
 
         try {
           const response = await fetch("/payment-failed-retry", {

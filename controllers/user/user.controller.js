@@ -146,7 +146,6 @@ export const handleUserSignup = async (req, res) => {
       return res.render("user/signup", { msg });
     }
 
-    console.log("OTP sent", OTP);
     return res.redirect("user/otp-message");
   } catch (error) {
     console.error("Signup error", error);
@@ -212,7 +211,6 @@ export const handleOTPVerification = async (req, res) => {
 export const handleResendOTP = async (req, res) => {
   try {
     const user = req.session.userData;
-    // console.log("User", user);
 
     if (!user) {
       console.error("User data not passed");
@@ -227,7 +225,6 @@ export const handleResendOTP = async (req, res) => {
     const { OTP, expiryTime } = generateOTP();
 
     req.session.userOTP = OTP;
-    console.log("OTP stored in session:", req.session.userOTP);
 
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
 

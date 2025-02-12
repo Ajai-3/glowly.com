@@ -177,7 +177,7 @@ export const returnOrder = async (req, res) => {
 
     res
       .status(200)
-      .json({ success: true, message: "Order returned successfully" });
+      .json({ success: true, message: "Order return request sent successfully" });
   } catch (error) {
     console.error("Error canceling order:", error);
     return res.redirect("user/page-404");

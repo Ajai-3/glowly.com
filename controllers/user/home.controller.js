@@ -10,7 +10,7 @@ import Product from "../../models/product.model.js";
 // ========================================================================================
 export const renderHomePage = async (req, res) => {
   try {
-    const { user, wishlist, cart, cartCount, cartVariants, categories } = req;
+    const { user, wishlist, cartCount, cartVariants, categories } = req;
 
     const products = await Product.find({ isDeleted: false }).populate([
       { path: "brandId", select: "name" },
@@ -30,7 +30,6 @@ export const renderHomePage = async (req, res) => {
           return false;
         }
       });
-
 
       if (categoryProducts.length > 0) {
         const allVariants = categoryProducts.reduce((acc, product) => {

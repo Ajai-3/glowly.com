@@ -26,7 +26,7 @@ export const loadUserData = async (req, res, next) => {
             cart = await Cart.findOne({ user_id: user.userId });
             wallet = await Wallet.findOne({ user_id: user.userId });
           } catch (error) {
-            console.log("Invalid or expired token:", error);
+            console.error("Invalid or expired token:", error);
           }
         }
       

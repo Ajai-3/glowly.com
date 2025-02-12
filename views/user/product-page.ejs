@@ -173,17 +173,21 @@
                       <% } %>
                   </div>
                   <div class="review-user-verify">
-                    <p><%= review.userId.name %></p>
                     <div class="d-flex">
-                      <p><% if (review.verified) { %>
-                        Verified <i class="fa-solid fa-check"></i>
-                        <% } else { %>
-                        Not Verified
-                        <% } %> &nbsp;&nbsp;
-                        
-                      </p>
+                      <p><%= review.userId.name %> </p>
+                    <p2><% if (review.verified) { %>
+                      &nbsp;&nbsp;Verified <i class="fa-solid fa-check"></i>
+                      <% } else { %>
+                        &nbsp;&nbsp;Not Verified
+                      <% } %> 
+                      
+                    </p2>
+                    </div>
+                    <div class="d-flex">
+                      <p2><%= review.edited ? "Edited" : "" %>  &nbsp; </p2>
                       <p><%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
                       <p2> &nbsp;( <%= review.variantShade %> )</p2>
+                      
                     </div>
                   </div>
                   
@@ -441,7 +445,6 @@
 
         const form = event.target.closest("form");
         if (!form) {
-          console.log("Form not found for the clicked button");
           return;
         }
 

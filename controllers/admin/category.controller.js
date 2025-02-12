@@ -585,7 +585,6 @@ export const removeOffer = async (req, res) => {
     for (const product of products) {
       for (const variant of product.variants) {
         variant.salePrice = variant.salePriceBeforeOffer;
-        console.log("Reverted variant sale price:", variant.salePrice);
       }
 
       await product.save();

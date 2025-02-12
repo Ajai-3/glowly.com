@@ -329,10 +329,6 @@ export const editProduct = async (req, res) => {
     const { productId, variantId } = req.params;
     const { variantImages } = req.files;
 
-    console.log("Request body:", req.body);
-    console.log("Request params:", req.params);
-    console.log("Uploaded files:", req.files);
-
     if (
       !productName ||
       !brand ||
@@ -351,7 +347,6 @@ export const editProduct = async (req, res) => {
     }
 
     const product = await Product.findById(productId);
-    console.log("Product found:", product);
 
     if (!product) {
       return res
@@ -362,7 +357,6 @@ export const editProduct = async (req, res) => {
     const variant = product.variants.find(
       (v) => v._id.toString() === variantId
     );
-    console.log("Variant found:", variant);
 
     if (!variant) {
       return res.status(404).json({ message: "Variant not found" });
@@ -384,17 +378,14 @@ export const editProduct = async (req, res) => {
       (removedImages && removedImages.length > 0) ||
       (variantImages && variantImages.length > 0)
     ) {
-      console.log("Updating images...");
       variant.images = updateVariantImages(
         variant.images,
         removedImages,
         variantImages
       );
-      console.log("Images updated successfully.");
     }
 
     await product.save();
-    console.log("Product and variant saved successfully");
     return res.status(200).json({
       success: true,
       message: "Product and variant updated successfully",
@@ -564,8 +555,6 @@ export const addNewVariants = async (req, res) => {
           : req.files[`variantImages_${index}`]
           ? req.files[`variantImages_${index}`].map((file) => file.path)
           : [];
-
-      console.log(`Variant ${index + 1} images:`, variantImages);
 
       if (variantImages.length === 0) {
         throw new Error(`Images are required for variant ${index + 1}`);

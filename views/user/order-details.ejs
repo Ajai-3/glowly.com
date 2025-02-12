@@ -130,12 +130,9 @@
                 <div class="d-flex flex-nowrap align-items-center">
                   <!-- Product Image -->
                   <div class="product-image">
-                    <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" 
-                         class="img-fluid rounded" 
-                         alt="<%= product.title || 'Product Image' %>" 
-                         style="max-width: 100px; object-fit: cover;">
+                    <img src="<%= variant.images && variant.images[0] ? variant.images[0] : 'https://res.cloudinary.com/your-cloud-name/image/upload/v1736860957/default-image.jpg' %>" class="img-fluid rounded" alt="<%= product.title || 'Product Image' %>" style="max-width: 100px; object-fit: cover;">
                   </div>
-                
+
                   <!-- Product Info -->
                   <div class="product-info ms-3">
                     <div class="card-body p-0">
@@ -147,7 +144,7 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="row p-2">
                   <!-- Pricing Details -->
                   <div class="col-12 mt-2">
@@ -193,7 +190,7 @@
                 <h5>Your Review</h5>
               </div>
 
-              <form method="POST" class="review-form-edit" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= variant._id %>" data-order-id="<%= orderId %>" data-review-id="<%= review._id %>">
+              <form class="review-form-edit" data-product-id="<%= product.product_id._id %>" data-variant-id="<%= variant._id %>" data-order-id="<%= orderId %>" data-review-id="<%= review._id %>">
                 <div class="mb-3">
                   <label>Rating</label>
                   <div class="star-rating">
@@ -266,7 +263,6 @@
 
 
 
-
 </body>
 <%- include('partials/footerforhome') %>
 
@@ -331,7 +327,7 @@
     });
   };
 
- 
+
 
   document.addEventListener('DOMContentLoaded', function() {
     const reviewForm = document.querySelector('.review-form');
@@ -339,7 +335,6 @@
     if (reviewForm) {
       reviewForm.addEventListener('submit', async function(event) {
         event.preventDefault();
-
 
         const submitButton = reviewForm.querySelector('button[type="submit"]');
         if (submitButton) {
@@ -376,11 +371,10 @@
           });
 
           if (response.ok) {
-            const result = await response.json();
             toastSuccess('Review submitted successfully!');
             setTimeout(() => {
               window.location.reload();
-            }, 1500)
+            }, 1500);
           } else {
             toastError('Failed to submit review.');
           }
@@ -389,10 +383,61 @@
           toastWarning('Error submitting review.');
         }
       });
-    } else {
-      console.error('Review form not found!');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const reviewFormEdit = document.querySelector('.review-form-edit');
+
+    if (reviewFormEdit) {
+      reviewFormEdit.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const productId = this.dataset.productId;
+        const variantId = this.dataset.variantId;
+        const orderId = this.dataset.orderId;
+        const reviewId = this.dataset.reviewId;
+        const rating = this.querySelector('input[name="rating"]:checked')?.value;
+        const reviewText = this.querySelector('textarea[name="review"]').value.trim();
+
+        if (!rating || !reviewText) {
+          toastError('Please provide both rating and review text');
+          return;
+        }
+
+        try {
+          const response = await fetch(`/edit-review/${reviewId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              productId,
+              variantId,
+              orderId,
+              rating,
+              review: reviewText
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            toastSuccess(data.message || 'Review updated successfully');
+            setTimeout(() => {
+              window.location.reload();
+            }, 1500);
+          } else {
+            toastError(data.message || 'Failed to update review');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          toastError('An error occurred while updating the review');
+        }
+      });
     }
   });
 </script>
+
 
 </html>

@@ -66,7 +66,7 @@ import {
   myWallet,
   addMoneyToWallet,
 } from "../controllers/user/wallet.controller.js";
-import { review } from "../controllers/user/review.controller.js";
+import { review, editReview } from "../controllers/user/review.controller.js";
 import { myCoupons } from "../controllers/user/coupon.controller.js";
 import { helpPage, getAppPage } from "../controllers/user/others.controller.js";
 
@@ -153,6 +153,7 @@ router.get("/my-coupons", loadUserData, myCoupons);
 
 // Rewview Mangement
 router.post("/submit-review", loadUserData, review);
+router.patch("/edit-review/:reviewId", loadUserData, editReview);
 
 // Other Page Management
 router.get("/help", loadUserData, helpPage);

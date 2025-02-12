@@ -450,7 +450,6 @@ export const paymentRetry = async (req, res, next) => {
     }
 
     const amount = Math.round(order.total_order_amount * 100);
-    console.log("[PaymentRetry] Creating Razorpay order with amount:", amount);
 
     const options = {
       amount,
@@ -583,7 +582,6 @@ const updateCouponUsage = async (couponId, userId) => {
   });
 
   if (!coupon) {
-    console.log("Coupon not found");
     return;
   }
 

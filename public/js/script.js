@@ -267,7 +267,6 @@ function resendOTP() {
         type: "POST",
         url: "/resend-otp",
         success: function (response) {
-            console.log('Response:', response);
             if (response.success) {
                 Swal.fire({
                     icon: "success",
@@ -299,7 +298,6 @@ function resendOTP() {
         },
         error: function(xhr, status, error) {
             console.error('AJAX error:', error); 
-            console.log('XHR response:', xhr); 
             Swal.fire({
                 icon: "error",
                 title: "Error",

@@ -229,7 +229,7 @@
         `;
       });
 
-      cancelBtn.addEventListener("click", () => {
+      cancelBtn?.addEventListener("click", () => {
         addAddressDiv.style.display = "none";
         viewAddressDiv.style.display = "block";
 
@@ -456,92 +456,6 @@
 
 
     document.addEventListener("DOMContentLoaded", () => {
-      const editAddressDiv = document.getElementById("edit-address");
-      const editAddressForm = document.getElementById("editAddressForm");
-      const viewAddressDiv = document.getElementById("view-address");
-
-      // Fetching and displaying the address data for editing
-      document.querySelectorAll('.edit-address-form').forEach(form => {
-        form.addEventListener('submit', async (event) => {
-          event.preventDefault();
-          const addressId = form.getAttribute('data-id');
-          try {
-            const response = await fetch(`/get-address/${addressId}`, {
-              method: 'GET',
-              headers: {
-                'Content-Type': 'application/json'
-              }
-            });
-            const result = await response.json();
-            if (response.ok) {
-              // Populate form fields with existing address data
-              document.getElementById('edit_address_id').value = result._id;
-              document.getElementById('edit_city').value = result.city;
-              document.getElementById('edit_district').value = result.district;
-              document.getElementById('edit_state').value = result.state;
-              document.getElementById('edit_country').value = result.country;
-              document.getElementById('edit_address').value = result.address;
-              document.getElementById('edit_pincode').value = result.pin_code;
-              document.getElementById('edit_land_mark').value = result.land_mark;
-              document.getElementById('edit_alternative_phone_no').value = result.alternative_phone_no;
-              document.getElementById('edit_alternative_email').value = result.alternative_email;
-              document.getElementById(`edit_address_type_${result.address_type}`).checked = true;
-
-              viewAddressDiv.style.display = 'none';
-              editAddressDiv.style.display = 'block';
-            } else {
-              toastSuccess(result.message);
-            }
-          } catch (error) {
-            toastError('Something went wrong!');
-          }
-        });
-      });
-
-      // Submitting the edited address form
-      editAddressForm.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        if (!addressFormValidation('edit_')) {
-          return;
-        }
-
-        const addressId = document.getElementById('edit_address_id').value;
-        const data = {
-          city: document.getElementById('edit_city').value,
-          district: document.getElementById('edit_district').value,
-          state: document.getElementById('edit_state').value,
-          country: document.getElementById('edit_country').value,
-          address: document.getElementById('edit_address').value,
-          pin_code: document.getElementById('edit_pincode').value,
-          address_type: document.querySelector('input[name="edit_address_type"]:checked').value,
-          land_mark: document.getElementById('edit_land_mark').value,
-          alternative_phone_no: document.getElementById('edit_alternative_phone_no').value,
-          alternative_email: document.getElementById('edit_alternative_email').value,
-        };
-
-        try {
-          const response = await fetch(`/edit-address/${addressId}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-          });
-          const result = await response.json();
-          if (response.ok) {
-            toastSuccess(result.message);
-            setTimeout(() => {
-              window.location.reload();
-            }, 1500);
-          } else {
-            toastError(result.message);
-          }
-        } catch (error) {
-          toastWarning('Something went wrong!');
-        }
-      });
-
-      // Add address form validation
       document.getElementById('addAddressForm').addEventListener('submit', function(event) {
         if (!addressFormValidation('')) {
           event.preventDefault();

@@ -2807,15 +2807,6 @@ border: 1px solid transparent;
     width: 300px;
     gap: 0 !important;
   }
-
-  /* .d-flex.justify-content-between {
-    flex-direction: column; 
-  } */
-
-  .d-flex.justify-content-between > div {
-    width: 100%; 
-    margin-bottom: 10px;
-  }
   .address-center-div {
     flex-direction: column; 
   }
@@ -3688,6 +3679,9 @@ border: 1px solid transparent;
   }
   .nav-bar-checkout-page1 {
     display: block;
+  }
+  .left-box-checkout-page .div1, .left-box-checkout-page .div2 {
+    padding: 0px 10px;
   }
 
 }

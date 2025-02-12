@@ -130,10 +130,10 @@ export const handleAddAddress = async (req, res) => {
       pin_code,
       address_type,
       land_mark,
-      phone_no,
       alternative_phone_no,
       alternative_email,
     } = req.body;
+
 
     const activeUser = await User.findById(user.userId);
     if (!activeUser) {
@@ -144,7 +144,7 @@ export const handleAddAddress = async (req, res) => {
       user_id: user.userId,
       isActive: true,
     });
-    if (addressCount >= 4) {
+    if (addressCount >= 3) {
       return res.render("user/manage-address", {
         name: user ? user.name : "",
         user: user,
@@ -255,7 +255,7 @@ export const editAddressPage = async (req, res) => {
       return res.redirect("/home");
     }
     const { id } = req.params;
-    console.log(id);
+
     const address = await Address.findById(id);
 
     if (!address) {
@@ -282,12 +282,27 @@ export const editAddressPage = async (req, res) => {
 // ========================================================================================
 export const updateAddress = async (req, res) => {
   try {
-    console.log(req.body);
-    const updatedAddress = await Address.findByIdAndUpdate(
-      req.params.addressId,
-      req.body,
-      { new: true }
-    );
+    const { city, district, state, country, address, pin_code } = req.body;
+    const { addressId } = req.params;
+
+    const existingAddress = await Address.findOne({
+      user_id: req.user.userId,
+      city,
+      district,
+      state,
+      country,
+      address,
+      pin_code,
+      _id: { $ne: addressId }, 
+    });
+
+    if (existingAddress) {
+      return res.status(400).json({ message: "This address already exists" });
+    }
+
+    const updatedAddress = await Address.findByIdAndUpdate(addressId, req.body, {
+      new: true,
+    });
 
     if (!updatedAddress) {
       return res.status(404).json({ message: "Address not found" });
