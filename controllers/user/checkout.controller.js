@@ -104,6 +104,10 @@ export const placeOrderWithBuyNow = async (req, res) => {
       return res.redirect("user/login");
     }
 
+    let coupons = await Coupon.find({ isDelete: false, isActive: true }).sort({
+      created_at: -1,
+    });
+
     if (!cart) {
       cart = new Cart({
         user_id: user.userId,
@@ -172,6 +176,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
       userDetails,
       products,
       cartCount,
+      coupons,
       cartProducts: cartProductsToSend,
     });
   } catch (error) {
@@ -615,7 +620,7 @@ export const verifyCoupon = async (req, res) => {
   try {
     const { coupon, grandTotal } = req.body;
     let { token } = req;
-
+    
     if (!token) {
       return res
         .status(401)
