@@ -1,4 +1,3 @@
-import cors from "cors"
 import express from 'express';
 import nocache from 'nocache';
 import session from 'express-session';
@@ -21,8 +20,6 @@ app.use((req, res, next) => {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
     next();
 });
-
-app.use(cors());
 
 app.use(express.static('public'))
 app.use('/uploads', express.static('uploads'));
