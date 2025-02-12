@@ -10,6 +10,22 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/izitoast/dist/css/iziToast.min.css"
     />
+    <style>
+      .error-message {
+        color: #ff4444;
+        font-size: 0.7rem;
+        margin-top: 2px;
+        display: none;
+      }
+
+      .error-border {
+        border: 1px solid #ff4444 !important;
+      }
+
+      .valid-border {
+        border: 1px solid #00c851 !important;
+      }
+    </style>
   </head>
   <body>
     <div class="header">
@@ -178,32 +194,53 @@
                     <input
                       type="number"
                       name="variantRegularPrice[]"
+                      class="price-input"
                       placeholder="Regular Price"
                       min="0"
                       step="0.01"
                     />
+                    <div class="error-message" data-for="regular-price">
+                      Price must be greater than 0
+                    </div>
                   </div>
                   <div>
                     <label for="variantSalePrice">Sale Price</label>
                     <input
                       type="number"
                       name="variantSalePrice[]"
+                      class="price-input"
                       placeholder="Sale Price"
                       min="0"
                       step="0.01"
                     />
+                    <div class="error-message" data-for="sale-price">
+                      Sale price must be less than regular price
+                    </div>
                   </div>
                   <div>
                     <label for="variantStockQuantity">Stock Quantity</label>
                     <input
                       type="number"
                       name="variantStockQuantity[]"
+                      class="stock-input"
                       placeholder="Stock Quantity"
                       min="0"
                     />
+                    <div class="error-message" data-for="stock">
+                      Stock must be a positive whole number
+                    </div>
                   </div>
                 </div>
-                <div class="variant-image-section mb-2">
+                <div
+                  class="variant-image-section mb-2"
+                  style="
+                    display: $ {
+                      document.getElementById('shareImagesCheckbox').checked? 'none'
+                    : 'block';
+                      .checked;
+                    }
+                  "
+                >
                   <label for="variantImages">Variant Images</label>
                   <input
                     type="file"
@@ -366,15 +403,18 @@
               <div class="add-products-container-center">
                 <div>
                   <label for="variantRegularPrice">Regular Price</label>
-                  <input type="number" name="variantRegularPrice[]" placeholder="Regular Price" min="0" step="0.01">
+                  <input type="number" name="variantRegularPrice[]" class="price-input" placeholder="Regular Price" min="0" step="0.01">
+                  <div class="error-message" data-for="regular-price">Price must be greater than 0</div>
                 </div>
                 <div>
                   <label for="variantSalePrice">Sale Price</label>
-                  <input type="number" name="variantSalePrice[]" placeholder="Sale Price" min="0" step="0.01">
+                  <input type="number" name="variantSalePrice[]" class="price-input" placeholder="Sale Price" min="0" step="0.01">
+                  <div class="error-message" data-for="sale-price">Sale price must be less than regular price</div>
                 </div>
                 <div>
                   <label for="variantStockQuantity">Stock Quantity</label>
-                  <input type="number" name="variantStockQuantity[]" placeholder="Stock Quantity" min="0">
+                  <input type="number" name="variantStockQuantity[]" class="stock-input" placeholder="Stock Quantity" min="0">
+                  <div class="error-message" data-for="stock">Stock must be a positive whole number</div>
                 </div>
               </div>
               <div class="variant-image-section" style="display: ${document.getElementById('shareImagesCheckbox').checked ? 'none' : 'block'};">
@@ -563,7 +603,7 @@
         });
       });
 
-      // Update the form submission code to include validation
+      // Update the form submission code with preloader handling
       document.getElementById('productForm').addEventListener('submit', async (e) => {
           e.preventDefault();
 
@@ -571,6 +611,9 @@
           if (!validateForm()) {
             return;
           }
+
+          // Show preloader before form submission
+          document.querySelector("#preloader").style.display = "flex";
 
           const formData = new FormData();
           formData.append('productName', document.getElementById('productName').value);
@@ -632,6 +675,9 @@
 
               const data = await response.json();
 
+              // Hide preloader after getting response
+              document.querySelector("#preloader").style.display = "none";
+
               if (data.success) {
                   toastSuccess(data.message);
                   setTimeout(() => {
@@ -641,9 +687,90 @@
                   toastError(data.message);
               }
           } catch (error) {
+              // Hide preloader if there's an error
+              document.querySelector("#preloader").style.display = "none";
               console.error('Error:', error);
               toastError('An error occurred while adding the product');
           }
+      });
+
+      // Add this after your existing script
+      document.addEventListener('DOMContentLoaded', () => {
+        function validateInput(input) {
+          const variant = input.closest('.variant');
+          const errorMessage = input.nextElementSibling;
+          const regularPrice = variant.querySelector('input[name="variantRegularPrice[]"]');
+          const salePrice = variant.querySelector('input[name="variantSalePrice[]"]');
+
+          let isValid = true;
+
+          // Remove any previous validation styles
+          input.classList.remove('error-border', 'valid-border');
+
+          if (input.name.includes('RegularPrice')) {
+            if (parseFloat(input.value) <= 0) {
+              errorMessage.style.display = 'block';
+              errorMessage.textContent = 'Price must be greater than 0';
+              input.classList.add('error-border');
+              isValid = false;
+            } else {
+              errorMessage.style.display = 'none';
+              input.classList.add('valid-border');
+            }
+          }
+
+          if (input.name.includes('SalePrice')) {
+            if (parseFloat(input.value) <= 0) {
+              errorMessage.style.display = 'block';
+              errorMessage.textContent = 'Price must be greater than 0';
+              input.classList.add('error-border');
+              isValid = false;
+            } else if (parseFloat(input.value) >= parseFloat(regularPrice.value)) {
+              errorMessage.style.display = 'block';
+              errorMessage.textContent = 'Sale price must be less than regular price';
+              input.classList.add('error-border');
+              isValid = false;
+            } else {
+              errorMessage.style.display = 'none';
+              input.classList.add('valid-border');
+            }
+          }
+
+          if (input.name.includes('StockQuantity')) {
+            if (parseInt(input.value) <= 0 || !Number.isInteger(parseFloat(input.value))) {
+              errorMessage.style.display = 'block';
+              errorMessage.textContent = 'Stock must be a positive whole number';
+              input.classList.add('error-border');
+              isValid = false;
+            } else {
+              errorMessage.style.display = 'none';
+              input.classList.add('valid-border');
+            }
+          }
+
+          return isValid;
+        }
+
+        // Add live validation to the form
+        document.body.addEventListener('input', (e) => {
+          if (e.target.matches('.price-input, .stock-input')) {
+            validateInput(e.target);
+          }
+        });
+
+        // Modify addVariant function to include error message divs
+        const originalAddVariant = window.addVariant;
+        window.addVariant = function() {
+          originalAddVariant();
+          const newVariant = document.querySelector('.variant:last-child');
+
+          // Add error message divs to the new variant
+          newVariant.querySelectorAll('input[type="number"]').forEach(input => {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            input.parentNode.insertBefore(errorDiv, input.nextSibling);
+          });
+        };
       });
     </script>
   </body>
