@@ -2824,6 +2824,7 @@ border: 1px solid transparent;
   }
   .address-gap-div {
     gap: 0;
+    flex-direction: column;
   }
 }
 
