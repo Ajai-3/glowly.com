@@ -61,15 +61,16 @@ overlay.addEventListener('click', function() {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-  const preloader = document.getElementById("preloader");
-  if (preloader) {
-      preloader.style.display = "block";
-      setTimeout(() => {
-          preloader.style.display = "none";
-          window.scrollTo(0, 0);
-      }, 1000);
-  }
+  let preloader = document.getElementById("preloader");
+
+  preloader.style.display = "flex";
+
+  setTimeout(function () {
+      preloader.style.display = "none";
+      window.scrollTo(0, 0);
+  }, 1000);
 });
+
 
 
 
