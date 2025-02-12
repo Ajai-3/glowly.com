@@ -26,7 +26,6 @@
     "cookie": "^0.7.1",
     "cookie-parser": "^1.4.7",
     "cookie-signature": "^1.0.6",
-    "cors": "^2.8.5",
     "cropperjs": "^1.6.2",
     "debug": "^2.6.9",
     "define-data-property": "^1.1.4",
