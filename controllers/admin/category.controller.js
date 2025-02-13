@@ -574,6 +574,7 @@ export const removeOffer = async (req, res) => {
     }
 
     offer.isActive = true;
+    offer.isDeleted = true;
     await offer.save();
 
     const maxDiscountPercentage = 70;
@@ -582,6 +583,7 @@ export const removeOffer = async (req, res) => {
       isDeleted: false,
     });
 
+    console.log(products)
     for (const product of products) {
       for (const variant of product.variants) {
         variant.salePrice = variant.salePriceBeforeOffer;
