@@ -199,10 +199,15 @@ export const updateOrderStatus = async (req, res) => {
         productInOrder.canceled_at = new Date();
         variant.stockQuantity += productInOrder.quantity;
 
+        if (variant.stockQuantity < 5) {
+          refundAmount * 0.10;
+        }
+
         if (
           order.payment_method === "wallet" ||
           order.payment_method === "razorpay"
         ) {
+
           const wallet = await Wallet.findOneAndUpdate(
             { user_id: userId },
             {
