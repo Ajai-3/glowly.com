@@ -42,6 +42,7 @@ export const renderHomePage = async (req, res) => {
                   productId: product._id,
                   brandName: product.brandId?.name,
                   categoryName: product.categoryId.name,
+                  categoryId: product.categoryId._id,
                   subcategoryName: product.subcategoryId?.name,
                 });
               }
@@ -60,6 +61,7 @@ export const renderHomePage = async (req, res) => {
         shuffleArray(allVariants);
 
         acc.push({
+          categoryId: category._id,
           categoryName: category.name,
           variants: allVariants.slice(0, 20),
         });

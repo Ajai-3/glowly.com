@@ -5,48 +5,69 @@
 
 
 <div class="user-contents">
-  <div id="carouselExampleDark" class="carousel carousel-dark slide carousel-home" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    <div class="carousel-inner">
-      <div class="carousel-item active" data-bs-interval="10000">
-        <img src="/assets/logo/home1.jpg" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>First slide label</h5>
-          <p>Some representative placeholder content for the first slide.</p>
-        </div>
+ <!-- Video Carousel -->
+<div id="videoCarousel" class="carousel carousel-dark slide carousel-home">
+  <div class="carousel-inner">
+      <!-- First Video -->
+      <div class="carousel-item active">
+          <video class="d-block w-100" autoplay muted playsinline id="video1">
+              <source src="/assets/videos/home-video1.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+          <div class="progress-container">
+              <div class="progress-circle" id="progress1"></div>
+          </div>
       </div>
-      <div class="carousel-item" data-bs-interval="2000">
-        <img src="/assets/logo/home2.jpg" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Second slide label</h5>
-          <p>Some representative placeholder content for the second slide.</p>
-        </div>
-      </div>
+
+      <!-- Second Video -->
       <div class="carousel-item">
-        <img src="/assets/logo/home3.jpg" class="d-block w-100" alt="...">
-        <div class="carousel-caption d-none d-md-block">
-          <h5>Third slide label</h5>
-          <p>Some representative placeholder content for the third slide.</p>
-        </div>
+          <video class="d-block w-100" autoplay muted playsinline id="video2">
+              <source src="/assets/videos/home-video2.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+          <div class="progress-container">
+              <div class="progress-circle" id="progress2"></div>
+          </div>
       </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
+
+      <!-- Third Video -->
+      <div class="carousel-item">
+          <video class="d-block w-100" autoplay muted playsinline id="video3">
+              <source src="/assets/videos/home-video3.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+          </video>
+          <div class="progress-container">
+              <div class="progress-circle" id="progress3"></div>
+          </div>
+      </div>
   </div>
+</div>
+
+
   
   <% categorizedProducts.forEach(categoryGroup => { %>
     <div class="category-group">
-      <h2><%= categoryGroup.categoryName %></h2>
+      <div class="home-category-products-header">
+        <h2 class="home-product-category-title">
+          <% if (categoryGroup && categoryGroup.categoryName) { %>
+            <% if (categoryGroup.categoryName.toLowerCase() === 'lips') { %>
+              Enhance Your Lips with Elegance
+            <% } else if (categoryGroup.categoryName.toLowerCase() === 'face') { %>
+              Glow with the Best Face Products
+            <% } else if (categoryGroup.categoryName.toLowerCase() === 'eyes') { %>
+               Define Your Eyes, Define Your Style
+            <% } else { %>
+              Discover the Best <%= categoryGroup.categoryName %> Products
+            <% } %>
+          <% } else { %>
+            No Category Found
+          <% } %>
+        </h2>
+        <div><a href="/shop?filters=%7B%22category%22%3A%5B%22<%= categoryGroup.categoryId %>%22%5D%7D">see all  ⟶</a></div>
+        
+        
+        
+      </div>
       <div class="product-group-wrapper" style="position: relative; overflow: hidden;">
         <div class="product-group d-flex" id="product-group-<%= categoryGroup.categoryName %>" style="transition: transform 0.5s ease;">
           <% categoryGroup.variants.forEach((variant) => { %>
@@ -103,12 +124,51 @@
       </div>
     </div>
   <% }); %>
+  <div id="carouselExampleDark" class="carousel carousel-dark slide carousel-home" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+      <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+      <div class="carousel-item active" data-bs-interval="10000">
+        <img src="/assets/logo/banner1.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item" data-bs-interval="2000">
+        <img src="/assets/logo/banner2.jpg" class="d-block w-100" alt="...">
+      </div>
+      <div class="carousel-item">
+        <img src="/assets/logo/banner3.jpg" class="d-block w-100" alt="...">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+  </div>
 
-  <!-- <div>
-    <a href="admin/dashboard"><button>click</button></a>
-  </div> -->
+
+  <div class="brands-container-home mb-4">
+    <% if (brands && brands.length > 0) { %>
+      <% brands.forEach((brand) => { %>
+        <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D" class="brand-link">
+          <div class="brand-item">
+            <span><%= brand.brandName %></span>
+          </div>
+        </a>
+      <% }); %>
+    <% } else { %>
+      <div>No Brands Available</div>
+    <% } %>
+  </div>
+  
+  
+
 </div>
-
 
 
 
@@ -116,8 +176,23 @@
 </body>
 <%- include('partials/footerforhome') %>
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+        let videoCarousel = new bootstrap.Carousel(document.getElementById("videoCarousel"), { interval: false });
+        let videos = document.querySelectorAll("#videoCarousel video");
 
+        videos.forEach((video, index) => {
+            let progressCircle = document.getElementById(`progress${index + 1}`);
 
+            video.addEventListener("timeupdate", function () {
+                let progress = (video.currentTime / video.duration) * 100;
+                progressCircle.style.left = `${progress}%`;
+            });
+
+            video.addEventListener("ended", function () {
+                videoCarousel.next(); 
+            });
+        });
+    });
 
   $(document).ready(function () {
             const offers = $('#offers-container .offer-item');

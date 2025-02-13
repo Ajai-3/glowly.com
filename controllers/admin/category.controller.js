@@ -573,7 +573,7 @@ export const removeOffer = async (req, res) => {
       });
     }
 
-    offer.isActive = false;
+    offer.isActive = true;
     await offer.save();
 
     const maxDiscountPercentage = 70;
