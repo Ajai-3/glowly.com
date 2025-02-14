@@ -269,20 +269,6 @@ export const updateCategory = async (req, res) => {
       });
     }
 
-    const product = await Product.find({ categoryId: categoryId})
-
-    console.log(product.variants)
-    if (product && product.length > 0) {
-      product.variants.forEach(variant => {
-        if (variant.stockQuantity < 5 && variant.salesPrice > 100) {
-            product.isDeleted = true;
-            
-        }
-      })
-    }
-    await product.save();
-
-
     const updatedCategory = await Category.findByIdAndUpdate(
       categoryId,
       { name, description },

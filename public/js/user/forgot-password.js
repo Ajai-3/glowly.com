@@ -128,3 +128,4 @@ document.getElementById("forgotPasswordForm").addEventListener('submit', functio
       toastWarning("Something went wrong. Please try again later.");
   });
 });
+      
