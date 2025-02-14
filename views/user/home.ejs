@@ -234,7 +234,7 @@
       let currentIndex = 0;
       const products = categoryGroup.querySelectorAll('.product-card');
       const totalProducts = products.length;
-      const itemsToShow = 5;
+      const itemsToShow = 6;
 
       function showProducts() {
         const offset = currentIndex * (100 / itemsToShow);
@@ -419,10 +419,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => response.json())
             .then(data => {
               if (data.success) {
-                // const cartCountElement = document.querySelector('.nav-cart-count');
-                // if (cartCountElement) {
-                //   cartCountElement.innerText = data.cartCount;
-                // }
                 const cartCountElement = document.querySelector('.nav-cart-count');
                 if (cartCountElement) {
                   cartCountElement.innerText = data.cartCount;

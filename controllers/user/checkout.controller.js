@@ -28,7 +28,7 @@ export const renderCheckoutPage = async (req, res, next) => {
     const addresses = await Address.find({
       user_id: user.userId,
       isActive: true,
-    }).limit(3);
+    }).limit(4);
 
     let coupons = await Coupon.find({ isDelete: false, isActive: true }).sort({
       created_at: -1,

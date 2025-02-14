@@ -34,7 +34,7 @@
 
       <!-- Right Side Box -->
       <div class="col-md-9 p-0">
-        <div class="card shadow-sm p-4 user-menu-wishlist">
+        <div class="card shadow-sm p-4 user-menu-order">
           <% if (orders.length > 0) { %>
           <h5 class="card-title">My Orders</h5>
           <% orders.forEach(order => { %>
@@ -60,16 +60,12 @@
                 <div class="row">
                   <div class="col-12 col-md-6 d-flex justify-content-start">
                     <span class="order-info-label">Payment Status:</span>
-                    <span class="payment_status_my_orders 
-                                  <%= order.payment_status === 'Payment completed' ? 'green-p' : 
+                    <span class="payment_status_my_orders
+                                      <%= order.payment_status === 'Payment completed' ? 'green-p' : 
                                       order.payment_status === 'Payment failed' ? 'red-p' : 'yellow-p' %>">
                       <%= order.payment_status ? order.payment_status : 'Not Available' %>
                     </span>
-                    <span>
-                      <% if (order.payment_status === 'Payment failed') { %>
-                        <button class="pay-btn-order-page" data-order-id="<%= order._id %>">Pay Now</button>
-                      <% } %>
-                    </span>
+                    
                   </div>
             
                   <div class="col-12 col-md-6 d-flex justify-content-end">
@@ -85,6 +81,11 @@
                     <span class="order-info-value"><%= order.products.length %></span>
                   </div>
                   <div>
+                    <span>
+                      <% if (order.payment_status === 'Payment failed') { %>
+                        <button class="pay-btn-order-page main-btn px-4 py-1" data-order-id="<%= order._id %>">Pay Now</button>
+                      <% } %>
+                    </span>
                     <% if (order.payment_status !== 'Payment failed') { %>
                       <button type="button" class="btn btn-secondary btn-sm" onclick="generateInvoice(this)" data-order='<%= JSON.stringify(order) %>'>
                         <i class="fas fa-file-invoice"></i> Download Invoice

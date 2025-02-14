@@ -16,7 +16,7 @@ export const renderWishlistPage = async (req, res) => {
       req;
 
     let wishlistProducts = [];
-    const ITEMS_PER_PAGE = 3;
+    const ITEMS_PER_PAGE = 4;
     const page = parseInt(req.query.page) || 1;
 
     if (!token) {

@@ -144,11 +144,12 @@ export const handleAddAddress = async (req, res) => {
       user_id: user.userId,
       isActive: true,
     });
-    if (addressCount >= 3) {
+    if (addressCount >= 4) {
       return res.render("user/manage-address", {
         name: user ? user.name : "",
         user: user,
         categories,
+        brands,
         activeUser,
         cartCount,
         addresses: await Address.find({ user_id: user.userId, isActive: true }),
