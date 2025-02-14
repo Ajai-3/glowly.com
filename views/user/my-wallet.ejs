@@ -260,10 +260,10 @@
               <!-- Simple Filter Section -->
               <div class="filter-section">
                 <div class="filter-buttons">
-                  <button class="filter-btn active" data-type="all">All</button>
-                  <button class="filter-btn" data-type="Credited">Credited</button>
-                  <button class="filter-btn" data-type="Debited">Debited</button>
-                  <button class="filter-btn" data-type="Refunded">Refunded</button>
+                  <a href="/my-wallet?page=1&limit=<%= limit %>&type=all" class="filter-btn <%= type === 'all' ? 'active' : '' %>">All</a>
+                  <a href="/my-wallet?page=1&limit=<%= limit %>&type=Credited" class="filter-btn <%= type === 'Credited' ? 'active' : '' %>">Credited</a>
+                  <a href="/my-wallet?page=1&limit=<%= limit %>&type=Debited" class="filter-btn <%= type === 'Debited' ? 'active' : '' %>">Debited</a>
+                  <a href="/my-wallet?page=1&limit=<%= limit %>&type=Refund" class="filter-btn <%= type === 'Refund' ? 'active' : '' %>">Refunded</a>
                 </div>
               </div>
 
@@ -319,25 +319,26 @@
                   const start = Math.max(1, Math.min(currentPage - 1, totalPages - maxVisible + 1));
                   const end = Math.min(start + maxVisible - 1, totalPages);
                 %>
-
+              
                 <% if (currentPage > 1) { %>
-                <button class="pagination-btn" onclick="changePage(<%= currentPage - 1 %>)">
-                  <i class="fas fa-chevron-left"></i>
-                </button>
+                  <a href="/my-wallet?page=<%= currentPage - 1 %>&limit=<%= limit %>&type=<%= type %>" class="pagination-btn">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
                 <% } %>
-
+              
                 <% for(let i = start; i <= end; i++) { %>
-                <button class="pagination-btn <%= i === currentPage ? 'active' : '' %>" onclick="changePage(<%= i %>)">
-                  <%= i %>
-                </button>
+                  <a href="/my-wallet?page=<%= i %>&limit=<%= limit %>&type=<%= type %>" class="pagination-btn <%= i === currentPage ? 'active' : '' %>">
+                    <%= i %>
+                  </a>
                 <% } %>
-
+              
                 <% if (currentPage < totalPages) { %>
-                <button class="pagination-btn" onclick="changePage(<%= currentPage + 1 %>)">
-                  <i class="fas fa-chevron-right"></i>
-                </button>
+                  <a href="/my-wallet?page=<%= currentPage + 1 %>&limit=<%= limit %>&type=<%= type %>" class="pagination-btn">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
                 <% } %>
               </div>
+              
               <% } else { %>
               <div class="empty-state mt-3">
 
@@ -552,6 +553,9 @@
             inputField.value = "";
             errorMessage.style.display = "none";
             inputField.style.borderColor = "";
+            setTimeout(() => {
+              window.location.href = "/my-wallet";
+            }, 1500);
           }
         },
         prefill: {
@@ -576,38 +580,35 @@
     }
   };
 
-  // Filter and Pagination functionality
-  document.addEventListener('DOMContentLoaded', function() {
-    const filterButtons = document.querySelectorAll('.filter-btn');
-    const rows = document.querySelectorAll('.transaction-row');
-    let currentFilter = 'all';
 
-    filterButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Update active button
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
+  // document.addEventListener('DOMContentLoaded', function() {
+  //   const filterButtons = document.querySelectorAll('.filter-btn');
+  //   const rows = document.querySelectorAll('.transaction-row');
+  //   let currentFilter = 'all';
 
-        // Store current filter
-        currentFilter = button.dataset.type;
+  //   filterButtons.forEach(button => {
+  //     button.addEventListener('click', () => {
+  //       filterButtons.forEach(btn => btn.classList.remove('active'));
+  //       button.classList.add('active');
 
-        // Filter rows
-        rows.forEach(row => {
-          if (currentFilter === 'all' || row.dataset.type === currentFilter) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        });
-      });
-    });
-  });
+  //       currentFilter = button.dataset.type;
 
-  function changePage(page) {
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('page', page);
-    window.location.href = currentUrl.toString();
-  }
+  //       rows.forEach(row => {
+  //         if (currentFilter === 'all' || row.dataset.type === currentFilter) {
+  //           row.style.display = '';
+  //         } else {
+  //           row.style.display = 'none';
+  //         }
+  //       });
+  //     });
+  //   });
+  // });
+
+  // function changePage(page) {
+  //   const currentUrl = new URL(window.location.href);
+  //   currentUrl.searchParams.set('page', page);
+  //   window.location.href = currentUrl.toString();
+  // }
 </script>
 
 </html>

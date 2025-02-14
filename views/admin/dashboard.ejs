@@ -7,7 +7,7 @@
     <div class="responsive-logo-admin-side">
       <div class="d-flex align-items-center">
         <i class="fa fa-bars" id="sidebar-toggle"></i>
-      <h2 class="m-0 mx-2"> Glowly</h2>
+        <h2 class="m-0 mx-2"> Glowly</h2>
       </div>
     </div>
     <div class="d-flex align-items-center">
@@ -18,13 +18,13 @@
       </div>
       <div class="admin-profile mx-3">
         <% if (admin && admin.profilePic) { %>
-          <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
-          <% } else {%>
-            <a href="/admin/settings">
-              <i class="fa-solid fa-circle-user"></i>
-            </a>
-          <% }  %>
-        
+        <a href="/admin/settings" class="ms-2"><img src="<%= admin.profilePic %>" alt="Profile Picture" style="width: 35px; height: 35px; border-radius: 50%; object-fit: cover;"></a>
+        <% } else {%>
+        <a href="/admin/settings">
+          <i class="fa-solid fa-circle-user"></i>
+        </a>
+        <% }  %>
+
       </div>
     </div>
   </div>
@@ -32,82 +32,83 @@
 
 
   <div class="main-content">
-    
+
     <div class="breadcrumbs">Dashboard</div>
 
     <div class="dashboard-summary-container">
-        <div class="col-12 dashboard-summary">
-          <div>
-            <h3>Total Users</h3>
-            <p><%= userCount %></p>
-            <p1>
-              <i class="fa-solid fa-chart-simple"></i>
-              <p2>Active Users</p2>
-            </p1>
-          </div>
-          <div>
-            <h3>Total Sales Count</h3>
-            <p id="total-orders"><%= totalSalesCount %></p>
-            <p1>
-              <i class="fa-solid fa-chart-simple"></i>
-              <p2>Delivered Orders</p2>
-            </p1>
-          </div>
-          <div>
-            <h3>Total Revenue</h3>
-            <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
-            <p2>
-              <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
-            </p2>
-          </div>
-          <div>
-            <h3>Total Discount</h3>
-            <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
-            <p2>
-              <i class="fa-solid fa-chart-simple"></i> Applied Discounts
-            </p2>
-          </div>
-          <div>
-            <h3>Net Revenue</h3>
-            <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
-            <p2>
-              <i class="fa-solid fa-chart-simple"></i> After Discounts
-            </p2>
-          </div>
+      <div class="col-12 dashboard-summary">
+        <div>
+          <h3>Total Users</h3>
+          <p><%= userCount %></p>
+          <p1>
+            <i class="fa-solid fa-chart-simple"></i>
+            <p2>Active Users</p2>
+          </p1>
         </div>
+        <div>
+          <h3>Total Sales Count</h3>
+          <p id="total-orders"><%= totalSalesCount %></p>
+          <p1>
+            <i class="fa-solid fa-chart-simple"></i>
+            <p2>Delivered Orders</p2>
+          </p1>
+        </div>
+        <div>
+          <h3>Total Revenue</h3>
+          <p id="gross-revenue">₹ <%= totalRevenue.toLocaleString('en-IN') %></p>
+          <p2>
+            <i class="fa-solid fa-chart-simple"></i> From Delivered Orders
+          </p2>
+        </div>
+        <div>
+          <h3>Total Discount</h3>
+          <p id="total-discount">₹ <%= totalDiscount.toLocaleString('en-IN') %></p>
+          <p2>
+            <i class="fa-solid fa-chart-simple"></i> Applied Discounts
+          </p2>
+        </div>
+        <div>
+          <h3>Net Revenue</h3>
+          <p id="net-revenue">₹ <%= netRevenue.toLocaleString('en-IN') %></p>
+          <p2>
+            <i class="fa-solid fa-chart-simple"></i> After Discounts
+          </p2>
+        </div>
+      </div>
 
       <div class="row">
         <div class="col-12 col-md-8 col-lg-8">
           <div class="chart-wrapper">
             <div class="chart-container">
-               <div class="filter-container-dashboard filter-container">
-          <div class="download">
-            <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
-            <button id="download-excel" class="download-excel">Download Excel</button>
-          </div>
-          <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
-            <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
-            <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
-            <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
-            <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
-            <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
-            <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
-          </select>
-          <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
-            <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
-            <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
-            <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
-          </div>
-          <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
-        </div>
+              <div class="filter-container-dashboard filter-container">
+                <div class="download">
+                  <button id="download-pdf" class="download-pdf me-2">Download PDF</button>
+                  <button id="download-excel" class="download-excel">Download Excel</button>
+                </div>
+                <select id="filter" class="filter-select" onchange="applyFilter(this.value)">
+                  <option value="all_time" <%= filter === 'all_time' ? 'selected' : '' %>>All Time</option>
+                  <option value="today" <%= filter === 'today' ? 'selected' : '' %>>Today</option>
+                  <option value="this_week" <%= filter === 'this_week' ? 'selected' : '' %>>This Week</option>
+                  <option value="this_month" <%= filter === 'this_month' ? 'selected' : '' %>>This Month</option>
+                  <option value="this_year" <%= filter === 'this_year' ? 'selected' : '' %>>This Year</option>
+                  <option value="custom" <%= filter === 'custom' ? 'selected' : '' %>>Custom</option>
+                </select>
+                <div id="custom-date-range" style="display: <%= filter === 'custom' ? 'inline-block' : 'none' %>;">
+                  <input type="date" id="start-date" class="date-input" value="<%= startDate %>">
+                  <input type="date" id="end-date" class="date-input" value="<%= endDate %>">
+                  <button id="apply-custom-filter" onclick="applyCustomFilter()" class="apply-btn">Apply</button>
+                </div>
+                <button id="toggleChart" class="toggle-btn"><i class="fas fa-chart-bar"></i></button>
+              </div>
               <canvas id="salesChart"></canvas>
             </div>
           </div>
         </div>
         <div class="col-12 col-md-4 col-lg-4">
           <div class="chart-wrapper">
-            <div class="chart-container">
-              <h6>Payment Methods</h6>
+           
+            <div class="chart-container chart-container-payment p-0">
+              <h5 class="mb-4">Payment Methods</h5>
               <canvas id="paymentMethodsChart"></canvas>
             </div>
           </div>
@@ -117,38 +118,38 @@
       <div class="table-container">
         <h2>Sales Data (Delivered Orders)</h2>
         <div class="table-scroll-wrapper">
-            <table class="all-table">
-                <thead>
-                    <tr>
-                        <th>Order ID</th>
-                        <th>Customer</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Amount</th>
-                        <th>Discount</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody id="sales-table-body">
-                    <% salesData.forEach(order => { %>
-                    <tr>
-                        <td><%= order._id %></td>
-                        <td><%= order.user_name %></td>
-                        <td><%= order.product.title %></td>
-                        <td><%= order.quantity || 0 %></td>
-                        <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
-                        <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
-                        <td><%= new Date(order.createdAt).toLocaleString() %></td>
-                    </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+          <table class="all-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Discount</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="sales-table-body">
+              <% salesData.forEach(order => { %>
+              <tr>
+                <td><%= order._id %></td>
+                <td><%= order.user_name %></td>
+                <td><%= order.product.title %></td>
+                <td><%= order.quantity || 0 %></td>
+                <td>₹ <%= (order.total_amount.toLocaleString('en-IN') || 0) %></td>
+                <td>₹ <%= (order.discount_amount.toLocaleString('en-IN') || 0) %></td>
+                <td><%= new Date(order.createdAt).toLocaleString() %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
         </div>
         <div class="pagination">
           <% if (typeof hasPrevPage !== 'undefined' && hasPrevPage) { %>
-              <a href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">Previous</a>
+          <a href="?page=<%= page - 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Previous">Previous</a>
           <% } %>
-      
+
           <% 
               const currentPage = typeof page !== 'undefined' ? page : 1;
               const totalPagesCount = typeof totalPages !== 'undefined' ? totalPages : 1;
@@ -159,24 +160,24 @@
               }
           %>
           <% for(let i = startPage; i <= endPage; i++) { %>
-              <a href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+          <a href="?page=<%= i %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
           <% } %>
-      
+
           <% if (typeof hasNextPage !== 'undefined' && hasNextPage) { %>
-              <a href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">Next</a>
+          <a href="?page=<%= currentPage + 1 %>&filter=<%= filter %>&startDate=<%= startDate %>&endDate=<%= endDate %>" aria-label="Next">Next</a>
           <% } %>
+        </div>
+
       </div>
-      
-    </div>
-    
-      
+
+
     </div>
   </div>
 
 
 
-  
-<%- include('partials/footer') %> 
+
+  <%- include('partials/footer') %>
   <script>
     function applyFilter(filter) {
       const url = new URL(window.location.href);
@@ -487,7 +488,17 @@
           order.quantity || 0,
           `INR ${(order.total_amount ? order.total_amount.toLocaleString('en-IN') : 0)}`,
           `INR ${(order.discount_amount ? order.discount_amount.toLocaleString('en-IN') : 0)}`,
-          order.createdAt ? new Date(order.createdAt).toLocaleString() : ''
+          order.createdAt ? new Date(order.createdAt).toLocaleString('en-GB', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          }).replace(',', '') :
+          ''
+
         ]),
         styles: {
           fillColor: [255, 255, 255],

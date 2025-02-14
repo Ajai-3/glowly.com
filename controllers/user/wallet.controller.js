@@ -13,25 +13,30 @@ import Transaction from "../../models/transaction.model.js";
 export const myWallet = async (req, res) => {
   try {
     const { user, brands, token, wallet, cartCount, categories } = req;
-
-    const { page = 1, limit = 10 } = req.query;
+    const { page = 1, limit = 10, type } = req.query;
     const skip = (page - 1) * limit;
 
     let transactions = [];
     let totalTransactions = 0;
+    let query = {};
 
     if (!token) {
       return res.redirect("/home");
     }
+
     if (wallet) {
-      transactions = await Transaction.find({ wallet_id: wallet._id })
+      query.wallet_id = wallet._id;
+
+      if (type && type !== "all") {  
+        query.type = type;
+      }
+
+      transactions = await Transaction.find(query)
         .skip(skip)
         .limit(Number(limit))
         .sort({ date: -1 });
 
-      totalTransactions = await Transaction.countDocuments({
-        wallet_id: wallet._id,
-      });
+      totalTransactions = await Transaction.countDocuments(query);
     }
 
     return res.render("user/my-wallet", {
@@ -46,12 +51,14 @@ export const myWallet = async (req, res) => {
       currentPage: Number(page),
       totalTransactions,
       limit,
+      type: type || "all" 
     });
   } catch (error) {
     console.log("Error in myWallet:", error);
     return res.redirect("user/page-404");
   }
 };
+
 
 // ========================================================================================
 // ADD MONEY TO WALLET USING RAZORPAY

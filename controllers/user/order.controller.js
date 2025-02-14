@@ -1,6 +1,7 @@
 import Order from "../../models/order.model.js";
 import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
+import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
 // RENDER ORDER LIST PAGE
@@ -58,11 +59,13 @@ export const renderOrderListPage = async (req, res) => {
 // ========================================================================================
 export const cancelOrder = async (req, res) => {
   try {
-    const { token } = req;
+    const { token, user, wallet } = req;
     const { orderId, productId, variantId, quantity } = req.body;
     if (!token) {
       return res.redirect("user/home");
     }
+
+    console.log(user, wallet);
 
     if (!productId || !variantId || !orderId || !quantity) {
       return res.status(400).json({ success: false, message: "Missing data." });
@@ -108,6 +111,21 @@ export const cancelOrder = async (req, res) => {
 
       productInOrder.status = "canceled";
       productInOrder.canceled_at = new Date();
+
+      if (order.payment_method === "wallet" || order.payment_method === "razorpay") {
+        const refundAmount = productInOrder.amount_after_coupon;
+        wallet.balance += refundAmount;
+        const transaction = new Transaction({
+          user_id: user.userId,
+          order_id: orderId,
+          wallet_id: wallet._id,
+          amount: refundAmount,
+          type: "Refund",
+          description: "Order canceled",
+        });
+
+        await Promise.all([wallet.save(), transaction.save()]);
+      }
 
       await Promise.all([product.save(), order.save()]);
     }

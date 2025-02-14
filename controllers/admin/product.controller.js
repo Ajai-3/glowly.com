@@ -12,7 +12,7 @@ import Category from "../../models/category.model.js";
 // ========================================================================================
 export const renderProductsPage = async (req, res) => {
   try {
-    const perPage = 5;
+    const perPage = 6;
     const page = parseInt(req.query.page) || 1;
     const search = req.query.search || "";
     const status = req.query.status || "all";

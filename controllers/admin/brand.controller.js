@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 // ========================================================================================
 export const renderBrandPage = async (req, res) => {
   try {
-    const limit = 5;
+    const limit = 6;
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit;
     const search = req.query.search || "";
