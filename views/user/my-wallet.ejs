@@ -282,11 +282,12 @@
                     <% transactions.forEach(transaction => { %>
                     <tr class="transaction-row" data-type="<%= transaction.type %>">
                       <td>
-                        <%= new Date(transaction.date).toLocaleDateString() %>
+                        <%= new Date(transaction.date).toLocaleDateString("en-GB") %>
                         <br>
                         <small style="color: #666;">
-                          <%= new Date(transaction.date).toLocaleTimeString() %>
+                          <%= new Date(transaction.date).toLocaleTimeString("en-US", { hour12: true }) %>
                         </small>
+                                            
                       </td>
                       <td><%= transaction.description %></td>
                       <td>
@@ -580,35 +581,6 @@
     }
   };
 
-
-  // document.addEventListener('DOMContentLoaded', function() {
-  //   const filterButtons = document.querySelectorAll('.filter-btn');
-  //   const rows = document.querySelectorAll('.transaction-row');
-  //   let currentFilter = 'all';
-
-  //   filterButtons.forEach(button => {
-  //     button.addEventListener('click', () => {
-  //       filterButtons.forEach(btn => btn.classList.remove('active'));
-  //       button.classList.add('active');
-
-  //       currentFilter = button.dataset.type;
-
-  //       rows.forEach(row => {
-  //         if (currentFilter === 'all' || row.dataset.type === currentFilter) {
-  //           row.style.display = '';
-  //         } else {
-  //           row.style.display = 'none';
-  //         }
-  //       });
-  //     });
-  //   });
-  // });
-
-  // function changePage(page) {
-  //   const currentUrl = new URL(window.location.href);
-  //   currentUrl.searchParams.set('page', page);
-  //   window.location.href = currentUrl.toString();
-  // }
 </script>
 
 </html>
