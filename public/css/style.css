@@ -366,10 +366,11 @@ cursor: pointer;
   background-color: var(--main-color);
 }
 .social-auth-btn {
-  font-size: 0.71875rem; 
+  font-size: var(--font-size-p);
   border-radius: 3px;
   cursor: pointer;
-  padding: 6px 94px;
+  padding: 6px 108px;
+  width: 100%;
   color: var(--text-color);
   border: 1px solid var(--second-text-color);
 }
@@ -431,7 +432,7 @@ cursor: pointer;
   font-size: var(--font-size-p); 
   padding: 15px 10px 5px 5px;
   display: block;
-  width: 300px;
+  width: 360px;
   border: none;
   border-bottom: 1px solid var(--second-text-color);
   background: transparent;

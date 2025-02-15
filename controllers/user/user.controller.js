@@ -6,6 +6,7 @@ import {
   generateOTP,
   generateResetCode,
   sendOTPToUserEmail,
+  generateReferralCode,
   sendResetPasswordEmail,
 } from "../../helpers/email.js";
 import User from "../../models/user.model.js";
@@ -112,6 +113,8 @@ export const handleUserSignup = async (req, res) => {
   const { name, phone_no, email, password, repeatPassword } = req.body;
 
   try {
+    // const refferalCode = req.quary.refferalCode || null;
+    const referralCode = generateReferralCode(); 
     // Check If The User Email Already Exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -137,8 +140,9 @@ export const handleUserSignup = async (req, res) => {
     req.session.otp = OTP;
     req.session.userOTP = OTP;
     req.session.otpExpiriy = expiryTime;
-    req.session.userData = { name, phone_no, email, password };
+    req.session.userData = { name, phone_no, email, password, referralCode };
 
+    console.log("OTP", OTP);
     // Send OTP to the user email
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
     if (!sendOTPEmail) {
@@ -175,6 +179,8 @@ export const handleOTPVerification = async (req, res) => {
         phone_no: user.phone_no,
         email: user.email,
         password: passwordHash,
+        refferalCode: referralCode,
+        referredBy: null,
       });
 
       await saveUserData.save();
