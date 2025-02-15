@@ -202,18 +202,18 @@ cursor: pointer;
   background-color: var(--main-color);
 }
 .iziToast-icon {
-  font-size: 14px !important; 
+  font-size: 18px !important; 
 }
 .iziToast-title {
-  font-size: 15px !important; 
+  font-size: 20px !important; 
 }
 .iziToast-balloon.success {
   background-color: #2160de;
-  border-bottom-color: #28a745; 
+  border-bottom-color: #1f9a3c; 
 }
 .iziToast-message {
-  font-size: 12px !important;
-  line-height: 1.2 !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
 }
 
 /* Reduce padding for a more compact style */
@@ -3629,8 +3629,220 @@ background: rgba(60, 60, 60, 0.3);
 
 
 
+/* ====================================================================
+ /* ===================================================================
+  * #Share And Reffer Page Styles
+  *
+  * -------------------------------------------------------------------
+  * - Pages Included:
+  *    -  
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  *    - 
+  * -------------------------------------------------------------------
+  */
+.referral-header {
+  text-align: center;
+  margin-bottom: 5px;
+  padding: 1rem;
+  background: linear-gradient(145deg, #E80071 0%, #FF4E98 100%);
+  border-radius: 8px;
+}
 
+.referral-header h4 {
+  color: var(--text-color-4);
+  font-size: var(--font-size-heading2);
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
 
+.referral-header p {
+  color: var(--text-color-3);
+  margin: 0;
+  font-size: var(--font-size-second);
+}
+
+.referral-box {
+  background: var(--bg-color-4);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.referral-input-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.referral-input-group input {
+  flex: 1;
+  background: #212121;
+  border: 1px solid #333;
+  color: var(--text-color-4);
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.copy-btn-share-and-earn, .share-btn {
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 50px;
+  margin: 0;
+}
+
+.copy-btn-share-and-earn {
+  background: #333;
+  padding: 0.5rem 1.5rem;
+  color: var(--text-color-4);
+}
+
+.share-btn {
+  background: var(--main-color);
+  color: var(--text-color-4);
+  justify-content: center;
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.copy-btn-share-and-earn:hover, .share-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.referral-code {
+  padding: 0.8rem 1.5rem;
+  background: var(--bg-color-4);
+  border-radius: 8px;
+  color: var(--main-color);
+  font-weight: 600;
+  font-size: 1.2rem;
+  margin: 1.5rem 0;
+  border: 1px solid var(--main-color);
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-top: 10px;
+}
+
+.stat-card {
+  background: var(--bg-color-4);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-value {
+  font-size: var(--font-size-heading2);
+  font-weight: 600;
+  color: var(--main-color);
+  margin: 0.5rem 0;
+}
+
+.stat-label {
+  color: var(--text-color-2);
+  font-size: 0.9rem;
+}
+
+.achievement-icon {
+  font-size: 2.5rem;
+  color: var(--text-color-4);
+  margin-bottom: 1rem;
+}
+
+/* Add these new styles */
+.redeem-box {
+ 
+  background: var(--bg-color-4);
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.redeem-input-group {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.redeem-input-group input {
+  flex: 1;
+  background: #212121;
+  border: 1px solid #333;
+  color: var(--text-color-4);
+  padding: 2px 20px;
+  border-radius: 8px;
+  font-size: var(--font-size-second);
+  /* text-transform: uppercase; */
+}
+.redeem-input-group input:focus {
+  border: 1px solid var(--main-color);
+}
+.redeem-btn {
+  background: var(--main-color);
+  color: var(--text-color-4);
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin: 0;
+}
+
+.redeem-btn:hover {
+  background: #d1006a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(232, 0, 113, 0.3);
+}
+
+.section-title {
+  color: var(--text-color-4);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.referral-container input {
+  outline: none;
+  padding: 5px 20px;
+  height: 50px;
+}
+
+@media (max-width: 768px) {
+  .redeem-box {
+      padding: 5px 10px;
+  }
+  .referral-container {
+    padding: 0;
+}
+.referral-box {
+  padding: 5px 10px;
+}
+.stats-container {
+    grid-template-columns: 1fr;
+}
+  .share-btn {
+    width: 100%;
+  }
+}
 
 /* ====================================================================
  /* ===================================================================

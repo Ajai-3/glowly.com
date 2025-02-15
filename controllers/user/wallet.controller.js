@@ -8,7 +8,8 @@ import Transaction from "../../models/transaction.model.js";
 // ========================================================================================
 // RENDER MY WALLET PAGE
 // ========================================================================================
-// Displays the user's wallet with account balance, transaction history, and payment options.
+// Displays the user's wallet with account balance, transaction history, and payment
+// options.
 // ========================================================================================
 export const myWallet = async (req, res) => {
   try {

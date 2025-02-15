@@ -69,6 +69,7 @@ import {
 import { review, editReview } from "../controllers/user/review.controller.js";
 import { myCoupons } from "../controllers/user/coupon.controller.js";
 import { helpPage, getAppPage, privacyPolicy, termsAndCOnditions } from "../controllers/user/others.controller.js";
+import { shareAndEarn } from "../controllers/user/shareAndEarn.controller.js";
 
 router.get("/", loadUserData, renderHomePage);
 router.get("/home", loadUserData, renderHomePage);
@@ -154,6 +155,10 @@ router.get("/my-coupons", loadUserData, myCoupons);
 // Rewview Mangement
 router.post("/submit-review", loadUserData, review);
 router.patch("/edit-review/:reviewId", loadUserData, editReview);
+
+// Sare & Earn
+router.get("/share-and-earn", loadUserData, shareAndEarn);
+
 
 // Other Page Management
 router.get("/help", loadUserData, helpPage);
