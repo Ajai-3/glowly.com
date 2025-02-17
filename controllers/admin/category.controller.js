@@ -451,19 +451,19 @@ export const addOffer = async (req, res) => {
   }
 };
 
+
 cron.schedule("* * * * *", async () => {
   try {
-
-    console.log("Cron is called")
+    console.log("Cron is called");
 
     const currentDate = new Date().toISOString();
-
+console.log(currentDate)
     const activeOffers = await Offer.find({
-      isActive: false,
+      isActive: true,
       isDeleted: false,
       startDate: { $lte: currentDate },
     });
-
+console.log(activeOffers,"eeuir")
     for (const offer of activeOffers) {
       offer.isActive = true;
       await offer.save();
@@ -471,46 +471,46 @@ cron.schedule("* * * * *", async () => {
       const maxDiscountPercentage = 70;
 
       const category = await Category.findOne({ offerId: offer._id });
-      if (!category) {
-        continue;
-      }
+      if (!category) continue;
 
       const products = await Product.find({
         categoryId: category._id,
         isDeleted: false,
-        productOffer: { $eq: false }
+        productOffer: { $ne: "Applied" },
       });
-      
+      console.log(products)
 
       for (const product of products) {
-          for (const variant of product.variants) {
+        if (product.productOffer === "Applied") {
+          console.log(`Skipping product ${product._id} because it already has an applied offer`);
+          continue;
+        }
+        for (const variant of product.variants) {
+          if (!variant.salePriceBeforeOffer) {
             variant.salePriceBeforeOffer = variant.salePrice;
-            let newSalePrice = variant.regularPrice;
-            const maxDiscountValue =
-              (maxDiscountPercentage / 100) * variant.regularPrice;
-
-            if (offer.offerType === "flat") {
-              const appliedDiscount = Math.min(
-                offer.offerValue,
-                maxDiscountValue
-              );
-              newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-            } else if (offer.offerType === "percentage") {
-              const appliedDiscount = Math.min(
-                variant.regularPrice * (offer.offerValue / 100),
-                maxDiscountValue
-              );
-              newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-            }
-
-            variant.salePrice = Math.round(newSalePrice);
           }
 
-          await product.save();
+          let newSalePrice = variant.regularPrice;
+          const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
+
+          if (offer.offerType === "flat") {
+            const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+          } else if (offer.offerType === "percentage") {
+            const appliedDiscount = Math.min(
+              variant.regularPrice * (offer.offerValue / 100),
+              maxDiscountValue
+            );
+            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+          }
+
+          variant.salePrice = Math.round(newSalePrice);
         }
+
+        await product.save(); // No change to `productOffer`
+      }
     }
 
-    // Deactivate expired offers
     const expiredOffers = await Offer.find({
       isActive: true,
       endDate: { $lte: currentDate },
@@ -522,27 +522,124 @@ cron.schedule("* * * * *", async () => {
       await offer.save();
 
       const category = await Category.findOne({ offerId: offer._id });
-      if (!category) {
-        continue;
-      }
+      if (!category) continue;
 
       const products = await Product.find({
         categoryId: category._id,
-        productOffer: { $eq: false },
         isDeleted: false,
+        productOffer: "Not applied", // Only reset category-offered products
       });
 
       for (const product of products) {
         for (const variant of product.variants) {
-          variant.salePrice = variant.salePriceBeforeOffer;
+          if (variant.salePriceBeforeOffer) {
+            variant.salePrice = variant.salePriceBeforeOffer;
+            variant.salePriceBeforeOffer = null;
+          }
         }
-        await product.save();
+
+        await product.save(); // No change to `productOffer`
       }
     }
   } catch (error) {
     console.error("Error in cron job:", error);
   }
 });
+
+// cron.schedule("* * * * *", async () => {
+//   try {
+//     console.log("Cron is called");
+
+//     const currentDate = new Date().toISOString();
+
+//     const activeOffers = await Offer.find({
+//       isActive: false,
+//       isDeleted: false,
+//       startDate: { $lte: currentDate },
+//     });
+
+//     for (const offer of activeOffers) {
+//       offer.isActive = true;
+//       await offer.save();
+
+//       const maxDiscountPercentage = 70;
+
+//       const category = await Category.findOne({ offerId: offer._id });
+//       if (!category) continue;
+
+//       const products = await Product.find({
+//         categoryId: category._id,
+//         isDeleted: false,
+//         productOffer: "Not applied",
+//       });
+
+//       for (const product of products) {
+//         if (product.productOffer === "Applied") continue;
+
+//         for (const variant of product.variants) {
+//           if (!variant.salePriceBeforeOffer) {
+//             variant.salePriceBeforeOffer = variant.salePrice;
+//           }
+
+//           let newSalePrice = variant.regularPrice;
+//           const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
+
+//           if (offer.offerType === "flat") {
+//             const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+//           } else if (offer.offerType === "percentage") {
+//             const appliedDiscount = Math.min(
+//               variant.regularPrice * (offer.offerValue / 100),
+//               maxDiscountValue
+//             );
+//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+//           }
+
+//           variant.salePrice = Math.round(newSalePrice);
+//         }
+
+//         product.productOffer = "Applied";
+//         await product.save();
+//       }
+//     }
+
+//     const expiredOffers = await Offer.find({
+//       isActive: true,
+//       endDate: { $lte: currentDate },
+//     });
+
+//     for (const offer of expiredOffers) {
+//       offer.isActive = false;
+//       offer.isDeleted = true;
+//       await offer.save();
+
+//       const category = await Category.findOne({ offerId: offer._id });
+//       if (!category) continue;
+
+//       const products = await Product.find({
+//         categoryId: category._id,
+//         isDeleted: false,
+//         productOffer: "Applied",
+//       });
+
+//       for (const product of products) {
+//         for (const variant of product.variants) {
+//           if (variant.salePriceBeforeOffer) {
+//             variant.salePrice = variant.salePriceBeforeOffer;
+//             variant.salePriceBeforeOffer = null;
+//           }
+//         }
+
+//         product.productOffer = "Not applied";
+//         await product.save();
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
+
+
 
 // ========================================================================================
 // REMOVE OFFER FROM CATEGORY
@@ -587,7 +684,7 @@ export const removeOffer = async (req, res) => {
     const products = await Product.find({
       categoryId: category._id,
       isDeleted: false,
-      productOffer: false
+      productOffer: "Not applied"
     });
 
     for (const product of products) {

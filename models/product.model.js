@@ -77,11 +77,12 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+      productOffer: {
+        type: String,
+        enum: ["Applied", "Not applied"],
+        default: "Not applied",
+      },
     isDeleted: {
-      type: Boolean,
-      default: false,
-    },
-    productOffer: {
       type: Boolean,
       default: false,
     },
