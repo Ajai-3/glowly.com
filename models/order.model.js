@@ -44,7 +44,7 @@ const OrderSchema = new mongoose.Schema(
             "shipped",
             "delivered",
             "canceled",
-            "return_req",
+            "return_reqested",
             "returned",
           ],
           default: "pending",

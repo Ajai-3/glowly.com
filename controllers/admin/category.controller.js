@@ -453,6 +453,9 @@ export const addOffer = async (req, res) => {
 
 cron.schedule("* * * * *", async () => {
   try {
+
+    console.log("Cron is called")
+
     const currentDate = new Date().toISOString();
 
     const activeOffers = await Offer.find({
@@ -475,34 +478,36 @@ cron.schedule("* * * * *", async () => {
       const products = await Product.find({
         categoryId: category._id,
         isDeleted: false,
+        productOffer: { $eq: false }
       });
+      
 
       for (const product of products) {
-        for (const variant of product.variants) {
-          variant.salePriceBeforeOffer = variant.salePrice;
-          let newSalePrice = variant.regularPrice;
-          const maxDiscountValue =
-            (maxDiscountPercentage / 100) * variant.regularPrice;
+          for (const variant of product.variants) {
+            variant.salePriceBeforeOffer = variant.salePrice;
+            let newSalePrice = variant.regularPrice;
+            const maxDiscountValue =
+              (maxDiscountPercentage / 100) * variant.regularPrice;
 
-          if (offer.offerType === "flat") {
-            const appliedDiscount = Math.min(
-              offer.offerValue,
-              maxDiscountValue
-            );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-          } else if (offer.offerType === "percentage") {
-            const appliedDiscount = Math.min(
-              variant.regularPrice * (offer.offerValue / 100),
-              maxDiscountValue
-            );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+            if (offer.offerType === "flat") {
+              const appliedDiscount = Math.min(
+                offer.offerValue,
+                maxDiscountValue
+              );
+              newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+            } else if (offer.offerType === "percentage") {
+              const appliedDiscount = Math.min(
+                variant.regularPrice * (offer.offerValue / 100),
+                maxDiscountValue
+              );
+              newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+            }
+
+            variant.salePrice = Math.round(newSalePrice);
           }
 
-          variant.salePrice = Math.round(newSalePrice);
+          await product.save();
         }
-
-        await product.save();
-      }
     }
 
     // Deactivate expired offers
@@ -523,6 +528,7 @@ cron.schedule("* * * * *", async () => {
 
       const products = await Product.find({
         categoryId: category._id,
+        productOffer: { $eq: false },
         isDeleted: false,
       });
 
@@ -581,9 +587,9 @@ export const removeOffer = async (req, res) => {
     const products = await Product.find({
       categoryId: category._id,
       isDeleted: false,
+      productOffer: false
     });
 
-    console.log(products)
     for (const product of products) {
       for (const variant of product.variants) {
         variant.salePrice = variant.salePriceBeforeOffer;

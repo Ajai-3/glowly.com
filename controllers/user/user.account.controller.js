@@ -64,7 +64,7 @@ export const handleProfileUpdate = async (req, res) => {
         profilePic: updatedUser.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", newToken, { httpOnly: true, secure: true });

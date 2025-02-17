@@ -236,6 +236,7 @@ export const addProduct = async (req, res) => {
         stockQuantity: parseInt(variant.stockQuantity),
         regularPrice: parseFloat(variant.regularPrice),
         salePrice: parseFloat(variant.salePrice),
+        salePriceBeforeOffer: parseFloat(variant.salePrice),
         images: variantImages,
       };
     });
@@ -372,6 +373,7 @@ export const editProduct = async (req, res) => {
     variant.shade = variantShade;
     variant.regularPrice = variantRegularPrice;
     variant.salePrice = variantSalePrice;
+    variant.salePriceBeforeOffer = variantSalePrice,
     variant.stockQuantity = variantStockQuantity;
 
     if (
@@ -548,33 +550,35 @@ export const addNewVariants = async (req, res) => {
       ? req.files.sharedImages.map((file) => file.path)
       : [];
 
-    const processedVariants = parsedVariants.map((variant, index) => {
-      const variantImages =
-        shareImages === "true"
-          ? sharedImages
-          : req.files[`variantImages_${index}`]
-          ? req.files[`variantImages_${index}`].map((file) => file.path)
-          : [];
+      const processedVariants = [];
 
-      if (variantImages.length === 0) {
-        throw new Error(`Images are required for variant ${index + 1}`);
+      for (let index = 0; index < parsedVariants.length; index++) {
+        const variant = parsedVariants[index];
+      
+        const variantImages =
+          shareImages === "true"
+            ? sharedImages
+            : req.files?.[`variantImages_${index}`]
+            ? req.files[`variantImages_${index}`].map((file) => file.path)
+            : [];
+      
+        if (variantImages.length === 0) {
+          return res
+            .status(400)
+            .json({ success: false, message: `Images are required for variant ${index + 1}` });
+        }
+      
+        processedVariants.push({
+          color: variant.color,
+          shade: variant.shade,
+          stockQuantity: parseInt(variant.stockQuantity),
+          regularPrice: parseFloat(variant.regularPrice),
+          salePrice: parseFloat(variant.salePrice),
+          salePriceBeforeOffer: parseFloat(variant.salePrice),
+          images: variantImages,
+        });
       }
-
-      if (parseFloat(variant.salePrice) >= parseFloat(variant.regularPrice)) {
-        throw new Error(
-          `Sale price must be less than regular price for variant ${index + 1}.`
-        );
-      }
-
-      return {
-        color: variant.color,
-        shade: variant.shade,
-        stockQuantity: parseInt(variant.stockQuantity),
-        regularPrice: parseFloat(variant.regularPrice),
-        salePrice: parseFloat(variant.salePrice),
-        images: variantImages,
-      };
-    });
+      
 
     product.variants.push(...processedVariants);
 

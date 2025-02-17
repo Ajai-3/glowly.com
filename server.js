@@ -10,6 +10,7 @@ import { startServer } from './config/connection.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.midleware.js';
 
 
+
 const app = express();
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
@@ -51,8 +52,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/',  userRouter);
-// app.use('/', adminRouter);
+app.use('/', userRouter);
 app.use('/user', userRouter);
 app.use('/admin', adminRouter);
 

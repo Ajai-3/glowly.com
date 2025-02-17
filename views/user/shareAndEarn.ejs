@@ -30,70 +30,72 @@
         </div>
       </div>
 
-<!-- Right Side Box -->
+      <!-- Right Side Box -->
 
-<div class="col-md-9 p-0">
-    <div class="card shadow-sm p-4 user-menu-wallet">
-        <div class="referral-container">
+      <div class="col-md-9 p-0">
+        <div class="card shadow-sm p-4 user-menu-wallet">
+          <div class="referral-container">
             <div class="referral-header">
-                <h4 class="mb-0">Share & Earn with Glowly</h4>
-                <p>Refer your friends and earn ₹100 on their first purchase!</p>
+              <h4 class="mb-0">Share & Earn with Glowly</h4>
+              <p>Refer your friends and earn ₹100 on their first purchase!</p>
             </div>
             <div class="stats-container mb-4">
-                <div class="stat-card">
-                    <i class="fas fa-gift achievement-icon"></i>
-                    <div class="stat-value">₹0</div>
-                    <div class="stat-label">Total Earnings</div>
-                </div>
-                <div class="stat-card">
-                    <i class="fas fa-users achievement-icon"></i>
-                    <div class="stat-value">0</div>
-                    <div class="stat-label">Successful Referrals</div>
-                </div>
+              <div class="stat-card">
+                <i class="fas fa-users achievement-icon"></i>
+                <div class="stat-value"> <%= userData.referredUsers.length %> </div>
+                <div class="stat-label">Successful Referrals</div>
+              </div>
+              <div class="stat-card">
+                <i class="fas fa-gift achievement-icon"></i>
+                <div class="stat-value"> <%= userData.referredUsers.length * 100 %> </div>
+                <div class="stat-label">Total Earnings</div>
+              </div>
             </div>
 
-         
 
-                <div class="redeem-box">
-                    <h5 class="section-title">
-                        <i class="fas fa-ticket-alt"></i>
-                        Have a Referral Code?
-                    </h5>
-                    <div class="redeem-input-group">
-                        <input 
-                            type="text" 
-                            id="referralCodeInput" 
-                            placeholder="Enter referral code" 
-                            maxlength="10"
-                            pattern="[A-Za-z0-9]+"
-                        >
-                        <button class="redeem-btn" onclick="redeemReferralCode()">
-                            <i class="fas fa-check"></i> Apply
-                        </button>
-                    </div>
-                    <div id="referralError" class="error-message"></div>
+            <% if (userData.referredBy === null) { %>
+              <div class="redeem-box">
+                <h5 class="section-title">
+                  <i class="fas fa-ticket-alt"></i>
+                  Have a Referral Code?
+                </h5>
+                <div class="redeem-input-group">
+                  <input type="text" id="referralCodeInput" placeholder="Enter referral code" maxlength="10" pattern="[A-Za-z0-9]+">
+                  <button class="redeem-btn" onclick="redeemReferralCode()">
+                    <i class="fas fa-check"></i> Apply
+                  </button>
                 </div>
+                <div id="referralError" class="error-message"></div>
+              </div>
+            <% } else { %>
+              <div class="redeem-box text-center">
+                <h5 class="section-title mb-0">
+                  <i class="fas fa-ticket-alt"></i>
+                  You've claimed this reward. Check your wallet for details! 🚀
+                </h5>
+              </div>
+            <% } %>
 
-                <div class="referral-box">
-                    <h5 class="mb-3" style="color: #fff;">Your Unique Referral Link</h5>
-                    <div class="referral-input-group">
-                        <input type="text" id="referralLink" value="https://glowly.com/ref/XXXX" readonly/>
-                        <button class="copy-btn-share-and-earn" onclick="copyReferralLink()">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                        <button class="share-btn" onclick="shareReferralLink()">
-                            <i class="fas fa-share-alt"></i> Share with Friends
-                        </button>
-                    </div>
-                   
-                </div>
-    
-    
+            <div class="referral-box">
+              <h5 class="mb-3" style="color: #fff;">Your Unique Referral Code</h5>
+              <div class="referral-input-group">
+                <input type="text" id="referralLink" value="<%= userData.referralCode %>" readonly />
+                <button class="copy-btn-share-and-earn" onclick="copyReferralLink()">
+                  <i class="fas fa-copy"></i> Copy
+                </button>
+                <button class="share-btn" onclick="shareReferralLink()">
+                  <i class="fas fa-share-alt"></i> Share referral link with Friends
+                </button>
+              </div>
 
-            
+            </div>
+
+
+
+
+          </div>
         </div>
-    </div>
-</div>
+      </div>
 
 
     </div>
@@ -156,76 +158,97 @@
 
 
 
-    // Copy Referral Link
-    function copyReferralLink() {
-      const referralLink = document.getElementById('referralLink');
-      referralLink.select();
-      document.execCommand('copy');
-      toastSuccess('Referral link copied to clipboard!');
+  // Copy Referral Link
+  function copyReferralLink() {
+    const referralLink = document.getElementById('referralLink');
+    referralLink.select();
+    document.execCommand('copy');
+    toastSuccess('Referral code copied to clipboard!');
+  }
+
+  function shareReferralLink() {
+    const referralLink = "https://glowly.com/signup?referralCode=<%= userData.referralCode %>";
+    const message = `🚀 Join Glowly and earn rewards!\n\nSign up using my referral link:\n\n${referralLink}`;
+
+    if (navigator.share) {
+      navigator.share({
+          title: "Join Glowly!",
+          text: message,
+        }).then(() => console.log("Shared successfully"))
+        .catch((error) => console.error("Error sharing:", error));
+    } else {
+      const encodedMessage = encodeURIComponent(message);
+      const fallbackURL = `https://wa.me/?text=${encodedMessage}`;
+      window.open(fallbackURL, "_blank");
     }
-  
-    // Share Referral Link
-    function shareReferralLink() {
-      const referralLink = document.getElementById('referralLink').value;
-      const shareData = {
-        title: 'Join me and earn rewards!',
-        text: 'Check out this amazing platform and earn rewards with me!',
-        url: referralLink,
-      };
-  
-      if (navigator.share) {
-        navigator.share(shareData)
-          .then(() => console.log('Shared successfully'))
-          .catch((error) => console.error('Error sharing:', error));
-      } else {
-        toastWarning('Your device does not support sharing directly. Please copy the link manually.');
-      }
+  }
+
+  function fireConfetti() {
+    var count = 1000;
+    var defaults = { origin: { y: 0.7 } };
+
+    function fire(particleRatio, opts) {
+      confetti({
+        ...defaults,
+        ...opts,
+        particleCount: Math.floor(count * particleRatio)
+      });
     }
 
-    function redeemReferralCode() {
-        const codeInput = document.getElementById('referralCodeInput');
-        const errorDiv = document.getElementById('referralError');
-        const code = codeInput.value.trim().toUpperCase();
-    
-        // Basic validation
-        if (!code) {
-            errorDiv.textContent = 'Please enter a referral code';
-            errorDiv.style.display = 'block';
-            return;
-        }
-    
-        // Make API call to verify and redeem code
-        fetch('/redeem-referral', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ code })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                toastSuccess('Referral code applied successfully!');
-                errorDiv.style.display = 'none';
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1500);
-            } else {
-                errorDiv.textContent = data.message || 'Invalid referral code';
-                errorDiv.style.display = 'block';
-            }
-        })
-        .catch(error => {
-            errorDiv.textContent = 'Error processing referral code';
-            errorDiv.style.display = 'block';
-        });
+    fire(0.25, { spread: 246, startVelocity: 55 });
+    fire(0.2, { spread: 80 });
+    fire(0.35, { spread: 1000, decay: 0.91, scalar: 0.8 });
+    fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1, { spread: 1200, startVelocity: 45 });
+}
+
+  function redeemReferralCode() {
+    const codeInput = document.getElementById('referralCodeInput');
+    const errorDiv = document.getElementById('referralError');
+    const code = codeInput.value.trim().toUpperCase();
+
+    // Basic validation
+    if (!code) {
+      errorDiv.textContent = 'Please enter a referral code';
+      errorDiv.style.display = 'block';
+      return;
     }
-    
-    // Add input validation
-    document.getElementById('referralCodeInput').addEventListener('input', function(e) {
-        this.value = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-        document.getElementById('referralError').style.display = 'none';
-    });
+
+    // Make API call to verify and redeem code
+    fetch('/redeem-referral', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          code
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          toastSuccess(data.message);
+          if (data.showConfetti) {
+           fireConfetti();
+         }
+          setTimeout(() => {
+            window.location.href = '/share-and-earn';
+          }, 3500);
+        } else {
+          toastError(data.message);
+        }
+      })
+      .catch(error => {
+        errorDiv.textContent = 'Error processing referral code';
+        errorDiv.style.display = 'block';
+      });
+  }
+
+  // Add input validation
+  document.getElementById('referralCodeInput').addEventListener('input', function(e) {
+    this.value = this.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    document.getElementById('referralError').style.display = 'none';
+  });
 </script>
 
 </html>

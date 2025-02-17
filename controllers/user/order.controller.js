@@ -65,8 +65,6 @@ export const cancelOrder = async (req, res) => {
       return res.redirect("user/home");
     }
 
-    console.log(user, wallet);
-
     if (!productId || !variantId || !orderId || !quantity) {
       return res.status(400).json({ success: false, message: "Missing data." });
     }
@@ -188,7 +186,7 @@ export const returnOrder = async (req, res) => {
         .json({ success: false, message: "Product not found in the order." });
     }
 
-    productInOrder.status = "return_req";
+    productInOrder.status = "return_reqested";
     productInOrder.return_reqested_at = new Date();
 
     await order.save();

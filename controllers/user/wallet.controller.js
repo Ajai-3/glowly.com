@@ -14,16 +14,17 @@ import Transaction from "../../models/transaction.model.js";
 export const myWallet = async (req, res) => {
   try {
     const { user, brands, token, wallet, cartCount, categories } = req;
+
+    if (!token) {
+      return res.redirect("/home");
+    }
+
     const { page = 1, limit = 10, type } = req.query;
     const skip = (page - 1) * limit;
 
     let transactions = [];
     let totalTransactions = 0;
     let query = {};
-
-    if (!token) {
-      return res.redirect("/home");
-    }
 
     if (wallet) {
       query.wallet_id = wallet._id;

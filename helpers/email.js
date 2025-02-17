@@ -1,7 +1,7 @@
-import crypto from "crypto";
-import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-dotenv.config();
+import crypto from 'crypto';
+import nodemailer from "nodemailer"
+import dotenv from "dotenv";dotenv.config();
+
 
 // ========================================================================================
 // GENERATE RANDOM STRING FOR RESEND EMAIL
@@ -9,7 +9,7 @@ dotenv.config();
 // This function generates a random string to be used for resending email verification.
 // ========================================================================================
 export const generateResetCode = () => {
-  return crypto.randomBytes(20).toString("hex");
+  return crypto.randomBytes(20).toString('hex');
 };
 
 // ========================================================================================
@@ -17,11 +17,11 @@ export const generateResetCode = () => {
 // ========================================================================================
 // This function generates a one-time password (OTP) for authentication or verification.
 // ========================================================================================
-export const generateOTP = () => {
+export const  generateOTP = () => {
   const OTP = Math.floor(100000 + Math.random() * 900000).toString();
-  const expiryTime = Date.now() + 5 * 60 * 1000;
-  return { OTP, expiryTime };
-};
+  const expiryTime = Date.now() + 5 * 60 * 1000; 
+  return { OTP, expiryTime }
+}
 
 // ========================================================================================
 // GENERATE REFERRAL CODE
@@ -29,46 +29,45 @@ export const generateOTP = () => {
 // This function generates a unique referral code for users to share and earn rewards.
 // ========================================================================================
 export const generateReferralCode = (length = 8) => {
-  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let referralCode = "";
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let referralCode = '';
   for (let i = 0; i < length; i++) {
-    referralCode += characters.charAt(
-      Math.floor(Math.random() * characters.length)
-    );
+      referralCode += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   return referralCode;
-};
+}
 
 // ========================================================================================
 // SEND OTP TO USER EMAIL
 // ========================================================================================
-// This function generates a one-time password (OTP) and sends it to the user's email
+// This function generates a one-time password (OTP) and sends it to the user's email 
 // for authentication or verification purposes.
 // ========================================================================================
 export const sendOTPToUserEmail = async (email, OTP) => {
-  try {
+   try {
+     
     const transporter = nodemailer.createTransport({
-      service: "gmail",
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
-      },
-    });
+        host: "smtp.gmail.com",  
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: {
+            user: process.env.NODEMAILER_EMAIL,
+            pass: process.env.NODEMAILER_PASSWORD
+        }
+    })
 
     const info = await transporter.sendMail({
-      from: process.env.NODEMAILER_EMAIL,
-      to: email,
-      subject: "Your OTP for Glowly E-commerce Registration",
-      text: `Hi, 
+        from: process.env.NODEMAILER_EMAIL,
+        to: email,
+        subject: "Your OTP for Glowly E-commerce Registration", 
+        text: `Hi, 
                Thank you for registering with Glowly E-commerce! 
                Your OTP is: ${OTP}.
                If you didn't request this OTP, please ignore this message.
                Best regards, 
-               Glowly Team`,
-      html: `
+               Glowly Team`,  
+        html: `
         <html>
           <head>
             <style>
@@ -130,39 +129,40 @@ export const sendOTPToUserEmail = async (email, OTP) => {
             </div>
           </body>
         </html>
-      `, // Your styled HTML content
+      `,  // Your styled HTML content
     });
 
-    return info.accepted.length > 0;
-  } catch (error) {
-    console.error("Error sending email.", error);
-    return false;
-  }
-};
+    return info.accepted.length > 0
+   } catch (error) {
+      console.error("Error sending email.", error);
+      return false
+   }
+}
+
 
 // ========================================================================================
 // SEND RESET PASSWORD EMAIL
 // ========================================================================================
-// This function sends an email to the user with a reset password link or OTP
+// This function sends an email to the user with a reset password link or OTP 
 // to help them securely reset their account password.
 // ========================================================================================
 export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
   try {
-    // Create a transporter object for nodemailer (example with Gmail)
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.NODEMAILER_EMAIL,
-        pass: process.env.NODEMAILER_PASSWORD,
-      },
-    });
+      // Create a transporter object for nodemailer (example with Gmail)
+      const transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+              user: process.env.NODEMAILER_EMAIL, 
+              pass: process.env.NODEMAILER_PASSWORD
+          },
+      });
 
-    // Email content
-    const mailOptions = {
-      from: process.env.NODEMAILER_EMAIL,
-      to: email,
-      subject: "Password Reset Request",
-      html: `
+      // Email content
+      const mailOptions = {
+          from: process.env.NODEMAILER_EMAIL,  
+          to: email,
+          subject: 'Password Reset Request',
+          html: `
               <html>
                   <head>
                       <style>
@@ -231,14 +231,15 @@ export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
                   </body>
               </html>
           `,
-    };
+      };
 
-    // Send email
-    const info = await transporter.sendMail(mailOptions);
+      // Send email
+      const info = await transporter.sendMail(mailOptions);
 
-    return info.accepted.length > 0;
+      return info.accepted.length > 0;
   } catch (error) {
-    console.error("Error sending OTP email:", error);
-    return false;
+      console.error("Error sending OTP email:", error);
+      return false;
   }
 };
+

@@ -151,7 +151,7 @@
                                   <% if (product.status === 'shipped') { %> pink-p <% } %>
                                   <% if (product.status === 'delivered') { %> green-p <% } %>
                                   <% if (product.status === 'canceled') { %> red-p <% } %>
-                                  <% if (product.status === 'return_req') { %> yellow-p <% } %>
+                                  <% if (product.status === 'return_reqested') { %> yellow-p <% } %>
                                   <% if (product.status === 'returned') { %> blue-p <% } %>">
                           <%= product.status %>
                         </p2>
@@ -345,7 +345,7 @@
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              const statusText = actionType === 'cancel' ? 'canceled' : 'return_req';
+              const statusText = actionType === 'cancel' ? 'canceled' : 'return_reqested';
               const statusClass = actionType === 'cancel' ? 'red-p' : 'yellow-p';
               const statusElement = buttonElement.closest('.col-md-2').querySelector('p2');
               statusElement.textContent = statusText;

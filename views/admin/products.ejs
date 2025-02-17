@@ -90,6 +90,7 @@
           <th>Brand</th>
           <th>Category</th>
           <th>Sub category</th>
+          <th>Offer</th>
           <th>Price</th>
           <th>Sale Price</th>
           <th>Stock</th>
@@ -113,6 +114,18 @@
             <td><%= variant.brandName %></td>
             <td><%= variant.categoryName %></td>
             <td><%= variant.subcategoryName %></td>
+            <td>
+            
+              <button 
+              class="add-offer-btn" 
+              data-bs-toggle="modal" 
+              data-bs-target="#offerModal"
+              data-product-id="<%= variant.productId %>">
+              Add Offer
+            </button>
+            
+
+            </td>
             <td><%= variant.regularPrice %></td>
             <td><%= variant.salePrice %></td>
             <td><%= variant.stockQuantity %></td>
@@ -156,7 +169,26 @@
   </div>
   
 
-
+  <div class="modal fade" id="offerModal" tabindex="-1" aria-labelledby="offerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="offerModalLabel">Add Offer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="offerForm">
+            <input type="hidden" id="productId" name="productId">
+            <div class="mb-3">
+              <label for="discount" class="form-label">Discount (%)</label>
+              <input type="number" class="form-control" id="discount" name="discount" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Offer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
 <div class="modal fade top-items-modal" id="topItemsModal" tabindex="-1" role="dialog" aria-labelledby="topItemsModalLabel" aria-hidden="true">
@@ -228,7 +260,22 @@
       position: 'topRight',
     });
   };
+  document.addEventListener("DOMContentLoaded", function () {
+    const offerModal = document.getElementById("offerModal");
 
+    offerModal.addEventListener("show.bs.modal", function (event) {
+      const button = event.relatedTarget;
+      const productId = button.getAttribute("data-product-id");
+      document.getElementById("productId").value = productId;
+    });
+
+    document.getElementById("offerForm").addEventListener("submit", function (event) {
+      event.preventDefault();
+      const productId = document.getElementById("productId").value;
+      const discount = document.getElementById("discount").value;
+      console.log("Submitting offer for Product ID:", productId, "with Discount:", discount);
+    });
+  });
 
   document.addEventListener('DOMContentLoaded', function () {
   const btn = document.querySelector(".top-items-btn");

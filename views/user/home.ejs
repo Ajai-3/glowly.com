@@ -5,124 +5,124 @@
 
 
 <div class="user-contents">
- <!-- Video Carousel -->
-<div id="videoCarousel" class="carousel carousel-dark slide carousel-home">
-  <div class="carousel-inner">
+  <!-- Video Carousel -->
+  <div id="videoCarousel" class="carousel carousel-dark slide carousel-home">
+    <div class="carousel-inner">
       <!-- First Video -->
       <div class="carousel-item active">
-          <video class="d-block w-100" autoplay muted playsinline id="video1">
-              <source src="/assets/videos/home-video1.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-          </video>
-          <div class="progress-container">
-              <div class="progress-circle" id="progress1"></div>
-          </div>
+        <video class="d-block w-100" autoplay muted playsinline id="video1">
+          <source src="/assets/videos/home-video1.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="progress-container">
+          <div class="progress-circle" id="progress1"></div>
+        </div>
       </div>
 
       <!-- Second Video -->
       <div class="carousel-item">
-          <video class="d-block w-100" autoplay muted playsinline id="video2">
-              <source src="/assets/videos/home-video2.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-          </video>
-          <div class="progress-container">
-              <div class="progress-circle" id="progress2"></div>
-          </div>
+        <video class="d-block w-100" autoplay muted playsinline id="video2">
+          <source src="/assets/videos/home-video2.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="progress-container">
+          <div class="progress-circle" id="progress2"></div>
+        </div>
       </div>
 
       <!-- Third Video -->
       <div class="carousel-item">
-          <video class="d-block w-100" autoplay muted playsinline id="video3">
-              <source src="/assets/videos/home-video3.mp4" type="video/mp4">
-              Your browser does not support the video tag.
-          </video>
-          <div class="progress-container">
-              <div class="progress-circle" id="progress3"></div>
-          </div>
-      </div>
-  </div>
-</div>
-
-
-  
-  <% categorizedProducts.forEach(categoryGroup => { %>
-    <div class="category-group">
-      <div class="home-category-products-header">
-        <h2 class="home-product-category-title">
-          <% if (categoryGroup && categoryGroup.categoryName) { %>
-            <% if (categoryGroup.categoryName.toLowerCase() === 'lips') { %>
-              Enhance Your Lips with Elegance
-            <% } else if (categoryGroup.categoryName.toLowerCase() === 'face') { %>
-              Glow with the Best Face Products
-            <% } else if (categoryGroup.categoryName.toLowerCase() === 'eyes') { %>
-               Define Your Eyes, Define Your Style
-            <% } else { %>
-              Discover the Best <%= categoryGroup.categoryName %> Products
-            <% } %>
-          <% } else { %>
-            No Category Found
-          <% } %>
-        </h2>
-        <div><a href="/shop?filters=%7B%22category%22%3A%5B%22<%= categoryGroup.categoryId %>%22%5D%7D">see all  ⟶</a></div>
-        
-        
-        
-      </div>
-      <div class="product-group-wrapper" style="position: relative; overflow: hidden;">
-        <div class="product-group d-flex" id="product-group-<%= categoryGroup.categoryName %>" style="transition: transform 0.5s ease;">
-          <% categoryGroup.variants.forEach((variant) => { %>
-            <div class="product-card col-12 col-sm-6 col-md-4 col-lg-2 mx-2" data-variant-id="<%= variant._id %>">
-              <a href="/product/<%= variant.productId %>/<%= variant._id %>">
-                <img src="<%= variant.images[0] %>" class="d-block w-100" alt="<%= variant.productTitle %> Image" />
-              </a>
-              <div class="product-card-like">
-                <form action="/add-to-wishlist/<%= variant.productId %>" method="POST" class="wishlist-form" id="wishlist-form">
-                  <% if (user) { %>
-                    <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === variant.productId.toString() && item.variant_id.toString() === variant._id.toString())) { %>
-                      <button type="submit" title="Remove from Wishlist" class="wishlist-button">
-                        <i class="fa-solid fa-heart in-wishlist"></i>
-                      </button>
-                    <% } else { %>
-                      <button type="submit" title="Add to Wishlist" class="wishlist-button">
-                        <i class="fa-solid fa-heart not-in-wishlist"></i>
-                      </button>
-                    <% } %>
-                  <% } else { %>
-                    <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
-                      <i class="fa-solid fa-heart"></i>
-                    </button>
-                  <% } %>
-                </form>
-              </div>
-              <a href="/product/<%= variant.productId %>/<%= variant._id %>">
-                <p class="product-title"><%= variant.productTitle %> - <%= variant.shade %></p>
-              </a>
-              <div class="product-prices-box">
-                <p class="sale-price price-inr">&#8377;<%= variant.salePrice %></p>
-                <p class="original-price price-inr mx-2">&#8377;<%= variant.regularPrice %></p>
-                <% if (variant.regularPrice > variant.salePrice) { %>
-                  <span class="discount-percentage">
-                    <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
-                  </span>
-                <% } %>
-              </div>
-              <% const variantInCart = cartVariants.includes(variant._id.toString()); %>
-              <% if (variantInCart) { %>
-                <a href="/user/my-cart">
-                  <button type="button" class="go-to-cart-btn">Go To Bag</button>
-                </a>
-              <% } else { %>
-                <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= variant.productId %>" data-variant-id="<%= variant._id %>">
-                  <button type="submit" class="add-to-cart-btn">Add to Bag</button>
-                </form>
-              <% } %>
-            </div>
-          <% }); %>
+        <video class="d-block w-100" autoplay muted playsinline id="video3">
+          <source src="/assets/videos/home-video3.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="progress-container">
+          <div class="progress-circle" id="progress3"></div>
         </div>
-        <button class="prev-button custom-carousel-control" data-category="<%= categoryGroup.categoryName %>">&lt;</button>
-        <button class="next-button custom-carousel-control" data-category="<%= categoryGroup.categoryName %>">&gt;</button>
       </div>
     </div>
+  </div>
+
+
+
+  <% categorizedProducts.forEach(categoryGroup => { %>
+  <div class="category-group">
+    <div class="home-category-products-header">
+      <h2 class="home-product-category-title">
+        <% if (categoryGroup && categoryGroup.categoryName) { %>
+        <% if (categoryGroup.categoryName.toLowerCase() === 'lips') { %>
+        Enhance Your Lips with Elegance
+        <% } else if (categoryGroup.categoryName.toLowerCase() === 'face') { %>
+        Glow with the Best Face Products
+        <% } else if (categoryGroup.categoryName.toLowerCase() === 'eyes') { %>
+        Define Your Eyes, Define Your Style
+        <% } else { %>
+        Discover the Best <%= categoryGroup.categoryName %> Products
+        <% } %>
+        <% } else { %>
+        No Category Found
+        <% } %>
+      </h2>
+      <div><a href="/shop?filters=%7B%22category%22%3A%5B%22<%= categoryGroup.categoryId %>%22%5D%7D">see all ⟶</a></div>
+
+
+
+    </div>
+    <div class="product-group-wrapper" style="position: relative; overflow: hidden;">
+      <div class="product-group d-flex" id="product-group-<%= categoryGroup.categoryName %>" style="transition: transform 0.5s ease;">
+        <% categoryGroup.variants.forEach((variant) => { %>
+        <div class="product-card col-12 col-sm-6 col-md-4 col-lg-2 mx-2" data-variant-id="<%= variant._id %>">
+          <a href="/product/<%= variant.productId %>/<%= variant._id %>">
+            <img src="<%= variant.images[0] %>" class="d-block w-100" alt="<%= variant.productTitle %> Image" />
+          </a>
+          <div class="product-card-like">
+            <form action="/add-to-wishlist/<%= variant.productId %>" method="POST" class="wishlist-form" id="wishlist-form">
+              <% if (user) { %>
+              <% if (wishlist && wishlist.products && wishlist.products.some(item => item.product_id._id.toString() === variant.productId.toString() && item.variant_id.toString() === variant._id.toString())) { %>
+              <button type="submit" title="Remove from Wishlist" class="wishlist-button">
+                <i class="fa-solid fa-heart in-wishlist"></i>
+              </button>
+              <% } else { %>
+              <button type="submit" title="Add to Wishlist" class="wishlist-button">
+                <i class="fa-solid fa-heart not-in-wishlist"></i>
+              </button>
+              <% } %>
+              <% } else { %>
+              <button type="button" title="Login to Add to Wishlist" class="wishlist-button" onclick="window.location.href='/login'">
+                <i class="fa-solid fa-heart"></i>
+              </button>
+              <% } %>
+            </form>
+          </div>
+          <a href="/product/<%= variant.productId %>/<%= variant._id %>">
+            <p class="product-title"><%= variant.productTitle %> - <%= variant.shade %></p>
+          </a>
+          <div class="product-prices-box">
+            <p class="sale-price price-inr">&#8377;<%= variant.salePrice %></p>
+            <p class="original-price price-inr mx-2">&#8377;<%= variant.regularPrice %></p>
+            <% if (variant.regularPrice > variant.salePrice) { %>
+            <span class="discount-percentage">
+              <%= Math.round(((variant.regularPrice - variant.salePrice) / variant.regularPrice) * 100) %>% Off
+            </span>
+            <% } %>
+          </div>
+          <% const variantInCart = cartVariants.includes(variant._id.toString()); %>
+          <% if (variantInCart) { %>
+          <a href="/user/my-cart">
+            <button type="button" class="go-to-cart-btn">Go To Bag</button>
+          </a>
+          <% } else { %>
+          <form action="/add-to-cart" method="POST" class="cart-form" data-product-id="<%= variant.productId %>" data-variant-id="<%= variant._id %>">
+            <button type="submit" class="add-to-cart-btn">Add to Bag</button>
+          </form>
+          <% } %>
+        </div>
+        <% }); %>
+      </div>
+      <button class="prev-button custom-carousel-control" data-category="<%= categoryGroup.categoryName %>">&lt;</button>
+      <button class="next-button custom-carousel-control" data-category="<%= categoryGroup.categoryName %>">&gt;</button>
+    </div>
+  </div>
   <% }); %>
   <div id="carouselExampleDark" class="carousel carousel-dark slide carousel-home" data-bs-ride="carousel">
     <div class="carousel-indicators">
@@ -154,19 +154,19 @@
 
   <div class="brands-container-home mb-4">
     <% if (brands && brands.length > 0) { %>
-      <% brands.forEach((brand) => { %>
-        <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D" class="brand-link">
-          <div class="brand-item">
-            <span><%= brand.brandName %></span>
-          </div>
-        </a>
-      <% }); %>
+    <% brands.forEach((brand) => { %>
+    <a href="/shop?filters=%7B%22brand%22%3A%5B%22<%= brand.id %>%22%5D%7D" class="brand-link">
+      <div class="brand-item">
+        <span><%= brand.brandName %></span>
+      </div>
+    </a>
+    <% }); %>
     <% } else { %>
-      <div>No Brands Available</div>
+    <div>No Brands Available</div>
     <% } %>
   </div>
-  
-  
+
+
 
 </div>
 
@@ -176,53 +176,190 @@
 </body>
 <%- include('partials/footerforhome') %>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-        let videoCarousel = new bootstrap.Carousel(document.getElementById("videoCarousel"), { interval: false });
-        let videos = document.querySelectorAll("#videoCarousel video");
+  const toastSuccess = (message) => {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
 
-        videos.forEach((video, index) => {
-            let progressCircle = document.getElementById(`progress${index + 1}`);
+    });
+  };
 
-            video.addEventListener("timeupdate", function () {
-                let progress = (video.currentTime / video.duration) * 100;
-                progressCircle.style.left = `${progress}%`;
-            });
+  const toastError = (message) => {
+    iziToast.error({
+      message: message,
+      backgroundColor: '#e51e1e',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-times',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+  const toastInfo = (message) => {
+    iziToast.info({
+      message: message,
+      backgroundColor: '#2160de',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-info-circle',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
 
-            video.addEventListener("ended", function () {
-                videoCarousel.next(); 
-            });
-        });
+  const toastWarning = (message) => {
+    iziToast.warning({
+      message: message,
+      backgroundColor: '#e5811e',
+      messageColor: '#212529',
+      icon: 'fa fa-exclamation-triangle',
+      iconColor: '#212529',
+      timeout: 1500,
+      position: 'topRight',
+    });
+  };
+
+  const toastWish = (message) => {
+    iziToast.show({
+      message: message,
+      backgroundColor: '#e80071',
+      messageColor: '#FFFFFF',
+      icon: 'fas fa-check-circle',
+      iconColor: '#FFFFFF',
+      timeout: 2000,
+      position: 'bottomCenter',
+    });
+  };
+  const urlParams = new URLSearchParams(window.location.search);
+  const message = urlParams.get('msg');
+
+  if (message) {
+    iziToast.success({
+      message: message,
+      backgroundColor: '#0e932d',
+      messageColor: '#FFFFFF',
+      icon: 'fa fa-check',
+      iconColor: '#FFFFFF',
+      timeout: 1500,
+      position: 'topRight',
     });
 
-  $(document).ready(function () {
-            const offers = $('#offers-container .offer-item');
-            let currentIndex = 0;
-            const offerElement = $('#current-offer');
+    const newUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState(null, '', newUrl);
+  }
 
-            if (offers.length > 0) {
-                offerElement.text(offers.eq(currentIndex).text());
-            }
+  document.addEventListener("DOMContentLoaded", function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReferral = urlParams.get("isReferral");
 
-            function showNextOffer() {
-                if (offers.length === 0) return;
+    if (isReferral === "true") {
+      toastSuccess("You have successfully earned ₹100 referral bonus!")
+      var count = 600;
+      var defaults = {
+        origin: {
+          y: 0.7
+        }
+      };
 
-                const nextIndex = (currentIndex + 1) % offers.length;
-                const nextOffer = offers.eq(nextIndex).text();
-
-                offerElement.animate({ opacity: 0, marginTop: '-20px' }, 100, function () {
-                    setTimeout(function () {
-                        offerElement.text(nextOffer);
-                        offerElement.css({ opacity: 0, marginTop: '20px' });
-                        offerElement.animate({ opacity: 1, marginTop: '0px' }, 100);
-                        currentIndex = nextIndex;
-                    }, 3000);
-                });
-            }
-
-            if (offers.length > 0) {
-                setInterval(showNextOffer, 12000); 
-            }
+      function fire(particleRatio, opts) {
+        confetti({
+          ...defaults,
+          ...opts,
+          particleCount: Math.floor(count * particleRatio)
         });
+      }
+
+      fire(0.25, {
+        spread: 2600,
+        startVelocity: 55,
+      });
+      fire(0.2, {
+        spread: 60,
+      });
+      fire(0.35, {
+        spread: 1000,
+        decay: 0.91,
+        scalar: 0.8
+      });
+      fire(0.1, {
+        spread: 1200,
+        startVelocity: 25,
+        decay: 0.92,
+        scalar: 1.2
+      });
+      fire(0.1, {
+        spread: 1020,
+        startVelocity: 45,
+      });
+      setTimeout(() => {
+        const newUrl = window.location.pathname + window.location.hash;
+        window.history.replaceState(null, "", newUrl);
+      }, 2000);
+    }
+  });
+  document.addEventListener("DOMContentLoaded", function() {
+    let videoCarousel = new bootstrap.Carousel(document.getElementById("videoCarousel"), {
+      interval: false
+    });
+    let videos = document.querySelectorAll("#videoCarousel video");
+
+    videos.forEach((video, index) => {
+      let progressCircle = document.getElementById(`progress${index + 1}`);
+
+      video.addEventListener("timeupdate", function() {
+        let progress = (video.currentTime / video.duration) * 100;
+        progressCircle.style.left = `${progress}%`;
+      });
+
+      video.addEventListener("ended", function() {
+        videoCarousel.next();
+      });
+    });
+  });
+
+  $(document).ready(function() {
+    const offers = $('#offers-container .offer-item');
+    let currentIndex = 0;
+    const offerElement = $('#current-offer');
+
+    if (offers.length > 0) {
+      offerElement.text(offers.eq(currentIndex).text());
+    }
+
+    function showNextOffer() {
+      if (offers.length === 0) return;
+
+      const nextIndex = (currentIndex + 1) % offers.length;
+      const nextOffer = offers.eq(nextIndex).text();
+
+      offerElement.animate({
+        opacity: 0,
+        marginTop: '-20px'
+      }, 100, function() {
+        setTimeout(function() {
+          offerElement.text(nextOffer);
+          offerElement.css({
+            opacity: 0,
+            marginTop: '20px'
+          });
+          offerElement.animate({
+            opacity: 1,
+            marginTop: '0px'
+          }, 100);
+          currentIndex = nextIndex;
+        }, 3000);
+      });
+    }
+
+    if (offers.length > 0) {
+      setInterval(showNextOffer, 12000);
+    }
+  });
 
 
 
@@ -266,137 +403,65 @@
     });
   });
 
-  const toastSuccess = (message) => {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-
-      });
-    };
-
-    const toastError = (message) => {
-      iziToast.error({
-        message: message,
-        backgroundColor: '#e51e1e',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-times',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-    const toastInfo = (message) => {
-      iziToast.info({
-        message: message,
-        backgroundColor: '#2160de',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-info-circle',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastWarning = (message) => {
-      iziToast.warning({
-        message: message,
-        backgroundColor: '#e5811e',
-        messageColor: '#212529',
-        icon: 'fa fa-exclamation-triangle',
-        iconColor: '#212529',
-        timeout: 1500,
-        position: 'topRight',
-      });
-    };
-
-    const toastWish = (message) => {
-        iziToast.show({
-            message: message,
-            backgroundColor: '#e80071', 
-            messageColor: '#FFFFFF',
-            icon: 'fas fa-check-circle',
-            iconColor: '#FFFFFF',
-            timeout: 2000, 
-            position: 'bottomCenter',
-        });
-    };
-  const urlParams = new URLSearchParams(window.location.search);
-  const message = urlParams.get('msg');
-
-  if (message) {
-      iziToast.success({
-        message: message,
-        backgroundColor: '#0e932d',
-        messageColor: '#FFFFFF',
-        icon: 'fa fa-check',
-        iconColor: '#FFFFFF',
-        timeout: 1500,
-        position: 'topRight',
-      });
-
-    const newUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState(null, '', newUrl);
-  }
 
 
-document.addEventListener('DOMContentLoaded', () => {
+
+  document.addEventListener('DOMContentLoaded', () => {
     const forms = document.querySelectorAll('.wishlist-form');
 
     forms.forEach(form => {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            const button = form.querySelector('button');
-            const icon = button.querySelector('i');
-            const productId = form.action.split('/').pop();
-            const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
-            const url = form.action;
+        const button = form.querySelector('button');
+        const icon = button.querySelector('i');
+        const productId = form.action.split('/').pop();
+        const variantId = form.closest('.product-card').getAttribute('data-variant-id').trim();
+        const url = form.action;
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ product_id: productId, variant_id: variantId }),
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Server Error: ${response.status} ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.action === 'added') {
-                    icon.classList.remove('not-in-wishlist');
-                    icon.classList.add('in-wishlist');
-                    button.title = 'Remove from Wishlist';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              product_id: productId,
+              variant_id: variantId
+            }),
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Server Error: ${response.status} ${response.statusText}`);
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.action === 'added') {
+              icon.classList.remove('not-in-wishlist');
+              icon.classList.add('in-wishlist');
+              button.title = 'Remove from Wishlist';
 
-                    toastWish('Product has been added to Wishlist.');
-                } else if (data.action === 'removed') {
-                    icon.classList.remove('in-wishlist');
-                    icon.classList.add('not-in-wishlist');
-                    button.title = 'Add to Wishlist';
+              toastWish('Product has been added to Wishlist.');
+            } else if (data.action === 'removed') {
+              icon.classList.remove('in-wishlist');
+              icon.classList.add('not-in-wishlist');
+              button.title = 'Add to Wishlist';
 
-                    toastWish('Product has been removed from Wishlist.');
-                } else if (data.error) {
-                    console.error('Server Error:', data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                toastWarning('An error occurred.')
-            });
-        });
+              toastWish('Product has been removed from Wishlist.');
+            } else if (data.error) {
+              console.error('Server Error:', data.error);
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            toastWarning('An error occurred.')
+          });
+      });
     });
-});
+  });
 
-// Handle add to cart form submission
-document.addEventListener('DOMContentLoaded', () => {
+  // Handle add to cart form submission
+  document.addEventListener('DOMContentLoaded', () => {
     const cartForms = document.querySelectorAll('.cart-form');
 
     cartForms.forEach(form => {
@@ -414,7 +479,11 @@ document.addEventListener('DOMContentLoaded', () => {
               headers: {
                 'Content-Type': 'application/json'
               },
-              body: JSON.stringify({ quantity, productId, variantId }),
+              body: JSON.stringify({
+                quantity,
+                productId,
+                variantId
+              }),
             })
             .then(response => response.json())
             .then(data => {
@@ -424,11 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
                   cartCountElement.innerText = data.cartCount;
                   cartCountElement.style.display = data.cartCount > 0 ? "block" : "none";
                 }
-              const newButton = document.createElement('a');
-              newButton.href = '/user/my-cart';
-              newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
+                const newButton = document.createElement('a');
+                newButton.href = '/user/my-cart';
+                newButton.innerHTML = `<button type="button" class="go-to-cart-btn">Go To Bag</button>`;
 
-              form.parentNode.replaceChild(newButton, form);
+                form.parentNode.replaceChild(newButton, form);
 
                 toastSuccess(data.message);
               } else {
@@ -440,15 +509,12 @@ document.addEventListener('DOMContentLoaded', () => {
               toastWarning('Error adding product to cart.');
             });
         } else {
-        window.location = '/login'
+          window.location = '/login'
 
-      }
+        }
+      })
     })
   })
-})
-
-
-
 </script>
 
 </html>

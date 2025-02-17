@@ -465,7 +465,7 @@ cursor: pointer;
 .wave-group .bar {
   position: relative;
   display: block;
-  width: 300px;
+  width: 360px;
 }
 .wave-group .bar:before,
 .wave-group .bar:after {
@@ -1077,7 +1077,10 @@ input[type="number"]::-webkit-input-placeholder {
   border-radius: 50%;
   object-fit: cover;
 }
-
+.fa-circle-user {
+  font-size: 2.2rem;
+  color: var(--text-color-2);
+}
 .profile-section a:hover {
   color: var(--main-color);
 }
@@ -4975,10 +4978,6 @@ background: rgba(60, 60, 60, 0.3);
 }
 
 /* Admin Profile */
-.fa-circle-user {
-  font-size: 1.8rem;
-  color: var(--text-color-2);
-}
 /* Dashboard summary */
 .dashboard-summary-container {
   padding: 0;

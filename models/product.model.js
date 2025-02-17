@@ -81,6 +81,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    productOffer: {
+      type: Boolean,
+      default: false,
+    },
     reviewCount: {
       type: Number,
       default: 0,
