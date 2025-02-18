@@ -79,8 +79,11 @@ const productSchema = new mongoose.Schema(
     ],
       productOffer: {
         type: String,
-        enum: ["Applied", "Not applied"],
         default: "Not applied",
+      },
+      categoryOffer: {
+        type: String,
+        default: "Not applied"
       },
     isDeleted: {
       type: Boolean,

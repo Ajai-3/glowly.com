@@ -78,10 +78,14 @@
           </td>
           <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
           <td>
-            <% if (cat.offerId && cat.offerId.isActive) { %>
+            <% if (cat.offerId && cat.offerId.isDeleted === false) { %>
             <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
-              (<%= cat.offerId.offerValue %>%)</p>
-            <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>')">Remove Offer</button>
+              (<%= cat.offerId.offerValue %>%) 
+            </p>
+            <p><%= cat.offerId.startDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %> - <%= cat.offerId.endDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
+              <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>', this)">
+                Remove Offer
+              </button>
             <% } else { %>
             <a href="/admin/add-offer/<%= cat._id %>">
               <button class="add-offer-btn">Add Offer</button>
@@ -339,31 +343,41 @@
     }
   };
 
-  async function removeOffer(categoryId, offerId) {
-    if (!offerId) {
-      alert('Offer ID is required.');
-      return;
-    }
+  let isProcessing = false;
 
-    const response = await fetch(`/admin/remove-offer/${categoryId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        offerId: offerId,
-      }),
-    });
+async function removeOffer(categoryId, offerId, button) {
+  if (isProcessing) return;
+  isProcessing = true;
+  button.disabled = true;
 
-    const result = await response.json();
-
-    if (result.success) {
-      toastSuccess('Offer removed successfully!');
-      location.reload();
-    } else {
-      toastError(`Failed to remove offer: ${result.message}`);
-    }
+  if (!offerId) {
+    toastError('Offer ID is required.');
+    isProcessing = false;
+    return;
   }
+
+  const response = await fetch(`/admin/remove-offer/${categoryId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ offerId: offerId })
+  });
+
+  const result = await response.json();
+
+  if (result.success) {
+    toastSuccess('Offer removed successfully!');
+   setTimeout(() => {
+    location.reload();
+   }, 1500)
+  } else {
+    toastError('Failed to remove offer: ' + result.message);
+  }
+
+  button.disabled = false;
+  isProcessing = false;
+}
 </script>
 
 </html>

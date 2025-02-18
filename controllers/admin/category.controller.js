@@ -27,7 +27,7 @@ export const renderCategoryPage = async (req, res) => {
       .populate("subcategories")
       .populate({
         path: "offerId",
-        match: { isActive: true, isDeleted: false },
+        match: { isDeleted: false },
       });
 
     const totalCategories = await Category.countDocuments();
@@ -301,7 +301,6 @@ export const updateCategory = async (req, res) => {
 // This function allows admins to soft delete (unlist) or restore (list) a category,
 // enabling them to manage the visibility of categories without permanently removing them.
 // ========================================================================================
-
 export const toggleCategory = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -333,7 +332,6 @@ export const toggleCategory = async (req, res) => {
 // This function allows admins to soft delete (unlist) or restore (relist) a subcategory,
 // managing the visibility of subcategories without permanently removing them.
 // ========================================================================================
-
 export const toggleSubcategory = async (req, res) => {
   try {
     const subcategoryId = req.params.id;
@@ -359,7 +357,6 @@ export const toggleSubcategory = async (req, res) => {
 // This function renders the "Add Offer for Category" page, allowing admins to create
 // special offers or discounts for specific product categories.
 // ========================================================================================
-
 export const renderAddOfferPage = async (req, res) => {
   try {
     const categoryId = req.params.id;
@@ -424,13 +421,17 @@ export const addOffer = async (req, res) => {
       });
     }
 
+    const currentDate = new Date();
+
     const newOffer = new Offer({
       offerType,
       offerValue,
       name: description,
       startDate,
       endDate,
-      isActive: false,
+      isActive:
+        new Date(startDate).toISOString().split("T")[0] ===
+        currentDate.toISOString().split("T")[0],
       isDeleted: false,
     });
 
@@ -438,63 +439,50 @@ export const addOffer = async (req, res) => {
 
     await Promise.all([newOffer.save(), category.save()]);
 
-    return res.status(200).json({
-      success: true,
-      message: "Offer applied successfully.",
-    });
-  } catch (error) {
-    console.error("Error adding offer:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Something went wrong while adding the offer.",
-    });
-  }
-};
-
-
-cron.schedule("* * * * *", async () => {
-  try {
-    console.log("Cron is called");
-
-    const currentDate = new Date().toISOString();
-console.log(currentDate)
     const activeOffers = await Offer.find({
-      isActive: true,
       isDeleted: false,
       startDate: { $lte: currentDate },
     });
-console.log(activeOffers,"eeuir")
+
+    const eligibleProducts = await Product.find({
+      isDeleted: false,
+      $and: [
+        { productOffer: "Not applied" },
+        { categoryOffer: { $in: ["Not applied", null, ""] } },
+      ],
+    });
+
+
     for (const offer of activeOffers) {
-      offer.isActive = true;
-      await offer.save();
-
-      const maxDiscountPercentage = 70;
-
       const category = await Category.findOne({ offerId: offer._id });
       if (!category) continue;
 
-      const products = await Product.find({
-        categoryId: category._id,
-        isDeleted: false,
-        productOffer: { $ne: "Applied" },
-      });
-      console.log(products)
+      const categoryProducts = eligibleProducts.filter(
+        (product) =>
+          product.categoryId.toString() === category._id.toString() &&
+          product.productOffer !== "Applied"
+      );
 
-      for (const product of products) {
+      for (const product of categoryProducts) {
         if (product.productOffer === "Applied") {
-          console.log(`Skipping product ${product._id} because it already has an applied offer`);
           continue;
         }
+
         for (const variant of product.variants) {
           if (!variant.salePriceBeforeOffer) {
             variant.salePriceBeforeOffer = variant.salePrice;
           }
 
+          const maxDiscountPercentage = 70;
+          const maxDiscountValue =
+            (maxDiscountPercentage / 100) * variant.regularPrice;
           let newSalePrice = variant.regularPrice;
-          const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
 
           if (offer.offerType === "flat") {
-            const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
+            const appliedDiscount = Math.min(
+              offer.offerValue,
+              maxDiscountValue
+            );
             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
           } else if (offer.offerType === "percentage") {
             const appliedDiscount = Math.min(
@@ -507,139 +495,24 @@ console.log(activeOffers,"eeuir")
           variant.salePrice = Math.round(newSalePrice);
         }
 
-        await product.save(); // No change to `productOffer`
+        product.categoryOffer = "Applied";
+        product.productOffer = "Not applied";
+
+        await product.save();
       }
     }
 
-    const expiredOffers = await Offer.find({
-      isActive: true,
-      endDate: { $lte: currentDate },
+    return res.status(200).json({
+      success: true,
+      message: "Offer applied successfully.",
     });
-
-    for (const offer of expiredOffers) {
-      offer.isActive = false;
-      offer.isDeleted = true;
-      await offer.save();
-
-      const category = await Category.findOne({ offerId: offer._id });
-      if (!category) continue;
-
-      const products = await Product.find({
-        categoryId: category._id,
-        isDeleted: false,
-        productOffer: "Not applied", // Only reset category-offered products
-      });
-
-      for (const product of products) {
-        for (const variant of product.variants) {
-          if (variant.salePriceBeforeOffer) {
-            variant.salePrice = variant.salePriceBeforeOffer;
-            variant.salePriceBeforeOffer = null;
-          }
-        }
-
-        await product.save(); // No change to `productOffer`
-      }
-    }
   } catch (error) {
-    console.error("Error in cron job:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while adding the offer.",
+    });
   }
-});
-
-// cron.schedule("* * * * *", async () => {
-//   try {
-//     console.log("Cron is called");
-
-//     const currentDate = new Date().toISOString();
-
-//     const activeOffers = await Offer.find({
-//       isActive: false,
-//       isDeleted: false,
-//       startDate: { $lte: currentDate },
-//     });
-
-//     for (const offer of activeOffers) {
-//       offer.isActive = true;
-//       await offer.save();
-
-//       const maxDiscountPercentage = 70;
-
-//       const category = await Category.findOne({ offerId: offer._id });
-//       if (!category) continue;
-
-//       const products = await Product.find({
-//         categoryId: category._id,
-//         isDeleted: false,
-//         productOffer: "Not applied",
-//       });
-
-//       for (const product of products) {
-//         if (product.productOffer === "Applied") continue;
-
-//         for (const variant of product.variants) {
-//           if (!variant.salePriceBeforeOffer) {
-//             variant.salePriceBeforeOffer = variant.salePrice;
-//           }
-
-//           let newSalePrice = variant.regularPrice;
-//           const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
-
-//           if (offer.offerType === "flat") {
-//             const appliedDiscount = Math.min(offer.offerValue, maxDiscountValue);
-//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-//           } else if (offer.offerType === "percentage") {
-//             const appliedDiscount = Math.min(
-//               variant.regularPrice * (offer.offerValue / 100),
-//               maxDiscountValue
-//             );
-//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-//           }
-
-//           variant.salePrice = Math.round(newSalePrice);
-//         }
-
-//         product.productOffer = "Applied";
-//         await product.save();
-//       }
-//     }
-
-//     const expiredOffers = await Offer.find({
-//       isActive: true,
-//       endDate: { $lte: currentDate },
-//     });
-
-//     for (const offer of expiredOffers) {
-//       offer.isActive = false;
-//       offer.isDeleted = true;
-//       await offer.save();
-
-//       const category = await Category.findOne({ offerId: offer._id });
-//       if (!category) continue;
-
-//       const products = await Product.find({
-//         categoryId: category._id,
-//         isDeleted: false,
-//         productOffer: "Applied",
-//       });
-
-//       for (const product of products) {
-//         for (const variant of product.variants) {
-//           if (variant.salePriceBeforeOffer) {
-//             variant.salePrice = variant.salePriceBeforeOffer;
-//             variant.salePriceBeforeOffer = null;
-//           }
-//         }
-
-//         product.productOffer = "Not applied";
-//         await product.save();
-//       }
-//     }
-//   } catch (error) {
-//     console.error("Error in cron job:", error);
-//   }
-// });
-
-
+};
 
 // ========================================================================================
 // REMOVE OFFER FROM CATEGORY
@@ -684,7 +557,7 @@ export const removeOffer = async (req, res) => {
     const products = await Product.find({
       categoryId: category._id,
       isDeleted: false,
-      productOffer: "Not applied"
+      productOffer: "Not applied",
     });
 
     for (const product of products) {
@@ -692,6 +565,7 @@ export const removeOffer = async (req, res) => {
         variant.salePrice = variant.salePriceBeforeOffer;
       }
 
+      product.categoryOffer = "Not applied";
       await product.save();
     }
 

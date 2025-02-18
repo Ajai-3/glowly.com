@@ -117,13 +117,11 @@ export const handleUserSignup = async (req, res) => {
 
   try {
     const referer = req.headers.referer || "";
-    console.log("Full Referrer URL:", referer);
     
     const baseURL = referer.includes("localhost") ? "http://localhost" : "https://glowly.ajaiii.tech";
     const urlParams = new URL(referer, baseURL).searchParams;
     const referralCode = urlParams.get("referralCode") || null;
     
-    console.log("Extracted Referral Code:", referralCode);
     
     
     // Check If The User Email Already Exists
@@ -333,12 +331,14 @@ export const handleUserLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    const referralCode = generateReferralCode();
+    
     const user = await User.findOne({ email, role: "user" });
     if (!user) {
       const msg = { type: "error", msg: "User Not Found" };
       return res.render("user/login", { msg });
     }
-    // Check The User Is Blocked By Admin
+
     if (user.status === "blocked") {
       const msg = { type: "error", msg: "Account blocked by Admin...!" };
       return res.render("user/login", { msg });
@@ -349,6 +349,11 @@ export const handleUserLogin = async (req, res) => {
     if (!passwordMatch) {
       const msg = { type: "error", msg: "Invalid Credential..!" };
       return res.render("user/login", { msg });
+    }
+
+    if (!user.referralCode) {
+      user.referralCode = referralCode;
+      await user.save(); 
     }
 
     const token = jwt.sign(
@@ -369,6 +374,7 @@ export const handleUserLogin = async (req, res) => {
     res.render("user/login", { msg });
   }
 };
+
 
 // ========================================================================================
 // HANDLE THE LOGIN WITH GOOGLE ACCOUNT
@@ -395,6 +401,7 @@ export const googleCallbackHandler = async (req, res) => {
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
+
       });
 
       try {

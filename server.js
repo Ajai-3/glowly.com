@@ -1,5 +1,6 @@
 import express from 'express';
 import nocache from 'nocache';
+import cron from "node-cron";
 import session from 'express-session';
 import cookieParser from "cookie-parser";
 import passport from './config/passport.js';
@@ -7,6 +8,7 @@ import dotenv from 'dotenv'; dotenv.config();
 import userRouter from './routes/user.router.js';
 import adminRouter from './routes/adminRoutes.js';
 import { startServer } from './config/connection.js';
+import { resetCategoryOffer } from './helpers/resetCategoryOffer.js';
 import { errorHandler, notFoundHandler } from './middlewares/error.midleware.js';
 
 
@@ -36,6 +38,19 @@ app.use(session({
     }
 }));
 
+
+cron.schedule("* * * * *",async () => {
+    try {
+      const date = new Date()
+    //   console.log(`cron job started ${date} `)
+  
+    //   await resetCoupons()
+      await resetCategoryOffer()
+  
+    } catch (error) {
+      console.error("error at cron in index.js",error)
+    }
+  })
 
 app.set("view engine", "ejs");
 app.use(nocache());
