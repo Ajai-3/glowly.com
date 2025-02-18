@@ -20,8 +20,6 @@ export const resetCategoryOffer = async () => {
             ]
         });
 
-        console.log(`Found ${eligibleProducts.length} total eligible products`);
-
         for (const offer of activeOffers) {
             const category = await Category.findOne({ offerId: offer._id });
             if (!category) continue;

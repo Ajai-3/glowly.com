@@ -123,15 +123,12 @@ export const handleUserSignup = async (req, res) => {
     const referralCode = urlParams.get("referralCode") || null;
     
     
-    
-    // Check If The User Email Already Exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       const msg = "User with this email already exists.";
       return res.render("user/signup", { msg });
     }
 
-    // Check If The Phone Number Already Exists
     const userPhoneNoExists = await User.findOne({ phone_no });
     if (userPhoneNoExists) {
       const msg = "Phone number already in use.";
@@ -151,7 +148,8 @@ export const handleUserSignup = async (req, res) => {
     req.session.otpExpiriy = expiryTime;
     req.session.userData = { name, phone_no, email, password, referralCode };
 
-    console.log("OTP", OTP);
+    // console.log("OTP", OTP);
+
     // Send OTP to the user email
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
     if (!sendOTPEmail) {
@@ -396,11 +394,14 @@ export const googleCallbackHandler = async (req, res) => {
 
     let user = await User.findOne({ email: req.user.email });
 
+    const referralCode = generateReferralCode();
+
     if (!user) {
       user = new User({
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
+        referralCode: referralCode,
 
       });
 
