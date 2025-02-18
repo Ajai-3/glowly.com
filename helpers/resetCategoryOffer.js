@@ -4,7 +4,6 @@ import Category from "../models/category.model.js";
 
 export const resetCategoryOffer = async () => {
     try {
-        console.log("resetCategoryOffer is called");
         const currentDate = new Date();
 
         // Get active offers
@@ -13,14 +12,11 @@ export const resetCategoryOffer = async () => {
             startDate: { $lte: currentDate },
         });
 
-        console.log(`Found ${activeOffers.length} active offers`);
-
-        // Get ONLY products that don't have any product offers
         const eligibleProducts = await Product.find({
             isDeleted: false,
             $and: [
-                { productOffer: { $in: ["Not applied", null, ""] } }, // Strict check for no product offers
-                { categoryOffer: { $in: ["Not applied", null, ""] } }  // Also ensure no category offers
+                { productOffer: { $in: ["Not applied", null, ""] } }, 
+                { categoryOffer: { $in: ["Not applied", null, ""] } }  
             ]
         });
 
@@ -30,24 +26,15 @@ export const resetCategoryOffer = async () => {
             const category = await Category.findOne({ offerId: offer._id });
             if (!category) continue;
 
-            // Filter products for this specific category
             const categoryProducts = eligibleProducts.filter(product =>
                 product.categoryId.toString() === category._id.toString() &&
                 product.productOffer !== "Applied"
             );
 
-            console.log(`Processing category ${category.name}:`);
-            console.log(`- Found ${categoryProducts.length} eligible products in this category`);
-            console.log(`- These products have no existing offers`);
-
             for (const product of categoryProducts) {
-                console.log(`Processing product ${product._id}:`);
-                console.log(`- Current productOffer status: ${product.productOffer}`);
-                console.log(`- Current categoryOffer status: ${product.categoryOffer}`);
 
                 // Double-check before applying offer
                 if (product.productOffer === "Applied") {
-                    console.log(`- Skipping: Product already has an offer`);
                     continue;
                 }
 
@@ -78,10 +65,9 @@ export const resetCategoryOffer = async () => {
 
                 // Mark with category offer ONLY
                 product.categoryOffer = "Applied";
-                product.productOffer = "Not applied"; // Ensure product offer remains not applied
+                product.productOffer = "Not applied";
 
                 await product.save();
-                console.log(`- Successfully applied category offer to product ${product._id}`);
             }
         }
 
@@ -90,8 +76,6 @@ export const resetCategoryOffer = async () => {
             isActive: true,
             endDate: { $lte: currentDate },
         });
-
-        console.log(`Expiring ${expiredOffers.length} offers...`);
 
         if (expiredOffers.length > 0) {
             await Offer.updateMany(
@@ -106,8 +90,6 @@ export const resetCategoryOffer = async () => {
 
             // Filter products based on categoryId for expired offers
             let products = eligibleProducts.filter((product) => product.categoryId.toString() === category._id.toString());
-
-            console.log(`Resetting ${products.length} products from expired offer ${offer._id}`);
 
             for (const product of products) {
                 for (const variant of product.variants) {

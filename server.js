@@ -41,10 +41,8 @@ app.use(session({
 
 cron.schedule("* * * * *",async () => {
     try {
-      const date = new Date()
-    //   console.log(`cron job started ${date} `)
-  
-    //   await resetCoupons()
+
+
       await resetCategoryOffer()
   
     } catch (error) {
