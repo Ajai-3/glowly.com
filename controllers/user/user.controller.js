@@ -396,6 +396,7 @@ export const googleCallbackHandler = async (req, res) => {
 
     const referralCode = generateReferralCode();
 
+    console.log(referralCode)
     if (!user) {
       user = new User({
         email: req.user.email,
