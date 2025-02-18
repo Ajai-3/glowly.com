@@ -10,7 +10,7 @@ import Coupon from "../../models/coupon.model.js";
 // ========================================================================================
 export const renderCouponsPage = async (req, res) => {
   const { page = 1, type = "all", isActive = "all" } = req.query;
-  const limit = 7;
+  const limit = 10;
 
   try {
     const totalCouponsQuery = {};

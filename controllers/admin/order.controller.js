@@ -111,7 +111,7 @@ export const updateOrderStatus = async (req, res) => {
       "shipped",
       "delivered",
       "canceled",
-      "return_req",
+      "return_reqested",
       "returned",
     ];
     if (!validStatuses.includes(status)) {

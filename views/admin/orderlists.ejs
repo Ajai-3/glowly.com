@@ -44,7 +44,7 @@
               <option value="shipped" <%= status === 'shipped' ? 'selected' : '' %>>Shipped</option>
               <option value="delivered" <%= status === 'delivered' ? 'selected' : '' %>>Delivered</option>
               <option value="canceled" <%= status === 'canceled' ? 'selected' : '' %>>Canceled</option>
-              <option value="return_req" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
+              <option value="return_reqested" <%= status === 'return_requested' ? 'selected' : '' %>>Return Requested</option>
               <option value="returned" <%= status === 'returned' ? 'selected' : '' %>>Returned</option>
             </select>
           </label>
@@ -81,13 +81,18 @@
           <td><%= order.orderId %></td>
           <td><%= order.userId.name %></td>
           <td><%= order.addressId ? order.addressId.city + ', ' + order.addressId.state : 'Address not available' %></td>
-          <td>
+          <td class="d-flex align-items-center">
             <% if (order.variant && order.variant.images && order.variant.images.length > 0) { %>
-            <img src="<%= order.variant.images[0] %>" alt="<%= order.product.title %>" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
+            <img src="<%= order.variant.images[0] %>" alt="<%= order.product.title %>" width="60" height="60" style="margin-right: 10px; vertical-align: middle;">
             <% } else { %>
             <img src="/path/to/default-image.jpg" alt="No Image Available" width="45" height="45" style="margin-right: 10px; vertical-align: middle;">
             <% } %>
-            <%= order.product.title.slice(0, 20) %>...
+          
+              <div>
+                <%= order.product.title %> - <%= order.product.title.shade %>
+              </div>
+            
+ 
           </td>
           <td><%= order.quantity %></td>
           <td>₹<%= order.totalAmount %></td>
@@ -106,7 +111,7 @@
                   <% if (order.status === 'shipped') { %> pink-p <% } %>
                   <% if (order.status === 'delivered') { %> green-p <% } %>
                   <% if (order.status === 'canceled') { %> red-p <% } %>
-                  <% if (order.status === 'return_req') { %> yellow-p <% } %>
+                  <% if (order.status === 'return_reqested') { %> yellow-p <% } %>
                   <% if (order.status === 'returned') { %> blue-p <% } %>">
               <%= order.status %>
             </p2>
@@ -119,7 +124,7 @@
               <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' ? 'disabled' : '' %>>shipped</option>
               <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' ? 'disabled' : '' %>>delivered</option>
               <option value="canceled" <%= order.status === 'canceled' ? 'selected' : '' %> <%= order.status !== 'pending' && order.status !== 'processing' && order.status !== 'shipped' && order.status !== 'delivered' && order.status !== 'canceled' ? 'disabled' : '' %>>canceled</option>
-              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_req' ? 'disabled' : '' %>>returned</option>
+              <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %> <%= order.status !== 'return_reqested' ? 'disabled' : '' %>>returned</option>
             </select>
   
           </td>

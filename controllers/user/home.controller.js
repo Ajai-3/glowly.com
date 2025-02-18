@@ -63,7 +63,7 @@ export const renderHomePage = async (req, res) => {
         acc.push({
           categoryId: category._id,
           categoryName: category.name,
-          variants: allVariants.slice(0, 20),
+          variants: allVariants.slice(0, 18),
         });
       }
       return acc;

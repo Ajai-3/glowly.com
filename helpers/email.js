@@ -3,23 +3,51 @@ import nodemailer from "nodemailer"
 import dotenv from "dotenv";dotenv.config();
 
 
-// Genarate Random String For The Resend Email
+// ========================================================================================
+// GENERATE RANDOM STRING FOR RESEND EMAIL
+// ========================================================================================
+// This function generates a random string to be used for resending email verification.
+// ========================================================================================
 export const generateResetCode = () => {
   return crypto.randomBytes(20).toString('hex');
 };
 
-// Genarate OTP 
+// ========================================================================================
+// GENERATE OTP
+// ========================================================================================
+// This function generates a one-time password (OTP) for authentication or verification.
+// ========================================================================================
 export const  generateOTP = () => {
   const OTP = Math.floor(100000 + Math.random() * 900000).toString();
   const expiryTime = Date.now() + 5 * 60 * 1000; 
   return { OTP, expiryTime }
 }
 
+// ========================================================================================
+// GENERATE REFERRAL CODE
+// ========================================================================================
+// This function generates a unique referral code for users to share and earn rewards.
+// ========================================================================================
+export const generateReferralCode = (length = 8) => {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let referralCode = '';
+  for (let i = 0; i < length; i++) {
+      referralCode += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return referralCode;
+}
+
+// ========================================================================================
+// SEND OTP TO USER EMAIL
+// ========================================================================================
+// This function generates a one-time password (OTP) and sends it to the user's email 
+// for authentication or verification purposes.
+// ========================================================================================
 export const sendOTPToUserEmail = async (email, OTP) => {
    try {
      
     const transporter = nodemailer.createTransport({
-        service: 'gmail',
+        host: "smtp.gmail.com",  
         port: 587,
         secure: false,
         requireTLS: true,
@@ -111,7 +139,13 @@ export const sendOTPToUserEmail = async (email, OTP) => {
    }
 }
 
-// Reset Password Email
+
+// ========================================================================================
+// SEND RESET PASSWORD EMAIL
+// ========================================================================================
+// This function sends an email to the user with a reset password link or OTP 
+// to help them securely reset their account password.
+// ========================================================================================
 export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
   try {
       // Create a transporter object for nodemailer (example with Gmail)
@@ -202,7 +236,6 @@ export const sendResetPasswordEmail = async (email, resetPasswordUrl) => {
       // Send email
       const info = await transporter.sendMail(mailOptions);
 
-      // Return true if email sent successfully
       return info.accepted.length > 0;
   } catch (error) {
       console.error("Error sending OTP email:", error);

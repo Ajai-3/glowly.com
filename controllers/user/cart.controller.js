@@ -274,10 +274,11 @@ export const buyNow = async (req, res) => {
   try {
     const { quantity, productId, variantId } = req.body;
     let { user, cart, token } = req;
-    if (!token) {
-      return res.status(404).json({
+
+    if (!user) {
+      return res.status(401).json({
         success: false,
-        message: `Login to buy product.`,
+        message: "Login to buy the product.",
       });
     }
 

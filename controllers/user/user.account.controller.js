@@ -64,7 +64,7 @@ export const handleProfileUpdate = async (req, res) => {
         profilePic: updatedUser.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", newToken, { httpOnly: true, secure: true });
@@ -144,11 +144,12 @@ export const handleAddAddress = async (req, res) => {
       user_id: user.userId,
       isActive: true,
     });
-    if (addressCount >= 3) {
+    if (addressCount >= 4) {
       return res.render("user/manage-address", {
         name: user ? user.name : "",
         user: user,
         categories,
+        brands,
         activeUser,
         cartCount,
         addresses: await Address.find({ user_id: user.userId, isActive: true }),

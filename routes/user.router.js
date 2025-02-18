@@ -4,7 +4,7 @@ import passport from "../config/passport.js";
 const router = express.Router();
 import storage from "../helpers/multer.js";
 const upload = multer({ storage: storage });
-import { verifyToken } from "../middlewares/auth.middleware.js";
+import { verifyToken, authenticateToken } from "../middlewares/auth.middleware.js";
 import { loadUserData } from "../middlewares/loadUserData.midleware.js";
 import { renderHomePage } from "../controllers/user/home.controller.js";
 import {
@@ -69,6 +69,7 @@ import {
 import { review, editReview } from "../controllers/user/review.controller.js";
 import { myCoupons } from "../controllers/user/coupon.controller.js";
 import { helpPage, getAppPage, privacyPolicy, termsAndCOnditions } from "../controllers/user/others.controller.js";
+import { redeemReferral, shareAndEarn } from "../controllers/user/shareAndEarn.controller.js";
 
 router.get("/", loadUserData, renderHomePage);
 router.get("/home", loadUserData, renderHomePage);
@@ -100,7 +101,7 @@ router.get("/shop", loadUserData, renderShopPage);
 router.get("/product/:productId/:variantId", loadUserData, renderProductPage);
 
 // Account Mangement
-router.get("/my-account", loadUserData, renderMyAccountPage);
+router.get("/my-account", authenticateToken, loadUserData, renderMyAccountPage);
 router.post(
   "/my-account",
   upload.single("profile-pic"),
@@ -109,51 +110,56 @@ router.post(
 );
 
 // Address Management
-router.post("/add-address", loadUserData, handleAddAddress);
-router.get("/manage-address", loadUserData, renderManageAddressPage);
-router.post("/remove-address/:addressId", loadUserData, removeAddress);
+router.post("/add-address", authenticateToken, loadUserData, handleAddAddress);
+router.get("/manage-address", authenticateToken, loadUserData, renderManageAddressPage);
+router.post("/remove-address/:addressId", authenticateToken, loadUserData, removeAddress);
 
-router.get("/edit-address/:id", loadUserData, editAddressPage);
-router.post("/edit-address/:addressId", loadUserData, updateAddress);
+router.get("/edit-address/:id", authenticateToken, loadUserData, editAddressPage);
+router.post("/edit-address/:addressId", authenticateToken, loadUserData, updateAddress);
 
 // Cart Management
 router.post("/buy-now", loadUserData, buyNow);
-router.get("/my-cart", loadUserData, renderCartPage);
+router.get("/my-cart", authenticateToken, loadUserData, renderCartPage);
 router.post("/add-to-cart", loadUserData, addToCart);
 router.post("/remove-cart-product", loadUserData, removeCartProduct);
 router.patch("/update-cart-product", loadUserData, updateCartPageProduct);
 
 // Checkout Mangement
-router.get("/checkout", loadUserData, renderCheckoutPage);
-router.post("/place-order", loadUserData, placeOrder);
-router.post("/verify-coupon", loadUserData, verifyCoupon);
-router.get("/placeOrderWithBuyNow", loadUserData, placeOrderWithBuyNow);
-router.post("/verify-razorpay-payment", loadUserData, verifyRazorpayPayment);
+router.get("/checkout", authenticateToken, loadUserData, renderCheckoutPage);
+router.post("/place-order", authenticateToken, loadUserData, placeOrder);
+router.post("/verify-coupon", authenticateToken, loadUserData, verifyCoupon);
+router.get("/placeOrderWithBuyNow", authenticateToken, loadUserData, placeOrderWithBuyNow);
+router.post("/verify-razorpay-payment", authenticateToken, loadUserData, verifyRazorpayPayment);
 
 // Order Management
-router.get("/my-orders", loadUserData, renderOrderListPage);
-router.patch("/cancel-order", loadUserData, cancelOrder);
-router.patch("/return-order", loadUserData, returnOrder);
-router.post("/payment-failed-retry", loadUserData, paymentRetry);
+router.get("/my-orders", authenticateToken, loadUserData, renderOrderListPage);
+router.patch("/cancel-order", authenticateToken, loadUserData, cancelOrder);
+router.patch("/return-order", authenticateToken, loadUserData, returnOrder);
+router.post("/payment-failed-retry", authenticateToken, loadUserData, paymentRetry);
 router.get(
   "/product-details/:orderId/:productId/:variantId/:addressId",
-  loadUserData,
+  authenticateToken, loadUserData,
   orderDetailsPage
 );
 //Wish list Management
-router.get("/my-wishlist", loadUserData, renderWishlistPage);
-router.post("/add-to-wishlist/:id", loadUserData, addToWishlist);
+router.get("/my-wishlist", authenticateToken, loadUserData, renderWishlistPage);
+router.post("/add-to-wishlist/:id", authenticateToken, loadUserData, addToWishlist);
 
 // Wallet Managent
-router.get("/my-wallet", loadUserData, myWallet);
-router.post("/add-money-to-wallet", loadUserData, addMoneyToWallet);
+router.get("/my-wallet", authenticateToken, loadUserData, myWallet);
+router.post("/add-money-to-wallet", authenticateToken, loadUserData, addMoneyToWallet);
 
 // Coupon Management
-router.get("/my-coupons", loadUserData, myCoupons);
+router.get("/my-coupons", authenticateToken, loadUserData, myCoupons);
 
 // Rewview Mangement
 router.post("/submit-review", loadUserData, review);
 router.patch("/edit-review/:reviewId", loadUserData, editReview);
+
+// Sare & Earn
+router.get("/share-and-earn", authenticateToken, loadUserData, shareAndEarn);
+router.post("/redeem-referral", authenticateToken, loadUserData, redeemReferral);
+
 
 // Other Page Management
 router.get("/help", loadUserData, helpPage);

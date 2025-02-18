@@ -28,6 +28,7 @@ const transactionSchema = new Schema({
       "Order placed",
       "Order returned",
       "Order canceled",
+      "Referral bonus",
       "Money added",
       "Refund",
       "Cashback",

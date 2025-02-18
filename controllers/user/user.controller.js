@@ -1,14 +1,18 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 dotenv.config();
 import {
   generateOTP,
   generateResetCode,
   sendOTPToUserEmail,
+  generateReferralCode,
   sendResetPasswordEmail,
 } from "../../helpers/email.js";
 import User from "../../models/user.model.js";
+import Wallet from "../../models/wallet.model.js";
+import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
 // RENDER LOGIN PAGE
@@ -112,6 +116,16 @@ export const handleUserSignup = async (req, res) => {
   const { name, phone_no, email, password, repeatPassword } = req.body;
 
   try {
+    const referer = req.headers.referer || "";
+    console.log("Full Referrer URL:", referer);
+    
+    const baseURL = referer.includes("localhost") ? "http://localhost" : "https://glowly.ajaiii.tech";
+    const urlParams = new URL(referer, baseURL).searchParams;
+    const referralCode = urlParams.get("referralCode") || null;
+    
+    console.log("Extracted Referral Code:", referralCode);
+    
+    
     // Check If The User Email Already Exists
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -137,8 +151,9 @@ export const handleUserSignup = async (req, res) => {
     req.session.otp = OTP;
     req.session.userOTP = OTP;
     req.session.otpExpiriy = expiryTime;
-    req.session.userData = { name, phone_no, email, password };
+    req.session.userData = { name, phone_no, email, password, referralCode };
 
+    console.log("OTP", OTP);
     // Send OTP to the user email
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
     if (!sendOTPEmail) {
@@ -161,10 +176,14 @@ export const handleUserSignup = async (req, res) => {
 // ========================================================================================
 export const handleOTPVerification = async (req, res) => {
   try {
+    let isRefferal = false;
+
     req.session.msg = "Successful Login now";
     req.session.type = "success";
 
     const { otp } = req.body;
+
+    const referralCode = generateReferralCode();
 
     if (String(otp).trim() === String(req.session.userOTP).trim()) {
       const user = req.session.userData;
@@ -175,9 +194,62 @@ export const handleOTPVerification = async (req, res) => {
         phone_no: user.phone_no,
         email: user.email,
         password: passwordHash,
+        referralCode: referralCode,
+        referredBy: null,
       });
 
-      await saveUserData.save();
+      const newWallet = new Wallet({
+        user_id: saveUserData._id,
+        balance: 0,
+      });
+
+      await Promise.all([ newWallet.save(), saveUserData.save() ])
+
+      if (user.referralCode && user.referralCode !== "") {
+        const referrer = await User.findOne({ referralCode: user.referralCode });
+        console.log(referrer)
+      
+        if (referrer) {
+
+          isRefferal = true;
+
+          saveUserData.referredBy = new mongoose.Types.ObjectId(referrer._id);
+      
+          let referrerWallet = await Wallet.findOne({ user_id: referrer._id });
+          let newUserWallet = await Wallet.findOne({ user_id: saveUserData._id });
+      
+          if (referrerWallet && newUserWallet) {
+            const referralBonus = 100;
+      
+            referrerWallet.balance += referralBonus;
+            newUserWallet.balance += referralBonus;
+      
+            const referrerTransaction = new Transaction({
+              wallet_id: referrerWallet._id,
+              user_id: referrer._id,
+              amount: referralBonus,
+              type: "Credited",
+              description: "Referral bonus",
+            });
+      
+            const newUserTransaction = new Transaction({
+              wallet_id: newUserWallet._id,
+              user_id: saveUserData._id,
+              amount: referralBonus,
+              type: "Credited",
+              description: "Referral bonus",
+            });
+      
+            await Promise.all([
+              saveUserData.save(),
+              referrerWallet.save(),
+              newUserWallet.save(),
+              referrerTransaction.save(),
+              newUserTransaction.save(),
+            ]);
+          }
+        }
+      }
 
       const token = jwt.sign(
         { userId: saveUserData._id, name: saveUserData.name },
@@ -190,7 +262,7 @@ export const handleOTPVerification = async (req, res) => {
       return res.status(200).json({
         success: true,
         message: "Signup Successful, login now!",
-        redirectUrl: "/home",
+        redirectUrl: `/home?isReferral=${isRefferal}`,
       });
     } else {
       res
@@ -286,7 +358,7 @@ export const handleUserLogin = async (req, res) => {
         profilePic: user.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
     res.cookie("token", token, { httpOnly: true, secure: true });
 
@@ -351,7 +423,7 @@ export const googleCallbackHandler = async (req, res) => {
         profilePic: user.profilePic || null,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "1h" }
+      { expiresIn: "7d" }
     );
 
     res.cookie("token", token, { httpOnly: true, secure: true });

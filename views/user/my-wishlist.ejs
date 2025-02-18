@@ -18,6 +18,8 @@
           <hr />
           <a href="/user/my-coupons"><i class="fa-solid fa-gift"></i> &nbsp; My Coupons</a>
           <hr />
+          <a href="/share-and-earn"><i class="fas fa-coins"></i> &nbsp; Share & Earn</a>
+          <hr>
           <a href="/user/my-wishlist" class="active"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
           <hr />
           <a href="/user/my-wallet"><i class="fa-solid fa-wallet"></i> &nbsp; My Wallet</a>
@@ -34,9 +36,9 @@
         <div class="card shadow-sm p-4 user-menu-wishlist">
           <% if (wishlistProducts.length > 0) { %>
           <h5 class="card-title m-0">My Wishlist</h5>
-          <div class="product-grid m-0 mt-3 mx-3">
+          <div class="product-grid-wishlist m-0 mt-3">
             <% wishlistProducts.forEach(item => { %>
-            <div class="product-card mx-2" data-variant-id="<%= item.variant._id %>">
+            <div class="product-card" data-variant-id="<%= item.variant._id %>">
               <a href="/product/<%= item.product._id %>/<%= item.variant._id %>">
                 <img src="<%= item.variant.images[0] %>" alt="<%= item.variant.shade %>" />
               </a>

@@ -76,8 +76,6 @@
                 <% }) %>
               </div>
             </div>
-
-            <span class="arrow"><i class="fas fa-caret-down"></i></span>
           </li>
 
 
@@ -100,7 +98,6 @@
                 <% }) %>
               </div>
             </div>
-            <span class="arrow"><i class="fas fa-caret-down"></i></span>
           </li>
 
 
@@ -156,8 +153,8 @@
             <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
             <hr>
             <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
+            <hr class="mb-0">
           </div>
-          <span class="arrow"><i class="fas fa-triangle"></i></span>
         </div>
         <% } else { %>
         <!-- If User Not Logged In -->
@@ -267,6 +264,9 @@
       </div>
 
       <div class="sidbar-div">
+        <a href="/share-and-earn"><i class="fas fa-coins"></i> &nbsp; Share & Earn</a><i class="fa fa-plus"></i>
+      </div>
+      <div class="sidbar-div">
         <a href="/my-wishlist"><i class="fa-solid fa-heart"></i> &nbsp; My Wishlist</a>
         <i class="fa fa-plus"></i>
       </div>
@@ -279,14 +279,17 @@
         <a href="/my-orders"><i class="fa-solid fa-truck"></i> &nbsp; My Orders</a>
         <i class="fa fa-plus"></i>
       </div>
+      <% } %>
+
+      <div class="sidbar-div"><a href="/get-app"><i class="fa-solid fa-mobile-screen-button"></i> &nbsp; GET APP</a><i class="fa fa-plus"></i></div>
+      <div class="sidbar-div"><a href="/help"><i class="fas fa-question-circle"></i> &nbsp; HELP</a><i class="fa fa-plus"></i></div>
+
+      <% if (user) { %>
       <div class="sidbar-div">
         <a href="/logout"><i class="fa-solid fa-power-off"></i> &nbsp; Logout</a>
         <i class="fa fa-plus"></i>
       </div>
       <% } %>
-
-
-
     </div>
 
 

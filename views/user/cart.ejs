@@ -3,7 +3,7 @@
 <%- include('partials/headforhome', { user, categories }) %>
 
 <div class="user-contents">
-  <div class="container my-4 p-2">
+  <div class="container my-4 p-2 cart-container">
     <% if (cartProducts.length > 0) { %>
     <div class="row">
       <!-- Left Column: Cart Items -->
@@ -13,7 +13,7 @@
         <div class="card mb-1 px-2 shadow-sm cart-box" id="cart-box" data-product-id="<%= product._id %>" data-variant-id="<%= variant._id %>">
           <div class="row g-0">
             <!-- Image Column -->
-            <div class="col-4 col-md-2 text-center mt-2">
+            <div class="col-4 col-md-2 text-center my-2">
               <a href="/product/<%= product._id %>/<%= variant._id %>">
                 <img id="main-display-image" src="<%= variant.images[0] %>" class="img-fluid rounded" alt="<%= product.title %>">
               </a>
