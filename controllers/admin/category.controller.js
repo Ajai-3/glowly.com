@@ -1,4 +1,4 @@
-import cron from "node-cron";
+// import cron from "node-cron";
 import User from "../../models/user.model.js";
 import Offer from "../../models/offer.model.js";
 import Product from "../../models/product.model.js";
@@ -451,92 +451,92 @@ export const addOffer = async (req, res) => {
   }
 };
 
-cron.schedule("* * * * *", async () => {
-  try {
-    const currentDate = new Date().toISOString();
+// cron.schedule("* * * * *", async () => {
+//   try {
+//     const currentDate = new Date().toISOString();
 
-    const activeOffers = await Offer.find({
-      isActive: false,
-      isDeleted: false,
-      startDate: { $lte: currentDate },
-    });
+//     const activeOffers = await Offer.find({
+//       isActive: false,
+//       isDeleted: false,
+//       startDate: { $lte: currentDate },
+//     });
 
-    for (const offer of activeOffers) {
-      offer.isActive = true;
-      await offer.save();
+//     for (const offer of activeOffers) {
+//       offer.isActive = true;
+//       await offer.save();
 
-      const maxDiscountPercentage = 70;
+//       const maxDiscountPercentage = 70;
 
-      const category = await Category.findOne({ offerId: offer._id });
-      if (!category) {
-        continue;
-      }
+//       const category = await Category.findOne({ offerId: offer._id });
+//       if (!category) {
+//         continue;
+//       }
 
-      const products = await Product.find({
-        categoryId: category._id,
-        isDeleted: false,
-      });
+//       const products = await Product.find({
+//         categoryId: category._id,
+//         isDeleted: false,
+//       });
 
-      for (const product of products) {
-        for (const variant of product.variants) {
-          variant.salePriceBeforeOffer = variant.salePrice;
-          let newSalePrice = variant.regularPrice;
-          const maxDiscountValue =
-            (maxDiscountPercentage / 100) * variant.regularPrice;
+//       for (const product of products) {
+//         for (const variant of product.variants) {
+//           variant.salePriceBeforeOffer = variant.salePrice;
+//           let newSalePrice = variant.regularPrice;
+//           const maxDiscountValue =
+//             (maxDiscountPercentage / 100) * variant.regularPrice;
 
-          if (offer.offerType === "flat") {
-            const appliedDiscount = Math.min(
-              offer.offerValue,
-              maxDiscountValue
-            );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-          } else if (offer.offerType === "percentage") {
-            const appliedDiscount = Math.min(
-              variant.regularPrice * (offer.offerValue / 100),
-              maxDiscountValue
-            );
-            newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
-          }
+//           if (offer.offerType === "flat") {
+//             const appliedDiscount = Math.min(
+//               offer.offerValue,
+//               maxDiscountValue
+//             );
+//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+//           } else if (offer.offerType === "percentage") {
+//             const appliedDiscount = Math.min(
+//               variant.regularPrice * (offer.offerValue / 100),
+//               maxDiscountValue
+//             );
+//             newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+//           }
 
-          variant.salePrice = Math.round(newSalePrice);
-        }
+//           variant.salePrice = Math.round(newSalePrice);
+//         }
 
-        await product.save();
-      }
-    }
+//         await product.save();
+//       }
+//     }
 
-    // Deactivate expired offers
-    const expiredOffers = await Offer.find({
-      isActive: true,
-      endDate: { $lte: currentDate },
-    });
+//     // Deactivate expired offers
+//     const expiredOffers = await Offer.find({
+//       isActive: true,
+//       endDate: { $lte: currentDate },
+//     });
 
-    for (const offer of expiredOffers) {
-      offer.isActive = false;
-      offer.isDeleted = true;
-      await offer.save();
+//     for (const offer of expiredOffers) {
+//       offer.isActive = false;
+//       offer.isDeleted = true;
+//       await offer.save();
 
-      const category = await Category.findOne({ offerId: offer._id });
-      if (!category) {
-        continue;
-      }
+//       const category = await Category.findOne({ offerId: offer._id });
+//       if (!category) {
+//         continue;
+//       }
 
-      const products = await Product.find({
-        categoryId: category._id,
-        isDeleted: false,
-      });
+//       const products = await Product.find({
+//         categoryId: category._id,
+//         isDeleted: false,
+//       });
 
-      for (const product of products) {
-        for (const variant of product.variants) {
-          variant.salePrice = variant.salePriceBeforeOffer;
-        }
-        await product.save();
-      }
-    }
-  } catch (error) {
-    console.error("Error in cron job:", error);
-  }
-});
+//       for (const product of products) {
+//         for (const variant of product.variants) {
+//           variant.salePrice = variant.salePriceBeforeOffer;
+//         }
+//         await product.save();
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error in cron job:", error);
+//   }
+// });
 
 // ========================================================================================
 // REMOVE OFFER FROM CATEGORY

@@ -1,4 +1,4 @@
-import cron from "node-cron";
+// import cron from "node-cron";
 import User from "../../models/user.model.js";
 import Coupon from "../../models/coupon.model.js";
 
@@ -85,37 +85,37 @@ export const addCoupon = async (req, res) => {
   }
 };
 
-cron.schedule("* * * * *", async () => {
-  try {
-    const couponsToActivate = await Coupon.find({
-      startDate: { $lte: new Date() },
-      isActive: false,
-      isDelete: false,
-    });
+// cron.schedule("* * * * *", async () => {
+//   try {
+//     const couponsToActivate = await Coupon.find({
+//       startDate: { $lte: new Date() },
+//       isActive: false,
+//       isDelete: false,
+//     });
 
-    if (couponsToActivate.length > 0) {
-      for (const coupon of couponsToActivate) {
-        coupon.isActive = true;
-        await coupon.save();
-      }
-    }
+//     if (couponsToActivate.length > 0) {
+//       for (const coupon of couponsToActivate) {
+//         coupon.isActive = true;
+//         await coupon.save();
+//       }
+//     }
 
-    const expiredCoupons = await Coupon.find({
-      expiryDate: { $lt: new Date() },
-      isActive: true,
-      isDelete: false,
-    });
+//     const expiredCoupons = await Coupon.find({
+//       expiryDate: { $lt: new Date() },
+//       isActive: true,
+//       isDelete: false,
+//     });
 
-    if (expiredCoupons.length > 0) {
-      for (const coupon of expiredCoupons) {
-        coupon.isActive = false;
-        await coupon.save();
-      }
-    }
-  } catch (error) {
-    console.error("Error running cron job for coupon status update:", error);
-  }
-});
+//     if (expiredCoupons.length > 0) {
+//       for (const coupon of expiredCoupons) {
+//         coupon.isActive = false;
+//         await coupon.save();
+//       }
+//     }
+//   } catch (error) {
+//     console.error("Error running cron job for coupon status update:", error);
+//   }
+// });
 
 // ========================================================================================
 // DELETE COUPON (SOFT DELETE)
