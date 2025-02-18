@@ -5714,6 +5714,7 @@ p2 {
 
 /* products Page */
 .edit-btn,
+.remove-btn,
 .delete-btn,
 .unlist-btn,
 .list-btn,
@@ -5733,7 +5734,8 @@ p2 {
   background-color: var(--blue-text-color-3);
 }
 
-.delete-btn {
+.delete-btn,
+.remove-btn {
   color: var(--red-text-color-2);
   background-color: var(--red-text-color-3);
 }

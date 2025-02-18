@@ -101,6 +101,11 @@ const productSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+      offerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Offer",
+        default: null,
+      },
   },
   {
     timestamps: true,

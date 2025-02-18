@@ -520,7 +520,6 @@ export const addOffer = async (req, res) => {
 // This function allows admins to remove an offer from a specific category,
 // effectively deactivating the offer and ensuring it is no longer applied to the category.
 // ========================================================================================
-
 export const removeOffer = async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
@@ -549,7 +548,7 @@ export const removeOffer = async (req, res) => {
       });
     }
 
-    offer.isActive = true;
+    offer.isActive = false;
     offer.isDeleted = true;
     await offer.save();
 

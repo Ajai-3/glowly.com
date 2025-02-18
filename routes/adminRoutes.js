@@ -46,6 +46,8 @@ import {
   toggleProductVariant,
   addVariantPage,
   addNewVariants,
+  addProductOffer,
+  removeProductOffer,
 } from "../controllers/admin/product.controller.js";
 import {
   renderBrandPage,
@@ -93,6 +95,8 @@ router.get("/top-items", verifyAdminToken, renderTopItemsPage);
 
 // Product Routes
 router.get("/products", verifyAdminToken, renderProductsPage);
+router.post("/product-offer", verifyAdminToken, addProductOffer);
+router.post("/remove-product-offer/:productId", verifyAdminToken, removeProductOffer);
 router.get("/search-products", verifyAdminToken, renderProductsPage);
 router.get("/add-products", verifyAdminToken, renderAddProductsPage);
 router.patch("/toggle-product/:id", verifyAdminToken, toggleProduct); 

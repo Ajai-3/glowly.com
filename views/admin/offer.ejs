@@ -160,9 +160,33 @@ const offerType = document.getElementById('offerType');
 const description = document.getElementById('description');
 const categoryId = document.getElementById('categoryId');
 
-const today = new Date().toISOString().split('T')[0];  
-document.getElementById("startDate").setAttribute("min", today);
-document.getElementById("endDate").setAttribute("min", today);
+// Get today's date
+const today = new Date();
+const todayString = today.toISOString().split('T')[0];
+const nextDay = new Date(today);
+nextDay.setDate(today.getDate() + 1);
+const nextDayString = nextDay.toISOString().split('T')[0];
+
+document.getElementById("startDate").setAttribute("min", todayString);
+document.getElementById("startDate").value = todayString; 
+
+document.getElementById("endDate").setAttribute("min", nextDayString);
+
+// Add event listener for the start date
+document.getElementById("startDate").addEventListener("change", function() {
+    const selectedStartDate = new Date(this.value);
+    selectedStartDate.setDate(selectedStartDate.getDate() + 1); 
+
+    const endDateInput = document.getElementById("endDate");
+
+    endDateInput.disabled = false;
+    const minEndDate = selectedStartDate.toISOString().split('T')[0];
+    endDateInput.setAttribute("min", minEndDate);
+    endDateInput.value = minEndDate;
+});
+
+
+
 
 const errorMessages = {
     offerValue: 'Please enter a valid value.',

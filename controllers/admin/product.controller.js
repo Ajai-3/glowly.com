@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import User from "../../models/user.model.js";
+import Offer from "../../models/offer.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
@@ -61,6 +62,15 @@ export const renderProductsPage = async (req, res) => {
         },
       },
       { $unwind: "$brand" },
+      {
+        $lookup: {
+          from: "offers",
+          localField: "offerId",
+          foreignField: "_id",
+          as: "offer",
+        },
+      },
+      { $unwind: { path: "$offer", preserveNullAndEmptyArrays: true } },
       { $sort: { createdAt: -1 } },
     ];
 
@@ -77,6 +87,13 @@ export const renderProductsPage = async (req, res) => {
           subcategoryName: product.subcategory.name,
           productId: product._id,
           isDeleted: product.isDeleted,
+          offerId: product.offer?._id,
+          offerName: product.offer?.name,
+          offerValue: product.offer?.offerValue,
+          offerStartDate: product.offer?.startDate,
+          offerEndDate: product.offer?.endDate,
+          offerIsActive: product.offer?.isActive,
+          offerIsDeleted: product.offer?.isDeleted,
         });
       });
       return acc;
@@ -674,3 +691,139 @@ export const toggleProductVariant = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+// ==========================================================================================
+// ADD PRODUCT OFFER
+// ==========================================================================================
+// This function allows admins to apply discount offers to specific products, 
+// setting a percentage-based discount and an expiration date. 
+// ==========================================================================================
+export const addProductOffer = async (req, res) => {
+  try {
+    const { productId, name, discount, endDate } = req.body;
+
+    if (!productId || !name || !discount || !endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required.",
+      });
+    }
+
+    const newOffer = new Offer({
+      offerType: "percentage",
+      offerValue: discount,
+      name,
+      startDate: new Date(),
+      endDate,
+      isActive: true,
+      isDeleted: false,
+    });
+
+    await newOffer.save();
+
+    const product = await Product.findOne({ _id: productId, isDeleted: false });
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found.",
+      });
+    }
+
+    for (const variant of product.variants) {
+      if (!variant.salePriceBeforeOffer) {
+        variant.salePriceBeforeOffer = variant.salePrice;
+      }
+
+      const maxDiscountPercentage = 90;
+      const maxDiscountValue = (maxDiscountPercentage / 100) * variant.regularPrice;
+
+      const appliedDiscount = Math.min(variant.regularPrice * (discount / 100), maxDiscountValue);
+      const newSalePrice = Math.max(variant.regularPrice - appliedDiscount, 0);
+
+      variant.salePrice = Math.round(newSalePrice);
+    }
+
+    product.categoryOffer = "Not applied";
+    product.productOffer = "Applied";
+    product.offerId = newOffer._id;
+    await product.save();
+  
+
+    return res.status(200).json({
+      success: true,
+      message: "Offer applied successfully.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while adding the offer.",
+    });
+  }
+};
+
+// ==========================================================================================
+// REMOVE PRODUCT OFFER
+// ==========================================================================================
+// This function allows admins to remove an existing discount offer from a product. 
+// Once removed, the product will no longer have any discount applied. 
+// ==========================================================================================
+export const removeProductOffer = async (req, res) => {
+    try {
+      const productId = req.params.productId;
+      const { offerId } = req.body;
+  
+      if (!offerId) {
+        return res.status(400).json({
+          success: false,
+          message: "Offer ID is required.",
+        });
+      }
+     
+  
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "Category not found.",
+        });
+      }
+  
+      console.log(product)
+
+      const offer = await Offer.findById(offerId);
+      if (!offer) {
+        return res.status(404).json({
+          success: false,
+          message: "Offer not found.",
+        });
+      }
+      console.log(offer)
+  
+      offer.isActive = false;
+      offer.isDeleted = true;
+      await offer.save();
+  
+  
+ 
+        for (const variant of product.variants) {
+          variant.salePrice = variant.salePriceBeforeOffer;
+        }
+  
+        product.productOffer = "Not applied";
+        await product.save();
+
+  
+      return res.status(200).json({
+        success: true,
+        message: "Offer removed and sale prices reverted successfully.",
+      });
+    } catch (error) {
+      console.error("Error removing offer:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Something went wrong while removing the offer.",
+      });
+    }
+  };

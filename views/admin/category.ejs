@@ -79,10 +79,14 @@
           <td> <%= new Date(cat.created_at).toLocaleDateString() %> </td>
           <td>
             <% if (cat.offerId && cat.offerId.isDeleted === false) { %>
-            <p>Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
+            <p class="mb-1">Offer:<%= cat.offerId.name.split(' ').slice(0, 5).join(' ') %><%= cat.offerId.name.split(' ').length > 5 ? '...' : '' %>
               (<%= cat.offerId.offerValue %>%) 
             </p>
-            <p><%= cat.offerId.startDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %> - <%= cat.offerId.endDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
+            <div class="d-flex">
+              <p class="mb-1 me-1" style="font-size: smaller; color: #04c900;"><%= cat.offerId.startDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %> - </p>
+              <p class="mb-1 ms-1" style="font-size: smaller; color: #cb0000;"><%= cat.offerId.endDate.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
+            </div>
+            
               <button class="delete-btn" onclick="removeOffer('<%= cat._id %>', '<%= cat.offerId._id %>', this)">
                 Remove Offer
               </button>
