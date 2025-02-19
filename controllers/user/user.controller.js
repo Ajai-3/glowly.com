@@ -148,7 +148,7 @@ export const handleUserSignup = async (req, res) => {
     req.session.otpExpiriy = expiryTime;
     req.session.userData = { name, phone_no, email, password, referralCode };
 
-    // console.log("OTP", OTP);
+    console.log("OTP", OTP);
 
     // Send OTP to the user email
     const sendOTPEmail = await sendOTPToUserEmail(email, OTP);
@@ -405,9 +405,11 @@ export const googleCallbackHandler = async (req, res) => {
         referralCode: referralCode,
 
       });
+      console.log("User before saving:", user);
 
       try {
         await user.save();
+        console.log("User before saving:", user);
       } catch (err) {
         if (err.code === 11000) {
           user = await User.findOne({ email: req.user.email });
