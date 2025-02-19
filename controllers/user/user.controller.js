@@ -411,6 +411,10 @@ export const googleCallbackHandler = async (req, res) => {
       } catch (err) {
         if (err.code === 11000) {
           user = await User.findOne({ email: req.user.email });
+          if (!user.referralCode) {
+            user.referralCode = await generateReferralCode();
+            await user.save();
+          }
         } else {
           throw err;
         }
@@ -418,7 +422,7 @@ export const googleCallbackHandler = async (req, res) => {
     } else if (!user.googleId) {
       user.googleId = req.user.googleId;
       await user.save();
-    }
+    } 
 
     req.session.user = {
       _id: user._id,
