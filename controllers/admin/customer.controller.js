@@ -1,4 +1,5 @@
 import User from "../../models/user.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER USERS PAGE
@@ -64,7 +65,7 @@ export const renderUsersPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error rendering users page:", error);
-    res.status(500).send("An error occurred while rendering the users page.");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred while rendering the users page.");
   }
 };
 
@@ -79,7 +80,7 @@ export const blockUser = async (req, res) => {
 
   if (!userId) {
     return res
-      .status(400)
+      .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: "User ID is required." });
   }
 
@@ -87,20 +88,20 @@ export const blockUser = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "User not found." });
     }
 
     user.status = "blocked";
     await user.save();
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "User has been successfully blocked.",
     });
   } catch (error) {
     console.error("Error in blocking user:", error);
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "An error occurred while blocking the user.",
     });
@@ -118,7 +119,7 @@ export const unBlockUser = async (req, res) => {
 
   if (!userId) {
     return res
-      .status(400)
+      .status(StatusCodes.BAD_REQUEST)
       .json({ success: false, message: "User ID is required." });
   }
 
@@ -126,20 +127,20 @@ export const unBlockUser = async (req, res) => {
     const user = await User.findById(userId);
     if (!user) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "User not found." });
     }
 
     user.status = "active";
     await user.save();
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "User has been successfully unblocked.",
     });
   } catch (error) {
     console.error("Error in unblocking user:", error);
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "An error occurred while unblocking the user.",
     });

@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 import User from "../../models/user.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER SETTINGS PAGE (ADMIN PROFILE UPDATE)
@@ -50,7 +51,7 @@ export const updateAdminProfile = async (req, res) => {
     });
   } catch (error) {
     console.error("Update profile error:", error);
-    res.status(500).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || "Error updating profile",
     });

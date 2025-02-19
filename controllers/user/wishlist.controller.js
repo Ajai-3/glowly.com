@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import Product from "../../models/product.model.js";
 import Wishlist from "../../models/wishlist.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER WISHLIST PAGE
@@ -96,7 +97,7 @@ export const addToWishlist = async (req, res) => {
       !mongoose.Types.ObjectId.isValid(variant_id)
     ) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ error: "Invalid product_id or variant_id" });
     }
 

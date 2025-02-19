@@ -12,6 +12,7 @@ import {
 } from "../../helpers/email.js";
 import User from "../../models/user.model.js";
 import Wallet from "../../models/wallet.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
@@ -255,19 +256,19 @@ export const handleOTPVerification = async (req, res) => {
 
       res.cookie("token", token, { httpOnly: true, secure: true });
 
-      return res.status(200).json({
+      return res.status(StatusCodes.OK).json({
         success: true,
         message: "Signup Successful, login now!",
         redirectUrl: `/home?isReferral=${isRefferal}`,
       });
     } else {
       res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, msg: "Invalid OTP Please try again." });
     }
   } catch (error) {
     console.error("Error in verifing OTP", error);
-    res.status(500).json({ success: false, msg: "An error occurs" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, msg: "An error occurs" });
   }
 };
 
@@ -283,7 +284,7 @@ export const handleResendOTP = async (req, res) => {
     if (!user) {
       console.error("User data not passed");
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, msg: "User not authenticated." });
     }
 
@@ -299,7 +300,7 @@ export const handleResendOTP = async (req, res) => {
     if (!sendOTPEmail) {
       console.error("Error sending OTP");
       return res
-        .status(500)
+        .status(StatusCodes.BAD_REQUEST)
         .json({
           success: false,
           msg: "Error sending OTP. Please try again later.",
@@ -307,7 +308,7 @@ export const handleResendOTP = async (req, res) => {
     }
 
     return res
-      .status(200)
+      .status(StatusCodes.OK)
       .json({ success: true, msg: "OTP resent successfully." });
   } catch (error) {
     console.error("Error in resend OTP:", error);
@@ -385,7 +386,7 @@ export const googleCallbackHandler = async (req, res) => {
       req.logout((err) => {
         if (err) {
           console.error("Logout error:", err);
-          return res.status(500).send("An error occurred during logout");
+          return res.status(StatusCodes.BAD_REQUEST).send("An error occurred during logout");
         }
         return res.render("user/login", { msg: { type: "error", msg: "Account blocked by admin...!" } });
       });
@@ -547,13 +548,13 @@ export const handleUserLogout = async (req, res) => {
     req.session.destroy((err) => {
       if (err) {
         console.error("Logout error:", err);
-        return res.status(500).send("Error during logout");
+        return res.status(StatusCodes.BAD_REQUEST).send("Error during logout");
       }
       res.clearCookie("token");
       return res.redirect("/home");
     });
   } catch (error) {
     console.error("Unexpected error during logout:", error);
-    return res.status(500).send("Server error during logout");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Server error during logout");
   }
 };

@@ -2,6 +2,7 @@ import Brand from "../../models/brand.model.js";
 import Review from "../../models/review.model.js";
 import Product from "../../models/product.model.js";
 import Subcategory from "../../models/subcategory.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER PRODUCT PAGE

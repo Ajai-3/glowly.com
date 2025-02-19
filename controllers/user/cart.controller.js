@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import Cart from "../../models/cart.model.js";
 import Product from "../../models/product.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER CART PAGE
@@ -84,13 +85,13 @@ export const addToCart = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
     if (!variantId) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Variant ID is required" });
     }
 
@@ -99,7 +100,7 @@ export const addToCart = async (req, res) => {
     );
     if (!variant) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Variant not found" });
     }
 
@@ -171,7 +172,7 @@ export const addToCart = async (req, res) => {
   } catch (error) {
     console.error("Error adding product to cart:", error);
     return res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Error adding product to cart" });
   }
 };
@@ -207,7 +208,7 @@ export const removeCartProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in removing product from cart:", error);
-    return res.status(500).send("Error in removing product");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error in removing product");
   }
 };
 
@@ -228,27 +229,27 @@ export const updateCartPageProduct = async (req, res) => {
     );
     if (!productInCart) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found in cart" });
     }
 
     const product = await Product.findById(productId);
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
     const variant = product.variants.id(variantId);
     if (!variant) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Variant not found" });
     }
 
     if (variant.stockQuantity < newQuantity) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Not enough stock available" });
     }
 
@@ -259,7 +260,7 @@ export const updateCartPageProduct = async (req, res) => {
   } catch (error) {
     console.error("Error in updating cart product:", error);
     return res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Internal Server Error" });
   }
 };

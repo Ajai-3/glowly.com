@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import User from "../../models/user.model.js";
 import Coupon from "../../models/coupon.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER COUPONS PAGE
@@ -39,7 +40,7 @@ export const renderCouponsPage = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Error rendering coupons page.");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error rendering coupons page.");
   }
 };
 // ========================================================================================
@@ -75,13 +76,13 @@ export const addCoupon = async (req, res) => {
 
     await newCoupon.save();
 
-    return res.status(201).json({
+    return res.status(StatusCodes.CREATED).json({
       success: true,
       message: "Coupon added successfully!",
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).send("Error saving the coupon.");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error saving the coupon.");
   }
 };
 
@@ -130,18 +131,18 @@ export const removeCoupon = async (req, res) => {
 
     if (!coupon) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Coupon not found" });
     }
     coupon.isDelete = true;
 
     await coupon.save();
     return res
-      .status(200)
+      .status(StatusCodes.OK)
       .json({ success: true, message: "Coupon deleted successfully." });
   } catch (error) {
     console.error("Error in deleting coupon", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
   }
 };
 
@@ -159,17 +160,17 @@ export const restoreCoupon = async (req, res) => {
 
     if (!coupon) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Coupon not found" });
     }
     coupon.isDelete = false;
 
     await coupon.save();
     return res
-      .status(200)
+      .status(StatusCodes.OK)
       .json({ success: true, message: "Coupon restored successfully." });
   } catch (error) {
     console.error("Error in restoring coupon", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal server error" });
   }
 };

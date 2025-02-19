@@ -4,6 +4,7 @@ import Offer from "../../models/offer.model.js";
 import Brand from "../../models/brand.model.js";
 import Product from "../../models/product.model.js";
 import Category from "../../models/category.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER PRODUCTS PAGE
@@ -121,7 +122,7 @@ export const renderProductsPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -148,7 +149,7 @@ export const topProducts = async (req, res) => {
     res.json(topProducts);
   } catch (error) {
     console.error("Error fetching top products:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -182,7 +183,7 @@ export const renderAddProductsPage = async (req, res) => {
       "Error fetching categories, brands, and subcategories:",
       error
     );
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -213,7 +214,7 @@ export const addProduct = async (req, res) => {
       !variants
     ) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Missing required fields" });
     }
 
@@ -221,7 +222,7 @@ export const addProduct = async (req, res) => {
 
     if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "At least one variant is required" });
     }
 
@@ -269,14 +270,14 @@ export const addProduct = async (req, res) => {
 
     await newProduct.save();
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "Product added successfully",
       product: newProduct,
     });
   } catch (error) {
     console.error("Error in adding product:", error);
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || "Internal Server Error",
     });
@@ -319,7 +320,7 @@ export const renderEditProductPage = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    res.status(500).send("Error fetching product details");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Error fetching product details");
   }
 };
 
@@ -360,7 +361,7 @@ export const editProduct = async (req, res) => {
       !variantStockQuantity
     ) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Missing required fields" });
     }
 
@@ -368,7 +369,7 @@ export const editProduct = async (req, res) => {
 
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
@@ -377,7 +378,7 @@ export const editProduct = async (req, res) => {
     );
 
     if (!variant) {
-      return res.status(404).json({ message: "Variant not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Variant not found" });
     }
 
     product.title = productName;
@@ -405,13 +406,13 @@ export const editProduct = async (req, res) => {
     }
 
     await product.save();
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "Product and variant updated successfully",
     });
   } catch (err) {
     console.log("Error:", err);
-    res.status(500).send("Internal server error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 function updateVariantImages(existingImages, removedImages, newImages) {
@@ -478,7 +479,7 @@ export const addVariantPage = async (req, res) => {
 
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
@@ -490,7 +491,7 @@ export const addVariantPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in rendering add variant page.", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -506,7 +507,7 @@ export const addNewVariants = async (req, res) => {
 
     if (!productId || !variants || variants.length === 0) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Missing required fields" });
     }
 
@@ -514,7 +515,7 @@ export const addNewVariants = async (req, res) => {
 
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
@@ -523,13 +524,13 @@ export const addNewVariants = async (req, res) => {
       parsedVariants = JSON.parse(variants);
     } catch (error) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Invalid JSON format for variants" });
     }
 
     if (!Array.isArray(parsedVariants) || parsedVariants.length === 0) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "At least one variant is required" });
     }
 
@@ -581,7 +582,7 @@ export const addNewVariants = async (req, res) => {
       
         if (variantImages.length === 0) {
           return res
-            .status(400)
+            .status(StatusCodes.BAD_REQUEST)
             .json({ success: false, message: `Images are required for variant ${index + 1}` });
         }
       
@@ -601,14 +602,14 @@ export const addNewVariants = async (req, res) => {
 
     await product.save();
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "Variants added successfully",
     });
   } catch (error) {
     console.error("Error in adding variant.", error);
     res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: error.message || "Server error" });
   }
 };
@@ -627,7 +628,7 @@ export const toggleProduct = async (req, res) => {
 
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
@@ -636,14 +637,14 @@ export const toggleProduct = async (req, res) => {
 
     await product.save();
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       isDeleted: product.isDeleted,
       message: product.isDeleted ? "Product deleted" : "Product restored",
     });
   } catch (error) {
     console.error("Error toggling product status:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -660,14 +661,14 @@ export const toggleProductVariant = async (req, res) => {
     const product = await Product.findById(productId);
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found" });
     }
 
     const variant = product.variants.id(variantId);
     if (!variant) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Variant not found" });
     }
 
@@ -681,14 +682,14 @@ export const toggleProductVariant = async (req, res) => {
 
     await product.save();
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       isDeleted: variant.isDeleted,
       message: variant.isDeleted ? "Variant deleted" : "Variant restored",
     });
   } catch (error) {
     console.error("Error toggling product variant status:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -703,7 +704,7 @@ export const addProductOffer = async (req, res) => {
     const { productId, name, discount, endDate } = req.body;
 
     if (!productId || !name || !discount || !endDate) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "All fields are required.",
       });
@@ -724,7 +725,7 @@ export const addProductOffer = async (req, res) => {
     const product = await Product.findOne({ _id: productId, isDeleted: false });
 
     if (!product) {
-      return res.status(404).json({
+      return res.status(StatusCodes.NOT_FOUND).json({
         success: false,
         message: "Product not found.",
       });
@@ -750,13 +751,13 @@ export const addProductOffer = async (req, res) => {
     await product.save();
   
 
-    return res.status(200).json({
+    return res.status(StatusCodes.OK).json({
       success: true,
       message: "Offer applied successfully.",
     });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Something went wrong while adding the offer.",
     });
@@ -775,7 +776,7 @@ export const removeProductOffer = async (req, res) => {
       const { offerId } = req.body;
   
       if (!offerId) {
-        return res.status(400).json({
+        return res.status(StatusCodes.BAD_REQUEST).json({
           success: false,
           message: "Offer ID is required.",
         });
@@ -784,7 +785,7 @@ export const removeProductOffer = async (req, res) => {
   
       const product = await Product.findById(productId);
       if (!product) {
-        return res.status(404).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           success: false,
           message: "Category not found.",
         });
@@ -794,7 +795,7 @@ export const removeProductOffer = async (req, res) => {
 
       const offer = await Offer.findById(offerId);
       if (!offer) {
-        return res.status(404).json({
+        return res.status(StatusCodes.NOT_FOUND).json({
           success: false,
           message: "Offer not found.",
         });
@@ -815,13 +816,13 @@ export const removeProductOffer = async (req, res) => {
         await product.save();
 
   
-      return res.status(200).json({
+      return res.status(StatusCodes.OK).json({
         success: true,
         message: "Offer removed and sale prices reverted successfully.",
       });
     } catch (error) {
       console.error("Error removing offer:", error);
-      return res.status(500).json({
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Something went wrong while removing the offer.",
       });

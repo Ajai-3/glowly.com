@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import razorpay from "../../config/razorpay.js";
 import Wallet from "../../models/wallet.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
@@ -83,7 +84,7 @@ export const addMoneyToWallet = async (req, res) => {
     } = req.body;
 
     if (!amount || amount <= 0 || amount > 25000) {
-      return res.status(400).json({ error: "Invalid amount" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid amount" });
     }
 
     let userWallet = wallet;
@@ -118,7 +119,7 @@ export const addMoneyToWallet = async (req, res) => {
     const generated_signature = hmac.digest("hex");
 
     if (generated_signature !== razorpay_signature) {
-      return res.status(400).json({ error: "Invalid signature" });
+      return res.status(StatusCodes.BAD_REQUEST).json({ error: "Invalid signature" });
     }
 
     // Update Wallet and create Transaction

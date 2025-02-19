@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import User from "../../models/user.model.js";
 import Wallet from "../../models/wallet.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js"
 import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
@@ -30,7 +31,7 @@ export const shareAndEarn = async (req, res) => {
         });
     } catch (error) {
         console.error("Error rendering Share & Earn page:", error);
-        return res.status(500).send("Internal Server Error");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
     }
 };
 
@@ -48,16 +49,16 @@ export const redeemReferral = async (req, res) => {
 
         const userIndb = await User.findOne({ referralCode: code });
         if (!userIndb) {
-            return res.status(400).json({ success: false, message: "Invalid referral code" });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Invalid referral code" });
         }
 
         if (user.userId.toString() === userIndb._id.toString()) {
-            return res.status(400).json({ success: false, message: "You cannot enter your own Reffreal code. " });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "You cannot enter your own Reffreal code. " });
         }
 
         const currentUser = await User.findById({ _id: user.userId })
         if (currentUser.referredBy) {
-            return res.status(400).json({ success: false, message: "Referral bonus already claimed." });
+            return res.status(StatusCodes.BAD_REQUEST).json({ success: false, message: "Referral bonus already claimed." });
         }
 
         if (user.userId.toString() !== userIndb._id.toString()) {
@@ -103,7 +104,7 @@ export const redeemReferral = async (req, res) => {
                     newTransactionReferrer.save(),
                 ]);
 
-                return res.status(200).json({ 
+                return res.status(StatusCodes.OK).json({ 
                     success: true, 
                     message: `₹ ${referralBonus} referral bonus credited.`,
                     showConfetti: true
@@ -114,6 +115,6 @@ export const redeemReferral = async (req, res) => {
         
     } catch (error) {
         console.error("Error redeeming referral code:", error);
-        return res.status(500).json("Internal Server Error");
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json("Internal Server Error");
     }
 }

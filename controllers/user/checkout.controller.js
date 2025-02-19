@@ -9,6 +9,7 @@ import Wallet from "../../models/wallet.model.js";
 import Coupon from "../../models/coupon.model.js";
 import Address from "../../models/address.model.js";
 import Product from "../../models/product.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
@@ -85,7 +86,7 @@ export const renderCheckoutPage = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error rendering checkout page:", error);
-    next({ statusCode: 500, message: error.message });
+    next({ statusCode: StatusCodes.INTERNAL_SERVER_ERROR, message: error.message });
   }
 };
 
@@ -116,7 +117,7 @@ export const placeOrderWithBuyNow = async (req, res) => {
     }
 
     if (!productId || !variantId || !quantity) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Product ID and quantity are required.",
       });
@@ -205,7 +206,7 @@ export const placeOrder = async (req, res) => {
 
     if (!token) {
       return res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated." });
     }
 
@@ -216,21 +217,21 @@ export const placeOrder = async (req, res) => {
       typeof grandTotal !== "number"
     ) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Missing required fields." });
     }
 
     const userData = await User.findById(user.userId);
     if (!userData) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "User not found." });
     }
 
     const address = await Address.findById(address_id);
     if (!address) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Address not found." });
     }
 
@@ -239,7 +240,7 @@ export const placeOrder = async (req, res) => {
       const product = await Product.findById(cartItem.product_id);
       if (!product) {
         return res
-          .status(404)
+          .status(StatusCodes.NOT_FOUND)
           .json({ success: false, message: `Product not found` });
       }
 
@@ -248,7 +249,7 @@ export const placeOrder = async (req, res) => {
       );
       if (!variant || variant.stockQuantity < cartItem.quantity) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: `Insufficient stock for variant` });
       }
 
@@ -281,7 +282,7 @@ export const placeOrder = async (req, res) => {
       const wallet = await Wallet.findOne({ user_id: user.userId });
       if (!wallet || wallet.balance < grandTotal) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "Insufficient wallet balance." });
       }
 
@@ -306,7 +307,7 @@ export const placeOrder = async (req, res) => {
       ]);
 
       return res
-        .status(201)
+        .status(StatusCodes.OK)
         .json({
           success: true,
           message: "Order placed successfully using wallet!",
@@ -362,7 +363,7 @@ export const placeOrder = async (req, res) => {
       ]);
 
       return res
-        .status(201)
+        .status(StatusCodes.CREATED)
         .json({
           success: true,
           message: "Order placed successfully with cash on delivery!",
@@ -370,13 +371,13 @@ export const placeOrder = async (req, res) => {
         });
     } else {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Invalid payment method." });
     }
   } catch (error) {
     console.error("Error in place order:", error);
     return res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Internal server error." });
   }
 };
@@ -393,7 +394,7 @@ export const paymentRetry = async (req, res, next) => {
 
     if (!orderId) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Order ID is required" });
     }
 
@@ -406,13 +407,13 @@ export const paymentRetry = async (req, res, next) => {
 
     if (!order) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Order not found" });
     }
 
     if (order.payment_status === "Payment completed") {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({
           success: false,
           message: "Payment is already completed for this order",
@@ -422,7 +423,7 @@ export const paymentRetry = async (req, res, next) => {
     if (
       !["Payment failed", "Payment pending COD"].includes(order.payment_status)
     ) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message:
           "Payment retry is only available for failed or pending payments",
@@ -451,7 +452,7 @@ export const paymentRetry = async (req, res, next) => {
     }
 
     if (unavailableProducts.length > 0) {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: `The following products are out of stock: ${unavailableProducts.join(
           ", "
@@ -477,7 +478,7 @@ export const paymentRetry = async (req, res, next) => {
       razorpay_order_id: razorpayOrder.id,
     });
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       key: process.env.RAZORPAY_KEY_ID,
       order: {
@@ -489,13 +490,13 @@ export const paymentRetry = async (req, res, next) => {
     });
   } catch (error) {
     if (error.code === "BAD_REQUEST_ERROR") {
-      return res.status(400).json({
+      return res.status(StatusCodes.BAD_REQUEST).json({
         success: false,
         message: "Invalid request to payment gateway",
       });
     }
     next({
-      statusCode: 500,
+      statusCode: StatusCodes.INTERNAL_SERVER_ERROR,
       message: "Failed to process payment retry. Please try again.",
     });
   }
@@ -518,7 +519,7 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     if (generated_signature !== razorpay_signature) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Invalid Razorpay signature." });
     }
 
@@ -534,19 +535,19 @@ export const verifyRazorpayPayment = async (req, res) => {
       ]);
 
       return res
-        .status(200)
+        .status(StatusCodes.OK)
         .json({
           success: true,
           message: "Payment verified and order placed successfully!",
         });
     } else {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Order not found." });
     }
   } catch (error) {
     return res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "Internal server error." });
   }
 };
@@ -569,6 +570,7 @@ const processOrder = async (cart, userId) => {
     }
 
     variant.stockQuantity -= cartItem.quantity;
+    product.markModified("variants");
     updateProductPromises.push(product.save());
 
     purchasedProductIds.push({
@@ -623,7 +625,7 @@ export const verifyCoupon = async (req, res) => {
     
     if (!token) {
       return res
-        .status(401)
+        .status(StatusCodes.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated." });
     }
 
@@ -631,7 +633,7 @@ export const verifyCoupon = async (req, res) => {
 
     if (getCoupon && getCoupon.isActive === false) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({
           sucess: false,
           message: "This coupon has expired or is invalid.",
@@ -639,7 +641,7 @@ export const verifyCoupon = async (req, res) => {
     }
     if (!getCoupon) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({
           success: false,
           message: "This coupon has expired or is invalid.",
@@ -657,14 +659,14 @@ export const verifyCoupon = async (req, res) => {
 
       if (userCoupon && userCoupon.usedCount >= getCoupon.usageLimit) {
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({
             success: false,
             message: "You have reached the usage limit for this coupon.",
           });
       }
 
-      return res.status(200).json({
+      return res.status(StatusCodes.OK).json({
         success: true,
         message: "Coupon applied successfully.",
         discountValue: getCoupon.discountValue,
@@ -673,7 +675,7 @@ export const verifyCoupon = async (req, res) => {
       });
     } else {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({
           success: false,
           message: "This coupon does not meet the requirements.",

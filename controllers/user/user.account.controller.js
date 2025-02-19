@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../../models/user.model.js";
 import Address from "../../models/address.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER MY ACCOUNT PAGE
@@ -54,7 +55,7 @@ export const handleProfileUpdate = async (req, res) => {
     });
 
     if (!updatedUser) {
-      return res.status(404).send("User not found");
+      return res.status(StatusCodes.NOT_FOUND).send("User not found");
     }
 
     const newToken = jwt.sign(
@@ -137,7 +138,7 @@ export const handleAddAddress = async (req, res) => {
 
     const activeUser = await User.findById(user.userId);
     if (!activeUser) {
-      return res.status(404).send("User not found");
+      return res.status(StatusCodes.NOT_FOUND).send("User not found");
     }
 
     const addressCount = await Address.countDocuments({
@@ -221,7 +222,7 @@ export const removeAddress = async (req, res) => {
 
     if (!user) {
       return res
-        .status(401)
+        .status()
         .json({ message: "Unauthorized access. Please log in." });
     }
 
@@ -234,13 +235,13 @@ export const removeAddress = async (req, res) => {
     );
 
     if (!updatedAddress) {
-      return res.status(404).json({ message: "Address not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Address not found" });
     }
 
-    res.status(200).json({ message: "Address deactivated successfully" });
+    res.status(StatusCodes.OK).json({ message: "Address deactivated successfully" });
   } catch (error) {
     console.error("Error in removing address:", error);
-    res.status(500).json({ message: "Error deactivating address", error });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Error deactivating address", error });
   }
 };
 
@@ -260,7 +261,7 @@ export const editAddressPage = async (req, res) => {
     const address = await Address.findById(id);
 
     if (!address) {
-      return res.status(404).send("Address not found");
+      return res.status(StatusCodes.NOT_FOUND).send("Address not found");
     }
 
     return res.render("user/edit-address.ejs", {
@@ -298,7 +299,7 @@ export const updateAddress = async (req, res) => {
     });
 
     if (existingAddress) {
-      return res.status(400).json({ message: "This address already exists" });
+      return res.status(StatusCodes.FORBIDDEN).json({ message: "This address already exists" });
     }
 
     const updatedAddress = await Address.findByIdAndUpdate(addressId, req.body, {
@@ -306,12 +307,12 @@ export const updateAddress = async (req, res) => {
     });
 
     if (!updatedAddress) {
-      return res.status(404).json({ message: "Address not found" });
+      return res.status(StatusCodes.NOT_FOUND).json({ message: "Address not found" });
     }
 
-    res.status(200).json({ message: "Address updated successfully" });
+    res.status(StatusCodes.OK).json({ message: "Address updated successfully" });
   } catch (error) {
     console.error("Error updating address:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ message: "Server error" });
   }
 };

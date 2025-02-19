@@ -1,5 +1,6 @@
 import User from "../../models/user.model.js";
 import Order from "../../models/order.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER SALES REPORT ON DASHBOARD
@@ -233,7 +234,7 @@ export const renderDashboardPage = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching sales data:", error);
-    return res.status(500).send("Internal Server Error");
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -365,6 +366,6 @@ export const salesData = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching all sales data:", error);
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };

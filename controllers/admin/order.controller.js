@@ -2,6 +2,7 @@ import User from "../../models/user.model.js";
 import Order from "../../models/order.model.js";
 import Wallet from "../../models/wallet.model.js";
 import Product from "../../models/product.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 import Transaction from "../../models/transaction.model.js";
 
 // ========================================================================================
@@ -68,12 +69,14 @@ export const renderOrderPage = async (req, res) => {
       )
       .filter((product) => product !== null);
 
+
     const totalProducts = allProducts.length;
     const totalPages = Math.ceil(totalProducts / limit);
 
     const paginatedProducts = allProducts.slice(skip, skip + limit);
 
     const queryParams = req.url.split("?")[1] || "";
+
 
     return res.render("admin/orderlists", {
       orders: paginatedProducts,
@@ -84,7 +87,7 @@ export const renderOrderPage = async (req, res) => {
       admin,
     });
   } catch (error) {
-    res.status(500).send("Internal Server Error");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("Internal Server Error");
   }
 };
 
@@ -101,7 +104,7 @@ export const updateOrderStatus = async (req, res) => {
 
     if (!orderId || !productId || !variantId || !status) {
       return res
-        .status(400)
+        .status(StatusCodes.BAD_REQUEST)
         .json({ success: false, message: "Missing required fields." });
     }
 
@@ -116,7 +119,7 @@ export const updateOrderStatus = async (req, res) => {
     ];
     if (!validStatuses.includes(status)) {
       return res
-        .status(400)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Invalid status value." });
     }
 
@@ -126,7 +129,7 @@ export const updateOrderStatus = async (req, res) => {
     }).populate("user_id");
     if (!order) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Order or product not found." });
     }
 
@@ -140,7 +143,7 @@ export const updateOrderStatus = async (req, res) => {
 
     if (!productInOrder) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found in the order." });
     }
 
@@ -155,7 +158,7 @@ export const updateOrderStatus = async (req, res) => {
 
     if (!product) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Product not found." });
     }
     const variant = product.variants.find(
@@ -163,7 +166,7 @@ export const updateOrderStatus = async (req, res) => {
     );
     if (!variant) {
       return res
-        .status(404)
+        .status(StatusCodes.NOT_FOUND)
         .json({ success: false, message: "Variant not found in the product." });
     }
 
@@ -246,13 +249,13 @@ export const updateOrderStatus = async (req, res) => {
         break;
       default:
         return res
-          .status(400)
+          .status(StatusCodes.BAD_REQUEST)
           .json({ success: false, message: "Invalid order status." });
     }
 
     await order.save();
 
-    res.status(200).json({
+    res.status(StatusCodes.OK).json({
       success: true,
       message: "Product status updated successfully.",
       order,
@@ -260,7 +263,7 @@ export const updateOrderStatus = async (req, res) => {
   } catch (error) {
     console.error("Error updating order status:", error);
     res
-      .status(500)
+      .status(StatusCodes.INTERNAL_SERVER_ERROR)
       .json({ success: false, message: "An internal server error occurred." });
   }
 };

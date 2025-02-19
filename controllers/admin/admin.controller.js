@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 dotenv.config();
 import User from "../../models/user.model.js";
+import { StatusCodes } from "../../helpers/StatusCodes.js";
 
 // ========================================================================================
 // RENDER ADMIN LOGIN PAGE
@@ -52,7 +53,7 @@ export const handleAdminLogin = async (req, res) => {
     res.redirect("/admin/dashboard");
   } catch (error) {
     console.error("Error during admin login:", error);
-    res.status(500).send("An error occurred during login.");
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).send("An error occurred during login.");
   }
 };
 
