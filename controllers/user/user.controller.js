@@ -396,7 +396,6 @@ export const googleCallbackHandler = async (req, res) => {
 
     const referralCode = generateReferralCode();
 
-    console.log("google login", referralCode);
     if (!user) {
       user = new User({
         email: req.user.email,
@@ -421,10 +420,8 @@ export const googleCallbackHandler = async (req, res) => {
       await user.save();
     } else if (!user.referralCode) {
       user.referralCode = referralCode;
-      console.log("Updating user with referralCode:", user);
       try {
         await user.save();
-        console.log("Updated user after save:", await User.findOne({ email: req.user.email }));
       } catch (err) {
         console.error("Error updating user:", err);
       }
