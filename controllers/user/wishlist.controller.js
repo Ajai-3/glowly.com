@@ -16,49 +16,49 @@ export const renderWishlistPage = async (req, res) => {
     let { user, wishlist, token, brands, cartCount, cartVariants, categories } =
       req;
 
-    let wishlistProducts = [];
-    const ITEMS_PER_PAGE = 4;
-    const page = parseInt(req.query.page) || 1;
-
-    if (!token) {
-      return res.redirect("/home");
-    }
-
-    if (wishlist && wishlist.products.length > 0) {
-      const totalItems = wishlist.products.length;
-
-      // Sort wishlist products by `added_at` in descending order
-      wishlist.products.sort(
-        (a, b) => new Date(b.added_at) - new Date(a.added_at)
-      );
-
-      // Paginate after sorting
-      const startIndex = (page - 1) * ITEMS_PER_PAGE;
-      const endIndex = startIndex + ITEMS_PER_PAGE;
-
-      wishlistProducts = await Promise.all(
-        wishlist.products.slice(startIndex, endIndex).map(async (item) => {
-          const productDetails = await Product.findById(item.product_id);
-          const variantDetails = productDetails?.variants.find(
-            (variant) => variant._id.toString() === item.variant_id.toString()
-          );
-
-          if (productDetails && variantDetails) {
+      let wishlistProducts = [];
+      const ITEMS_PER_PAGE = 4;
+      const page = parseInt(req.query.page) || 1;
+      let totalPages = 0;
+      
+      if (!token) {
+        return res.redirect("/home");
+      }
+      
+      if (wishlist && wishlist.products.length > 0) {
+        wishlist.products.sort(
+          (a, b) => new Date(b.added_at) - new Date(a.added_at)
+        );
+      
+        let validProducts = await Promise.all(
+          wishlist.products.map(async (item) => {
+            const productDetails = await Product.findById(item.product_id);
+            if (!productDetails || productDetails.isDeleted) return null;
+      
+            const variantDetails = productDetails?.variants.find(
+              (variant) => variant._id.toString() === item.variant_id.toString() && !variant.isDeleted
+            );
+      
+            if (!variantDetails) return null;
+      
             return {
               product: productDetails,
               variant: variantDetails,
               added_at: item.added_at,
             };
-          }
-          return null;
-        })
-      );
-      wishlistProducts = wishlistProducts.filter((item) => item !== null);
-    }
-
-    const totalPages = Math.ceil(
-      (wishlist ? wishlist.products.length : 0) / ITEMS_PER_PAGE
-    );
+          })
+        );
+      
+        validProducts = validProducts.filter((item) => item !== null);
+      
+        const totalItems = validProducts.length;
+        totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+      
+        const startIndex = (page - 1) * ITEMS_PER_PAGE;
+        const endIndex = startIndex + ITEMS_PER_PAGE;
+        wishlistProducts = validProducts.slice(startIndex, endIndex);
+      }
+      
 
     return res.render("user/my-wishlist", {
       name: user ? user.name : "",
