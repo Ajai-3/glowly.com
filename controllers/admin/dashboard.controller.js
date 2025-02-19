@@ -257,11 +257,13 @@ export const salesData = async (req, res) => {
 
     const now = new Date();
     if (filter === "today") {
-      const startOfDay = new Date(now);
-      startOfDay.setHours(0, 0, 0, 0);
-      const endOfDay = new Date(now);
-      endOfDay.setHours(23, 59, 59, 999);
-      matchStage.createdAt = { $gte: startOfDay, $lte: endOfDay };
+      const startOfDayIST = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      startOfDayIST.setHours(0, 0, 0, 0);
+
+      const endOfDayIST = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+      endOfDayIST.setHours(23, 59, 59, 999);
+
+      matchStage.createdAt = { $gte: startOfDayIST, $lte: endOfDayIST };
     } else if (filter === "this_week") {
       const startOfWeek = new Date(now);
       startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
