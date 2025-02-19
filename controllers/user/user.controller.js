@@ -396,27 +396,22 @@ export const googleCallbackHandler = async (req, res) => {
 
     const referralCode = generateReferralCode();
 
-    console.log(referralCode)
+    console.log("google login", referralCode);
     if (!user) {
       user = new User({
         email: req.user.email,
         name: req.user.displayName,
         googleId: req.user.googleId,
         referralCode: referralCode,
-
       });
       console.log("User before saving:", user);
 
       try {
         await user.save();
-        console.log("User before saving:", user);
+        console.log("User saved successfully:", user);
       } catch (err) {
         if (err.code === 11000) {
           user = await User.findOne({ email: req.user.email });
-          if (!user.referralCode) {
-            user.referralCode = await generateReferralCode();
-            await user.save();
-          }
         } else {
           throw err;
         }
@@ -424,7 +419,16 @@ export const googleCallbackHandler = async (req, res) => {
     } else if (!user.googleId) {
       user.googleId = req.user.googleId;
       await user.save();
-    } 
+    } else if (!user.referralCode) {
+      user.referralCode = referralCode;
+      console.log("Updating user with referralCode:", user);
+      try {
+        await user.save();
+        console.log("Updated user after save:", await User.findOne({ email: req.user.email }));
+      } catch (err) {
+        console.error("Error updating user:", err);
+      }
+    }
 
     req.session.user = {
       _id: user._id,
