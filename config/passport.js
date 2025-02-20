@@ -38,13 +38,4 @@ passport.serializeUser((user, done) => {
 
 // Deserilize The User
 // It Is Used To Fetch User Data From The Session
-passport.deserializeUser(async (id, done) => {
-    try {
-       const user = await User.findById(id);
-       done(null, user); 
-    } catch (error) {
-        done(error, null);
-    }
-})
-
-export default passport;
+xZx
