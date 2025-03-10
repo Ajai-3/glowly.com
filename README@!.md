@@ -2,7 +2,6 @@
 
 Welcome to **Glowly**, an online platform for affordable and premium makeup products. Shop your favorite face, lip makeup, and essential beauty products all in one place.
 
-<<<<<<< HEAD
   # features
 =======
 ## Features
@@ -138,4 +137,4 @@ This project is licensed under the MIT License.
 
 ## Contact
 For support, email support@glowly.com
->>>>>>> development
+
